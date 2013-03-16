@@ -1,0 +1,12 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET /               controllers.Application.index
+
+GET /tweets         controllers.Twitter.tweetList
+
+GET /status         controllers.WebSockets.statusPage()
+GET /statusFeed     controllers.WebSockets.statusFeed()
+
+GET /assets/*file   controllers.Assets.at(path="/public", file)

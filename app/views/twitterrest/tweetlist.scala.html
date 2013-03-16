@@ -1,0 +1,10 @@
+@(tweets: Seq[ParseTweet])(implicit flash: Flash, lang: Lang)
+
+@main("Tweets!") {
+  <h1>Tweets:</h1>
+  @tweets.map { tweet =>
+  <ul>
+    <li><span>@tweet.from_user_name</span>: @tweet.text - @tweet.created_at
+  </ul>
+  } 
+}

@@ -1,0 +1,28 @@
+body { color:black; }
+body, p, label { font-size:15px; }
+.label { font-size:13px; line-height:16px; }
+.alert-info { border-color:transparent; background-color:#3A87AD;
+    color:white; font-weight:bold; }
+div.screenshot { width: 1000px; margin:20px; background-color:#D0E7EF; }
+.navbar-fixed-top .navbar-inner { padding-left:20px; }
+.navbar .nav > li > a { color:#bbb; }
+.screenshot > .container { width: 960px; padding: 20px; }
+.navbar-fixed-top, .navbar-fixed-bottom { position:relative; }
+h1 { font-size:125%; }
+table { border-collapse: collapse; width:100%; }
+th, td { text-align:left; padding: 0.3em 0;
+    border-bottom: 1px solid white; }
+tr.odd td { }
+form { float:left; margin-right: 1em; }
+legend { border: none; }
+fieldset > div { margin: 12px 0; }
+.help-block { display: inline; vertical-align: middle; }
+.error .help-block { display: none; }
+.error .help-inline { padding-left: 9px; color: #B94A48; }
+footer { clear: both; text-align: right; }
+
+.chart rect {
+  stroke: white;
+  fill: steelblue;
+  
+}

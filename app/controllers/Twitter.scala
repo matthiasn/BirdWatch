@@ -10,7 +10,7 @@ import play.api.i18n.Messages
 import play.api.mvc.Flash
 import play.api.cache.Cached
 import play.api.libs.json._
-import play.api.libs.json.util._
+//import play.api.libs.json.util._
 import play.api.libs.ws.WS
 import play.api.libs.oauth._
 import play.api.libs.iteratee._
@@ -21,6 +21,8 @@ import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
 import play.api.mvc.{ Action, Controller, WebSocket }
 import play.api.libs.concurrent.Promise
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import org.joda.time.DateTime
+import utils.TimeInterval
 
 case class ParseTweet(from_user_name: String, text: String, created_at: String)
 case class StreamTweet(screen_name: String, text: String, created_at: String)
@@ -33,10 +35,11 @@ object Twitter extends Controller {
       Json.obj(
         "screen_name" -> t.screen_name,
         "text" -> t.text,
-        "timestamp" -> t.created_at
+        "timestamp" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString
       )
     }
   }
+  val intervalsInMillis = TimeInterval.tIntervals
 
   def tweetList() = Cached("action-tweets", 5) { Action {
     implicit request => Async {

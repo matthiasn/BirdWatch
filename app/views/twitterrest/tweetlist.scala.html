@@ -14,7 +14,7 @@
       
     ws.onmessage = function(msg){
       //console.log(msg.data)
-      viewModel.tweets.push(JSON.parse(msg.data))
+      viewModel.tweets.unshift(JSON.parse(msg.data))
    }
   })
   </script>

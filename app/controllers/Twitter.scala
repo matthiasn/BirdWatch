@@ -40,7 +40,7 @@ object Twitter extends Controller {
 
   def tweetList() = Cached("action-tweets", 5) { Action {
     implicit request => Async {
-      val results = 10
+      val results = 1
       val query = """schnee OR hamburg"""
 
       val responsePromise = WS.url("http://search.twitter.com/search.json")

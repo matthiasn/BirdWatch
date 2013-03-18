@@ -6,7 +6,7 @@
       var ws = new WebSocket("@routes.Twitter.tweetFeed.webSocketURL()")
       
       ws.onmessage = function(msg){
-        alert(msg.data)
+        console.log(msg.data)
      }
     })
     </script>

@@ -28,6 +28,16 @@ case class StreamTweet(screen_name: String, text: String, created_at: String)
 object Twitter extends Controller {
   implicit val tweetReads = Json.reads[ParseTweet]
 
+  implicit val tweetWrites = new Writes[Tweet] {
+    def writes(t: Tweet): JsValue = {
+      Json.obj(
+        "screen_name" -> t.screen_name,
+        "text" -> t.text,
+        "timestamp" -> t.created_at
+      )
+    }
+  }
+
   def tweetList() = Cached("action-tweets", 5) { Action {
     implicit request => Async {
       val results = 10
@@ -44,23 +54,27 @@ object Twitter extends Controller {
   }}
   
   def tweetFeed() = WebSocket.using[String] { implicit request =>
-    val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
-      def receive = { 
-        case t: Tweet => {
-          play.api.Logger.info("Twitter.scala " + t.created_at + ": " + t.screen_name + " - " + t.text)
-        }
-      }
-    }))
-    ActorStage.actorSystem.eventStream.subscribe(subscriber, classOf[Tweet])
-    
+
     def getLoadAverage = "%1.2f".format(100 * ManagementFactory.getOperatingSystemMXBean.getSystemLoadAverage() / 
       ManagementFactory.getOperatingSystemMXBean.getAvailableProcessors())
 
     val in = Iteratee.ignore[String] // ignore incoming messages on websocket
 
     // generate loadAverage message (String) every second
-    val out = Enumerator.generateM { Promise.timeout(Some(getLoadAverage), 5 seconds) }
-
+    //val out = Enumerator.generateM { Promise.timeout(Some(getLoadAverage), 5 seconds) }
+    
+    val out = Enumerator.imperative[String]()
+    
+    val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
+      def receive = { 
+        case t: Tweet => {
+          play.api.Logger.info("Twitter.scala " + t.created_at + ": " + t.screen_name + " - " + t.text)
+          out.push(Json.toJson(t).toString)
+        }
+      }
+    }))
+    ActorStage.actorSystem.eventStream.subscribe(subscriber, classOf[Tweet])
+    
     (in, out) // websocket has in and out "channels"
   }
 }

@@ -1,6 +1,8 @@
 package controllers
 
 import play.api.mvc.{ Action, Controller }
+import java.lang.management.ManagementFactory
+import scala.concurrent.duration.DurationInt
 import models._
 import play.api.data.Form
 import play.api.data.Forms.{ mapping, longNumber, nonEmptyText }
@@ -15,33 +17,50 @@ import play.api.libs.iteratee._
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.Play.current
 import play.api.libs.functional.syntax._
-import reactivemongo.api._
-import reactivemongo.bson._
-import reactivemongo.bson.handlers._
+import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
+import play.api.mvc.{ Action, Controller, WebSocket }
+import play.api.libs.concurrent.Promise
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 case class ParseTweet(from_user_name: String, text: String, created_at: String)
-
 case class StreamTweet(screen_name: String, text: String, created_at: String)
 
 object Twitter extends Controller {
   implicit val tweetReads = Json.reads[ParseTweet]
 
-  def tweetList() = Cached("action-tweets", 5) {
-    Action {
-      implicit request =>
-        Async {
-          val results = 10
-          val query = """schnee OR hamburg"""
+  def tweetList() = Cached("action-tweets", 5) { Action {
+    implicit request => Async {
+      val results = 10
+      val query = """schnee OR hamburg"""
 
-          val responsePromise =
-            WS.url("http://search.twitter.com/search.json")
-              .withQueryString("q" -> query, "rpp" -> results.toString).get
+      val responsePromise = WS.url("http://search.twitter.com/search.json")
+        .withQueryString("q" -> query, "rpp" -> results.toString).get
 
-          responsePromise.map { response =>
-            val tweets = Json.parse(response.body).\("results").as[Seq[ParseTweet]]
-            Ok(views.html.twitterrest.tweetlist(tweets))
-          }
-        }
+      responsePromise.map { response =>
+        val tweets = Json.parse(response.body).\("results").as[Seq[ParseTweet]]
+        Ok(views.html.twitterrest.tweetlist(tweets))
+      }
     }
+  }}
+  
+  def tweetFeed() = WebSocket.using[String] { implicit request =>
+    val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
+      def receive = { 
+        case t: Tweet => {
+          play.api.Logger.info("Twitter.scala " + t.created_at + ": " + t.screen_name + " - " + t.text)
+        }
+      }
+    }))
+    ActorStage.actorSystem.eventStream.subscribe(subscriber, classOf[Tweet])
+    
+    def getLoadAverage = "%1.2f".format(100 * ManagementFactory.getOperatingSystemMXBean.getSystemLoadAverage() / 
+      ManagementFactory.getOperatingSystemMXBean.getAvailableProcessors())
+
+    val in = Iteratee.ignore[String] // ignore incoming messages on websocket
+
+    // generate loadAverage message (String) every second
+    val out = Enumerator.generateM { Promise.timeout(Some(getLoadAverage), 5 seconds) }
+
+    (in, out) // websocket has in and out "channels"
   }
 }

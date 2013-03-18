@@ -14,6 +14,7 @@ object WebSockets extends Controller {
   def statusPage() = Action { implicit request => Ok(views.html.websockets.statusPage(request)) }
 
   def statusFeed() = WebSocket.using[String] { implicit request =>
+    
     def getLoadAverage = "%1.2f".format(100 * ManagementFactory.getOperatingSystemMXBean.getSystemLoadAverage() / 
       ManagementFactory.getOperatingSystemMXBean.getAvailableProcessors())
 

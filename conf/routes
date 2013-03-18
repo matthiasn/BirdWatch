@@ -5,6 +5,7 @@
 GET /               controllers.Application.index
 
 GET /tweets         controllers.Twitter.tweetList
+GET /tweetFeed      controllers.Twitter.tweetFeed()
 
 GET /status         controllers.WebSockets.statusPage()
 GET /statusFeed     controllers.WebSockets.statusFeed()

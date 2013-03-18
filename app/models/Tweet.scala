@@ -12,16 +12,14 @@ import reactivemongo.bson.handlers._
 import org.joda.time.DateTime
 import play.api.libs.json.Reads.jodaDateReads
 import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
-import akka.event.ActorEventBus
 
 case class Tweet(screen_name: String, text: String, created_at: DateTime, id: Option[BSONObjectID])
 
-
 object Tweet {
   
-  val system = ActorSystem("TweetStage")
+//  val system = ActorSystem("TweetStage")
   
-   val subscriber = system.actorOf(Props(new Actor {
+   val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
      def receive = { 
        case t: Tweet => {
          play.api.Logger.info(t.created_at + ": " + t.screen_name + " - " + t.text)
@@ -30,9 +28,8 @@ object Tweet {
      }
    }))  
 
-  system.eventStream.subscribe(subscriber, classOf[Tweet])
-  system.eventStream.publish(Tweet("XXXXXXX", "123456789123456789123456789", DateTime.now, None))
-  
+  ActorStage.actorSystem.eventStream.subscribe(subscriber, classOf[Tweet])
+  ActorStage.actorSystem.eventStream.publish(Tweet("XXXXXXX", "123456789123456789123456789", DateTime.now, None))
   
   implicit val DefaultJodaDateReads = jodaDateReads("EEE MMM dd HH:mm:ss Z YYYY")
 
@@ -66,7 +63,7 @@ object Tweet {
     val json = Json.parse(chunkString)
     tweetReads.reads(json) match {
       case JsSuccess(tweet: Tweet, _) => {
-        system.eventStream.publish(tweet)
+        ActorStage.actorSystem.eventStream.publish(tweet)
       }
       case JsError(_) => println _
     }

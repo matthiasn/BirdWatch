@@ -15,6 +15,9 @@ import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
 import akka.event.ActorEventBus
 import akka.event.LookupClassification
 
+object ActorStage {
+  val actorSystem = ActorSystem("TweetStage")
+}
 
 case class MessageEvent(channel: String, msg: Tweet)
 

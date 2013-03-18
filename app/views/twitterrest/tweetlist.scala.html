@@ -1,6 +1,16 @@
-@(tweets: Seq[ParseTweet])(implicit flash: Flash, lang: Lang)
+@(tweets: Seq[ParseTweet])(implicit request: RequestHeader)
 
 @main("Tweets!") {
+  <script type="text/javascript">
+    $(function() {
+      var ws = new WebSocket("@routes.Twitter.tweetFeed.webSocketURL()")
+      
+      ws.onmessage = function(msg){
+        alert(msg.data)
+     }
+    })
+    </script>
+
   <h1>Tweets:</h1>
   @tweets.map { tweet =>
   <ul>

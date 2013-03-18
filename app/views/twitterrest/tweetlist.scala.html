@@ -15,15 +15,16 @@
     ws.onmessage = function(msg){
       //console.log(msg.data)
       viewModel.tweets.unshift(JSON.parse(msg.data))
-   }
+      if(viewModel.tweets().length > 15) viewModel.tweets.pop()
+    }
   })
   </script>
 
   <h1>Tweets:</h1>
   @tweets.map { tweet =>
-  <ul>
+  <!--ul>
     <li><span>@tweet.from_user_name</span>: @tweet.text - @tweet.created_at
-  </ul>
+  </ul-->
   } 
   <ul data-bind="foreach: tweets">
     <li><span data-bind="text: screen_name"></span>: <span data-bind="text: text"></span> - <span data-bind="text: timestamp"></span>

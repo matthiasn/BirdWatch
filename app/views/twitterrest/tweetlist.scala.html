@@ -2,14 +2,22 @@
 
 @main("Tweets!") {
   <script type="text/javascript">
-    $(function() {
-      var ws = new WebSocket("@routes.Twitter.tweetFeed.webSocketURL()")
+  $(function() {
+    var ws = new WebSocket("@routes.Twitter.tweetFeed.webSocketURL()")
+
+    // Overall viewmodel for this screen, along with initial state
+    var TweetsViewModel = function() {
+      this.tweets = ko.observableArray();
+    }
+    var viewModel = new TweetsViewModel()
+    ko.applyBindings(viewModel);
       
-      ws.onmessage = function(msg){
-        console.log(msg.data)
-     }
-    })
-    </script>
+    ws.onmessage = function(msg){
+      //console.log(msg.data)
+      viewModel.tweets.push(JSON.parse(msg.data))
+   }
+  })
+  </script>
 
   <h1>Tweets:</h1>
   @tweets.map { tweet =>
@@ -17,4 +25,7 @@
     <li><span>@tweet.from_user_name</span>: @tweet.text - @tweet.created_at
   </ul>
   } 
+  <ul data-bind="foreach: tweets">
+    <li><span data-bind="text: screen_name"></span>: <span data-bind="text: text"></span> - <span data-bind="text: timestamp"></span>
+  </ul>
 }

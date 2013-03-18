@@ -54,17 +54,12 @@ object Twitter extends Controller {
   }}
   
   def tweetFeed() = WebSocket.using[String] { implicit request =>
-
-    def getLoadAverage = "%1.2f".format(100 * ManagementFactory.getOperatingSystemMXBean.getSystemLoadAverage() / 
-      ManagementFactory.getOperatingSystemMXBean.getAvailableProcessors())
-
     val in = Iteratee.ignore[String] // ignore incoming messages on websocket
 
-    // generate loadAverage message (String) every second
-    //val out = Enumerator.generateM { Promise.timeout(Some(getLoadAverage), 5 seconds) }
-    
+    // PushEnumerator. Deprected, should be replaced
     val out = Enumerator.imperative[String]()
     
+    // Actor for subscribing to eventStream. Pushes received data onto enumerator
     val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
       def receive = { 
         case t: Tweet => {

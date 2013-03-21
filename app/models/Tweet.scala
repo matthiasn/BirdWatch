@@ -16,11 +16,29 @@ import utils.TimeInterval
 import scala.collection.immutable.ListMap
 
 case class Tweet(screen_name: String, text: String, created_at: DateTime, id: Option[BSONObjectID])
-
 case class TweetState(tweetList: List[Tweet], wordMap: Map[String, Int])
 
-object TweetState {
-  implicit val tweetJsonWriter = new Writes[Tweet] {
+object Implicits {
+  implicit val DefaultJodaDateReads = jodaDateReads("EEE MMM dd HH:mm:ss Z YYYY")
+
+  // Fields specified because of hierarchical json. Otherwise:
+  // implicit val streamTweetReads = Json.reads[StreamTweet]
+  implicit val TweetReads = (
+    (__ \ "user" \ "screen_name").read[String] and
+    (__ \ "text").read[String] and
+    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, None))
+
+  implicit object TweetBSONWriter extends BSONWriter[Tweet] {
+    def toBSON(tweet: Tweet) = {
+      BSONDocument(
+        "_id" -> tweet.id.getOrElse(BSONObjectID.generate),
+        "screen_name" -> BSONString(tweet.screen_name),
+        "text" -> BSONString(tweet.text),
+        "created_at" -> BSONDateTime(tweet.created_at.getMillis))
+    }
+  }
+
+  implicit val TweetJsonWriter = new Writes[Tweet] {
     def writes(t: Tweet): JsValue = {
       Json.obj(
         "screen_name" -> t.screen_name,
@@ -40,6 +58,8 @@ object TweetState {
 }
 
 object Tweet {
+  import Implicits._
+  
   val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
     def receive = {
       case t: Tweet => {
@@ -50,33 +70,7 @@ object Tweet {
   }))
   ActorStage.actorSystem.eventStream.subscribe(subscriber, classOf[Tweet])
 
-  implicit val DefaultJodaDateReads = jodaDateReads("EEE MMM dd HH:mm:ss Z YYYY")
 
-  // Fields specified because of hierarchical json. Otherwise:
-  // implicit val streamTweetReads = Json.reads[StreamTweet]
-  implicit val tweetReads = (
-    (__ \ "user" \ "screen_name").read[String] and
-    (__ \ "text").read[String] and
-    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, None))
-
-  implicit object TweetBSONWriter extends BSONWriter[Tweet] {
-    def toBSON(tweet: Tweet) = {
-      BSONDocument(
-        "_id" -> tweet.id.getOrElse(BSONObjectID.generate),
-        "screen_name" -> BSONString(tweet.screen_name),
-        "text" -> BSONString(tweet.text),
-        "created_at" -> BSONDateTime(tweet.created_at.getMillis))
-    }
-  }
-
-  implicit val tweetJsonWriter = new Writes[Tweet] {
-    def writes(t: Tweet): JsValue = {
-      Json.obj(
-        "screen_name" -> t.screen_name,
-        "text" -> t.text,
-        "timestamp" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString)
-    }
-  }
 
   val connection = MongoConnection(List("localhost:27017"))
   val db = connection("PlayTest")
@@ -89,7 +83,7 @@ object Tweet {
     val chunkString = new String(chunk, "UTF-8")
     //println(chunkString)
     val json = Json.parse(chunkString)
-    tweetReads.reads(json) match {
+    TweetReads.reads(json) match {
       case JsSuccess(tweet: Tweet, _) => {
         ActorStage.actorSystem.eventStream.publish(tweet)
       }
@@ -114,4 +108,8 @@ object Tweet {
     //  .postAndRetrieveStream(filter)(tweets => tweetIteratee)
   }
 
+  object TweetState {
+    import models.Tweet._
+
+  }
 }

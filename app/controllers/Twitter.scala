@@ -22,6 +22,7 @@ import play.api.libs.concurrent.Promise
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import org.joda.time.DateTime
 import utils.WordCount
+import models.Implicits._
 
 object Twitter extends Controller {
 

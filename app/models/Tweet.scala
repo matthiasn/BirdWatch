@@ -17,7 +17,11 @@ import scala.collection.immutable.ListMap
 
 case class Tweet(screen_name: String, text: String, created_at: DateTime, id: Option[BSONObjectID])
 
-case class TweetState(tweetList: List[Tweet], wordMap: ListMap[String, Int])
+case class TweetState(tweetList: List[Tweet], wordMap: Map[String, Int])
+
+object TweetState {
+  
+}
 
 object Tweet {
   val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
@@ -49,7 +53,7 @@ object Tweet {
     }
   }
 
-  implicit val tweetWrites = new Writes[Tweet] {
+  implicit val tweetJsonWriter = new Writes[Tweet] {
     def writes(t: Tweet): JsValue = {
       Json.obj(
         "screen_name" -> t.screen_name,

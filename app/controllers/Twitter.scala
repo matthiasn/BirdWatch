@@ -40,8 +40,8 @@ object Twitter extends Controller {
     }
 
     def interceptTweetList(tweetList: List[Tweet]) { 
-      //val top25 = WordCount.topN(wordMap, 25)
-      println(tweetList.take(500)) 
+      val tweetState = TweetState(tweetList.take(25), WordCount.topN(tweetList, 25))
+      println(tweetState) 
       //out.push(Json.toJson(top25).toString)
     }
     
@@ -57,7 +57,7 @@ object Twitter extends Controller {
     val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
       def receive = {
         case t: Tweet => {
-          play.api.Logger.info("Twitter.scala " + t.created_at + ": " + t.screen_name + " - " + t.text)
+          //play.api.Logger.info("Twitter.scala " + t.created_at + ": " + t.screen_name + " - " + t.text)
           wordCountChannel.push(t)
           out.push(Json.toJson(t).toString)
         }

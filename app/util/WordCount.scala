@@ -45,6 +45,11 @@ object WordCount {
   def topN(wordMap: Map[String, Int], n: Int): ListMap[String, Int] =
     ListMap[String, Int](removeShortWords(wordMap).toList.sortBy(_._2).reverse.take(n): _*)
 
+  def topN(tweetList: List[Tweet], n: Int): ListMap[String, Int] = {
+    val wordMap = countTweetWords(tweetList)
+    ListMap[String, Int](removeShortWords(wordMap).toList.sortBy(_._2).reverse.take(n): _*)
+  }
+    
   /** Generate string from TimeInterval for n significant Interval components (e.g. days and hours).
    *  Allows passing in a side-effecting function f, e.g. for testing or pushing data to websocket
    *  or EventStream. Having f return unit instead of modifying the accumulator guarantees that f

@@ -33,22 +33,33 @@ object Twitter extends Controller {
     // PushEnumerator. Deprected, should be replaced
     val out = Enumerator.imperative[String]()
 
-    def interceptStep(wordMap: Map[String, Int]) { 
+    def interceptWordCount(wordMap: Map[String, Int]) { 
       val top25 = WordCount.topN(wordMap, 25)
       println(top25) 
       //out.push(Json.toJson(top25).toString)
     }
 
-    val (enumerator, wordCountChannel) = Concurrent.broadcast[String]
-    val wordCountIteratee = WordCount.wordCountIteratee(interceptStep)
+    def interceptTweetList(tweetList: List[Tweet]) { 
+      //val top25 = WordCount.topN(wordMap, 25)
+      println(tweetList.take(5)) 
+      //out.push(Json.toJson(top25).toString)
+    }
+    
+    val (enumerator, wordCountChannel) = Concurrent.broadcast[Tweet]
+    
+    
+    val wordCountIteratee = WordCount.wordCountIteratee(interceptWordCount)
     enumerator |>>> wordCountIteratee
+    
+    val tweetListIteratee = WordCount.tweetListIteratee(interceptTweetList)
+    enumerator |>>> tweetListIteratee
 
     // Actor for subscribing to eventStream. Pushes received data onto enumerator
     val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
       def receive = {
         case t: Tweet => {
           play.api.Logger.info("Twitter.scala " + t.created_at + ": " + t.screen_name + " - " + t.text)
-          wordCountChannel.push(t.text)
+          wordCountChannel.push(t)
           out.push(Json.toJson(t).toString)
         }
       }

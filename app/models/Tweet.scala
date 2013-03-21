@@ -13,8 +13,11 @@ import org.joda.time.DateTime
 import play.api.libs.json.Reads.jodaDateReads
 import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
 import utils.TimeInterval
+import scala.collection.immutable.ListMap
 
 case class Tweet(screen_name: String, text: String, created_at: DateTime, id: Option[BSONObjectID])
+
+case class TweetState(tweetList: List[Tweet], wordMap: ListMap[String, Int])
 
 object Tweet {
   val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
@@ -25,9 +28,7 @@ object Tweet {
       }
     }
   }))
-
   ActorStage.actorSystem.eventStream.subscribe(subscriber, classOf[Tweet])
-  ActorStage.actorSystem.eventStream.publish(Tweet("XXXXXXX", "123456789123456789123456789", DateTime.now, None))
 
   implicit val DefaultJodaDateReads = jodaDateReads("EEE MMM dd HH:mm:ss Z YYYY")
 

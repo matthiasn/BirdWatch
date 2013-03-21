@@ -2,6 +2,7 @@ package utils
 
 import scala.collection.immutable.ListMap
 import play.api.libs.iteratee._
+import models._
 
 object WordCount {
 
@@ -40,11 +41,20 @@ object WordCount {
    *  @return   String representation of TimeInterval
    */
   def wordCountIteratee(f: Map[String, Int] => Unit) =
-    Iteratee.fold[String, Map[String, Int]](Map[String, Int]()) {
-      case (acc, el) => {
-        val newAcc = countWords(el, acc)
+    Iteratee.fold[Tweet, Map[String, Int]](Map[String, Int]()) {
+      case (acc, tweet) => {
+        val newAcc = countWords(tweet.text, acc)
         f(newAcc) // purely for side-effects such as println, pushing to websocket / eventStream or testing
         newAcc
+      }
+    }
+    
+  def tweetListIteratee(f: List[Tweet] => Unit) = 
+    Iteratee.fold[Tweet, List[Tweet]] (List[Tweet]()) {
+      case (tweetList, tweet) => {
+       val newTweetList = (tweet :: tweetList) take 500 
+       f(newTweetList)
+       newTweetList
       }
     }
 

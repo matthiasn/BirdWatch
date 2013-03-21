@@ -15,7 +15,7 @@
     ws.onmessage = function(msg){
       console.log(msg.data)
       viewModel.tweets.unshift(JSON.parse(msg.data))
-      if(viewModel.tweets().length > 15) viewModel.tweets.pop()
+      if(viewModel.tweets().length > 20) viewModel.tweets.pop()
     }
   })
   </script>

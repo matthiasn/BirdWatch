@@ -5,8 +5,10 @@ import org.scalatest.GivenWhenThen
 import scala.collection.mutable.Stack
 import org.scalatest.prop.TableDrivenPropertyChecks
 import play.api.libs.iteratee._
+import org.joda.time.DateTime
 
 import utils._
+import models._
 
 class WordCountSpec extends FeatureSpec with GivenWhenThen {
 
@@ -50,15 +52,15 @@ class WordCountSpec extends FeatureSpec with GivenWhenThen {
     // this function intercepts each step and uses the wordMap to update var testMap
     def interceptStep(wordMap: Map[String, Int]) { testMap = WordCount.topN(wordMap, 3) }
 
-    val (enumerator, testChannel) = Concurrent.broadcast[String]
+    val (enumerator, testChannel) = Concurrent.broadcast[Tweet]
     val testIteratee = WordCount.wordCountIteratee(interceptStep)
     enumerator |>>> testIteratee
     
-    testChannel.push("ABCa abca abca abcd abcd ab a accb")
-    testChannel.push("abcA @abca abca abcd abcd ab a accb")
-    testChannel.push("abca abca. abca ABCD abcd ab a accb")
-    testChannel.push("abca aBca! abca abcd abcd ab a accb")
-    testChannel.push("a a a #accb accb")
+    testChannel.push(Tweet("User","ABCa abca abca abcd abcd ab a accb", DateTime.now, None))
+    testChannel.push(Tweet("User","abcA @abca abca abcd abcd ab a accb", DateTime.now, None))
+    testChannel.push(Tweet("User","abca abca. abca ABCD abcd ab a accb", DateTime.now, None))
+    testChannel.push(Tweet("User","abca aBca! abca abcd abcd ab a accb", DateTime.now, None))
+    testChannel.push(Tweet("User","a a a #accb accb", DateTime.now, None))
     
     scenario ("Iteratee wordMap count for 'abca' == 12")   { assert (testMap("abca")   ===  12) }
     scenario ("Iteratee wordMap count for 'abcd' == 8")   { assert (testMap("abcd")  ===  8)  }

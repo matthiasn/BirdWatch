@@ -26,8 +26,9 @@ object WordCount {
     ListMap[String, Int](wordMap.toList.sortBy(_._2).reverse.take(n): _*)
 
   /** Generate string from TimeInterval for n significant Interval components (e.g. days and hours).
-   *  Allows passing in a side-effecting function, e.g. for testing or pushing data to websocket
-   *  or EventStream.
+   *  Allows passing in a side-effecting function f, e.g. for testing or pushing data to websocket
+   *  or EventStream. Having f return unit instead of modifying the accumulator guarantees that f
+   *  cannot alter newAcc in unintended ways.
    *  @param    n number of siginificant interval components to print
    *  @return   String representation of TimeInterval
    */

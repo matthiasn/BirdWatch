@@ -47,11 +47,20 @@ object Implicits {
     }
   }
   
+  implicit val stringIntTupleWriter = new Writes[(String, Int)] {
+    def writes(tuple: (String, Int)): JsValue = {
+      Json.obj(
+        "text" -> tuple._1,
+        "size"-> tuple._2
+      )
+    }
+  }
+  
   implicit val tweetStateJsonWriter = new Writes[TweetState] {
     def writes(ts: TweetState): JsValue = {
       Json.obj(
         "tweetList" -> Json.toJson(ts.tweetList),
-        "topWords" -> ""
+        "topWords" -> Json.toJson(ts.wordMap.toList)
       )
     }
   }

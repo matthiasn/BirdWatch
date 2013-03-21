@@ -21,12 +21,12 @@ object ActorStage {
 
 case class MessageEvent(channel: String, msg: Tweet)
 
-class TweetEventBus extends ActorEventBus with LookupClassification{
+class TweetEventBus extends ActorEventBus with LookupClassification {
   type Event = MessageEvent
   type Classifier = String
 
   protected def mapSize(): Int = { 10 }
-   
+
   protected def classify(event: Event): Classifier = { event.channel }
 
   protected def publish(event: Event, subscriber: Subscriber): Unit = {

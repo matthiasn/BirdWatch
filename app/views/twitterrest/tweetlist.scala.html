@@ -1,4 +1,4 @@
-@(tweets: Seq[ParseTweet])(implicit request: RequestHeader)
+@(tweets: Seq[Tweet])(implicit request: RequestHeader)
 
 @main("Tweets!") {
   <script type="text/javascript">
@@ -23,7 +23,7 @@
   <h1>Tweets:</h1>
   @tweets.map { tweet =>
   <!--ul>
-    <li><span>@tweet.from_user_name</span>: @tweet.text - @tweet.created_at
+    <li><span>@tweet.screen_name</span>: @tweet.text - @tweet.created_at
   </ul-->
   } 
   <ul data-bind="foreach: tweets">

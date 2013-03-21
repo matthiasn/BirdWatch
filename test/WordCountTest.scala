@@ -9,11 +9,11 @@ import utils._
 
 class WordCountSpec extends FeatureSpec with GivenWhenThen {
 
-  val testString = "a b c d e f g h a b c d e f g a b c d e f a b c d e a b c d a b c a b a " // 8*a 7*b 6*c 5*d 4*e 3*f 2*g 1*h
+  val testString = "a b c D #e @f G h a b c d e F g a b c d e f! a b. c d e a b c d a b c a b a " // 8*a 7*b 6*c 5*d 4*e 3*f 2*g 1*h
   val wordMap = WordCount.countWords(testString, Map[String, Int]())
 
   feature("WordCount.countWords") {
-    info("Ensure that countWords correctly counts the occurences of words in a string")
+    info("Correctly counts the occurences of words in a string (case-insensitive), removing non-letters.")
 
     scenario ("counted 8 a")        { assert (wordMap("a")  ===  8) }
     scenario ("counted 7 b")        { assert (wordMap("b")  ===  7) }
@@ -22,8 +22,9 @@ class WordCountSpec extends FeatureSpec with GivenWhenThen {
     scenario ("counted 4 e")        { assert (wordMap("e")  ===  4) }
     scenario ("counted 3 f")        { assert (wordMap("f")  ===  3) }
     scenario ("counted 2 g")        { assert (wordMap("g")  ===  2) }
-    scenario ("counted 1 h")        { assert (wordMap("h")  ===  1) }
+    scenario ("counted 1 h")        { assert (wordMap("h")  ===  1) } 
   }
+  
   
   feature("WordCount.topN") {
     info("Ensure that topN gets the N-most often counted words")

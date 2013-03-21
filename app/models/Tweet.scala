@@ -12,25 +12,23 @@ import reactivemongo.bson.handlers._
 import org.joda.time.DateTime
 import play.api.libs.json.Reads.jodaDateReads
 import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
+import utils.TimeInterval
 
 case class Tweet(screen_name: String, text: String, created_at: DateTime, id: Option[BSONObjectID])
 
 object Tweet {
-  
-//  val system = ActorSystem("TweetStage")
-  
-   val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
-     def receive = { 
-       case t: Tweet => {
-         play.api.Logger.info(t.created_at + ": " + t.screen_name + " - " + t.text)
-         tweets.insert(t)
-       }
-     }
-   }))  
+  val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
+    def receive = {
+      case t: Tweet => {
+        play.api.Logger.info(t.created_at + ": " + t.screen_name + " - " + t.text)
+        tweets.insert(t)
+      }
+    }
+  }))
 
   ActorStage.actorSystem.eventStream.subscribe(subscriber, classOf[Tweet])
   ActorStage.actorSystem.eventStream.publish(Tweet("XXXXXXX", "123456789123456789123456789", DateTime.now, None))
-  
+
   implicit val DefaultJodaDateReads = jodaDateReads("EEE MMM dd HH:mm:ss Z YYYY")
 
   // Fields specified because of hierarchical json. Otherwise:
@@ -47,6 +45,15 @@ object Tweet {
         "screen_name" -> BSONString(tweet.screen_name),
         "text" -> BSONString(tweet.text),
         "created_at" -> BSONDateTime(tweet.created_at.getMillis))
+    }
+  }
+  
+  implicit val tweetWrites = new Writes[Tweet] {
+    def writes(t: Tweet): JsValue = {
+      Json.obj(
+        "screen_name" -> t.screen_name,
+        "text" -> t.text,
+        "timestamp" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString)
     }
   }
 
@@ -82,8 +89,8 @@ object Tweet {
 
     //WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=hamburg%2Cschnee")
     //WS.url("http://localhost:8081/1/statuses/filter.json")
-    //	.sign(OAuthCalculator(consumerKey, accessToken))
-    //	.postAndRetrieveStream(filter)(tweets => tweetIteratee)
+    //  .sign(OAuthCalculator(consumerKey, accessToken))
+    //  .postAndRetrieveStream(filter)(tweets => tweetIteratee)
   }
 
 }

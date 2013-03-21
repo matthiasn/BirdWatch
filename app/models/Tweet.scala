@@ -47,7 +47,7 @@ object Tweet {
         "created_at" -> BSONDateTime(tweet.created_at.getMillis))
     }
   }
-  
+
   implicit val tweetWrites = new Writes[Tweet] {
     def writes(t: Tweet): JsValue = {
       Json.obj(

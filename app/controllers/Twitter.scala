@@ -21,10 +21,9 @@ import play.api.mvc.{ Action, Controller, WebSocket }
 import play.api.libs.concurrent.Promise
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import org.joda.time.DateTime
+import util._
 
 object Twitter extends Controller {
-
-  //val intervalsInMillis = TimeInterval.tIntervals
 
   def tweetList() = Action { implicit request => Ok(views.html.twitterrest.tweetlist(Seq[Tweet]())) }
 

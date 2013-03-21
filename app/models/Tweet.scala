@@ -20,14 +20,23 @@ case class Tweet(screen_name: String, text: String, created_at: DateTime, id: Op
 case class TweetState(tweetList: List[Tweet], wordMap: Map[String, Int])
 
 object TweetState {
-  // implicit val tweetStateJsonWriter = new Writes[TweetState] {
-  //   def writes(ts: TweetState): JsValue = {
-  //     Json.obj(
-  //       "tweetLis" -> t.screen_name,
-  //       "text" -> t.text,
-  //       "timestamp" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString)
-  //   }
-  // }
+  implicit val tweetJsonWriter = new Writes[Tweet] {
+    def writes(t: Tweet): JsValue = {
+      Json.obj(
+        "screen_name" -> t.screen_name,
+        "text" -> t.text,
+        "timestamp" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString)
+    }
+  }
+  
+  implicit val tweetStateJsonWriter = new Writes[TweetState] {
+    def writes(ts: TweetState): JsValue = {
+      Json.obj(
+        "tweetList" -> Json.toJson(ts.tweetList),
+        "topWords" -> ""
+      )
+    }
+  }
 }
 
 object Tweet {

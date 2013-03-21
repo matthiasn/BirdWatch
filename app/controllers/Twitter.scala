@@ -42,6 +42,7 @@ object Twitter extends Controller {
     def interceptTweetList(tweetList: List[Tweet]) { 
       val tweetState = TweetState(tweetList.take(25), WordCount.topN(tweetList, 25))
       println(tweetState) 
+      println(Json.stringify(Json.toJson(tweetState)))
       //out.push(Json.toJson(top25).toString)
     }
     

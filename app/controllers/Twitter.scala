@@ -21,7 +21,7 @@ import play.api.mvc.{ Action, Controller, WebSocket }
 import play.api.libs.concurrent.Promise
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import org.joda.time.DateTime
-import util._
+import utils.WordCount
 
 object Twitter extends Controller {
 
@@ -33,11 +33,22 @@ object Twitter extends Controller {
     // PushEnumerator. Deprected, should be replaced
     val out = Enumerator.imperative[String]()
 
+    def interceptStep(wordMap: Map[String, Int]) { 
+      val top25 = WordCount.topN(wordMap, 25)
+      println(top25) 
+      //out.push(Json.toJson(top25).toString)
+    }
+
+    val (enumerator, wordCountChannel) = Concurrent.broadcast[String]
+    val wordCountIteratee = WordCount.wordCountIteratee(interceptStep)
+    enumerator |>>> wordCountIteratee
+
     // Actor for subscribing to eventStream. Pushes received data onto enumerator
     val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
       def receive = {
         case t: Tweet => {
           play.api.Logger.info("Twitter.scala " + t.created_at + ": " + t.screen_name + " - " + t.text)
+          wordCountChannel.push(t.text)
           out.push(Json.toJson(t).toString)
         }
       }

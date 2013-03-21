@@ -10,20 +10,23 @@ import utils._
 
 class WordCountSpec extends FeatureSpec with GivenWhenThen {
 
-  val testString = "a b c D #e @f G h a b c d e F g a b c d e f! a b. c d e a b c d a b c a b a " // 8*a 7*b 6*c 5*d 4*e 3*f 2*g 1*h
+  // using four-letter words because words of up to length three are removed automatically
+  val testString = "aaaa bBbb cccc dddD Eeee @ffff GggG hhhH aAaa bbbb cccc dDdd eeee fffF Gggg Aaaa Bbbb cCcc dDdd " +
+                   "eEeE fFFf! AaaA bBBb. Cccc Dddd Eeee aAaa bBbB cccC dddd aaaA bbBB cCcc aaAa! bBBb aAaa "
+                   
   val wordMap = WordCount.countWords(testString, Map[String, Int]())
 
   feature("WordCount.countWords") {
     info("Correctly counts the occurences of words in a string (case-insensitive), removing non-letters.")
 
-    scenario ("counted 8 a")        { assert (wordMap("a")  ===  8) }
-    scenario ("counted 7 b")        { assert (wordMap("b")  ===  7) }
-    scenario ("counted 6 c")        { assert (wordMap("c")  ===  6) }
-    scenario ("counted 5 d")        { assert (wordMap("d")  ===  5) }
-    scenario ("counted 4 e")        { assert (wordMap("e")  ===  4) }
-    scenario ("counted 3 f")        { assert (wordMap("f")  ===  3) }
-    scenario ("counted 2 g")        { assert (wordMap("g")  ===  2) }
-    scenario ("counted 1 h")        { assert (wordMap("h")  ===  1) } 
+    scenario ("counted 8 aaaa")        { assert (wordMap("aaaa")  ===  8) }
+    scenario ("counted 7 bbbb")        { assert (wordMap("bbbb")  ===  7) }
+    scenario ("counted 6 cccc")        { assert (wordMap("cccc")  ===  6) }
+    scenario ("counted 5 dddd")        { assert (wordMap("dddd")  ===  5) }
+    scenario ("counted 4 eeee")        { assert (wordMap("eeee")  ===  4) }
+    scenario ("counted 3 ffff")        { assert (wordMap("ffff")  ===  3) }
+    scenario ("counted 2 gggg")        { assert (wordMap("gggg")  ===  2) }
+    scenario ("counted 1 hhhh")        { assert (wordMap("hhhh")  ===  1) } 
   }
 
   feature("WordCount.topN") {
@@ -31,11 +34,11 @@ class WordCountSpec extends FeatureSpec with GivenWhenThen {
 
     val topThree = WordCount.topN(wordMap, 3) 
     
-    scenario ("topThree contains 3 elements")   { assert (topThree.size  ===  3) }
+    scenario ("topThree contains 3 elements") { assert (topThree.size  ===  3) }
     
-    scenario ("first element a -> 8")       { assert (topThree.toList(0)  ===  ("a", 8)) }
-    scenario ("first element b -> 7")       { assert (topThree.toList(1)  ===  ("b", 7)) }
-    scenario ("first element c -> 6")       { assert (topThree.toList(2)  ===  ("c", 6)) }
+    scenario ("first element aaaa -> 8")       { assert (topThree.toList(0)  ===  ("aaaa", 8)) }
+    scenario ("first element bbbb -> 7")       { assert (topThree.toList(1)  ===  ("bbbb", 7)) }
+    scenario ("first element cccc -> 6")       { assert (topThree.toList(2)  ===  ("cccc", 6)) }
   }
   
   feature("WordCount.wordCountIteratee") {
@@ -51,16 +54,16 @@ class WordCountSpec extends FeatureSpec with GivenWhenThen {
     val testIteratee = WordCount.wordCountIteratee(interceptStep)
     enumerator |>>> testIteratee
     
-    testChannel.push("ABC abc abc abcd abcd ab a b")
-    testChannel.push("abc @abc abc abcd abcd ab a b")
-    testChannel.push("abc abc. abc ABCD abcd ab a b")
-    testChannel.push("abc aBc! abc abcd abcd ab a b")
-    testChannel.push("#b")
+    testChannel.push("ABCa abca abca abcd abcd ab a accb")
+    testChannel.push("abcA @abca abca abcd abcd ab a accb")
+    testChannel.push("abca abca. abca ABCD abcd ab a accb")
+    testChannel.push("abca aBca! abca abcd abcd ab a accb")
+    testChannel.push("a a a #accb accb")
     
-    scenario ("Iteratee wordMap count for 'abc' == 12")   { assert (testMap("abc")   ===  12) }
+    scenario ("Iteratee wordMap count for 'abca' == 12")   { assert (testMap("abca")   ===  12) }
     scenario ("Iteratee wordMap count for 'abcd' == 8")   { assert (testMap("abcd")  ===  8)  }
-    scenario ("Iteratee wordMap count for 'b' == 5")      { assert (testMap("b")     ===  5)  }
-
+    scenario ("Iteratee wordMap count for 'accb' == 5")    { assert (testMap("accb")   ===  5)  }
+    scenario ("One-letter word a not contained in top 3") { assert (testMap.contains("a") === false) }
   }
 }
 

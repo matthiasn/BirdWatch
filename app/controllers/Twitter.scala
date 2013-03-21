@@ -59,7 +59,7 @@ object Twitter extends Controller {
         case t: Tweet => {
           //play.api.Logger.info("Twitter.scala " + t.created_at + ": " + t.screen_name + " - " + t.text)
           wordCountChannel.push(t)
-          out.push(Json.toJson(t).toString)
+          out.push(Json.stringify(Json.toJson(t)))
         }
       }
     }))

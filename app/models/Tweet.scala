@@ -20,7 +20,14 @@ case class Tweet(screen_name: String, text: String, created_at: DateTime, id: Op
 case class TweetState(tweetList: List[Tweet], wordMap: Map[String, Int])
 
 object TweetState {
-  
+  // implicit val tweetStateJsonWriter = new Writes[TweetState] {
+  //   def writes(ts: TweetState): JsValue = {
+  //     Json.obj(
+  //       "tweetLis" -> t.screen_name,
+  //       "text" -> t.text,
+  //       "timestamp" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString)
+  //   }
+  // }
 }
 
 object Tweet {

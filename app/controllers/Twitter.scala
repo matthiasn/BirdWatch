@@ -41,12 +41,11 @@ object Twitter extends Controller {
 
     def interceptTweetList(tweetList: List[Tweet]) { 
       //val top25 = WordCount.topN(wordMap, 25)
-      println(tweetList.take(5)) 
+      println(tweetList.take(500)) 
       //out.push(Json.toJson(top25).toString)
     }
     
     val (enumerator, wordCountChannel) = Concurrent.broadcast[Tweet]
-    
     
     val wordCountIteratee = WordCount.wordCountIteratee(interceptWordCount)
     enumerator |>>> wordCountIteratee

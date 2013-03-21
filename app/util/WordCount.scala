@@ -12,8 +12,20 @@ object WordCount {
    *  @return   Map[String, Int] with word counts
    */
   def countWords(s: String, wordMap: Map[String, Int]): Map[String, Int] =
-    s.replaceAll("[^a-zA-Z# ]", "").replaceAll("( )+", " ").split(" ").foldLeft(wordMap) {
-      case (acc, el) => acc + ((el.toLowerCase, acc.getOrElse(el.toLowerCase, 0) + 1))
+    s.toLowerCase.replaceAll("[^a-zA-Z# ]", "").replaceAll("( )+", " ").split(" ").foldLeft(wordMap) {
+      case (acc, el) => acc + ((el, acc.getOrElse(el, 0) + 1))
+    }
+
+ /** Counts words in List[Tweet], returning Map[String, Int] with wordMap.
+  *  @param    tweetList List[Tweet] to count words in
+  *  @return   Map[String, Int] with word counts
+  */
+  def countTweetWords(tweetList: List[Tweet]): Map[String, Int] =
+    tweetList.foldLeft(Map[String, Int]()) {
+      case (wordMap, tweet) => tweet.text.toLowerCase.replaceAll("[^a-zA-Z# ]", "")
+        .replaceAll("( )+", " ").split(" ").foldLeft(wordMap) {
+          case (wordMap, word) => wordMap + ((word, wordMap.getOrElse(word, 0) + 1))
+        }
     }
 
   /** Remove all short words of length one and two plus select three-letter words in wordMap. 

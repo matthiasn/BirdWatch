@@ -44,7 +44,7 @@ object Twitter extends Controller {
       val tweetState = TweetState(tweetList.take(25), WordCount.topN(tweetList, 25))
       println(tweetState) 
       println(Json.stringify(Json.toJson(tweetState)))
-      //out.push(Json.toJson(top25).toString)
+      out.push(Json.stringify(Json.toJson(tweetState)))
     }
     
     val (enumerator, wordCountChannel) = Concurrent.broadcast[Tweet]
@@ -61,7 +61,7 @@ object Twitter extends Controller {
         case t: Tweet => {
           //play.api.Logger.info("Twitter.scala " + t.created_at + ": " + t.screen_name + " - " + t.text)
           wordCountChannel.push(t)
-          out.push(Json.stringify(Json.toJson(t)))
+          //out.push(Json.stringify(Json.toJson(t)))
         }
       }
     }))

@@ -25,7 +25,9 @@ object WordCount {
   def topN(wordMap: Map[String, Int], n: Int): ListMap[String, Int] =
     ListMap[String, Int](wordMap.toList.sortBy(_._2).reverse.take(n): _*)
 
-  /** Generate string from TimeInterval for n significant Interval components (e.g. days and hours)
+  /** Generate string from TimeInterval for n significant Interval components (e.g. days and hours).
+   *  Allows passing in a side-effecting function, e.g. for testing or pushing data to websocket
+   *  or EventStream.
    *  @param    n number of siginificant interval components to print
    *  @return   String representation of TimeInterval
    */
@@ -33,7 +35,6 @@ object WordCount {
     Iteratee.fold[String, Map[String, Int]](Map[String, Int]()) {
       case (acc, el) => {
         val newAcc = countWords(el, acc)
-        println(topN(newAcc, 5))
         f(newAcc) // purely for side-effects such as println, pushing to websocket / eventStream or testing
         newAcc
       }

@@ -19,8 +19,15 @@
     // d3 word cloud
     var fill = d3.scale.category20();
     var fontSize = d3.scale.log().range([10, 90]);
+        
+    var wordList = [{text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, 
+      {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, 
+      {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, 
+      {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, 
+      {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}]
     
-    var wordList = [{text: "empty", size: 60}]
+    var fScale;
+    
     
     var layout = d3.layout.cloud()
           .size([1200, 800])
@@ -44,30 +51,28 @@
           .selectAll("text")
           .data(wordList)
           .enter().append("text")
-          .style("font-size", function(d) { return d.size / 3 + "px"; })
+          .style("font-size", function(d) { return d.size / 2 + "px"; })
           .style("font-family", "Impact")
           .style("fill", function(d, i) { return fill(i); })
           .attr("text-anchor", "middle")
           .attr("transform", function(d) {
-            return "translate(" + [50 + d.x/3, 50 + d.y/3] + ")rotate(" + d.rotate + ")";
+            return "translate(" + [d.x/3, d.y/3] + ")rotate(" + d.rotate + ")";
           })
           .text(function(d) { return d.text; });
     }
       
     function refresh() {
-      svg.attr("width", 1200)
-          .attr("height", 800)
-          .append("g")
-          .attr("transform", "translate(150,150)")
-          .selectAll("text")
+      svg.selectAll("text") 
           .data(wordList)
-          .style("font-size", function(d) { return d.size / 3 + "px"; })
-          .style("font-family", "Impact")
+          .transition().duration(500)
+  //        .attr("transform", "translate(150,150)")
+          .style("font-size", function(d) { return fScale(d.size) + "px"; })
+          //.style("font-family", "Impact")
           .style("fill", function(d, i) { return fill(i); })
-          .attr("text-anchor", "middle")
+          //.attr("text-anchor", "middle")
           .attr("transform", function(d) {
-            return "translate(" + [50 + d.x/3, 50 + d.y/3] + ")rotate(" + d.rotate + ")";
-          })
+            return "translate(" + [50 + d.size/3, 60 + d.size/3] + ")rotate(" + d.rotate + ")";
+          })          
           .text(function(d) { return d.text; });
     }
     
@@ -79,11 +84,13 @@
       viewModel.tweets(data.tweetList)
       wordList = data.topWords
       
+      fScale = d3.scale.linear().domain([0, d3.max(wordList, function(d) { return d.size; })]).range([10, 70])
+            
       refresh()
       //svg.data(wordList)
       //layout.data(wordList).stop().start()
       
-      layout.words(wordList).stop().start()
+      //layout.words(wordList).stop().start()
       //console.log(wordList)
     }
   })

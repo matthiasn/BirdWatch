@@ -16,14 +16,26 @@ object WordCount {
       case (acc, el) => acc + ((el, acc.getOrElse(el, 0) + 1))
     }
 
+  val stopWords = Set("i", "me", "my", "myself", "we", "us", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", 
+    "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", 
+    "what", "which", "who", "whom", "whose", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", 
+    "has", "had", "having", "do", "does", "did", "doing", "will", "would", "should", "can", "could", "ought", "im", "youre", "hes", "shes", 
+    "its", "were", "theyre", "ive", "youve", "weve", "theyve", "id", "youd", "hed", "shed", "wed", "theyd", "ill", "youll", "hell", "shell", 
+    "well", "theyll", "isnt", "arent", "wasnt", "werent", "hasnt", "havent", "hadnt", "doesnt", "dont", "didnt", "wont", "wouldnt", "shant",
+    "shouldnt", "cant", "cannot", "couldnt", "mustnt", "lets", "thats", "whos", "whats", "heres", "theres", "whens", "wheres", "whys", "hows",
+    "a", "an", "the", "and", "but", "if", "or", "because", "as", "until", "while", "of", "at", "by", "for", "with", "about", "against", 
+    "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "upon", "down", "in", "out", "on", "off",
+    "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", 
+    "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "say", "says", "said", "shall")
+ 
  /** Counts words in List[Tweet], returning Map[String, Int] with wordMap.
   *  @param    tweetList List[Tweet] to count words in
   *  @return   Map[String, Int] with word counts
   */
   def countTweetWords(tweetList: List[Tweet]): Map[String, Int] =
     tweetList.foldLeft(Map[String, Int]()) {
-      case (wordMap, tweet) => tweet.text.toLowerCase.replaceAll("[^a-zA-Z# ]", "")
-        .replaceAll("( )+", " ").split(" ").foldLeft(wordMap) {
+      case (wordMap, tweet) => tweet.text.toLowerCase.replaceAll("[-]", " ").replaceAll("[^a-zA-Z# ]", "")
+        .replaceAll("( )+", " ").split(" ").filter{ w => !stopWords.contains(w) }.foldLeft(wordMap) {
           case (wordMap, word) => wordMap + ((word, wordMap.getOrElse(word, 0) + 1))
         }
     }

@@ -104,8 +104,8 @@ object Tweet {
     // WS.url("https://stream.twitter.com/1.1/statuses/sample.json")
     // 	  .sign(OAuthCalculator(consumerKey, accessToken))
     // 	  .get(_ => tweetIteratee)
-
-    WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=hamburg%2Cschnee%2Ctomtom%2Camsterdam").withTimeout(-1)
+//    WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=hamburg%2Cschnee%2Ctomtom%2Camsterdam").withTimeout(-1)
+    WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=obama").withTimeout(-1)
       .sign(OAuthCalculator(consumerKey, accessToken))
       .get(_ => tweetIteratee)
 

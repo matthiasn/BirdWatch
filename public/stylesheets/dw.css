@@ -3,10 +3,10 @@
 	background-color: #FFF;
 	padding: 20px;
 	height: 500px;
-	width: 500px;
+	width: 700px;
 	position: fixed;
-	left: 100px;
-	top: 180px;
+	left: 50px;
+	top: 130px;
 }
 #header {
 	position: fixed;
@@ -21,7 +21,7 @@
 	position: fixed;
 	height: 700px;
 	width: 600px;
-	left: 750px;
+	left: 800px;
 	top: 50px;
 	overflow: auto;
 }

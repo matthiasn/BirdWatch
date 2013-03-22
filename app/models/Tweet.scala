@@ -50,8 +50,8 @@ object Implicits {
   implicit val stringIntTupleWriter = new Writes[(String, Int)] {
     def writes(tuple: (String, Int)): JsValue = {
       Json.obj(
-        "word" -> tuple._1,
-        "size"-> tuple._2
+        "key" -> tuple._1,
+        "value"-> tuple._2
       )
     }
   }

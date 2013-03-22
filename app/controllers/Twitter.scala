@@ -26,7 +26,7 @@ import models.Implicits._
 
 object Twitter extends Controller {
 
-  def tweetList() = Action { implicit request => Ok(views.html.twitterrest.tweetlist(Seq[Tweet]())) }
+  def tweetList() = Action { implicit request => Ok(views.html.twitterrest.tweetlist2(Seq[Tweet]())) }
 
   def tweetFeed() = WebSocket.using[String] { implicit request =>
     val in = Iteratee.ignore[String] // ignore incoming messages on websocket
@@ -34,23 +34,12 @@ object Twitter extends Controller {
     // PushEnumerator. Deprected, should be replaced
     val out = Enumerator.imperative[String]()
 
-    def interceptWordCount(wordMap: Map[String, Int]) { 
-      val top25 = WordCount.topN(wordMap, 25)
-      println(top25) 
-      //out.push(Json.toJson(top25).toString)
-    }
-
     def interceptTweetList(tweetList: List[Tweet]) { 
-      val tweetState = TweetState(tweetList.take(25), WordCount.topN(tweetList, 25))
-      println(tweetState) 
-      println(Json.stringify(Json.toJson(tweetState)))
+      val tweetState = TweetState(tweetList.take(50), WordCount.topN(tweetList, 50))
       out.push(Json.stringify(Json.toJson(tweetState)))
     }
     
-    val (enumerator, wordCountChannel) = Concurrent.broadcast[Tweet]
-    
-    val wordCountIteratee = WordCount.wordCountIteratee(interceptWordCount)
-    enumerator |>>> wordCountIteratee
+    val (enumerator, tweetChannel) = Concurrent.broadcast[Tweet]
     
     val tweetListIteratee = WordCount.tweetListIteratee(interceptTweetList)
     enumerator |>>> tweetListIteratee
@@ -59,9 +48,7 @@ object Twitter extends Controller {
     val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
       def receive = {
         case t: Tweet => {
-          //play.api.Logger.info("Twitter.scala " + t.created_at + ": " + t.screen_name + " - " + t.text)
-          wordCountChannel.push(t)
-          //out.push(Json.stringify(Json.toJson(t)))
+          tweetChannel.push(t) // push received tweet into Concurrent.Channel[Tweet]
         }
       }
     }))

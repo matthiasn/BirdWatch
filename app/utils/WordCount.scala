@@ -34,7 +34,7 @@ object WordCount {
   */
   def countTweetWords(tweetList: List[Tweet]): Map[String, Int] =
     tweetList.foldLeft(Map[String, Int]()) {
-      case (wordMap, tweet) => tweet.text.toLowerCase.replaceAll("[-]", " ").replaceAll("[^a-zA-Z# ]", "")
+      case (wordMap, tweet) => tweet.text.toLowerCase.replaceAll("—", " ").replaceAll("[^a-zA-Z# ]", "")
         .replaceAll("( )+", " ").split(" ").filter{ w => !stopWords.contains(w) }.foldLeft(wordMap) {
           case (wordMap, word) => wordMap + ((word, wordMap.getOrElse(word, 0) + 1))
         }

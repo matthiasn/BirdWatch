@@ -72,7 +72,7 @@ object Tweet {
   val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
     def receive = {
       case t: Tweet => {
-        play.api.Logger.info(t.created_at + ": " + t.screen_name + " - " + t.text)
+        //play.api.Logger.info(t.created_at + ": " + t.screen_name + " - " + t.text)
         tweets.insert(t)
       }
     }

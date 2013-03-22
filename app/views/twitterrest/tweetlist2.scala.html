@@ -16,8 +16,8 @@
     var viewModel = new TweetsViewModel()
     ko.applyBindings(viewModel);
     
-    
     // d3 word cloud
+    var lastUpdated = new Date().getTime() - 1000;
     var fill = d3.scale.category20b();
     var w = 700, h = 500;
     var maxEntries = 250
@@ -58,6 +58,7 @@
       complete = 0;
       words = [];
       layout.stop().words(tags.slice(0, max = Math.min(tags.length, maxEntries))).start();
+      lastUpdated = new Date().getTime();
     }
 
     function draw(data, bounds) {
@@ -109,7 +110,10 @@
       viewModel.tweets(data.tweetList)
       
       tags = data.topWords;
-      generate();
+      
+      if ( (new Date().getTime() - lastUpdated) > 3000) {
+        generate();
+      }
     }
   })
   </script>

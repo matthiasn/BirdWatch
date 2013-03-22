@@ -17,7 +17,7 @@
     ko.applyBindings(viewModel);
     
     // d3 word cloud
-    var lastUpdated = new Date().getTime() - 1000;
+    var lastUpdated = new Date().getTime() - 2000;
     var fill = d3.scale.category20b();
     var w = 700, h = 500;
     var maxEntries = 250
@@ -111,7 +111,7 @@
       
       tags = data.topWords;
       
-      if ( (new Date().getTime() - lastUpdated) > 3000) {
+      if ( (new Date().getTime() - lastUpdated) > 5000) {
         generate();
       }
     }

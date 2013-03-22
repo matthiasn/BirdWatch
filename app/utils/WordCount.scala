@@ -81,7 +81,7 @@ object WordCount {
   def tweetListIteratee(f: List[Tweet] => Unit) = 
     Iteratee.fold[Tweet, List[Tweet]] (List[Tweet]()) {
       case (tweetList, tweet) => {
-       val newTweetList = (tweet :: tweetList) take 500 
+       val newTweetList = (tweet :: tweetList) take 1000 
        f(newTweetList)
        newTweetList
       }

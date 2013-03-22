@@ -1,0 +1,39 @@
+@charset "UTF-8";
+#wordcloud {
+	background-color: #FFF;
+	padding: 20px;
+	height: 500px;
+	width: 500px;
+	position: fixed;
+	left: 100px;
+	top: 180px;
+}
+#header {
+	position: fixed;
+	left: 230px;
+	top: 50px;
+	font-family: Impact, Haettenschweiler, "Franklin Gothic Bold", "Arial Black", sans-serif;
+	font-stretch: ultra-expanded;
+	font-size: 36px;
+}
+#tweets {
+	//background-color: #CCC;
+	position: fixed;
+	height: 700px;
+	width: 600px;
+	left: 750px;
+	top: 50px;
+	overflow: auto;
+}
+.screen_name {
+	font-weight:bold
+}
+.timeInterval {
+	font-weight:bold;
+	font-size:10px;
+	color:#99D;
+	text-align:right;
+}
+li {
+	list-style:none;
+}

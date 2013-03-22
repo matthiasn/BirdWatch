@@ -23,7 +23,7 @@
     
     var layout = d3.layout.cloud()
           .size([1200, 800])
-          .timeInterval(1)
+          .timeInterval(10)
           .text(function(d) { return d.text; })
           .font("Impact")
           .fontSize(function(d) { return fontSize(d.size/2); })
@@ -33,14 +33,15 @@
           .on("end", draw)
           .start();
 
+    var svg = d3.select("body").append("svg")
+    
     function draw(words) {
-      d3.select("body").append("svg")
-          .attr("width", 1200)
+      svg.attr("width", 1200)
           .attr("height", 800)
           .append("g")
           .attr("transform", "translate(150,150)")
           .selectAll("text")
-          .data(words)
+          .data(wordList)
           .enter().append("text")
           .style("font-size", function(d) { return d.size / 3 + "px"; })
           .style("font-family", "Impact")
@@ -49,7 +50,7 @@
           .attr("transform", function(d) {
             return "translate(" + [50 + d.x/3, 50 + d.y/3] + ")rotate(" + d.rotate + ")";
           })
-          .text(function(d) { return d.text; });
+          .text(function(d) { return d.text; }).enter();
     }
       
     ws.onmessage = function(msg){

@@ -16,36 +16,51 @@
     var viewModel = new TweetsViewModel()
     ko.applyBindings(viewModel);
     
+    var w = 960, h = 600;
+    
     // d3 word cloud
     var fill = d3.scale.category20();
     var fontSize = d3.scale.log().range([10, 90]);
         
-    var wordList = [{text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, 
-      {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, 
-      {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, 
-      {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, 
-      {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}, {text: "", size: 60}]
+    var wordList = [{word: "a", size: 79}, {word: "b", size: 78}, {word: "c", size: 77}, {word: "", size: 60}, {word: "", size: 60}, 
+      {word: "", size: 60}]
     
-    var fScale;
+
+    fScale = d3.scale.linear().domain([0, d3.max(wordList, function(d) { return d.size; })]).range([10, 70]);
     
+    // var layout = d3.layout.cloud()
+    //     .timeInterval(10)
+    //     .size([w, h])
+    //     .fontSize(function(d) { return fontSize(+d.value); })
+    //     .text(function(d) { return d.key; })
+    //     .on("end", draw);
     
     var layout = d3.layout.cloud()
-          .size([1200, 800])
+          .size([w, h])
           .timeInterval(10)
-          .text(function(d) { return d.text; })
+          .text(function(d) { return d.word; })
           .font("Impact")
-          .fontSize(function(d) { return fontSize(d.size/2); })
-          .rotate(function(d) { return ~~(Math.random() * 5) * 30 - 60; })
+          .fontSize(function(d) { return fontSize(+d.size); })
+          //.rotate(function(d) { return ~~(Math.random() * 5) * 30 - 60; })
           .padding(1)
           .words(wordList)
+          .spiral("archimedean")
           .on("end", draw)
           .start();
 
     var svg = d3.select("#wordcloud").append("svg")
+        .attr("width", w)
+        .attr("height", h);
+
+    var background = svg.attr("width", w)
+            .attr("height", h)
+            .append("g");
+            
+    //var svg = d3.select("#wordcloud").append("svg")
     
     function draw() {
-      svg.attr("width", 1200)
-          .attr("height", 800)
+      svg.attr("width", w)
+          .attr("height", h)
           .append("g")
           .attr("transform", "translate(150,150)")
           .selectAll("text")
@@ -54,29 +69,45 @@
           .style("font-size", function(d) { return d.size / 2 + "px"; })
           .style("font-family", "Impact")
           .style("fill", function(d, i) { return fill(i); })
-          .attr("text-anchor", "middle")
+          .attr("text-anchor", "middle")          
           .attr("transform", function(d) {
-            return "translate(" + [d.x/3, d.y/3] + ")rotate(" + d.rotate + ")";
+            return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
           })
-          .text(function(d) { return d.text; });
+          .text(function(d) { return d.word; });
     }
-      
+
     function refresh() {
       svg.selectAll("text") 
           .data(wordList)
           .transition().duration(500)
-  //        .attr("transform", "translate(150,150)")
+          //.attr("transform", "translate(150,150)")
           .style("font-size", function(d) { return fScale(d.size) + "px"; })
           //.style("font-family", "Impact")
           .style("fill", function(d, i) { return fill(i); })
-          //.attr("text-anchor", "middle")
+          .attr("text-anchor", "middle")
           .attr("transform", function(d) {
-            return "translate(" + [50 + d.size/3, 60 + d.size/3] + ")rotate(" + d.rotate + ")";
+            console.log("dx dy " + d.x + " " + d.y)
+            return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
           })          
-          .text(function(d) { return d.text; });
+          .text(function(d) { return d.word; });
+    }
+    
+    function generate(data) {
+      layout
+          .font("Impact")
+          .spiral("archimedean");
+      fontSize = d3.scale["log"]().range([10, 100]);
+      //if (tags.length) fontSize.domain([+tags[tags.length - 1].value || 1, +tags[0].value]);
+      complete = 0;
+      words = [];
+      console.log(layout);
+      layout.stop().words(data).start();
     }
     
     console.log(layout)
+    
+    console.log(svg.selectAll("text"))
+    
     
     ws.onmessage = function(msg){
       //console.log(msg.data)
@@ -84,14 +115,17 @@
       viewModel.tweets(data.tweetList)
       wordList = data.topWords
       
-      fScale = d3.scale.linear().domain([0, d3.max(wordList, function(d) { return d.size; })]).range([10, 70])
-            
-      refresh()
-      //svg.data(wordList)
-      //layout.data(wordList).stop().start()
+      console.log(svg.selectAll("text"))
       
-      //layout.words(wordList).stop().start()
-      //console.log(wordList)
+      fScale = d3.scale.linear().domain([0, d3.max(wordList, function(d) { return d.size; })]).range([10, 70]);
+      
+      layout.stop();
+      layout.words(wordList)
+      layout.start();
+      
+      //layout.words(wordList)
+      //generate(wordList);
+      //refresh();
     }
   })
   </script>

@@ -26,25 +26,31 @@ import models.Implicits._
 
 object Twitter extends Controller {
 
+  // Serves single page (static content at the moment, gets updates through websocket)
   def tweetList() = Action { implicit request => Ok(views.html.twitterrest.tweetlist2(Seq[Tweet]())) }
 
+  // serves websocket connection for each client
   def tweetFeed() = WebSocket.using[String] { implicit request =>
     val in = Iteratee.ignore[String] // ignore incoming messages on websocket
 
     // PushEnumerator. Deprected, should be replaced
     val out = Enumerator.imperative[String]()
 
-    def interceptTweetList(tweetList: List[Tweet]) { 
-      val tweetState = TweetState(tweetList.take(50), WordCount.topN(tweetList, 200))
+    // "side-effecting" function to do something with the accumulator without possibly mutating it
+    // e.g. push some computation to a websocket enumerator or to log file
+    def interceptTweetList(tweetList: List[Tweet]): Unit = { 
+      val tweetState = TweetState(tweetList.take(50), WordCount.topN(tweetList, 250))
       out.push(Json.stringify(Json.toJson(tweetState)))
     }
     
+    // create enumerator and channel through Concurrent factory object, create tweetListIteratee
+    // which accumulates a rolling window of tweets and attach iteratee to channel
     val (enumerator, tweetChannel) = Concurrent.broadcast[Tweet]
-    
-    val tweetListIteratee = WordCount.tweetListIteratee(interceptTweetList)
+    val tweetListIteratee = WordCount.tweetListIteratee(interceptTweetList, List[Tweet](), 1000)
     enumerator |>>> tweetListIteratee
 
-    // Actor for subscribing to eventStream. Pushes received data onto enumerator
+    // Actor for subscribing to eventStream. Pushes received tweets into TweetChannel for
+    // consumption through iteratee (and potentially other consumers, decoupled) 
     val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
       def receive = {
         case t: Tweet => {

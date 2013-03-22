@@ -11,11 +11,12 @@ object WordCount {
    *  @param    wordMap Map[String, Int] with word counts
    *  @return   Map[String, Int] with word counts
    */
-  def countWords(s: String, wordMap: Map[String, Int]): Map[String, Int] =
+  @deprecated def countWords(s: String, wordMap: Map[String, Int]): Map[String, Int] =
     s.toLowerCase.replaceAll("[^a-zA-Z# ]", "").replaceAll("( )+", " ").split(" ").foldLeft(wordMap) {
       case (acc, el) => acc + ((el, acc.getOrElse(el, 0) + 1))
     }
 
+  // Insignificant stopWords (from Jason Davies' beautiful word cloud implementation, http://www.jasondavies.com/wordcloud)
   val stopWords = Set("i", "me", "my", "myself", "we", "us", "our", "ours", "ourselves", "you", "your", "yours", "yourself", "yourselves", 
     "he", "him", "his", "himself", "she", "her", "hers", "herself", "it", "its", "itself", "they", "them", "their", "theirs", "themselves", 
     "what", "which", "who", "whom", "whose", "this", "that", "these", "those", "am", "is", "are", "was", "were", "be", "been", "being", "have", 
@@ -28,7 +29,8 @@ object WordCount {
     "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all", "any", "both", "each", "few", 
     "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "say", "says", "said", "shall")
  
- /** Counts words in List[Tweet], returning Map[String, Int] with wordMap.
+ /** Counts words in List[Tweet], returning Map[String, Int] with wordMap filtered by regular expression
+  *  and not containing any word from the stopWords set
   *  @param    tweetList List[Tweet] to count words in
   *  @return   Map[String, Int] with word counts
   */
@@ -49,7 +51,7 @@ object WordCount {
     wordMap.filter { case (k, v) => (k.length > 3 || k.startsWith("#")) }
   }
 
-  /** Generates ListMap with Top n most popular words in wordmap
+  /** Generates ListMap with Top n most popular words in a wordmap
    *  @param    wordMap Map[String, Int] with word counts
    *  @param    n number highest ranking words to return
    *  @return   sorted ListMap with top n words in descending order of count 
@@ -57,18 +59,23 @@ object WordCount {
   def topN(wordMap: Map[String, Int], n: Int): ListMap[String, Int] =
     ListMap[String, Int](removeShortWords(wordMap).toList.sortBy(_._2).reverse.take(n): _*)
 
+ /** Generates ListMap with Top n most popular words in a tweetList
+  *  @param    tweetList List[Tweet]
+  *  @param    n number highest ranking words to return
+  *  @return   sorted ListMap with top n words in descending order of count 
+  */
   def topN(tweetList: List[Tweet], n: Int): ListMap[String, Int] = {
     val wordMap = countTweetWords(tweetList)
     ListMap[String, Int](removeShortWords(wordMap).toList.sortBy(_._2).reverse.take(n): _*)
   }
     
-  /** Generate string from TimeInterval for n significant Interval components (e.g. days and hours).
-   *  Allows passing in a side-effecting function f, e.g. for testing or pushing data to websocket
-   *  or EventStream. Having f return unit instead of modifying the accumulator guarantees that f
-   *  cannot alter newAcc in unintended ways.
-   *  @param    n number of siginificant interval components to print
-   *  @return   String representation of TimeInterval
-   */
+ /** Generate string from TimeInterval for n significant Interval components (e.g. days and hours).
+  *  Allows passing in a side-effecting function f, e.g. for testing or pushing data to websocket
+  *  or EventStream. Having f return unit instead of modifying the accumulator guarantees that f
+  *  cannot alter newAcc in unintended ways.
+  *  @param    n number of siginificant interval components to print
+  *  @return   Iteratee[Tweet, Map[String, Int]], accumulating word frequency map
+  */
   def wordCountIteratee(f: Map[String, Int] => Unit) =
     Iteratee.fold[Tweet, Map[String, Int]](Map[String, Int]()) {
       case (acc, tweet) => {
@@ -78,13 +85,19 @@ object WordCount {
       }
     }
     
-  def tweetListIteratee(f: List[Tweet] => Unit) = 
-    Iteratee.fold[Tweet, List[Tweet]] (List[Tweet]()) {
+ /** Creates Iteratee which successively updates an intially empty List[Tweet] from a stream of tweets. 
+  *  Attach to Channel[Tweet] for decoupling.
+  *  TO DO: 1) pass in pre-populated list (e.g. from database)
+  *         2) specify number of items to keep
+  *  @param    n number of siginificant interval components to print
+  *  @return   Iteratee[Tweet, List[Tweet]], accumulating tweetList from tweetChannel
+  */
+  def tweetListIteratee(f: List[Tweet] => Unit, tweetList: List[Tweet], n: Int) = 
+    Iteratee.fold[Tweet, List[Tweet]] (tweetList) {
       case (tweetList, tweet) => {
-       val newTweetList = (tweet :: tweetList) take 1000 
+       val newTweetList = (tweet :: tweetList) take n 
        f(newTweetList)
        newTweetList
       }
     }
-
 }

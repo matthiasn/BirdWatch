@@ -5,8 +5,7 @@ import reactivemongo.api._
 import reactivemongo.bson._
 import reactivemongo.bson.handlers._
 
-/** Companion object for case class Tweet, takes care of both Tweet serialization to MongoDB and retrieving Tweets
- *  from Twitter using the Streaming API. */
+/** Mongo connection object */
 object Mongo {
   
   /** Connection to MongoDB */

@@ -23,8 +23,7 @@ case class Tweet(screen_name: String, text: String, created_at: DateTime, id: Op
 case class TweetState(tweetList: List[Tweet], wordMap: Map[String, Int])
 
 /** Companion object for case class Tweet, takes care of both Tweet serialization to MongoDB and retrieving Tweets
- *  from Twitter using the Streaming API.
- */
+ *  from Twitter using the Streaming API. */
 object Tweet {
   
   /** Actor for receiving Tweets from eventStream and inserting them into MongoDB. */
@@ -69,8 +68,7 @@ object Tweet {
  
  /** Connect to Twitter Streaming API and retrieve a stream of Tweets for the specified search word or words.
   *  Individual words can be delimited by '%2C', see https://dev.twitter.com/docs/streaming-apis for reference.
-  *  @param    track String with search word(s)
-  */
+  *  @param    track String with search word(s) */
   def listen(track: String) {
     WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=" + track).withTimeout(-1)
       .sign(OAuthCalculator(consumerKey, accessToken))

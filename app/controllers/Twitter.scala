@@ -27,20 +27,19 @@ import models.Implicits._
 object Twitter extends Controller {
 
   // Serves single page (static content at the moment, gets updates through websocket)
-  def tweetList() = Action { implicit request => Ok(views.html.twitterrest.tweetlist2(Seq[Tweet]())) }
+  def tweetList() = Action { implicit request => Ok(views.html.twitter.tweets(Seq[Tweet]())) }
 
   // serves websocket connection for each client
   def tweetFeed() = WebSocket.using[String] { implicit request =>
     val in = Iteratee.ignore[String] // ignore incoming messages on websocket
-
-    // PushEnumerator. Deprected, should be replaced
-    val out = Enumerator.imperative[String]()
-
+    
+    val (out, wsOutChannel) = Concurrent.broadcast[String]
+    
     // "side-effecting" function to do something with the accumulator without possibly mutating it
     // e.g. push some computation to a websocket enumerator or to log file
     def interceptTweetList(tweetList: List[Tweet]): Unit = { 
       val tweetState = TweetState(tweetList.take(50), WordCount.topN(tweetList, 250))
-      out.push(Json.stringify(Json.toJson(tweetState)))
+      wsOutChannel.push(Json.stringify(Json.toJson(tweetState)))      
     }
     
     // create enumerator and channel through Concurrent factory object, create tweetListIteratee

@@ -11,7 +11,7 @@ object WordCount {
    *  @param    wordMap Map[String, Int] with word counts
    *  @return   Map[String, Int] with word counts
    */
-  @deprecated def countWords(s: String, wordMap: Map[String, Int]): Map[String, Int] =
+  def countWords(s: String, wordMap: Map[String, Int]): Map[String, Int] =
     s.toLowerCase.replaceAll("[^a-zA-Z# ]", "").replaceAll("( )+", " ").split(" ").foldLeft(wordMap) {
       case (acc, el) => acc + ((el, acc.getOrElse(el, 0) + 1))
     }
@@ -69,11 +69,11 @@ object WordCount {
     ListMap[String, Int](removeShortWords(wordMap).toList.sortBy(_._2).reverse.take(n): _*)
   }
     
- /** Generate string from TimeInterval for n significant Interval components (e.g. days and hours).
-  *  Allows passing in a side-effecting function f, e.g. for testing or pushing data to websocket
+ /** Creates Iteratee which successively updates an initially empty Map[String,Int] from a stream of tweets. 
+  *  Allows passing in a "side-effecting" function f, e.g. for testing or pushing data to websocket
   *  or EventStream. Having f return unit instead of modifying the accumulator guarantees that f
   *  cannot alter newAcc in unintended ways.
-  *  @param    n number of siginificant interval components to print
+  *  @param    f "side-effecting" function (List[Tweet] => Unit)
   *  @return   Iteratee[Tweet, Map[String, Int]], accumulating word frequency map
   */
   def wordCountIteratee(f: Map[String, Int] => Unit) =
@@ -85,11 +85,15 @@ object WordCount {
       }
     }
     
- /** Creates Iteratee which successively updates an intially empty List[Tweet] from a stream of tweets. 
-  *  Attach to Channel[Tweet] for decoupling.
-  *  TO DO: 1) pass in pre-populated list (e.g. from database)
-  *         2) specify number of items to keep
-  *  @param    n number of siginificant interval components to print
+ /** Creates Iteratee which holds a List[Tweet] of length up to n as its state in each step, based on the 
+  *  provided tweetList. The newest element is found in the head of the list.
+  *  Allows passing in a "side-effecting" function f, e.g. for testing or pushing data to websocket
+  *  or EventStream. Having f return unit instead of modifying the accumulator guarantees that f
+  *  cannot alter newAcc in unintended ways.
+  *  Attach to Channel[Tweet] for better decoupling within application.
+  *  @param    f "side-effecting" function (List[Tweet] => Unit)
+  *  @param    tweetList List[Tweet] to use as the accumulator
+  *  @param    n max length of list to keep as iteratee state
   *  @return   Iteratee[Tweet, List[Tweet]], accumulating tweetList from tweetChannel
   */
   def tweetListIteratee(f: List[Tweet] => Unit, tweetList: List[Tweet], n: Int) = 

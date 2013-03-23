@@ -1,0 +1,59 @@
+package models
+
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
+import reactivemongo.api._
+import reactivemongo.bson._
+import reactivemongo.bson.handlers._
+import org.joda.time.DateTime
+import play.api.libs.json.Reads.jodaDateReads
+import utils.TimeInterval
+import scala.collection.immutable.ListMap
+
+object Implicits {
+  implicit val DefaultJodaDateReads = jodaDateReads("EEE MMM dd HH:mm:ss Z YYYY")
+
+  // Fields specified because of hierarchical json. Otherwise:
+  // implicit val streamTweetReads = Json.reads[StreamTweet]
+  implicit val TweetReads = (
+    (__ \ "user" \ "screen_name").read[String] and
+    (__ \ "text").read[String] and
+    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, None))
+
+  implicit object TweetBSONWriter extends BSONWriter[Tweet] {
+    def toBSON(tweet: Tweet) = {
+      BSONDocument(
+        "_id" -> tweet.id.getOrElse(BSONObjectID.generate),
+        "screen_name" -> BSONString(tweet.screen_name),
+        "text" -> BSONString(tweet.text),
+        "created_at" -> BSONDateTime(tweet.created_at.getMillis))
+    }
+  }
+
+  implicit val TweetJsonWriter = new Writes[Tweet] {
+    def writes(t: Tweet): JsValue = {
+      Json.obj(
+        "screen_name" -> t.screen_name,
+        "text" -> t.text,
+        "timestamp" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString)
+    }
+  }
+  
+  implicit val stringIntTupleWriter = new Writes[(String, Int)] {
+    def writes(tuple: (String, Int)): JsValue = {
+      Json.obj(
+        "key" -> tuple._1,
+        "value"-> tuple._2
+      )
+    }
+  }
+  
+  implicit val tweetStateJsonWriter = new Writes[TweetState] {
+    def writes(ts: TweetState): JsValue = {
+      Json.obj(
+        "tweetList" -> Json.toJson(ts.tweetList),
+        "topWords" -> Json.toJson(ts.wordMap.toList)
+      )
+    }
+  }
+}

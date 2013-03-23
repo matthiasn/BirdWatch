@@ -10,7 +10,7 @@ import play.api.libs.json.Reads.jodaDateReads
 import utils.TimeInterval
 import scala.collection.immutable.ListMap
 
-object Implicits {
+object TweetImplicits {
   implicit val DefaultJodaDateReads = jodaDateReads("EEE MMM dd HH:mm:ss Z YYYY")
 
   // Fields specified because of hierarchical json. Otherwise:

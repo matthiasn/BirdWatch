@@ -10,10 +10,12 @@ import play.api.libs.functional.syntax._
 import reactivemongo.api._
 import reactivemongo.bson._
 import reactivemongo.bson.handlers._
+import reactivemongo.api.gridfs._
+import reactivemongo.api.gridfs.Implicits._
 import org.joda.time.DateTime
 import play.api.libs.json.Reads.jodaDateReads
 import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
-import Implicits._
+import models.TweetImplicits._
 import utils._
 
 /** Simple Tweet representation */
@@ -31,11 +33,16 @@ object Tweet {
     def receive = {
       case t: Tweet => {
         Mongo.tweets.insert(t)
+        
+        // send Tweet for retrieving image 
+        ActorStage.imageRetrievalActor ! t
       }
     }
   }))
   // attach tweetStreamSubscriber to eventStream
   ActorStage.eventStream.subscribe(tweetStreamSubscriber, classOf[Tweet])
+  
+  def stripImageUrl(t: Tweet) = t.copy(profile_image_url = t.profile_image_url.replaceAll("http://", "").replaceAll("_normal", ""))
   
   /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
    *  as Tweet instances and publishes them to eventStream.
@@ -44,8 +51,8 @@ object Tweet {
     val chunkString = new String(chunk, "UTF-8")
     val json = Json.parse(chunkString)
     TweetReads.reads(json) match {
-      case JsSuccess(tweet: Tweet, _) => {
-        ActorStage.eventStream.publish(tweet)
+      case JsSuccess(t: Tweet, _) => {
+        ActorStage.eventStream.publish(stripImageUrl(t))
       }
       case JsError(_) => println _
     }

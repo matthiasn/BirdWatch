@@ -22,7 +22,7 @@ import play.api.libs.concurrent.Promise
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import org.joda.time.DateTime
 import utils.WordCount
-import models.Implicits._
+import models.TweetImplicits._
 
 /** Controller for serving main BirdWatch page including the websocket connection */
 object Twitter extends Controller {

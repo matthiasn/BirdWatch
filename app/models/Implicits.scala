@@ -18,7 +18,10 @@ object Implicits {
   implicit val TweetReads = (
     (__ \ "user" \ "screen_name").read[String] and
     (__ \ "text").read[String] and
-    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, None))
+    (__ \ "user" \ "location").read[String] and
+    (__ \ "user" \ "profile_image_url").read[String] and
+    (__ \ "geo").read[Option[String]] and
+    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, _, _, _, None))
 
   implicit object TweetBSONWriter extends BSONWriter[Tweet] {
     def toBSON(tweet: Tweet) = {
@@ -26,6 +29,9 @@ object Implicits {
         "_id" -> tweet.id.getOrElse(BSONObjectID.generate),
         "screen_name" -> BSONString(tweet.screen_name),
         "text" -> BSONString(tweet.text),
+        "location" -> BSONString(tweet.location),
+        "profile_image_url" -> BSONString(tweet.profile_image_url),
+        "geo" -> BSONString(tweet.geo.getOrElse("")),
         "created_at" -> BSONDateTime(tweet.created_at.getMillis))
     }
   }
@@ -35,6 +41,7 @@ object Implicits {
       Json.obj(
         "screen_name" -> t.screen_name,
         "text" -> t.text,
+        "location" -> t.location,
         "timestamp" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString)
     }
   }

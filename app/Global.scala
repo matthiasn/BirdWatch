@@ -1,5 +1,6 @@
 import models.Tweet
 import play.api.GlobalSettings
+import utils.Mongo
 
 object Global extends GlobalSettings {
 
@@ -7,4 +8,8 @@ object Global extends GlobalSettings {
 //    Tweet.listen("hamburg%2Cschnee%2Ctomtom%2Camsterdam")
     Tweet.listen("obama")
   }  
+  
+  override def onStop(application: play.api.Application) {
+    Mongo.connection.close
+  }
 }

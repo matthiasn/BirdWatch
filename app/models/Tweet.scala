@@ -17,7 +17,7 @@ import Implicits._
 import utils._
 
 /** Simple Tweet representation */
-case class Tweet(screen_name: String, text: String, created_at: DateTime, id: Option[BSONObjectID])
+case class Tweet(screen_name: String, text: String, location: String, profile_image_url: String, geo: Option[String], created_at: DateTime, id: Option[BSONObjectID])
 
 /** holds the state for GUI updates (list of recent tweets and a word frequency map), used for Json serialization */
 case class TweetState(tweetList: List[Tweet], wordMap: Map[String, Int])
@@ -30,21 +30,12 @@ object Tweet {
   val tweetStreamSubscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
     def receive = {
       case t: Tweet => {
-        tweets.insert(t)
+        Mongo.tweets.insert(t)
       }
     }
   }))
   // attach tweetStreamSubscriber to eventStream
   ActorStage.eventStream.subscribe(tweetStreamSubscriber, classOf[Tweet])
-
-  /** Connection to MongoDB */
-  val connection = MongoConnection(List("localhost:27017"))
-
-  /** Representation of BirdWatch database in MongoDB */
-  val db = connection("BirdWatch")
-  
-  /** Representation of tweets collection in BirdWatch database */
-  val tweets = db("tweets")
   
   /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
    *  as Tweet instances and publishes them to eventStream.

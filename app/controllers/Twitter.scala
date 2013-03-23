@@ -57,7 +57,7 @@ object Twitter extends Controller {
         }
       }
     }))
-    ActorStage.actorSystem.eventStream.subscribe(subscriber, classOf[Tweet])
+    ActorStage.eventStream.subscribe(subscriber, classOf[Tweet])
 
     (in, out) // websocket has in and out "channels"
   }

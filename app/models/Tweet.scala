@@ -36,7 +36,7 @@ object Tweet {
     }
   }))
   // attach tweetStreamSubscriber to eventStream
-  ActorStage.actorSystem.eventStream.subscribe(tweetStreamSubscriber, classOf[Tweet])
+  ActorStage.eventStream.subscribe(tweetStreamSubscriber, classOf[Tweet])
 
   /** Connection to MongoDB */
   val connection = MongoConnection(List("localhost:27017"))
@@ -55,7 +55,7 @@ object Tweet {
     val json = Json.parse(chunkString)
     TweetReads.reads(json) match {
       case JsSuccess(tweet: Tweet, _) => {
-        ActorStage.actorSystem.eventStream.publish(tweet)
+        ActorStage.eventStream.publish(tweet)
       }
       case JsError(_) => println _
     }

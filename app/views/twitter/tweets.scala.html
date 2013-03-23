@@ -108,8 +108,9 @@
     ws.onmessage = function(msg){
       var data = JSON.parse(msg.data)
       viewModel.tweets(data.tweetList)
-      
       tags = data.topWords;
+      
+      console.log("tags.size " + tags.length + " words.size: " + words.length);
       
       if ( (new Date().getTime() - lastUpdated) > 5000) {
         generate();

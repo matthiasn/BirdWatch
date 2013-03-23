@@ -14,3 +14,4 @@ dist
 /RUNNING_PID
 /.settings
 .DS_Store
+conf/twitter.conf

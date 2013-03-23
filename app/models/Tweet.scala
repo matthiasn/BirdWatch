@@ -1,5 +1,6 @@
 package models
 
+import play.api.Play.current
 import play.api.libs.json._
 import play.api.libs.ws.WS
 import play.api.libs.oauth._
@@ -13,28 +14,42 @@ import org.joda.time.DateTime
 import play.api.libs.json.Reads.jodaDateReads
 import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
 import Implicits._
+import utils._
 
+/** Simple Tweet representation */
 case class Tweet(screen_name: String, text: String, created_at: DateTime, id: Option[BSONObjectID])
+
+/** holds the state for GUI updates (list of recent tweets and a word frequency map), used for Json serialization */
 case class TweetState(tweetList: List[Tweet], wordMap: Map[String, Int])
 
+/** Companion object for case class Tweet, takes care of both Tweet serialization to MongoDB and retrieving Tweets
+ *  from Twitter using the Streaming API.
+ */
 object Tweet {
   
-  val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
+  /** Actor for receiving Tweets from eventStream and inserting them into MongoDB. */
+  val tweetStreamSubscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
     def receive = {
       case t: Tweet => {
         tweets.insert(t)
       }
     }
   }))
-  ActorStage.actorSystem.eventStream.subscribe(subscriber, classOf[Tweet])
+  // attach tweetStreamSubscriber to eventStream
+  ActorStage.actorSystem.eventStream.subscribe(tweetStreamSubscriber, classOf[Tweet])
 
+  /** Connection to MongoDB */
   val connection = MongoConnection(List("localhost:27017"))
-  val db = connection("PlayTest")
+
+  /** Representation of BirdWatch database in MongoDB */
+  val db = connection("BirdWatch")
+  
+  /** Representation of tweets collection in BirdWatch database */
   val tweets = db("tweets")
-
-  val consumerKey = ConsumerKey("bvomH8pSmg0DAMcuS5bNg", "ZD82oUkvsdiSoGlmA13aEQ5l5vZihvqYWW9o98dL4")
-  val accessToken = RequestToken("327071779-yRrGaHvpsCCcqIk4Z1V4lwSWixbNN2HPAEYibWEL", "MoGJdMvU9peJzSvZg1g7QT2nZLkcnIYvRqtZiuap0")
-
+  
+  /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
+   *  as Tweet instances and publishes them to eventStream.
+   */
   val tweetIteratee = Iteratee.foreach[Array[Byte]] { chunk =>
     val chunkString = new String(chunk, "UTF-8")
     val json = Json.parse(chunkString)
@@ -45,10 +60,19 @@ object Tweet {
       case JsError(_) => println _
     }
   }
+  
+  /** OAuth consumer key and secret for Twitter Streaming API*/
+  val consumerKey = ConsumerKey(Conf.get("twitter.consumer.key"), Conf.get("twitter.consumer.secret"))
 
-  def listen() = {
-    // WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=hamburg%2Cschnee%2Ctomtom%2Camsterdam").withTimeout(-1)
-    WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=obama").withTimeout(-1)
+  /** OAuth request key and secret for Twitter Streaming API*/  
+  val accessToken = RequestToken(Conf.get("twitter.accessToken.key"), Conf.get("twitter.accessToken.secret"))
+ 
+ /** Connect to Twitter Streaming API and retrieve a stream of Tweets for the specified search word or words.
+  *  Individual words can be delimited by '%2C', see https://dev.twitter.com/docs/streaming-apis for reference.
+  *  @param    track String with search word(s)
+  */
+  def listen(track: String) {
+    WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=" + track).withTimeout(-1)
       .sign(OAuthCalculator(consumerKey, accessToken))
       .get(_ => tweetIteratee)
   }

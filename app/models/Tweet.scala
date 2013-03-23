@@ -24,23 +24,9 @@ case class Tweet(screen_name: String, text: String, location: String, profile_im
 /** holds the state for GUI updates (list of recent tweets and a word frequency map), used for Json serialization */
 case class TweetState(tweetList: List[Tweet], wordMap: Map[String, Int])
 
-/** Companion object for case class Tweet, takes care of both Tweet serialization to MongoDB and retrieving Tweets
- *  from Twitter using the Streaming API. */
+/** Companion object for case class Tweet, takes care of retrieving Tweets from
+ *  Twitter using the Streaming API and publishing them on the akka eventStream  */
 object Tweet {
-  
-  /** Actor for receiving Tweets from eventStream and inserting them into MongoDB. */
-  val tweetStreamSubscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
-    def receive = {
-      case t: Tweet => {
-        Mongo.tweets.insert(t)
-        
-        // send Tweet for retrieving image 
-        ActorStage.imageRetrievalActor ! t
-      }
-    }
-  }))
-  // attach tweetStreamSubscriber to eventStream
-  ActorStage.eventStream.subscribe(tweetStreamSubscriber, classOf[Tweet])
   
   def stripImageUrl(t: Tweet) = t.copy(profile_image_url = t.profile_image_url.replaceAll("http://", "").replaceAll("_normal", ""))
   

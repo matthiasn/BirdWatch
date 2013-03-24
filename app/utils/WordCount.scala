@@ -2,6 +2,7 @@ package utils
 
 import scala.collection.immutable.ListMap
 import play.api.libs.iteratee._
+
 import models._
 
 /** Helper object providing useful methods for statistics on word frequency */

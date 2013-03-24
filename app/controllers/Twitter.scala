@@ -1,27 +1,14 @@
 package controllers
 
 import play.api.mvc.{ Action, Controller }
-import java.lang.management.ManagementFactory
-import scala.concurrent.duration.DurationInt
-import models._
-import play.api.data.Form
-import play.api.data.Forms.{ mapping, longNumber, nonEmptyText }
-import play.api.i18n.Messages
-import play.api.mvc.Flash
-import play.api.cache.Cached
-import play.api.libs.json._
-import play.api.libs.ws.WS
-import play.api.libs.oauth._
-import play.api.libs.iteratee._
-import play.api.libs.concurrent.Execution.Implicits._
-import play.api.Play.current
-import play.api.libs.functional.syntax._
-import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
 import play.api.mvc.{ Action, Controller, WebSocket }
-import play.api.libs.concurrent.Promise
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import org.joda.time.DateTime
+import play.api.libs.iteratee._
+import play.api.libs.json._
+
+import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
+
 import utils.WordCount
+import models._
 import akka._
 import models.TweetImplicits._
 
@@ -60,7 +47,7 @@ object Twitter extends Controller {
 
    /** Actor for subscribing to eventStream. Pushes received tweets into TweetChannel for
     *  consumption through iteratee (and potentially other consumers, decoupled)  */
-    val subscriber = ActorStage.actorSystem.actorOf(Props(new Actor {
+    val subscriber = ActorStage.system.actorOf(Props(new Actor {
       def receive = {
         case t: Tweet => {
           tweetChannel.push(t) // push received tweet into Concurrent.Channel[Tweet]

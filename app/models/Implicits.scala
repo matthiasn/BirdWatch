@@ -7,8 +7,8 @@ import reactivemongo.bson._
 import reactivemongo.bson.handlers._
 import org.joda.time.DateTime
 import play.api.libs.json.Reads.jodaDateReads
+
 import utils.TimeInterval
-import scala.collection.immutable.ListMap
 
 object TweetImplicits {
   implicit val DefaultJodaDateReads = jodaDateReads("EEE MMM dd HH:mm:ss Z YYYY")

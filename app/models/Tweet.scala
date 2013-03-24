@@ -17,6 +17,7 @@ import play.api.libs.json.Reads.jodaDateReads
 import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
 import models.TweetImplicits._
 import utils._
+import akka._
 
 /** Simple Tweet representation */
 case class Tweet(screen_name: String, text: String, location: String, profile_image_url: String, geo: Option[String], created_at: DateTime, id: Option[BSONObjectID])

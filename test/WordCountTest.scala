@@ -56,11 +56,11 @@ class WordCountSpec extends FeatureSpec with GivenWhenThen {
     val testIteratee = WordCount.wordCountIteratee(interceptStep)
     enumerator |>>> testIteratee
     
-    testChannel.push(Tweet("User","ABCa abca abca abcd abcd ab a accb", DateTime.now, None))
-    testChannel.push(Tweet("User","abcA @abca abca abcd abcd ab a accb", DateTime.now, None))
-    testChannel.push(Tweet("User","abca abca. abca ABCD abcd ab a accb", DateTime.now, None))
-    testChannel.push(Tweet("User","abca aBca! abca abcd abcd ab a accb", DateTime.now, None))
-    testChannel.push(Tweet("User","a a a #accb accb", DateTime.now, None))
+    testChannel.push(Tweet("User","ABCa abca abca abcd abcd ab a accb", "", "", None, DateTime.now, None))
+    testChannel.push(Tweet("User","abcA @abca abca abcd abcd ab a accb", "", "", None, DateTime.now, None))
+    testChannel.push(Tweet("User","abca abca. abca ABCD abcd ab a accb", "", "", None, DateTime.now, None))
+    testChannel.push(Tweet("User","abca aBca! abca abcd abcd ab a accb", "", "", None, DateTime.now, None))
+    testChannel.push(Tweet("User","a a a #accb accb", "", "", None, DateTime.now, None))
     
     scenario ("Iteratee wordMap count for 'abca' == 12")   { assert (testMap("abca")   ===  12) }
     scenario ("Iteratee wordMap count for 'abcd' == 8")   { assert (testMap("abcd")  ===  8)  }

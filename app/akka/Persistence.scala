@@ -25,4 +25,15 @@ object Persistence {
     }
   }
   
+  
+  /** Actor for subscribing to eventStream. Pushes received tweets into TweetChannel for
+   *  consumption through iteratee (and potentially other consumers, decoupled)  */
+   class PushActor extends Actor {
+     def receive = {
+       case t: Tweet => {
+         //tweetChannel.push(t) // push received tweet into Concurrent.Channel[Tweet]
+       }
+     }
+   }
+  
 }

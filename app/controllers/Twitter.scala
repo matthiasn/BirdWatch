@@ -41,6 +41,8 @@ object Twitter extends Controller {
    /** Creates enumerator and channel for Tweets through Concurrent factory object */
     val (enumerator, tweetChannel) = Concurrent.broadcast[Tweet]
     
+    println(tweetChannel)
+    
     /** Iteratee processing Tweets from tweetChannel, accumulating a rolling window of tweets */
     val tweetListIteratee = WordCount.tweetListIteratee(interceptTweetList, List[Tweet](), 1000)
     enumerator |>>> tweetListIteratee // attach tweetListIteratee to enumerator

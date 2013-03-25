@@ -16,25 +16,27 @@ object TweetImplicits {
   // Fields specified because of hierarchical json. Otherwise:
   // implicit val streamTweetReads = Json.reads[StreamTweet]
   implicit val TweetReads = (
+    (__ \ "id").read[Long] and
     (__ \ "user" \ "screen_name").read[String] and
     (__ \ "text").read[String] and
     (__ \ "user" \ "location").read[String] and
     (__ \ "user" \ "profile_image_url").read[String] and
     (__ \ "geo").read[Option[String]] and
-    (__ \ "created_at").read[DateTime])(Tweet(_, _, 0, 0, _, _, _, _, None))
+    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, 0, 0, _, _, _, _, None))
 
   implicit object TweetBSONWriter extends BSONWriter[Tweet] {
-    def toBSON(tweet: Tweet) = {
+    def toBSON(t: Tweet) = {
       BSONDocument(
-        "_id" -> tweet.id.getOrElse(BSONObjectID.generate),
-        "screen_name" -> BSONString(tweet.screen_name),
-        "text" -> BSONString(tweet.text),
-        "wordCount" -> BSONInteger(tweet.wordCount),
-        "charCount" -> BSONInteger(tweet.charCount),
-        "location" -> BSONString(tweet.location),
-        "profile_image_url" -> BSONString(tweet.profile_image_url),
-        "geo" -> BSONString(tweet.geo.getOrElse("")),
-        "created_at" -> BSONDateTime(tweet.created_at.getMillis)
+        "_id" -> t.id.getOrElse(BSONObjectID.generate),
+        "tweet_id" -> BSONLong(t.tweet_id),
+        "screen_name" -> BSONString(t.screen_name),
+        "text" -> BSONString(t.text),
+        "wordCount" -> BSONInteger(t.wordCount),
+        "charCount" -> BSONInteger(t.charCount),
+        "location" -> BSONString(t.location),
+        "profile_image_url" -> BSONString(t.profile_image_url),
+        "geo" -> BSONString(t.geo.getOrElse("")),
+        "created_at" -> BSONDateTime(t.created_at.getMillis)
       )
     }
   }
@@ -43,6 +45,7 @@ object TweetImplicits {
     def fromBSON(document: BSONDocument): Tweet = {
       val doc = document.toTraversable
       Tweet(
+        doc.getAs[BSONLong]("tweet_id").get.value,
         doc.getAs[BSONString]("screen_name").get.value,
         doc.getAs[BSONString]("text").get.value,
         doc.getAs[BSONInteger]("wordCount").get.value,
@@ -59,6 +62,7 @@ object TweetImplicits {
   implicit val TweetJsonWriter = new Writes[Tweet] {
     def writes(t: Tweet): JsValue = {
       Json.obj(
+        "tweet_id" -> t.tweet_id,
         "screen_name" -> t.screen_name,
         "text" -> t.text,
         "location" -> t.location,

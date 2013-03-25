@@ -16,6 +16,7 @@ import akka._
 
 /** Simple Tweet representation */
 case class Tweet(
+  tweet_id: Long,
   screen_name: String,
   text: String,
   wordCount: Int,

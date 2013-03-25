@@ -101,4 +101,25 @@ object Twitter extends Controller {
   */
   def tweetsJsonLatest(results: Int) = tweetsJson(DateTime.now.getMillis, results)
   
+  
+  /** Controller Action replaying the specified number of tweets from 
+   *  the specified time in millis forward.
+   *  @param    millis time in millis
+   *  @param    results number of results to return 
+   */  
+   def tweetReplay(millis: Long, results: Int) = Action { implicit request => 
+     Async {      
+       val query = QueryBuilder().query(BSONDocument("created_at" -> BSONDocument("$gte" -> BSONDateTime(millis)))).sort("created_at" -> SortOrder.Ascending)
+
+       // run this query over the collection
+       val cursor = Mongo.tweets.find(query)
+
+       // got the list of documents (in a fully non-blocking way)
+       cursor.toList.map { tweets =>
+         tweets.take(results).foreach { t => ActorStage.eventStream.publish(t) }
+         Ok(Json.toJson(tweets.take(results)))
+       }     
+     }
+   }
+  
 }

@@ -62,4 +62,10 @@ object Twitter extends Controller {
 
     (in, out) // in and out channels for websocket
   }
+  
+  def tweetsJson(millis: Long, results: Int) = Action { implicit request => 
+    println("Millis " + millis + " results " + results)
+    Ok("Millis " + millis + " results " + results)
+  }
+  
 }

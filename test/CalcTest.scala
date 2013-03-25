@@ -10,7 +10,7 @@ class CalcSpec extends FeatureSpec {
 
     val testList = List(2,4,4,4,5,5,7,9)
     
-    scenario ("standard deviation is 2.0") { assert (Calc.stdDev(testList)  ===  2.0) }
+    scenario ("standard deviation is 2.0") { assert (Calc.stdDev(testList)  ===  (5.0, 2.0) ) }
   }
 
 }

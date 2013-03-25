@@ -15,7 +15,8 @@ import utils._
 import akka._
 
 /** Simple Tweet representation */
-case class Tweet(screen_name: String,
+case class Tweet(
+  screen_name: String,
   text: String,
   wordCount: Int,
   charCount: Int,
@@ -23,16 +24,19 @@ case class Tweet(screen_name: String,
   profile_image_url: String,
   geo: Option[String],
   created_at: DateTime,
-  id: Option[BSONObjectID])
+  id: Option[BSONObjectID]
+)
 
 /** holds the state for GUI updates (list of recent tweets and a word frequency map), used for Json serialization */
-case class TweetState(tweetList: List[Tweet],
+case class TweetState(
+  tweetList: List[Tweet],
   wordMap: Map[String, Int],
   charCountMean: Double,
   charCountStdDev: Double,
   wordCountMean: Double,
   wordCountStdDev: Double,
-  n: Int)
+  n: Int
+)
 
 /** Companion object for case class Tweet, takes care of retrieving Tweets from
  *  Twitter using the Streaming API and publishing them on the akka eventStream  */

@@ -7,6 +7,8 @@ GET /               controllers.Application.index
 GET /tweets         controllers.Twitter.tweetList
 GET /tweetFeed      controllers.Twitter.tweetFeed()
 
+GET /tweets/:millis controllers.Twitter.tweetsJson(millis: Long, results: Int ?= 50)
+
 GET /status         controllers.WebSockets.statusPage()
 GET /statusFeed     controllers.WebSockets.statusFeed()
 

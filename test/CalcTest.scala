@@ -1,12 +1,9 @@
 package test
 
 import org.scalatest.FeatureSpec
-import org.scalatest.GivenWhenThen
-import org.scalatest.prop.TableDrivenPropertyChecks
-
 import utils._
 
-class CalcSpec extends FeatureSpec with GivenWhenThen {
+class CalcSpec extends FeatureSpec {
 
   feature("Standard Deviation") {
     info("Ensure correct result")

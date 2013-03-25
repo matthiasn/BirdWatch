@@ -8,7 +8,6 @@ import reactivemongo.api.gridfs._
 import reactivemongo.api.gridfs.Implicits._
 import akka.event.Logging
 
-
 import java.io.File
 import java.awt.Image
 import java.awt.image.BufferedImage
@@ -16,7 +15,7 @@ import javax.imageio.ImageIO
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import javax.imageio.stream.FileImageOutputStream
-//FileImageOutputStream
+
 import models._
 import utils._
 
@@ -78,15 +77,19 @@ object ImageProc {
     def receive = {
       case (t: Tweet, data: Array[Byte]) => {
         log.debug("Received Image " + t.profile_image_url)
-        val contentType = "image/jpeg"
-        val fileName = t.profile_image_url.replaceAll("a0.twimg.com/", "").replaceAll("profile_images/", "").replaceAll("/", "-")
+        val contentType = "image/png"
+        val fileName = t.profile_image_url.replaceAll("a0.twimg.com/", "")
+          .replaceAll("profile_images/", "")
+          .replaceAll("/", "-")
+          .replaceAll(".jpeg", ".png")
+          .replaceAll(".jpg", ".png")
 
         val img: BufferedImage = ImageIO.read(new ByteArrayInputStream(data))
         val resizedImg = resizeImage(img, 150, 150)
-        //ImageIO.write(resizedImg, "jpg", new File( "/Users/mn/imageTemp/" + fileName))          
+        ImageIO.write(resizedImg, "png", new File( "/Users/mn/imageTemp/" + fileName))          
 
         val outStream: ByteArrayOutputStream = new ByteArrayOutputStream()
-        ImageIO.write(resizedImg, "jpg", outStream)
+        ImageIO.write(resizedImg, "png", outStream)
         
         // create Enumerator from body of WS request
         val enumerator = Enumerator(outStream.toByteArray())

@@ -13,6 +13,7 @@ GET /tweets/:millis           controllers.Twitter.tweetsJson(millis: Long, resul
 
 GET /tweets/replay/:millis    controllers.Twitter.tweetReplay(millis: Long, results: Int ?= 50)
 
+GET /images/:filename         controllers.Images.getImage(filename: String)
 
 GET /status                   controllers.WebSockets.statusPage()
 GET /statusFeed               controllers.WebSockets.statusFeed()

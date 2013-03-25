@@ -19,5 +19,4 @@ object Mongo {
   val tweets = db("tweets")
   
   val imagesGridFS = new GridFS(db, "images")
-  
 }

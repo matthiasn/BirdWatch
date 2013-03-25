@@ -7,7 +7,6 @@ import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 import org.joda.time.DateTime
 
-
 import play.modules.reactivemongo._
 import reactivemongo.api._
 import reactivemongo.bson._
@@ -49,7 +48,7 @@ object Twitter extends Controller {
       val (charCountMean, charCountStdDev) = Calc.stdDev(tweetList.map(t => t.charCount))
       val (wordCountMean, wordCountStdDev) = Calc.stdDev(tweetList.map(t => t.wordCount))
       
-      println(f"Words per Tweet: mean $wordCountMean%2.2f, stdDev $wordCountStdDev%2.2f; Chars per Tweet: mean $charCountMean%2.2f, stdDev $charCountStdDev%2.2f")
+      //println(f"Words per Tweet: mean $wordCountMean%2.2f, stdDev $wordCountStdDev%2.2f; Chars per Tweet: mean $charCountMean%2.2f, stdDev $charCountStdDev%2.2f")
       
       val tweetState = TweetState(tweetList.take(50), WordCount.topN(tweetList, 250), charCountMean, charCountStdDev, wordCountMean, wordCountStdDev, tweetList.size)
       wsOutChannel.push(Json.stringify(Json.toJson(tweetState)))      

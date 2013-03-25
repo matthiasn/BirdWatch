@@ -1,6 +1,7 @@
 package akka
 
 import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
+import akka.routing.RoundRobinRouter
 
 import models._
 
@@ -15,15 +16,13 @@ object ActorStage {
   val eventStream = system.eventStream
   
   /** Actor for receiving Tweets from eventStream and inserting them into MongoDB. */
-  val tweetStreamSubscriber = system.actorOf(Props(new Persistence.TweetWriteActor( Some(imageRetrievalActor) )))
+  val tweetStreamSubscriber = system.actorOf(Props(new Persistence.TweetWriteActor()), "TweetWriter")
   
   // attach tweetStreamSubscriber to eventStream
   eventStream.subscribe(tweetStreamSubscriber, classOf[Tweet])
   
-  /** Image conversion actor, receives (Tweet, Array[Byte]), converts images and saves them into MongoDB. */
-  val imageConversionActor = system.actorOf(Props(new ImageProc.ConversionActor(None)))
-  
- /** Image retrieval actor, receives Tweets, retrieves the Twitter profile images for each user and passes them on to conversion actor. */ 
-  val imageRetrievalActor = system.actorOf(Props(new ImageProc.RetrievalActor( Some(imageConversionActor) )))
+  /** Supervisor for Image Retrieval / Image Processing */
+  val imgSupervisor = system.actorOf(Props(new ImageProc.Supervisor()), "ImgSupervisor")
+  eventStream.subscribe(imgSupervisor, classOf[Tweet]) // subscribe to stream of Tweets
   
 }

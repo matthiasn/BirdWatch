@@ -11,16 +11,10 @@ import models._
 object Persistence {
 
   /** Actor for receiving Tweets from eventStream and inserting them into MongoDB. */
-  class TweetWriteActor(next: Option[ActorRef]) extends Actor {
+  class TweetWriteActor extends Actor {
     def receive = {
       case t: Tweet if (t.id == None) => {
         Mongo.tweets.insert(t)
-                
-        // send Tweet for retrieving image 
-        next match {
-          case Some(actor) => actor ! t
-          case None => 
-        }
       }
     }
   }

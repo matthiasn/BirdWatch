@@ -13,6 +13,3 @@ object Calc {
   }
 
 }
-
-                                       
-

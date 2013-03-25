@@ -106,4 +106,8 @@ object WordCount {
        newTweetList
       }
     }
+    
+  
+  def wordsChars(t: Tweet) = t.copy(charCount = t.text.length(), wordCount = t.text.replaceAll("[^a-zA-Z# ]", "").split(" ").length)
+    
 }

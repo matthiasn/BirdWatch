@@ -15,7 +15,15 @@ import utils._
 import akka._
 
 /** Simple Tweet representation */
-case class Tweet(screen_name: String, text: String, location: String, profile_image_url: String, geo: Option[String], created_at: DateTime, id: Option[BSONObjectID])
+case class Tweet(screen_name: String,
+  text: String,
+  wordCount: Int,
+  charCount: Int,
+  location: String,
+  profile_image_url: String,
+  geo: Option[String],
+  created_at: DateTime,
+  id: Option[BSONObjectID])
 
 /** holds the state for GUI updates (list of recent tweets and a word frequency map), used for Json serialization */
 case class TweetState(tweetList: List[Tweet], wordMap: Map[String, Int])
@@ -25,7 +33,7 @@ case class TweetState(tweetList: List[Tweet], wordMap: Map[String, Int])
 object Tweet {
   
   def stripImageUrl(t: Tweet) = t.copy(profile_image_url = t.profile_image_url.replaceAll("http://", "").replaceAll("_normal", ""))
-  
+    
   /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
    *  as Tweet instances and publishes them to eventStream.
    */
@@ -34,7 +42,7 @@ object Tweet {
     val json = Json.parse(chunkString)
     TweetReads.reads(json) match {
       case JsSuccess(t: Tweet, _) => {
-        ActorStage.eventStream.publish(stripImageUrl(t))
+        ActorStage.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
       }
       case JsError(_) => println _
     }

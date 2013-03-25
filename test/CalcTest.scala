@@ -14,4 +14,3 @@ class CalcSpec extends FeatureSpec {
   }
 
 }
-

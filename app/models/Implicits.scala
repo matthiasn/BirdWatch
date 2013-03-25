@@ -21,7 +21,7 @@ object TweetImplicits {
     (__ \ "user" \ "location").read[String] and
     (__ \ "user" \ "profile_image_url").read[String] and
     (__ \ "geo").read[Option[String]] and
-    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, _, _, _, None))
+    (__ \ "created_at").read[DateTime])(Tweet(_, _, 0, 0, _, _, _, _, None))
 
   implicit object TweetBSONWriter extends BSONWriter[Tweet] {
     def toBSON(tweet: Tweet) = {
@@ -29,6 +29,8 @@ object TweetImplicits {
         "_id" -> tweet.id.getOrElse(BSONObjectID.generate),
         "screen_name" -> BSONString(tweet.screen_name),
         "text" -> BSONString(tweet.text),
+        "wordCount" -> BSONInteger(tweet.wordCount),
+        "charCount" -> BSONInteger(tweet.charCount),
         "location" -> BSONString(tweet.location),
         "profile_image_url" -> BSONString(tweet.profile_image_url),
         "geo" -> BSONString(tweet.geo.getOrElse("")),

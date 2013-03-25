@@ -34,7 +34,25 @@ object TweetImplicits {
         "location" -> BSONString(tweet.location),
         "profile_image_url" -> BSONString(tweet.profile_image_url),
         "geo" -> BSONString(tweet.geo.getOrElse("")),
-        "created_at" -> BSONDateTime(tweet.created_at.getMillis))
+        "created_at" -> BSONDateTime(tweet.created_at.getMillis)
+      )
+    }
+  }
+  
+  implicit object TweetBSONReader extends BSONReader[Tweet] {
+    def fromBSON(document: BSONDocument): Tweet = {
+      val doc = document.toTraversable
+      Tweet(
+        doc.getAs[BSONString]("screen_name").get.value,
+        doc.getAs[BSONString]("text").get.value,
+        doc.getAs[BSONInteger]("wordCount").get.value,
+        doc.getAs[BSONInteger]("charCount").get.value,
+        doc.getAs[BSONString]("location").get.value,
+        doc.getAs[BSONString]("profile_image_url").get.value,
+        None,
+        new DateTime(doc.getAs[BSONDateTime]("created_at").get.value),
+        doc.getAs[BSONObjectID]("_id")
+      )
     }
   }
 
@@ -44,7 +62,8 @@ object TweetImplicits {
         "screen_name" -> t.screen_name,
         "text" -> t.text,
         "location" -> t.location,
-        "timestamp" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString)
+        "timestamp" -> t.created_at.getMillis,
+        "timeAgo" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString)
     }
   }
   

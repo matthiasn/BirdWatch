@@ -4,6 +4,17 @@ import play.api.mvc.{ Action, Controller }
 import play.api.mvc.{ Action, Controller, WebSocket }
 import play.api.libs.iteratee._
 import play.api.libs.json._
+import play.api.libs.concurrent.Execution.Implicits._
+import org.joda.time.DateTime
+
+
+import play.modules.reactivemongo._
+import reactivemongo.api._
+import reactivemongo.bson._
+import reactivemongo.bson.handlers._
+import reactivemongo.api.gridfs._
+import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONDocumentWriter
+import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONReaderHandler
 
 import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
 
@@ -38,6 +49,8 @@ object Twitter extends Controller {
       val (charCountMean, charCountStdDev) = Calc.stdDev(tweetList.map(t => t.charCount))
       val (wordCountMean, wordCountStdDev) = Calc.stdDev(tweetList.map(t => t.wordCount))
       
+      println(f"Words per Tweet: mean $wordCountMean%2.2f, stdDev $wordCountStdDev%2.2f; Chars per Tweet: mean $charCountMean%2.2f, stdDev $charCountStdDev%2.2f")
+      
       val tweetState = TweetState(tweetList.take(50), WordCount.topN(tweetList, 250), charCountMean, charCountStdDev, wordCountMean, wordCountStdDev, tweetList.size)
       wsOutChannel.push(Json.stringify(Json.toJson(tweetState)))      
     }
@@ -63,9 +76,29 @@ object Twitter extends Controller {
     (in, out) // in and out channels for websocket
   }
   
+ /** Controller Action serving Tweets as JSON going backwards in time from the 
+  *  specified time in milliseconds from epoch
+  *  @param    millis time in millis
+  *  @param    results number of results to return 
+  */  
   def tweetsJson(millis: Long, results: Int) = Action { implicit request => 
-    println("Millis " + millis + " results " + results)
-    Ok("Millis " + millis + " results " + results)
+    Async {      
+      val query = QueryBuilder().query(BSONDocument("created_at" -> BSONDocument("$lte" -> BSONDateTime(millis)))).sort("created_at" -> SortOrder.Descending)
+      
+      // run this query over the collection
+      val cursor = Mongo.tweets.find(query)
+      
+      // got the list of documents (in a fully non-blocking way)
+      cursor.toList.map { tweets =>
+        Ok(Json.toJson(tweets.take(results)))
+      }     
+    }
   }
+  
+ /** Controller Action serving Tweets as JSON going backwards in time from when
+  *  the action is called
+  *  @param    results number of results to return 
+  */
+  def tweetsJsonLatest(results: Int) = tweetsJson(DateTime.now.getMillis, results)
   
 }

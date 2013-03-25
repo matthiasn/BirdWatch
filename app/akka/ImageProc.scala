@@ -56,8 +56,7 @@ object ImageProc {
         retrievalActor ! t
       }
     }
- }
-
+  }
   
  /** Image retrieval actor, receives Tweets, retrieves the Twitter profile images for each user and passes them on to conversion actor. 
   *  @param next Actor reference to pass message on to (Image conversion actor)

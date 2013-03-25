@@ -49,10 +49,11 @@ object Tweet {
    */
   val tweetIteratee = Iteratee.foreach[Array[Byte]] { chunk =>
     val chunkString = new String(chunk, "UTF-8")
+    println(chunkString)
     val json = Json.parse(chunkString)
     TweetReads.reads(json) match {
       case JsSuccess(t: Tweet, _) => {
-        ActorStage.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
+        ActorStage.system.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
       }
       case JsError(_) => println _
     }

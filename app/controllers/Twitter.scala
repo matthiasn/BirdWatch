@@ -70,7 +70,7 @@ object Twitter extends Controller {
         }
       }
     }))
-    ActorStage.eventStream.subscribe(subscriber, classOf[Tweet])
+    ActorStage.system.eventStream.subscribe(subscriber, classOf[Tweet])
 
     (in, out) // in and out channels for websocket
   }
@@ -115,7 +115,7 @@ object Twitter extends Controller {
 
        // got the list of documents (in a fully non-blocking way)
        cursor.toList.map { tweets =>
-         tweets.take(results).foreach { t => ActorStage.eventStream.publish(t) }
+         tweets.take(results).foreach { t => ActorStage.system.eventStream.publish(t) }
          Ok(Json.toJson(tweets.take(results)))
        }     
      }

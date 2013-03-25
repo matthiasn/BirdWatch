@@ -15,9 +15,7 @@ object Persistence {
     def receive = {
       case t: Tweet => {
         Mongo.tweets.insert(t)
-        
-        println(t)
-        
+                
         // send Tweet for retrieving image 
         next match {
           case Some(actor) => actor ! t

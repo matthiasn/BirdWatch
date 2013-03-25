@@ -61,7 +61,12 @@ object TweetImplicits {
     def writes(ts: TweetState): JsValue = {
       Json.obj(
         "tweetList" -> Json.toJson(ts.tweetList),
-        "topWords" -> Json.toJson(ts.wordMap.toList)
+        "topWords" -> Json.toJson(ts.wordMap.toList),
+        "charCountMean" -> ts.charCountMean,
+        "charCountStdDev" -> ts.charCountStdDev,
+        "wordCountMean" -> ts.wordCountMean,
+        "wordCountStdDev" -> ts.wordCountStdDev,
+        "n" -> ts.n
       )
     }
   }

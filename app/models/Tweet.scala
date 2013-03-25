@@ -26,7 +26,13 @@ case class Tweet(screen_name: String,
   id: Option[BSONObjectID])
 
 /** holds the state for GUI updates (list of recent tweets and a word frequency map), used for Json serialization */
-case class TweetState(tweetList: List[Tweet], wordMap: Map[String, Int])
+case class TweetState(tweetList: List[Tweet],
+  wordMap: Map[String, Int],
+  charCountMean: Double,
+  charCountStdDev: Double,
+  wordCountMean: Double,
+  wordCountStdDev: Double,
+  n: Int)
 
 /** Companion object for case class Tweet, takes care of retrieving Tweets from
  *  Twitter using the Streaming API and publishing them on the akka eventStream  */

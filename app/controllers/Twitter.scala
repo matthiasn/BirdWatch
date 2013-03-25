@@ -7,7 +7,7 @@ import play.api.libs.json._
 
 import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
 
-import utils.WordCount
+import utils._
 import models._
 import akka._
 import models.TweetImplicits._
@@ -34,14 +34,17 @@ object Twitter extends Controller {
     *  @return   Unit, cannot interfere with the accumulator inside the Iteratee 
     */
     def interceptTweetList(tweetList: List[Tweet]): Unit = { 
-      val tweetState = TweetState(tweetList.take(50), WordCount.topN(tweetList, 250))
+      
+      val (charCountMean, charCountStdDev) = Calc.stdDev(tweetList.map(t => t.charCount))
+      val (wordCountMean, wordCountStdDev) = Calc.stdDev(tweetList.map(t => t.wordCount))
+      
+      val tweetState = TweetState(tweetList.take(50), WordCount.topN(tweetList, 250), charCountMean, charCountStdDev, wordCountMean, wordCountStdDev, tweetList.size)
+      println(tweetState)
       wsOutChannel.push(Json.stringify(Json.toJson(tweetState)))      
     }
     
    /** Creates enumerator and channel for Tweets through Concurrent factory object */
     val (enumerator, tweetChannel) = Concurrent.broadcast[Tweet]
-    
-    println(tweetChannel)
     
     /** Iteratee processing Tweets from tweetChannel, accumulating a rolling window of tweets */
     val tweetListIteratee = WordCount.tweetListIteratee(interceptTweetList, List[Tweet](), 1000)

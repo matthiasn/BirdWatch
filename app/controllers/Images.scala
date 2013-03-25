@@ -29,12 +29,13 @@ import models.TweetImplicits._
 object Images extends Controller with MongoController{
 
  /** Serves images connection updating the UI 
-  *  CAUTION: reactive mongo delivers incorrect mime type and length
+  *  CAUTION: reactivemongo marks file CONTENT_DISPOSITION as attachment (why???) 
   *  @param filename name of the image to serve
   */
   def getImage(filename: String) = Action {
     Async {
       import reactivemongo.api.gridfs.Implicits.DefaultReadFileReader
+      
       // find the matching attachment, if any, and streams it to the client
       val file = Mongo.imagesGridFS.find(BSONDocument("filename" -> new BSONString(filename)))
       serve(Mongo.imagesGridFS, file)

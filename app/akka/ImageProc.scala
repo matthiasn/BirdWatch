@@ -24,7 +24,16 @@ import utils._
 object ImageProc {
 
   /** Image retrieval actor, receives Tweets, retrieves the Twitter profile images for each user and passes them on to conversion actor. */
-  class RetrievalActor(next: Option[ActorRef]) extends Actor {
+  class RetrievalActor(next: Option[ActorRef]) extends Actor with ActorLogging {
+    override val log = Logging(context.system, this)
+     
+    override def preStart() = {
+      log.debug("Starting")
+    }
+    override def preRestart(reason: Throwable, message: Option[Any]) {
+      log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
+    }
+    
     def receive = {
       case t: Tweet => {
         
@@ -57,7 +66,6 @@ object ImageProc {
   
   /** Image conversion actor, receives (Tweet, Array[Byte]), converts images and saves them into MongoDB. */
   class ConversionActor(next: Option[ActorRef]) extends Actor with ActorLogging {
-    
     override val log = Logging(context.system, this)
      
     override def preStart() = {
@@ -65,7 +73,7 @@ object ImageProc {
     }
     override def preRestart(reason: Throwable, message: Option[Any]) {
       log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
-     }
+    }
     
     def receive = {
       case (t: Tweet, data: Array[Byte]) => {
@@ -73,16 +81,17 @@ object ImageProc {
         val contentType = "image/jpeg"
         val fileName = t.profile_image_url.replaceAll("a0.twimg.com/", "").replaceAll("profile_images/", "").replaceAll("/", "-")
 
+        val img: BufferedImage = ImageIO.read(new ByteArrayInputStream(data))
+        val resizedImg = resizeImage(img, 150, 150)
+        //ImageIO.write(resizedImg, "jpg", new File( "/Users/mn/imageTemp/" + fileName))          
+
+        val outStream: ByteArrayOutputStream = new ByteArrayOutputStream()
+        ImageIO.write(resizedImg, "jpg", outStream)
+        
         // create Enumerator from body of WS request
-        val enumerator = Enumerator(data)
+        val enumerator = Enumerator(outStream.toByteArray())
         // saves content of enumerator into GridFS
         Mongo.imagesGridFS.save(enumerator, DefaultFileToSave(fileName, Some(contentType), None))
-
-        if (!fileName.contains("sticky")){
-          val img: BufferedImage = ImageIO.read(new ByteArrayInputStream(data))
-          val resizedImg = resizeImage(img, 150, 150)
-          ImageIO.write(resizedImg, "jpg", new File( "/Users/mn/imageTemp/" + fileName))          
-        }
         
         next match {
           case Some(actor) => actor ! t

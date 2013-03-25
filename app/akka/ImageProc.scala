@@ -119,14 +119,10 @@ object ImageProc {
       case (t: Tweet, data: Array[Byte]) => {
         log.debug("Received Image " + t.profile_image_url)
         val contentType = "image/png"
-        val fileName = t.profile_image_url.replaceAll("a0.twimg.com/", "")
-          .replaceAll("profile_images/", "")
-          .replaceAll("/", "-")
-          .replaceAll(".jpeg", ".png")
-          .replaceAll(".jpg", ".png")
+        val fileName = t.tweet_id + ".png"
 
         val img: BufferedImage = ImageIO.read(new ByteArrayInputStream(data))
-        val resizedImg = resizeImage(img, 150, 150)
+        val resizedImg = resizeImage(img, 80, 80)
         ImageIO.write(resizedImg, "png", new File( "/Users/mn/imageTemp/" + fileName))          
 
         val outStream: ByteArrayOutputStream = new ByteArrayOutputStream()

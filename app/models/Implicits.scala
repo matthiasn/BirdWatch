@@ -63,6 +63,7 @@ object TweetImplicits {
     def writes(t: Tweet): JsValue = {
       Json.obj(
         "tweet_id" -> t.tweet_id,
+        "img_url" ->  ("/images/" + t.tweet_id.toString + ".png"),
         "screen_name" -> t.screen_name,
         "text" -> t.text,
         "location" -> t.location,

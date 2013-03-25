@@ -50,7 +50,7 @@ object Tweet {
    */
   val tweetIteratee = Iteratee.foreach[Array[Byte]] { chunk =>
     val chunkString = new String(chunk, "UTF-8")
-    println(chunkString)
+    //println(chunkString)
     val json = Json.parse(chunkString)
     TweetReads.reads(json) match {
       case JsSuccess(t: Tweet, _) => {

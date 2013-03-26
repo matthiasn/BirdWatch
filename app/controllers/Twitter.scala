@@ -19,7 +19,7 @@ import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
 
 import utils._
 import models._
-import akka._
+import actors._
 import models.TweetImplicits._
 
 /** Controller for serving main BirdWatch page including the websocket connection */

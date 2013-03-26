@@ -12,7 +12,7 @@ import akka.actor.ActorSystem
 
 import models.TweetImplicits._
 import utils._
-import akka._
+import actors._
 
 /** Simple Tweet representation */
 case class Tweet(

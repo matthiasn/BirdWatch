@@ -315,7 +315,7 @@
 
   <div id="tweets">
     <ul data-bind="foreach: tweets">
-      <li><img data-bind="attr: { src: img_url }" /><span class="screen_name" data-bind="text: screen_name"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="timeInterval" data-bind="text: timeAgo"></span><br /><span data-bind="text: text"><br /></span></li>
+      <li><div class="tweetlist"><span><img data-bind="attr: { src: img_url }" /></span><div class="screen_name" data-bind="text: screen_name"></div>&nbsp;&nbsp;&nbsp;&nbsp;<div class="timeInterval" data-bind="text: timeAgo"></div><br /><div class="tweettext"><span data-bind="text: text"><br /></span></div></div></li>
     </ul>
   </div>
     

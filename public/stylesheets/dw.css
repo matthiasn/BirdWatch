@@ -27,13 +27,19 @@
 	overflow: auto;
 }
 .screen_name {
-	font-weight:bold
+	position:absolute;
+	font-weight:bold;
+  	top:2px;
+  	left:100px;
 }
 .timeInterval {
+	position:absolute;
 	font-weight:bold;
 	font-size:10px;
 	color:#99D;
 	text-align:right;
+	top:2px;
+  	left:350px;
 }
 li {
 	list-style:none;
@@ -46,4 +52,14 @@ li {
 	left: 20px;
 	top: 670px;
 	overflow: auto;
+}
+.tweetlist {
+	position:relative;
+	height: 105px;
+}
+.tweettext {
+	position:absolute;
+  	top:22px;
+  	left:100px;
+	height:auto;
 }

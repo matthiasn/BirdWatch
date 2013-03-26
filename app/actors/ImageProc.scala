@@ -26,10 +26,11 @@ import utils._
 
 /** Actors related to image processing */
 object ImageProc {
-  
+
+  case class Proc(t: Tweet)  
   case class DoneProc(t: Tweet)
 
-  class Supervisor extends Actor with ActorLogging {
+  class Supervisor(eventStream: akka.event.EventStream) extends Actor with ActorLogging {
     override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
       case _: ArithmeticException      ⇒ Resume
       case _: NullPointerException     ⇒ Restart
@@ -40,7 +41,7 @@ object ImageProc {
     override val log = Logging(context.system, this)
      
     override def preStart() = {
-      log.debug("Starting")
+      log.info("Starting")
     }
     override def preRestart(reason: Throwable, message: Option[Any]) {
       log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
@@ -55,7 +56,8 @@ object ImageProc {
     */
     def receive = {
       case t: Tweet if (t.id == None) => {
-        retrievalActor ! t
+        sender ! Proc(t)      // acknowledge receipt (testing)
+        retrievalActor ! t    // forward tweet to retrieval actor (child)
       }
       case DoneProc(t: Tweet) => {
         log.debug("DONE: " + t.profile_image_url)

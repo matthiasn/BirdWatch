@@ -16,6 +16,6 @@ object ActorStage {
   val tweetStreamSubscriber = system.actorOf(Props(new Persistence.TweetWriteActor()), "TweetWriter")
   
   /** Supervisor for Image Retrieval / Image Processing */
-  val imgSupervisor = system.actorOf(Props(new ImageProc.Supervisor()), "ImgSupervisor")
+  val imgSupervisor = system.actorOf(Props(new ImageProc.Supervisor(system.eventStream)), "ImgSupervisor")
   
 }

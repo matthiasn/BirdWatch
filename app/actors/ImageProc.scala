@@ -6,6 +6,7 @@ import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.iteratee._
 import reactivemongo.api.gridfs._
 import reactivemongo.api.gridfs.Implicits._
+import reactivemongo.bson._
 import akka.event.Logging
 
 import akka.actor.OneForOneStrategy
@@ -32,10 +33,11 @@ object ImageProc {
 
   class Supervisor(eventStream: akka.event.EventStream) extends Actor with ActorLogging {
     override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
-      case _: ArithmeticException      ⇒ Resume
-      case _: NullPointerException     ⇒ Restart
-      case _: IllegalArgumentException ⇒ Stop
-      case _: Exception                ⇒ Escalate
+      case _: ArithmeticException        => Resume
+      case _: javax.imageio.IIOException => Resume
+      case _: NullPointerException       => Restart
+      case _: IllegalArgumentException   => Stop
+      case _: Exception                  => Escalate
     }
     
     override val log = Logging(context.system, this)
@@ -132,7 +134,7 @@ object ImageProc {
     /** Converts and downsizes received Array[Byte] into PNG of dimensions 150*150px, writes image to GridFS */
     def receive = {
       case (p: Proc, data: Array[Byte]) => {
-        log.info("Received Image " + p.t.profile_image_url)
+        log.debug("Received Image " + p.t.profile_image_url)
         val contentType = "image/png"
         val fileName = p.t.tweet_id + ".png"
 

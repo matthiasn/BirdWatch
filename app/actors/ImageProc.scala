@@ -34,10 +34,10 @@ object ImageProc {
   class Supervisor(eventStream: akka.event.EventStream) extends Actor with ActorLogging {
     override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
       case _: ArithmeticException        => Resume
-      case _: javax.imageio.IIOException => Resume
+      case _: javax.imageio.IIOException => Restart
       case _: NullPointerException       => Restart
       case _: IllegalArgumentException   => Stop
-      case _: Exception                  => Escalate
+      case _: Exception                  => Restart
     }
     
     override val log = Logging(context.system, this)

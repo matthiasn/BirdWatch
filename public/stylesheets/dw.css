@@ -20,7 +20,7 @@
 #tweets {
 	//background-color: #CCC;
 	position: fixed;
-	height: 700px;
+	height: 1000px;
 	width: 600px;
 	left: 800px;
 	top: 50px;
@@ -40,11 +40,10 @@ li {
 }
 
 #wordBars {
-	background-color: #CCC;
 	position: fixed;
 	height: 500px;
 	width: 700px;
-	left: 50px;
-	top: 700px;
+	left: 20px;
+	top: 670px;
 	overflow: auto;
 }

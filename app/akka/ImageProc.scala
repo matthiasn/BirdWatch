@@ -26,6 +26,8 @@ import utils._
 
 /** Actors related to image processing */
 object ImageProc {
+  
+  case class DoneProc(t: Tweet)
 
   class Supervisor extends Actor with ActorLogging {
     override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
@@ -38,7 +40,7 @@ object ImageProc {
     override val log = Logging(context.system, this)
      
     override def preStart() = {
-      log.info("Starting")
+      log.debug("Starting")
     }
     override def preRestart(reason: Throwable, message: Option[Any]) {
       log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
@@ -55,6 +57,12 @@ object ImageProc {
       case t: Tweet if (t.id == None) => {
         retrievalActor ! t
       }
+      case DoneProc(t: Tweet) => {
+        log.debug("DONE: " + t.profile_image_url)
+        
+        ActorStage.system.eventStream.publish(t)
+        ActorStage.tweetStreamSubscriber ! t
+      }
     }
   }
   
@@ -65,7 +73,7 @@ object ImageProc {
     override val log = Logging(context.system, this)
      
     override def preStart() = {
-      log.info("Starting")
+      log.debug("Starting")
     }
     override def preRestart(reason: Throwable, message: Option[Any]) {
       log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
@@ -108,7 +116,7 @@ object ImageProc {
     override val log = Logging(context.system, this)
      
     override def preStart() = {
-      log.info("Starting")
+      log.debug("Starting")
     }
     override def preRestart(reason: Throwable, message: Option[Any]) {
       log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
@@ -132,6 +140,8 @@ object ImageProc {
         val enumerator = Enumerator(outStream.toByteArray())
         // saves content of enumerator into GridFS
         Mongo.imagesGridFS.save(enumerator, DefaultFileToSave(fileName, Some(contentType), None))
+        
+        context.actorFor("../..") ! DoneProc(t)
       }
     }
   }

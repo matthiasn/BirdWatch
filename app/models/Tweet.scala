@@ -53,8 +53,8 @@ object Tweet {
     //println(chunkString)
     val json = Json.parse(chunkString)
     TweetReads.reads(json) match {
-      case JsSuccess(t: Tweet, _) => {
-        ActorStage.system.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
+      case JsSuccess(t: Tweet, _) => { ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
+        //ActorStage.system.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
       }
       case JsError(_) => println _
     }

@@ -14,10 +14,8 @@ object ActorStage {
   
   /** Actor for receiving Tweets from eventStream and inserting them into MongoDB. */
   val tweetStreamSubscriber = system.actorOf(Props(new Persistence.TweetWriteActor()), "TweetWriter")
-  system.eventStream.subscribe(tweetStreamSubscriber, classOf[Tweet])  // subscribe to eventStream for Tweets
   
   /** Supervisor for Image Retrieval / Image Processing */
   val imgSupervisor = system.actorOf(Props(new ImageProc.Supervisor()), "ImgSupervisor")
-  system.eventStream.subscribe(imgSupervisor, classOf[Tweet])  // subscribe to eventStream for Tweets
   
 }

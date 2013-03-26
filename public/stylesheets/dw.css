@@ -38,3 +38,13 @@
 li {
 	list-style:none;
 }
+
+#wordBars {
+	background-color: #CCC;
+	position: fixed;
+	height: 500px;
+	width: 700px;
+	left: 50px;
+	top: 700px;
+	overflow: auto;
+}

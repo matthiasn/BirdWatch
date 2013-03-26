@@ -27,23 +27,6 @@
       var y = d3.scale.ordinal()
          .domain(data)
          .rangeBands([0, 120]);
-
-      chart.selectAll("rect")
-         .data(data)
-         .enter().append("rect")
-         .attr("y", y)
-         .attr("width", x)
-         .attr("height", y.rangeBand());
-    
-      chart.selectAll("text")
-         .data(data)
-         .enter().append("text")
-         .attr("x", x)
-         .attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
-         .attr("dx", -10) // padding-right
-         .attr("dy", ".35em") // vertical-align: middle
-         .attr("text-anchor", "end") // text-align: right
-         .text(String);
          
       chart.selectAll("line")
          .data(x.ticks(10))
@@ -53,6 +36,23 @@
          .attr("y1", 0)
          .attr("y2", 120)
          .style("stroke", "#ccc");
+      
+      chart.selectAll("rect")
+         .data(data)
+         .enter().append("rect")
+         .attr("y", y)
+         .attr("width", x)
+         .attr("height", y.rangeBand());
+      
+      chart.selectAll("text")
+         .data(data)
+         .enter().append("text")
+         .attr("x", x)
+         .attr("y", function(d) { return y(d) + y.rangeBand() / 2; })
+         .attr("dx", -10) // padding-right
+         .attr("dy", ".35em") // vertical-align: middle
+         .attr("text-anchor", "end") // text-align: right
+         .text(String);
          
       chart.selectAll(".rule")
          .data(x.ticks(10))

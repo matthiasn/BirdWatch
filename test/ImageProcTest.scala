@@ -5,28 +5,40 @@ import org.scalatest._
 import org.scalatest.matchers._
 import org.joda.time.DateTime
 import akka.actor._
+import scala.concurrent.duration._
+
+import play.api.test._
+import play.api.test.Helpers._
+import play.api.libs.ws.WS
 
 import actors._
 import models._
 
 class ImageProcSpec(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
   with WordSpec with MustMatchers with BeforeAndAfterAll {
- 
+
   def this() = this(ActorSystem("ImageProcSpec"))
-  
+
   override def afterAll {
     system.shutdown()
   }
 
-  val testTweet = Tweet(5L, "User","a a a #accb accb", 0, 0, "", "", None, DateTime.now, None)
+  val testTweet = Tweet(1234567890L, "User", "a a a #accb accb", 0, 0, "", "localhost:3333/assets/images/imageproc-test.jpg", None, DateTime.now, None)
 
-  " ImageProc Supervisor acknowledges message receipt" must {
+  running(TestServer(3333)) {
 
-    "send back Proc(t)" in {
+    "Supervisor " must {
+
       val supervisor = system.actorOf(Props(new ImageProc.Supervisor(system.eventStream)))
-      supervisor ! testTweet
-      expectMsg(ImageProc.Proc(testTweet))
+      supervisor ! testTweet // send testTweet to supervisor hierarchy
+
+      system.eventStream.subscribe(self, classOf[ImageProc.Proc]) // subscribe status messages
+      system.eventStream.subscribe(self, classOf[ImageProc.DoneProc])
+
+      expectMsg(ImageProc.Proc(self, testTweet)) // expect Proc stat
+      expectMsg(6 seconds, ImageProc.DoneProc(ImageProc.Proc(self, testTweet)))
+
+      await(WS.url("http://localhost:3333/images/1234567890.png").get).status must equal(OK)
     }
- 
   }
 }

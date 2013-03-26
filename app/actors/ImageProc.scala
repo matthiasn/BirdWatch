@@ -27,8 +27,8 @@ import utils._
 /** Actors related to image processing */
 object ImageProc {
 
-  case class Proc(t: Tweet)  
-  case class DoneProc(t: Tweet)
+  case class Proc(client: ActorRef, t: Tweet)  
+  case class DoneProc(p: Proc)
 
   class Supervisor(eventStream: akka.event.EventStream) extends Actor with ActorLogging {
     override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
@@ -41,7 +41,7 @@ object ImageProc {
     override val log = Logging(context.system, this)
      
     override def preStart() = {
-      log.info("Starting")
+      log.debug("Starting")
     }
     override def preRestart(reason: Throwable, message: Option[Any]) {
       log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
@@ -56,14 +56,16 @@ object ImageProc {
     */
     def receive = {
       case t: Tweet if (t.id == None) => {
-        sender ! Proc(t)      // acknowledge receipt (testing)
-        retrievalActor ! t    // forward tweet to retrieval actor (child)
-      }
-      case DoneProc(t: Tweet) => {
-        log.debug("DONE: " + t.profile_image_url)
+        eventStream.publish(Proc(sender, t))    // acknowledge receipt (testing)
         
-        ActorStage.system.eventStream.publish(t)
-        ActorStage.tweetStreamSubscriber ! t
+        retrievalActor ! Proc(sender, t)        // forward tweet to retrieval actor (child)
+      }
+      case DoneProc(p: Proc) => {
+        log.debug("DONE: " + p.t.profile_image_url)
+        
+        eventStream.publish(DoneProc(p))
+        eventStream.publish(p.t)
+        ActorStage.tweetStreamSubscriber ! p.t
       }
     }
   }
@@ -85,13 +87,16 @@ object ImageProc {
     *  asynchronously forwards Image data to Image conversion actor.
     */
     def receive = {
-      case t: Tweet => {
+      case p: Proc => {
+        log.debug("RetrievalActor received request for " + p.t.profile_image_url)
         
-        WS.url("http://" + t.profile_image_url).get().map { r =>
+        WS.url("http://" + p.t.profile_image_url).get().map { r =>
+          log.debug("Image retrieved")
+          
           val body = r.getAHCResponse.getResponseBodyAsBytes // body as byte array
           
           next match {
-            case Some(actor) => actor ! (t, body)
+            case Some(actor) => actor ! (p, body)
             case None => 
           }
         }
@@ -126,10 +131,10 @@ object ImageProc {
     
     /** Converts and downsizes received Array[Byte] into PNG of dimensions 150*150px, writes image to GridFS */
     def receive = {
-      case (t: Tweet, data: Array[Byte]) => {
-        log.debug("Received Image " + t.profile_image_url)
+      case (p: Proc, data: Array[Byte]) => {
+        log.info("Received Image " + p.t.profile_image_url)
         val contentType = "image/png"
-        val fileName = t.tweet_id + ".png"
+        val fileName = p.t.tweet_id + ".png"
 
         val img: BufferedImage = ImageIO.read(new ByteArrayInputStream(data))
         val resizedImg = resizeImage(img, 80, 80)
@@ -143,7 +148,7 @@ object ImageProc {
         // saves content of enumerator into GridFS
         Mongo.imagesGridFS.save(enumerator, DefaultFileToSave(fileName, Some(contentType), None))
         
-        context.actorFor("../..") ! DoneProc(t)
+        context.actorFor("../..") ! DoneProc(p)
       }
     }
   }

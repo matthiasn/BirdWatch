@@ -53,6 +53,7 @@
      
      var lastCloudUpdate = new Date().getTime() - 2000;
      var lastBarUpdate = new Date().getTime() - 2000;
+     var lastWordsUpdate = new Date().getTime() - 2000;
      
      ws.onmessage = function(msg){
        var data = JSON.parse(msg.data)
@@ -69,24 +70,25 @@
          lastCloudUpdate = new Date().getTime();
        }
        
-       var bulletData = {
-         title: "Words / Tweet",
-         subtitle: "M, SD",
-         ranges: [data.wordCountMean-data.wordCountStdDev,data.wordCountMean+data.wordCountStdDev,30],
-         measures: [data.wordCountMean],
-         markers: [data.wordCountMean]
+       if ( (new Date().getTime() - lastWordsUpdate) > 1000) {
+         var bulletData = {
+           title: "Words / Tweet",
+           subtitle: "M, SD",
+           ranges: [data.wordCountMean-data.wordCountStdDev,data.wordCountMean+data.wordCountStdDev,25],
+           measures: [data.wordCountMean],
+           markers: [data.wordCountMean]
+         }
+         nv.addGraph(function() {
+           bulletChart = nv.models.bulletChart();
+
+           d3.select('#bulletChart svg')
+            .datum(bulletData)
+            .transition().duration(1000)
+            .call(bulletChart);
+
+           return bulletChart;
+          });
        }
-       nv.addGraph(function() {
-         bulletChart = nv.models.bulletChart();
-
-         d3.select('#bulletChart svg')
-          .data(bulletData)
-          .transition().duration(1000)
-          .call(bulletChart);
-
-         return bulletChart;
-        });
-       
      }
    })
    </script>

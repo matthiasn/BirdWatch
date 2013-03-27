@@ -106,16 +106,19 @@ object Twitter extends Controller {
    *  @param    millis time in millis
    *  @param    results number of results to return 
    */  
-   def tweetReplay(millis: Long, results: Int) = Action { implicit request => 
+   def tweetReplay(minutesAgo: Long, results: Int) = Action { implicit request => 
      Async {      
-       val query = QueryBuilder().query(BSONDocument("created_at" -> BSONDocument("$gte" -> BSONDateTime(millis)))).sort("created_at" -> SortOrder.Ascending)
+       val query = QueryBuilder().query(BSONDocument("created_at" -> BSONDocument("$gte" -> BSONDateTime(DateTime.now.getMillis - (minutesAgo * 60 * 1000))))).sort("created_at" -> SortOrder.Ascending)
 
        // run this query over the collection
        val cursor = Mongo.tweets.find(query)
 
        // got the list of documents (in a fully non-blocking way)
        cursor.toList.map { tweets =>
-         tweets.take(results).foreach { t => ActorStage.system.eventStream.publish(t) }
+         tweets.take(results).foreach { 
+           t => ActorStage.system.eventStream.publish(t) 
+           Thread.sleep(250)
+         }
          Ok(Json.toJson(tweets.take(results)))
        }     
      }

@@ -10,7 +10,7 @@
 }
 #header {
 	position: fixed;
-	left: 230px;
+	left: 300px;
 	top: 50px;
 	font-family: Impact, Haettenschweiler, "Franklin Gothic Bold", "Arial Black", sans-serif;
 	font-stretch: ultra-expanded;
@@ -62,4 +62,11 @@ li {
   	top:22px;
   	left:100px;
 	height:auto;
+}
+#bulletChart {
+	position:fixed;
+  top: 1080px;
+  left:51px;
+  width:650px;
+  heigth:200px;
 }

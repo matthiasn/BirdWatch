@@ -4,7 +4,7 @@ var WordCloud = (function () {
   // d3 word cloud
   var fill = d3.scale.category20b();
   var w = 700, h = 500;
-  var maxEntries = 250
+  var maxEntries = 250;
   var words = [];
   var max;
   var scale = 1;
@@ -78,14 +78,14 @@ var WordCloud = (function () {
     layout
       .font("Impact")
       .spiral("archimedean");
-    fontSize = d3.scale["log"]().range([10, 85]);
+    fontSize = d3.scale.log().range([10, 85]);
 
     if (tags.length) fontSize.domain([+tags[tags.length - 1].value || 1, +tags[0].value]);
     complete = 0;
     words = [];
     layout.stop().words(tags.slice(0, max = Math.min(tags.length, maxEntries))).start();
     lastUpdated = new Date().getTime();
-  };
+  }
   
   me.redraw = function(dataSource) {
     tags = dataSource;

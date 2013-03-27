@@ -1,4 +1,6 @@
-var WordCountBarChart = (function () {
+var birdWatch = birdWatch || {};
+
+birdWatch.wordCountBarChart = (function () {
   var me = {};
 
   var sortedData, xScale, yScale,chart, rect, gridContainer, labelContainer, barsContainer;

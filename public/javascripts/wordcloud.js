@@ -1,4 +1,6 @@
-var WordCloud = (function () {
+var birdWatch = birdWatch || {};
+
+birdWatch.wordCloud = (function () {
   var me = {};
 
   // d3 word cloud

@@ -29,6 +29,8 @@
   <script src="@routes.Assets.at("javascripts/wordcloud.js")" type="text/javascript"></script>
   
   <script type="text/javascript">
+  birdWatch = birdWatch || {};
+
    $(function() {
      var ws = new WebSocket("@routes.Twitter.tweetFeed.webSocketURL()")
 
@@ -37,8 +39,8 @@
      var viewModel = new TweetsViewModel()
      ko.applyBindings(viewModel);
 
-     WordCountBarChart.init();
-     WordCloud.init();
+     birdWatch.wordCountBarChart.init();
+     birdWatch.wordCloud.init();
      
      var lastUpdated = new Date().getTime() - 2000;
      
@@ -48,10 +50,10 @@
        if(viewModel.tweets.length > 0) { viewModel.tweets.pop() }
        
        if ( (new Date().getTime() - lastUpdated) > 100) {
-         WordCountBarChart.redraw(data.topWords);
+         birdWatch.wordCountBarChart.redraw(data.topWords);
        }
        if ( (new Date().getTime() - lastUpdated) > 5000) {
-         WordCloud.redraw(data.topWords);
+         birdWatch.wordCloud.redraw(data.topWords);
        }
      }
    })

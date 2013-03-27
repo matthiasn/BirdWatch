@@ -1,24 +1,7 @@
 var WordCountBarChart = (function () {
   var me = {};
 
-  var data = [{key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}, 
-    {key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}, 
-    {key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}, 
-    {key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}, 
-    {key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}, 
-    {key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}];
-    
-  // accessor functions 
-  var barLabel = function (d) { return d.key; };
-  var barValue = function (d) { return parseFloat(d.value); };
-    
-  var sortedData = data.sort(function (a, b) {
-    if (barValue(b) < barValue(a)) return -1;
-    if (barValue(b) > barValue(a)) return 1;
-    if (barLabel(b) < barLabel(a)) return -1;
-    if (barLabel(b) > barLabel(a)) return 1;
-    return 0;
-  });
+  var sortedData, xScale, yScale,chart, rect, gridContainer, labelContainer, barsContainer;
 
   var valueLabelWidth = 40; // space reserved for value labels (right)
   var barHeight = 20;       // height of one bar
@@ -28,7 +11,10 @@ var WordCountBarChart = (function () {
   var gridChartOffset = 3;  // space between start of grid and first bar
   var maxBarWidth = 420;    // width of the bar with the max value
 
-  var xScale, yScale,chart, rect, gridContainer, labelContainer, barsContainer;
+  // accessor functions 
+  var barLabel = function (d) { return d.key; };
+  var barValue = function (d) { return parseFloat(d.value); };
+
   var y = function (d, i) { return yScale(i); };
   var yText = function (d, i) { return y(d, i) + yScale.rangeBand() / 2; };
 
@@ -90,8 +76,7 @@ var WordCountBarChart = (function () {
   }
     
   me.update = function(dataSource) {
-    data = dataSource;
-    sortedData = data.sort(function (a, b) {
+    sortedData = dataSource.sort(function (a, b) {
       if (barValue(b) < barValue(a)) return -1;
       if (barValue(b) > barValue(a)) return 1;
       if (barLabel(b) < barLabel(a)) return -1;
@@ -102,8 +87,15 @@ var WordCountBarChart = (function () {
     xScale = d3.scale.linear().domain([0, d3.max(sortedData, barValue)]).range([0, maxBarWidth]);
   }
     
-  me.init = function(dataSource) {
-    me.update(dataSource);
+  me.init = function() {
+    var initialData = [{key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}, 
+       {key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}, 
+       {key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}, 
+       {key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}, 
+       {key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}, 
+       {key: "", value: 0}, {key: "", value: 0}, {key: "", value: 0}];
+    
+    me.update(initialData);
     renderBarChart();
   };
     

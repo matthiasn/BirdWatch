@@ -15,7 +15,7 @@ var WordCloud = (function () {
   var maxLength = 30;
   var statusText = d3.select("#status");
   
-  var layout, svg, background;
+  var layout, svg, background, vis;
   
   function draw(data, bounds) {
     statusText.style("display", "none");
@@ -59,19 +59,18 @@ var WordCloud = (function () {
   
   me.init = function() {
     layout = d3.layout.cloud()
-        .timeInterval(1)
-        .size([w, h])
-        .fontSize(function(d) { return fontSize(+d.value); })
-        .text(function(d) { return d.key; })
-        .on("end", draw);
+      .timeInterval(1)
+      .size([w, h])
+      .fontSize(function(d) { return fontSize(+d.value); })
+      .text(function(d) { return d.key; })
+      .on("end", draw);
 
     svg = d3.select("#wordcloud").append("svg")
-        .attr("width", w)
-        .attr("height", h);
+      .attr("width", w)
+      .attr("height", h);
 
-    background = svg.append("g"),
-        vis = svg.append("g")
-        .attr("transform", "translate(" + [w >> 1, h >> 1] + ")");
+    background = svg.append("g");
+    vis = svg.append("g").attr("transform", "translate(" + [w >> 1, h >> 1] + ")");
   };
     
   function generate() {

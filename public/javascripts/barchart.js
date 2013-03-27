@@ -32,18 +32,15 @@ var WordCountBarChart = (function () {
     var gridChartOffset = 3; // space between start of grid and first bar
     var maxBarWidth = 420; // width of the bar with the max value
 
-
-
     var yScale = d3.scale.ordinal().domain(d3.range(0, sortedData.length)).rangeBands([0, sortedData.length * barHeight]);
-    var y = function (d, i) {
-        return yScale(i);
-    };
-    var yText = function (d, i) {
-        return y(d, i) + yScale.rangeBand() / 2;
-    };
+    
+    var y = function (d, i) { return yScale(i); };
+    
+    var yText = function (d, i) { return y(d, i) + yScale.rangeBand() / 2; };
+    
     var xScale = d3.scale.linear().domain([0, d3.max(sortedData, barValue)]).range([0, maxBarWidth]);
 
-    var chart, gridContainer, labelContainer, barsContainer;
+    var chart, rect, gridContainer, labelContainer, barsContainer;
 
     function renderBarChart() {
         // svg container element
@@ -107,40 +104,36 @@ var WordCountBarChart = (function () {
             .attr("y2", yScale.rangeExtent()[1] + gridChartOffset)
             .style("stroke", "#000");
     }
-
-    me.init = function(dataSource) {
-        data = dataSource;
-        renderBarChart();
-    };
     
-    me.redraw = function(dataSource) {
-      
-      
-      
-      
+    me.update = function(dataSource) {
       data = dataSource;
-      
-      
-      
       sortedData = data.sort(function (a, b) {
           if (barValue(b) < barValue(a)) return -1;
           if (barValue(b) > barValue(a)) return 1;
           if (barLabel(b) < barLabel(a)) return -1;
           if (barLabel(b) > barLabel(a)) return 1;
           return 0;
-      });
-      
-      
+      });      
+      yScale = d3.scale.ordinal().domain(d3.range(0, sortedData.length)).rangeBands([0, sortedData.length * barHeight]);
+      xScale = d3.scale.linear().domain([0, d3.max(sortedData, barValue)]).range([0, maxBarWidth]);
+    }
+    
+    me.init = function(dataSource) {
+        me.update(dataSource);
+        renderBarChart();
+    };
+    
+    me.redraw = function(dataSource) {
+      me.update(dataSource);
         // Update…
-        var rect = chart.selectAll("rect")
-            .data(sortedData);
-
-        rect.transition()
-            .attr('y', y)
-            .attr('height', yScale.rangeBand())
-            .attr('width', function (d) {
+        barsContainer.selectAll("rect")
+          .data(sortedData)
+          .transition()
+          .attr('y', y)
+          .attr('height', yScale.rangeBand())
+          .attr('width', function (d) {
             return xScale(barValue(d));
-        });
+          });
 
         barsContainer.selectAll("text").data(sortedData)
             .transition()

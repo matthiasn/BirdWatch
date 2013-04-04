@@ -40,11 +40,11 @@
   birdWatch = birdWatch || {};
 
    $(function() {
-     var ws = new WebSocket("@routes.Twitter.tweetFeed().webSocketURL()")
+     var ws = new WebSocket("@routes.Twitter.tweetFeed().webSocketURL()");
 
      // Overall viewmodel for this screen, along with initial state
-     var TweetsViewModel = function() { this.tweets = ko.observableArray(); }
-     var viewModel = new TweetsViewModel()
+     var TweetsViewModel = function() { this.tweets = ko.observableArray(); };
+     var viewModel = new TweetsViewModel();
      ko.applyBindings(viewModel);
 
      birdWatch.wordCountBarChart.init();
@@ -55,9 +55,9 @@
      var lastWordsUpdate = new Date().getTime() - 2000;
      
      ws.onmessage = function(msg){
-       var data = JSON.parse(msg.data)
+       var data = JSON.parse(msg.data);
        console.log(data);
-       viewModel.tweets.unshift(data.tweetList[0])
+       viewModel.tweets.unshift(data.tweetList[0]);
        if(viewModel.tweets.length > 0) { viewModel.tweets.pop() }
        
        if ( (new Date().getTime() - lastBarUpdate) > 800) {
@@ -76,7 +76,7 @@
            ranges: [data.wordCountMean-data.wordCountStdDev,data.wordCountMean+data.wordCountStdDev,25],
            measures: [data.wordCountMean],
            markers: [data.wordCountMean]
-         }
+         };
          nv.addGraph(function() {
            bulletChart = nv.models.bulletChart();
 

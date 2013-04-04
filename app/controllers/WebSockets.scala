@@ -14,8 +14,8 @@ object WebSockets extends Controller {
 
   def statusFeed() = WebSocket.using[String] { implicit request =>
 
-    def getLoadAverage = "%1.2f".format(100 * ManagementFactory.getOperatingSystemMXBean.getSystemLoadAverage() /
-      ManagementFactory.getOperatingSystemMXBean.getAvailableProcessors())
+    def getLoadAverage = "%1.2f".format(100 * ManagementFactory.getOperatingSystemMXBean.getSystemLoadAverage /
+      ManagementFactory.getOperatingSystemMXBean.getAvailableProcessors)
 
     val in = Iteratee.ignore[String] // ignore incoming messages on websocket
 

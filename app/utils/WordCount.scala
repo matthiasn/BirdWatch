@@ -100,13 +100,12 @@ object WordCount {
   */
   def tweetListIteratee(f: List[Tweet] => Unit, tweetList: List[Tweet], n: Int) = 
     Iteratee.fold[Tweet, List[Tweet]] (tweetList) {
-      case (tweetList, tweet) => {
-       val newTweetList = (tweet :: tweetList) take n 
+      case (xs, x) => {
+       val newTweetList = (x :: xs) take n
        f(newTweetList)
        newTweetList
       }
     }
-    
   
   def wordsChars(t: Tweet) = t.copy(charCount = t.text.length(), wordCount = t.text.replaceAll("[^a-zA-Z# ]", "").split(" ").length)
     

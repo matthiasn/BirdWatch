@@ -1,14 +1,11 @@
 package models
 
-import play.api.Play.current
 import play.api.libs.json._
 import play.api.libs.ws.WS
 import play.api.libs.oauth._
 import play.api.libs.iteratee._
-import play.api.libs.concurrent.Execution.Implicits._
 import reactivemongo.bson._
 import org.joda.time.DateTime
-import akka.actor.ActorSystem
 
 import models.TweetImplicits._
 import utils._
@@ -56,7 +53,7 @@ object Tweet {
       case JsSuccess(t: Tweet, _) => { ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
         //ActorStage.system.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
       }
-      case JsError(_) => println _
+      case JsError(msg) => println(msg)
     }
   }
   

@@ -1,12 +1,11 @@
 @(tweets: Seq[Tweet])(implicit request: RequestHeader)
 
 @mainEmpty("Tweets!") {
-  <script src="@routes.Assets.at("javascripts/d3.v2.js")" type="text/javascript"></script>
+  <!--suppress HtmlUnknownTag -->
+    <script src="@routes.Assets.at("javascripts/d3.v2.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/d3.layout.cloud.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/nv.d3.js")" type="text/javascript"></script>
 
-  <!--script src="@routes.Assets.at("javascripts/d3.chart.js")" type="text/javascript"></script-->
-  
   <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/dw.css")">
   <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bullet.css")">
   <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/nv.d3.css")">
@@ -41,7 +40,7 @@
   birdWatch = birdWatch || {};
 
    $(function() {
-     var ws = new WebSocket("@routes.Twitter.tweetFeed.webSocketURL()")
+     var ws = new WebSocket("@routes.Twitter.tweetFeed().webSocketURL()")
 
      // Overall viewmodel for this screen, along with initial state
      var TweetsViewModel = function() { this.tweets = ko.observableArray(); }

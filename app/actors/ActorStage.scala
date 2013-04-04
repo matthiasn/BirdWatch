@@ -1,9 +1,6 @@
 package actors
 
 import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
-import akka.routing.RoundRobinRouter
-
-import models._
 
 /** "Singleton" object for BirdWatch actor system (name ActorSystem already taken). 
  *   Well, actors perform on stages...  */

@@ -1,12 +1,11 @@
 package actors
 
-import akka.actor.{ Actor, ActorSystem, DeadLetter, Props, ActorRef, ActorLogging }
+import akka.actor.{ Actor, Props, ActorRef, ActorLogging }
 import play.api.libs.ws.WS
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.iteratee._
 import reactivemongo.api.gridfs._
 import reactivemongo.api.gridfs.Implicits._
-import reactivemongo.bson._
 import akka.event.Logging
 
 import akka.actor.OneForOneStrategy
@@ -15,12 +14,10 @@ import akka.routing.RoundRobinRouter
 import scala.concurrent.duration._
 
 import java.io.File
-import java.awt.Image
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import javax.imageio.stream.FileImageOutputStream
 
 import models._
 import utils._
@@ -32,7 +29,7 @@ object ImageProc {
   case class DoneProc(p: Proc)
 
   class Supervisor(eventStream: akka.event.EventStream) extends Actor with ActorLogging {
-    override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
+    override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1.minute) {
       case _: ArithmeticException        => Resume
       case _: javax.imageio.IIOException => Restart
       case _: NullPointerException       => Restart
@@ -42,7 +39,7 @@ object ImageProc {
     
     override val log = Logging(context.system, this)
      
-    override def preStart() = {
+    override def preStart() {
       log.debug("Starting")
     }
     override def preRestart(reason: Throwable, message: Option[Any]) {
@@ -78,7 +75,7 @@ object ImageProc {
   class RetrievalActor(next: Option[ActorRef]) extends Actor with ActorLogging {
     override val log = Logging(context.system, this)
      
-    override def preStart() = {
+    override def preStart() {
       log.debug("Starting")
     }
     override def preRestart(reason: Throwable, message: Option[Any]) {
@@ -116,7 +113,7 @@ object ImageProc {
     val newImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB)
     val graphics = newImage.createGraphics
     graphics.drawImage(image, 0, 0, newWidth, newHeight, null)
-    graphics.dispose
+    graphics.dispose()
     newImage
   }
   
@@ -124,7 +121,7 @@ object ImageProc {
   class ConversionActor extends Actor with ActorLogging {
     override val log = Logging(context.system, this)
      
-    override def preStart() = {
+    override def preStart() {
       log.debug("Starting")
     }
     override def preRestart(reason: Throwable, message: Option[Any]) {
@@ -146,7 +143,7 @@ object ImageProc {
         ImageIO.write(resizedImg, "png", outStream)
         
         // create Enumerator from body of WS request
-        val enumerator = Enumerator(outStream.toByteArray())
+        val enumerator = Enumerator(outStream.toByteArray)
         // saves content of enumerator into GridFS
         Mongo.imagesGridFS.save(enumerator, DefaultFileToSave(fileName, Some(contentType), None))
         

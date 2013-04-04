@@ -1,21 +1,16 @@
 package controllers
 
-import play.api.mvc.{ Action, Controller }
 import play.api.mvc.{ Action, Controller, WebSocket }
 import play.api.libs.iteratee._
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits._
 import org.joda.time.DateTime
 
-import play.modules.reactivemongo._
 import reactivemongo.api._
 import reactivemongo.bson._
-import reactivemongo.bson.handlers._
-import reactivemongo.api.gridfs._
-import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONDocumentWriter
 import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONReaderHandler
 
-import akka.actor.{ Actor, ActorSystem, DeadLetter, Props }
+import akka.actor.{ Actor, Props }
 
 import utils._
 import models._
@@ -43,7 +38,7 @@ object Twitter extends Controller {
     *  @param    tweetList accumulator inside the Iteratee
     *  @return   Unit, cannot interfere with the accumulator inside the Iteratee 
     */
-    def interceptTweetList(tweetList: List[Tweet]): Unit = { 
+    def interceptTweetList(tweetList: List[Tweet]) {
       
       val (charCountMean, charCountStdDev) = Calc.stdDev(tweetList.map(t => t.charCount))
       val (wordCountMean, wordCountStdDev) = Calc.stdDev(tweetList.map(t => t.wordCount))
@@ -103,7 +98,7 @@ object Twitter extends Controller {
   
   /** Controller Action replaying the specified number of tweets from 
    *  the specified time in millis forward.
-   *  @param    millis time in millis
+   *  @param    minutesAgo time in minutes
    *  @param    results number of results to return 
    */  
    def tweetReplay(minutesAgo: Long, results: Int) = Action { implicit request => 

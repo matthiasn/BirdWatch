@@ -10,6 +10,6 @@ object Global extends GlobalSettings {
   }  
   
   override def onStop(application: play.api.Application) {
-    Mongo.connection.close
+    Mongo.connection.close()
   }
 }

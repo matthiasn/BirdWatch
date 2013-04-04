@@ -3,7 +3,7 @@
 @main("Server Status") {
   <script type="text/javascript">
     $(function() {
-      var ws = new WebSocket("@routes.WebSockets.statusFeed.webSocketURL()")
+      var ws = new WebSocket("@routes.WebSockets.statusFeed().webSocketURL()")
       
       ws.onmessage = function(msg){
         $('#load-average').text(msg.data + "%")
@@ -73,5 +73,5 @@
        }
     })
     </script>
-    <h1>System load average: <span id="load-average"></h1>
+    <h1>System load average: <span id="load-average" /></h1>
   }

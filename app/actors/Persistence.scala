@@ -1,6 +1,6 @@
 package actors
 
-import akka.actor.{ Actor, ActorSystem, DeadLetter, Props, ActorRef }
+import akka.actor.Actor
 import play.api.libs.concurrent.Execution.Implicits._
 
 import models.TweetImplicits._

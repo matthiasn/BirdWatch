@@ -7,7 +7,6 @@ import play.api.libs.concurrent.Promise
 import play.api.libs.iteratee.{ Enumerator, Iteratee }
 import play.api.mvc.{ Action, Controller, WebSocket }
 import scala.language.postfixOps
-import play.api.mvc.Flash
 
 object WebSockets extends Controller {
 

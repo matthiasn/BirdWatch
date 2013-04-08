@@ -137,7 +137,7 @@ object ImageProc {
 
         val img: BufferedImage = ImageIO.read(new ByteArrayInputStream(data))
         val resizedImg = resizeImage(img, 80, 80)
-        ImageIO.write(resizedImg, "png", new File( "/Users/mn/imageTemp/" + fileName))          
+        //ImageIO.write(resizedImg, "png", new File( "/Users/mn/imageTemp/" + fileName))
 
         val outStream: ByteArrayOutputStream = new ByteArrayOutputStream()
         ImageIO.write(resizedImg, "png", outStream)

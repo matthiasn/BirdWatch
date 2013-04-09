@@ -4,8 +4,11 @@ import play.api.libs.json._
 import play.api.libs.ws.WS
 import play.api.libs.oauth._
 import play.api.libs.iteratee._
-import reactivemongo.bson._
 import org.joda.time.DateTime
+import play.api.libs.concurrent.Execution.Implicits._
+
+import reactivemongo.bson._
+import play.modules.reactivemongo.PlayBsonImplicits._
 
 import models.TweetImplicits._
 import utils._
@@ -39,7 +42,7 @@ case class TweetState(
 /** Companion object for case class Tweet, takes care of retrieving Tweets from
  *  Twitter using the Streaming API and publishing them on the akka eventStream  */
 object Tweet {
-  
+
   def stripImageUrl(t: Tweet) = t.copy(profile_image_url = t.profile_image_url.replaceAll("http://", "").replaceAll("_normal", ""))
     
   /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
@@ -49,6 +52,11 @@ object Tweet {
     val chunkString = new String(chunk, "UTF-8")
     //println(chunkString)
     val json = Json.parse(chunkString)
+
+    // inserting raw Tweet
+    // TODO: make this the only representation within MongoDB, rehydrate Tweets from this representation 
+    Mongo.rawTweets.insert[JsValue](json)
+
     TweetReads.reads(json) match {
       case JsSuccess(t: Tweet, _) => { ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
         //ActorStage.system.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))

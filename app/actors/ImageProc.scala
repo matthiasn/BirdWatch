@@ -13,7 +13,6 @@ import akka.actor.SupervisorStrategy._
 import akka.routing.RoundRobinRouter
 import scala.concurrent.duration._
 
-import java.io.File
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import java.io.ByteArrayInputStream
@@ -137,6 +136,7 @@ object ImageProc {
 
         val img: BufferedImage = ImageIO.read(new ByteArrayInputStream(data))
         val resizedImg = resizeImage(img, 80, 80)
+        // import java.io.File
         //ImageIO.write(resizedImg, "png", new File( "/Users/mn/imageTemp/" + fileName))
 
         val outStream: ByteArrayOutputStream = new ByteArrayOutputStream()

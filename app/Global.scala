@@ -5,8 +5,7 @@ import utils.Mongo
 object Global extends GlobalSettings {
 
   override def onStart(application: play.api.Application) {
-//    Tweet.listen("hamburg%2Cschnee%2Ctomtom%2Camsterdam")
-    Tweet.listen("obama")
+    Tweet.listen("obama")   // multiple search words are separated by "%2C"
   }  
   
   override def onStop(application: play.api.Application) {

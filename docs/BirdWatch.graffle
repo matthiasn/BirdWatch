@@ -101,7 +101,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{70.2069091796875, 105}, {245, 25}}</string>
+			<string>{{37.2069091796875, 158.407958984375}, {245, 25}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>FitText</key>
@@ -908,8 +908,8 @@
 			<integer>128</integer>
 			<key>Points</key>
 			<array>
-				<string>{907.67994948137959, 524.82634784903587}</string>
-				<string>{982.8864600279112, 583.21273659134852}</string>
+				<string>{907.65482060389513, 524.82644902139077}</string>
+				<string>{982.82172528919375, 583.2129611692485}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -978,8 +978,8 @@
 			<integer>126</integer>
 			<key>Points</key>
 			<array>
-				<string>{814.28770229383963, 524.835181899811}</string>
-				<string>{742.50824933961826, 583.20390514786902}</string>
+				<string>{814.31172193982343, 524.83528240943429}</string>
+				<string>{742.57010579941254, 583.20412816335124}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1013,8 +1013,8 @@
 			<integer>125</integer>
 			<key>Points</key>
 			<array>
-				<string>{986.55915470678588, 416.68367344156002}</string>
-				<string>{925.66548962877073, 450.71190870080216}</string>
+				<string>{986.65732805010362, 416.68410503807263}</string>
+				<string>{925.90440542026317, 450.7125872812145}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1048,8 +1048,8 @@
 			<integer>124</integer>
 			<key>Points</key>
 			<array>
-				<string>{732.56236097207466, 416.68266148371595}</string>
-				<string>{793.79238192798721, 450.71292302392953}</string>
+				<string>{732.46366437371569, 416.68309232324219}</string>
+				<string>{793.55217952552016, 450.71360052045776}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1083,8 +1083,8 @@
 			<integer>123</integer>
 			<key>Points</key>
 			<array>
-				<string>{924.1671957754013, 337.35081357163023}</string>
-				<string>{984.10098825850105, 368.9988610720896}</string>
+				<string>{924.16478048300132, 337.35082075749619}</string>
+				<string>{984.09624368588993, 368.99888041343223}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1118,8 +1118,8 @@
 			<integer>122</integer>
 			<key>Points</key>
 			<array>
-				<string>{798.44139573865448, 337.34513596578427}</string>
-				<string>{736.57874137079853, 369.00596490215008}</string>
+				<string>{798.33735249368976, 337.34484046796831}</string>
+				<string>{736.37429035209641, 369.00517233069257}</string>
 			</array>
 			<key>Style</key>
 			<dict>
@@ -1606,7 +1606,7 @@
 		</dict>
 		<dict>
 			<key>Bounds</key>
-			<string>{{141.20690975095494, 299.11351201067237}, {69.5, 40}}</string>
+			<string>{{141.20690946736147, 299.11351201067237}, {69.5, 40}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>Head</key>
@@ -1749,7 +1749,7 @@ Streams Tweets through open HTTP connection}</string>
 \f0\b\fs24 \cf0 TweetModel
 \b0 \
 \
-Iteratee receives raw stream, publishes Tweet instances to Event Bus}</string>
+Iteratee receives raw stream, parses Tweets and sends them to ImageProc }</string>
 			</dict>
 			<key>TextPlacement</key>
 			<integer>0</integer>
@@ -1802,7 +1802,7 @@ Iteratee receives raw stream, publishes Tweet instances to Event Bus}</string>
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2013-03-28 06:54:05 +0000</string>
+	<string>2013-04-09 13:43:34 +0000</string>
 	<key>Modifier</key>
 	<string>Matthias Nehlsen</string>
 	<key>NotesVisible</key>
@@ -1893,7 +1893,7 @@ Iteratee receives raw stream, publishes Tweet instances to Event Bus}</string>
 			</dict>
 		</array>
 		<key>Frame</key>
-		<string>{{26, 159}, {1672, 1213}}</string>
+		<string>{{-288, 81}, {1672, 1213}}</string>
 		<key>ListView</key>
 		<true/>
 		<key>OutlineWidth</key>

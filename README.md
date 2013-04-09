@@ -5,6 +5,10 @@ This is a **[Play 2.1](http://www.playframework.com)** dynamic web application w
 ![Screenshot](./docs/screenshot.png)
 The idea behind this reactive web app is to explore processing a live stream of information using Scala and the Play Framework (making use of Akka actors). A rolling window of Tweets is analyzed in terms of certain parameters and displayed graphically. The **[d3-cloud](https://github.com/jasondavies/d3-cloud)** project by Jason Davies is used for displaying the word cloud, adapted for dynamic updates as new data comes in through the WebSockets connection. Tweets are also stored within MongoDB. Storing the Tweets in a persistent data store allows allows reasoning time periods longer than the uptime of the application.
 
+###Setup
+
+A Twitter API consumer key and access token are required to consume the **[Twitter Streaming API](https://dev.twitter.com/docs/streaming-apis)**. Please **[create a Twitter application](https://dev.twitter.com/apps)** and store keys and secrets in a twitter.conf file, using the commented out section in the **[application.conf](https://github.com/matthiasn/BirdWatch/blob/master/conf/application.conf)** as a template.
+
 ###Architecture
 
 ![Architecture](./docs/BirdWatch.png)

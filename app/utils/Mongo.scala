@@ -2,10 +2,9 @@ package utils
 
 import play.api.libs.concurrent.Execution.Implicits._
 import reactivemongo.api._
-import reactivemongo.bson._
-import reactivemongo.bson.handlers._
 import reactivemongo.api.gridfs._
 
+//TODO: ensure database indices 
 /** Mongo connection object */
 object Mongo {
   
@@ -17,6 +16,9 @@ object Mongo {
   
   /** Representation of tweets collection in BirdWatch database */
   val tweets = db("tweets")
+
+  val rawTweets = db("rawTweets")
   
   val imagesGridFS = new GridFS(db, "images")
+  
 }

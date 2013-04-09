@@ -12,8 +12,6 @@ import utils.TimeInterval
 object TweetImplicits {
   implicit val DefaultJodaDateReads = jodaDateReads("EEE MMM dd HH:mm:ss Z YYYY")
 
-  // TODO: Conversion from JsObject to BSON for saving complete Tweet
-
   // Fields specified because of hierarchical json. Otherwise:
   // implicit val streamTweetReads = Json.reads[StreamTweet]
   implicit val TweetReads = (

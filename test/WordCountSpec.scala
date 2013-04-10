@@ -1,9 +1,9 @@
 package test
 
+import org.joda.time.DateTime
 import org.scalatest.FeatureSpec
 import org.scalatest.GivenWhenThen
 import play.api.libs.iteratee._
-import org.joda.time.DateTime
 
 import utils._
 import models._

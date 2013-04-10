@@ -7,9 +7,11 @@ object Calc {
   *  @return   (mean: Double, stdDev: Double)
   */
   def stdDev(xs: TraversableOnce[Int]): (Double, Double) = {
-    val (total, n) = xs.foldLeft((0.0, 0)) { case ((sum, count), x: Int) => (sum + x, count + 1) }
+    val n = xs.size
+    val total = xs.foldLeft(0.0) { case (sum, x: Int) => sum + x }
     val mean = total / n
-    (mean, Math.sqrt( xs.foldLeft(0.0) { case (acc, x) => acc + (x-mean) * (x-mean) } / n ))
+    val stdDev = Math.sqrt( xs.foldLeft(0.0) { case (acc, x) => acc + (x-mean) * (x-mean) } / n )
+    (mean, stdDev)
   }
 
 }

@@ -8,6 +8,7 @@ object Conf {
    *  @param    key String configuration key
    *  @return   String with configuration key
    */
-  def get(key: String) = current.configuration.getString(key).getOrElse(throw new Exception("Couldn't find config for " + key))
+  def get(key: String): String = current.configuration.getString(key)
+    .getOrElse(throw new Exception("Couldn't find config for " + key))
 
 }

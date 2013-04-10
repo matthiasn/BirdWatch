@@ -1,11 +1,13 @@
 package models
 
-import play.api.libs.json._
-import play.api.libs.functional.syntax._
-import reactivemongo.bson._
-import reactivemongo.bson.handlers._
 import org.joda.time.DateTime
+
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 import play.api.libs.json.Reads.jodaDateReads
+
+import reactivemongo.bson.{ BSONDocument, BSONLong, BSONInteger, BSONObjectID, BSONString, BSONDateTime}
+import reactivemongo.bson.handlers.{ BSONWriter, BSONReader }
 
 import utils.TimeInterval
 

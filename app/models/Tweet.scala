@@ -1,18 +1,19 @@
 package models
 
-import play.api.libs.json._
-import play.api.libs.ws.WS
-import play.api.libs.oauth._
-import play.api.libs.iteratee._
 import org.joda.time.DateTime
-import play.api.libs.concurrent.Execution.Implicits._
 
-import reactivemongo.bson._
-import play.modules.reactivemongo.PlayBsonImplicits._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.iteratee.Iteratee
+import play.api.libs.json.{ Json, JsValue, JsSuccess, JsError}
+import play.api.libs.oauth.{ ConsumerKey, RequestToken, OAuthCalculator }
+import play.api.libs.ws.WS
+import play.modules.reactivemongo.PlayBsonImplicits.JsValueWriter
 
+import reactivemongo.bson.BSONObjectID
+
+import actors._
 import models.TweetImplicits._
 import utils._
-import actors._
 
 /** Simple Tweet representation */
 case class Tweet(
@@ -50,7 +51,6 @@ object Tweet {
    */
   val tweetIteratee = Iteratee.foreach[Array[Byte]] { chunk =>
     val chunkString = new String(chunk, "UTF-8")
-    //println(chunkString)
     val json = Json.parse(chunkString)
 
     // inserting raw Tweet

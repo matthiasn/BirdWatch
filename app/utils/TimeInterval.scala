@@ -11,10 +11,10 @@ case class TimeInterval(millis: Long, intervalMap: ListMap[String, Int]) {
   def toString(n: Int): String = {
     def formatKeyValue(key: String, value: Int): String = s"$value $key${if(value>1 && key !="ms") "s" else ""} "
 
-    (intervalMap.dropWhile(_._2 == 0) // drops leading elements with v == 0
-      .take(n)              // takes next n elements
-      .filter(_._2 != 0)    // leaves only the elements with v != 0
-      .foldLeft("") { case (res, (k, v)) => res + formatKeyValue(k, v)} trim) + " ago"
+    // drop leading zeros, take n, filter zero values
+    val significVal = intervalMap.dropWhile(_._2 == 0).take(n).filter(_._2 != 0)
+    
+    significVal.foldLeft("") { case (res, (k, v)) => res + formatKeyValue(k, v)}.trim + " ago"
   }
 }
 
@@ -22,7 +22,7 @@ object TimeInterval {
 
   /**
    * Constructing tIntervals ListMap with time intervals.
-   * The choice of ListMap preverves insertion order, which allows
+   * The choice of ListMap preserves insertion order, which allows
    * to right fold over the members in the map in the order
    * year, week, day, ...
    */
@@ -46,7 +46,7 @@ object TimeInterval {
    * of the division, and the map with the results (e.g.Map(year -> 1, week -> 2). 
    * This map in the accumulator tuple is then used in the resulting TimeInterval.
    *
-   * (cName, cval): name and value of current tIntervals element
+   * (cName, cVal): name and value of current tIntervals element
    * (rMs, res): accumulator with remaining millis, result map 
    */
   def apply(ms: Long): TimeInterval =

@@ -1,21 +1,22 @@
 package controllers
 
-import play.api.mvc.{ Action, Controller, WebSocket }
-import play.api.libs.iteratee._
-import play.api.libs.json._
-import play.api.libs.concurrent.Execution.Implicits._
-import org.joda.time.DateTime
-
-import reactivemongo.api._
-import reactivemongo.bson._
-import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONReaderHandler
-
 import akka.actor.{ Actor, Props }
 
-import utils._
-import models._
+import org.joda.time.DateTime
+
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.iteratee.{ Iteratee, Concurrent }
+import play.api.libs.json.Json
+import play.api.mvc.{ Action, Controller, WebSocket }
+
+import reactivemongo.api._
+import reactivemongo.bson.{ BSONDocument, BSONDateTime }
+import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONReaderHandler
+
 import actors._
+import models._
 import models.TweetImplicits._
+import utils._
 
 /** Controller for serving main BirdWatch page including the websocket connection */
 object Twitter extends Controller {
@@ -43,10 +44,10 @@ object Twitter extends Controller {
       val (charCountMean, charCountStdDev) = Calc.stdDev(tweetList.map(t => t.charCount))
       val (wordCountMean, wordCountStdDev) = Calc.stdDev(tweetList.map(t => t.wordCount))
       
-      //println(f"Words per Tweet: mean $wordCountMean%2.2f, stdDev $wordCountStdDev%2.2f; Chars per Tweet: mean $charCountMean%2.2f, stdDev $charCountStdDev%2.2f")
+      val tweetState = TweetState(tweetList.take(50), WordCount.topN(tweetList, 250), charCountMean, charCountStdDev, 
+        wordCountMean, wordCountStdDev, tweetList.size)
       
-      val tweetState = TweetState(tweetList.take(50), WordCount.topN(tweetList, 250), charCountMean, charCountStdDev, wordCountMean, wordCountStdDev, tweetList.size)
-      wsOutChannel.push(Json.stringify(Json.toJson(tweetState)))      
+     wsOutChannel.push(Json.stringify(Json.toJson(tweetState)))      
     }
     
    /** Creates enumerator and channel for Tweets through Concurrent factory object */
@@ -60,14 +61,12 @@ object Twitter extends Controller {
     *  consumption through iteratee (and potentially other consumers, decoupled)  */
     val subscriber = ActorStage.system.actorOf(Props(new Actor {
       def receive = {
-        case t: Tweet => {
-          tweetChannel.push(t) // push received tweet into Concurrent.Channel[Tweet]
-        }
+        case t: Tweet => tweetChannel.push(t) // push received tweet into Concurrent.Channel[Tweet] 
       }
     }))
     ActorStage.system.eventStream.subscribe(subscriber, classOf[Tweet])
 
-    (in, out) // in and out channels for websocket
+    (in, out) // in and out channels for WebSocket connection
   }
   
  /** Controller Action serving Tweets as JSON going backwards in time from the 
@@ -77,15 +76,14 @@ object Twitter extends Controller {
   */  
   def tweetsJson(millis: Long, results: Int) = Action { implicit request => 
     Async {      
-      val query = QueryBuilder().query(BSONDocument("created_at" -> BSONDocument("$lte" -> BSONDateTime(millis)))).sort("created_at" -> SortOrder.Descending)
+      val query = QueryBuilder().query(BSONDocument("created_at" -> BSONDocument("$lte" -> BSONDateTime(millis))))
+        .sort("created_at" -> SortOrder.Descending)
       
       // run this query over the collection
       val cursor = Mongo.tweets.find(query)
       
       // got the list of documents (in a fully non-blocking way)
-      cursor.toList.map { tweets =>
-        Ok(Json.toJson(tweets.take(results)))
-      }     
+      cursor.toList.map { tweets => Ok(Json.toJson(tweets.take(results))) }     
     }
   }
   
@@ -95,7 +93,6 @@ object Twitter extends Controller {
   */
   def tweetsJsonLatest(results: Int) = tweetsJson(DateTime.now.getMillis, results)
   
-  
   /** Controller Action replaying the specified number of tweets from 
    *  the specified time in millis forward.
    *  @param    minutesAgo time in minutes
@@ -103,7 +100,9 @@ object Twitter extends Controller {
    */  
    def tweetReplay(minutesAgo: Long, results: Int) = Action { implicit request => 
      Async {      
-       val query = QueryBuilder().query(BSONDocument("created_at" -> BSONDocument("$gte" -> BSONDateTime(DateTime.now.getMillis - (minutesAgo * 60 * 1000))))).sort("created_at" -> SortOrder.Ascending)
+       val query = QueryBuilder().query(BSONDocument("created_at" -> 
+         BSONDocument("$gte" -> BSONDateTime(DateTime.now.getMillis - (minutesAgo * 60 * 1000)))))
+         .sort("created_at" -> SortOrder.Ascending)
 
        // run this query over the collection
        val cursor = Mongo.tweets.find(query)

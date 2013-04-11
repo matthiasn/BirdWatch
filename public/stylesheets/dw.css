@@ -6,12 +6,12 @@
 	width: 700px;
 	position: fixed;
 	left: 50px;
-	top: 130px;
+	top: 100px;
 }
 #header {
 	position: fixed;
 	left: 300px;
-	top: 50px;
+	top: 30px;
 	font-family: Impact, Haettenschweiler, "Franklin Gothic Bold", "Arial Black", sans-serif;
 	font-stretch: ultra-expanded;
 	font-size: 36px;
@@ -50,7 +50,7 @@ li {
 	height: 500px;
 	width: 700px;
 	left: 20px;
-	top: 670px;
+	top: 625px;
 	overflow: auto;
 }
 .tweetlist {
@@ -65,7 +65,7 @@ li {
 }
 #bulletChart {
 	position:fixed;
-  top: 1080px;
+  top: 1025px;
   left:51px;
   width:650px;
   heigth:200px;

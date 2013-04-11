@@ -20,6 +20,7 @@ import models._
 import models.TweetImplicits._
 import utils._
 import models.TweetState
+import scala.concurrent.Future
 
 /** Controller for serving main BirdWatch page including the websocket connection */
 object Twitter extends Controller {
@@ -73,8 +74,22 @@ object Twitter extends Controller {
       }
     }))
     ActorStage.system.eventStream.subscribe(subscriber, classOf[Tweet])
+    
+    /** Pre-load the last 500 tweets through WebSocket connection  */
+    latestTweetQuery.map { tweets => tweets.take(500).reverse.foreach(t => tweetChannel.push(t)) }
 
     (in, out) // in and out channels for WebSocket connection
+  }
+  
+  def latestTweetQuery(): Future[List[Tweet]] = {
+    val query = QueryBuilder().query(BSONDocument("created_at" -> BSONDocument("$lte" -> BSONDateTime(DateTime.now.getMillis))))
+      .sort("created_at" -> SortOrder.Descending)
+
+    // run this query over the collection
+    val cursor = Mongo.tweets.find(query)
+
+    // got the list of documents (in a fully non-blocking way)
+    cursor.toList
   }
   
  /** Controller Action serving Tweets as JSON going backwards in time from the 
@@ -84,14 +99,7 @@ object Twitter extends Controller {
   */  
   def tweetsJson(millis: Long, results: Int) = Action { implicit request => 
     Async {      
-      val query = QueryBuilder().query(BSONDocument("created_at" -> BSONDocument("$lte" -> BSONDateTime(millis))))
-        .sort("created_at" -> SortOrder.Descending)
-      
-      // run this query over the collection
-      val cursor = Mongo.tweets.find(query)
-      
-      // got the list of documents (in a fully non-blocking way)
-      cursor.toList.map { tweets => Ok(Json.toJson(tweets.take(results))) }     
+      latestTweetQuery.map { tweets => Ok(Json.toJson(tweets.take(results))) }     
     }
   }
   

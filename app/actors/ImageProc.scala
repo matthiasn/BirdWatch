@@ -34,7 +34,7 @@ object ImageProc {
       case _: ArithmeticException        => Resume
       case _: javax.imageio.IIOException => Restart
       case _: NullPointerException       => Restart
-      case _: IllegalArgumentException   => Stop
+      case _: IllegalArgumentException   => Restart
       case _: Exception                  => Restart
     }
     

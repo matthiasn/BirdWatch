@@ -17,6 +17,8 @@ object Mongo {
   
   /** Representation of tweets collection in BirdWatch database */
   val tweets = db("tweets")
+  
+  val accessLog = db("accessLog")
 
   val rawTweets = db("rawTweets")
   

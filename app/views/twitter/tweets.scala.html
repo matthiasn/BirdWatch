@@ -50,10 +50,9 @@
      
      ws.onmessage = function(msg){
        var data = JSON.parse(msg.data);
-       console.log(data);
 
        viewModel.tweets.unshift(data.tweetList[0]);
-       if(viewModel.tweets.length > 5) { viewModel.tweets.pop(); }     // not working
+       if(viewModel.tweets().length > 9) { viewModel.tweets().pop(); }     // not working
 
        if ( (new Date().getTime() - lastBarUpdate) > 800) {
          birdWatch.wordCountBarChart.redraw(data.topWords);

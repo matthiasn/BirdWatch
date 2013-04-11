@@ -13,7 +13,6 @@ object RequestLogger {
   *  */
   def log(request: Request[AnyContent]) {
     /** simple access logging*/
-    println(request)
     val userAgent = request.headers.get("User-Agent").getOrElse("")
     Mongo.accessLog.insert(Json.obj(
       "address" -> request.remoteAddress,

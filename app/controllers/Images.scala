@@ -1,6 +1,5 @@
 package controllers
 
-import play.api.Logger
 import play.api.mvc.{ Action, Controller }
 import play.modules.reactivemongo.MongoController
 
@@ -18,9 +17,7 @@ object Images extends Controller with MongoController{
   *  @param filename name of the image to serve
   */
   def getImage(filename: String) = Action {
-    Async {
-      //Logger.debug("Images Controller serving: " + filename)   // always logs in production deployment ???
-      
+    Async {      
       // finds the matching attachment, if any, and streams it to the client
       val file = Mongo.imagesGridFS.find(BSONDocument("filename" -> new BSONString(filename)))
       serve(Mongo.imagesGridFS, file)

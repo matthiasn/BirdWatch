@@ -2,7 +2,9 @@ package utils
 
 import play.api.mvc.{Request, AnyContent}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
 import play.api.libs.json.Json
+import org.joda.time.DateTime
 
 import play.modules.reactivemongo.PlayBsonImplicits.JsValueWriter
 
@@ -18,7 +20,7 @@ object RequestLogger {
       "address" -> request.remoteAddress,
       "request" -> request.toString(),
       "user-agent" -> userAgent,
-      "created" -> new java.util.Date().getTime
+      "created" -> DateTime.now()
     ))
   }
   

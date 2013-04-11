@@ -10,21 +10,29 @@ import play.api.libs.json.Json
 import play.api.mvc.{ Action, Controller, WebSocket }
 
 import reactivemongo.api._
-import reactivemongo.bson.{ BSONDocument, BSONDateTime }
+import reactivemongo.bson._
 import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONReaderHandler
+import reactivemongo.bson.BSONDateTime
+import reactivemongo.api.QueryBuilder
 
 import actors._
 import models._
 import models.TweetImplicits._
 import utils._
+import models.TweetState
 
 /** Controller for serving main BirdWatch page including the websocket connection */
 object Twitter extends Controller {
 
   /** Serves HTML page (static content at the moment, page gets updates through websocket) */
-  def tweetList() = Action { implicit request => Ok(views.html.twitter.tweets(Seq[Tweet]())) }
+  def tweetList() = Action { 
+    implicit request => {
+      RequestLogger.log(request)     
+      Ok(views.html.twitter.tweets(Seq[Tweet]()))
+    } 
+  }
 
-  /** Serves websocket connection updating the UI */
+  /** Serves WebSocket connection updating the UI */
   def tweetFeed() = WebSocket.using[String] { implicit request =>
     
     /** Iteratee for incoming messages on websocket connection, currently ignored */

@@ -19,7 +19,7 @@ object Images extends Controller with MongoController{
   */
   def getImage(filename: String) = Action {
     Async {
-      Logger.debug("Images Controller serving: " + filename)
+      //Logger.debug("Images Controller serving: " + filename)   // always logs in production deployment ???
       
       // finds the matching attachment, if any, and streams it to the client
       val file = Mongo.imagesGridFS.find(BSONDocument("filename" -> new BSONString(filename)))

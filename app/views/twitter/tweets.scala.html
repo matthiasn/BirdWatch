@@ -22,12 +22,6 @@
       <li><div class="tweetlist"><span><img data-bind="attr: { src: img_url }" /></span><div class="screen_name" data-bind="text: screen_name"></div>&nbsp;&nbsp;&nbsp;&nbsp;<div class="timeInterval" data-bind="text: timeAgo"></div><br /><div class="tweettext"><span data-bind="text: text"><br /></span></div></div></li>
     </ul>
   </div>
-    
-  @tweets.map { tweet =>
-  <!--ul>
-    <li><span>@tweet.screen_name</span>: @tweet.text - @tweet.created_at
-  </ul-->
-  } 
   
   <div id="bulletChart">
     <svg></svg>
@@ -57,9 +51,10 @@
      ws.onmessage = function(msg){
        var data = JSON.parse(msg.data);
        console.log(data);
+
        viewModel.tweets.unshift(data.tweetList[0]);
-       if(viewModel.tweets.length > 0) { viewModel.tweets.pop() }
-       
+       if(viewModel.tweets.length > 5) { viewModel.tweets.pop(); }     // not working
+
        if ( (new Date().getTime() - lastBarUpdate) > 800) {
          birdWatch.wordCountBarChart.redraw(data.topWords);
          lastBarUpdate = new Date().getTime();

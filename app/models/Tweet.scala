@@ -52,7 +52,7 @@ object Tweet {
     chunk =>
       val chunkString = new String(chunk, "UTF-8")
       val json = Json.parse(chunkString)
-
+                                                
       // inserting raw Tweet
       // TODO: make this the only representation within MongoDB, rehydrate Tweets from this representation 
       Mongo.rawTweets.insert[JsValue](json)
@@ -62,7 +62,7 @@ object Tweet {
           ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
           //ActorStage.system.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
         }
-        case JsError(msg) => println(msg)
+        case JsError(msg) => println(chunkString)
       }
   }
 

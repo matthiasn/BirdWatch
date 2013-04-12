@@ -19,7 +19,7 @@
 #tweets {
 	position: absolute;
 	height: 1060px;
-	width: 600px;
+	width: 700px;
 	left: 750px;
 	top: 20px;
 
@@ -60,6 +60,7 @@ li {
   	top:22px;
   	left:100px;
 	height:auto;
+    width: 500px;
 }
 #bulletChart {
   position:absolute;

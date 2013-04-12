@@ -16,12 +16,13 @@ object RequestLogger {
   def log(req: Request[AnyContent]) {
 
     /** IPv6 address for localhost replaced */
-    val remoteAddress = req.remoteAddress.replace("0:0:0:0:0:0:0:1%0", "127.0.0.1")
-
+    val remoteAddress = req.remoteAddress.replace("0:0:0:0:0:0:0:1%0", "127.0.0.1")                           
+    val userAgent = req.headers.get("User-Agent").getOrElse("")
+    
     val logItem = Json.obj(
       "ip" -> remoteAddress,
       "request" -> req.toString(),
-      "user-agent" -> req.headers.get("User-Agent").getOrElse(""),
+      "user-agent" -> userAgent,
       "created" -> DateTime.now()
     )
 

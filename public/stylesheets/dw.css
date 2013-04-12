@@ -21,7 +21,7 @@
 	height: 1060px;
 	width: 700px;
 	left: 750px;
-	top: 20px;
+	top: 5px;
 
 }
 .screen_name {
@@ -64,7 +64,7 @@ li {
 }
 #bulletChart {
   position:absolute;
-  top: 1005px;
+  top: 997px;
   left:51px;
   width:650px;
   heigth:200px;

@@ -1,6 +1,8 @@
 @(tweets: Seq[Tweet])(implicit request: RequestHeader)
 
 @mainEmpty("Tweets!") {
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <!--suppress HtmlUnknownTag -->
     <script src="@routes.Assets.at("javascripts/d3.v2.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/d3.layout.cloud.js")" type="text/javascript"></script>

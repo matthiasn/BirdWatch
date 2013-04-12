@@ -11,21 +11,21 @@ import play.api.libs.ws.WS
 object RequestLogger {
 
   /** Simple request logger, stores IP-Address, User-Agent, request, geo data and timestamp 
-    * @param request
+    * @param req request 
     * */
-  def log(request: Request[AnyContent]) {
+  def log(req: Request[AnyContent]) {
 
     /** IPv6 address for localhost replaced */
-    val remoteAddress = request.remoteAddress.replace("0:0:0:0:0:0:0:1%0", "127.0.0.1")
+    val remoteAddress = req.remoteAddress.replace("0:0:0:0:0:0:0:1%0", "127.0.0.1")
 
     val logItem = Json.obj(
       "ip" -> remoteAddress,
-      "request" -> request.toString(),
-      "user-agent" -> request.headers.get("User-Agent").getOrElse(""),
+      "request" -> req.toString(),
+      "user-agent" -> req.headers.get("User-Agent").getOrElse(""),
       "created" -> DateTime.now()
     )
 
-    val geoRequest = WS.url("http://freegeoip.net/json/" + remoteAddress).withTimeout(2000).get
+    val geoRequest = WS.url("http://freegeoip.net/json/" + remoteAddress).withTimeout(2000).get()
 
     /** log with geo data if service accessible */
     geoRequest.onSuccess {

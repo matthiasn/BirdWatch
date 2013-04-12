@@ -2,11 +2,12 @@ package utils
 
 import play.api.mvc.{Request, AnyContent}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import org.joda.time.DateTime
 
 import play.modules.reactivemongo.PlayBsonImplicits.JsValueWriter
 import play.api.libs.ws.WS
+import org.joda.time.format.ISODateTimeFormat
 
 object RequestLogger {
 
@@ -18,12 +19,16 @@ object RequestLogger {
     /** IPv6 address for localhost replaced */
     val remoteAddress = req.remoteAddress.replace("0:0:0:0:0:0:0:1%0", "127.0.0.1")                           
     val userAgent = req.headers.get("User-Agent").getOrElse("")
-    
+
+   /** Joda DateTime not working as shown on https://github.com/zenexity/Play-ReactiveMongo
+    *  Workaround: use ISODateTime formatted string  */
+    val dtFormat = ISODateTimeFormat.dateTime()
+
     val logItem = Json.obj(
       "ip" -> remoteAddress,
       "request" -> req.toString(),
       "user-agent" -> userAgent,
-      "created" -> DateTime.now()
+      "timestamp" -> dtFormat.print(DateTime.now())
     )
 
     val geoRequest = WS.url("http://freegeoip.net/json/" + remoteAddress).withTimeout(2000).get()
@@ -31,7 +36,7 @@ object RequestLogger {
     /** log with geo data if service accessible */
     geoRequest.onSuccess {
       case response => {
-        Mongo.accessLog.insert(logItem ++ Json.obj(
+        Mongo.accessLog.insert[JsValue](logItem ++ Json.obj(
           "country_code" -> response.json \ "country_code",
           "country" -> response.json \ "country_name",
           "city" -> response.json \ "city",
@@ -42,6 +47,6 @@ object RequestLogger {
     }
 
     /** log without geo data in case of failure such as connection timeout */
-    geoRequest.onFailure { case _ => Mongo.accessLog.insert(logItem) }
+    geoRequest.onFailure { case _ => Mongo.accessLog.insert[JsValue](logItem) }
   }
 }

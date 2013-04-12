@@ -1,30 +1,28 @@
-@charset "UTF-8";
 #wordcloud {
 	background-color: #FFF;
 	padding: 20px;
 	height: 500px;
 	width: 700px;
-	position: fixed;
+	position: absolute;
 	left: 50px;
-	top: 100px;
+	top: 105px;
 }
 #header {
-	position: fixed;
+	position: absolute;
 	left: 300px;
-	top: 30px;
+	top: 25px;
 	font-family: Impact, Haettenschweiler, "Franklin Gothic Bold", "Arial Black", sans-serif;
 	font-stretch: ultra-expanded;
 	font-size: 36px;
 	color: steelblue;
 }
 #tweets {
-	//background-color: #CCC;
-	position: fixed;
+	position: absolute;
 	height: 1060px;
 	width: 600px;
 	left: 800px;
 	top: 50px;
-	overflow: auto;
+
 }
 .screen_name {
 	position:absolute;
@@ -41,17 +39,17 @@
 	top:2px;
   	left:350px;
 }
+
 li {
 	list-style:none;
 }
 
 #wordBars {
-	position: fixed;
+	position: absolute;
 	height: 500px;
 	width: 700px;
 	left: 20px;
 	top: 625px;
-	overflow: auto;
 }
 .tweetlist {
 	position:relative;
@@ -64,7 +62,7 @@ li {
 	height:auto;
 }
 #bulletChart {
-	position:fixed;
+  position:absolute;
   top: 1025px;
   left:51px;
   width:650px;

@@ -1,5 +1,3 @@
-body { color:black; }
-
 body, p, label { font-size:15px; }
 .label { font-size:13px; line-height:16px; }
 .alert-info { border-color:transparent; background-color:#3A87AD;
@@ -23,9 +21,9 @@ fieldset > div { margin: 12px 0; }
 footer { clear: both; text-align: right; }
 
 .chart rect {
-  stroke: white;
-  fill: steelblue;
+    stroke: white;
+    fill: steelblue;
 }
 .chart text {
-  font: 10px sans-serif; 
+    font: 10px sans-serif;
 }

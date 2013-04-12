@@ -4,13 +4,13 @@
 	height: 500px;
 	width: 700px;
 	position: absolute;
-	left: 50px;
-	top: 105px;
+	left: 30px;
+	top: 85px;
 }
 #header {
 	position: absolute;
-	left: 300px;
-	top: 25px;
+	left: 290px;
+	top: 0px;
 	font-family: Impact, Haettenschweiler, "Franklin Gothic Bold", "Arial Black", sans-serif;
 	font-stretch: ultra-expanded;
 	font-size: 36px;
@@ -20,8 +20,8 @@
 	position: absolute;
 	height: 1060px;
 	width: 600px;
-	left: 800px;
-	top: 50px;
+	left: 750px;
+	top: 20px;
 
 }
 .screen_name {
@@ -49,7 +49,7 @@ li {
 	height: 500px;
 	width: 700px;
 	left: 20px;
-	top: 625px;
+	top: 605px;
 }
 .tweetlist {
 	position:relative;
@@ -63,7 +63,7 @@ li {
 }
 #bulletChart {
   position:absolute;
-  top: 1025px;
+  top: 1005px;
   left:51px;
   width:650px;
   heigth:200px;

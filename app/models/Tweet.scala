@@ -4,8 +4,8 @@ import org.joda.time.DateTime
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.Iteratee
-import play.api.libs.json.{ Json, JsValue, JsSuccess, JsError}
-import play.api.libs.oauth.{ ConsumerKey, RequestToken, OAuthCalculator }
+import play.api.libs.json.{Json, JsValue, JsSuccess, JsError}
+import play.api.libs.oauth.{ConsumerKey, RequestToken, OAuthCalculator}
 import play.api.libs.ws.WS
 import play.modules.reactivemongo.PlayBsonImplicits.JsValueWriter
 
@@ -45,36 +45,38 @@ case class TweetState(
 object Tweet {
 
   def stripImageUrl(t: Tweet) = t.copy(profile_image_url = t.profile_image_url.replaceAll("http://", "").replaceAll("_normal", ""))
-    
-  /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
-   *  as Tweet instances and publishes them to eventStream.
-   */
-  val tweetIteratee = Iteratee.foreach[Array[Byte]] { chunk =>
-    val chunkString = new String(chunk, "UTF-8")
-    val json = Json.parse(chunkString)
 
-    // inserting raw Tweet
-    // TODO: make this the only representation within MongoDB, rehydrate Tweets from this representation 
-    Mongo.rawTweets.insert[JsValue](json)
+ /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
+  *  as Tweet instances and publishes them to eventStream. */
+  val tweetIteratee = Iteratee.foreach[Array[Byte]] {
+    chunk =>
+      val chunkString = new String(chunk, "UTF-8")
+      val json = Json.parse(chunkString)
 
-    TweetReads.reads(json) match {
-      case JsSuccess(t: Tweet, _) => { ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
-        //ActorStage.system.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
+      // inserting raw Tweet
+      // TODO: make this the only representation within MongoDB, rehydrate Tweets from this representation 
+      Mongo.rawTweets.insert[JsValue](json)
+
+      TweetReads.reads(json) match {
+        case JsSuccess(t: Tweet, _) => {
+          ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
+          //ActorStage.system.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
+        }
+        case JsError(msg) => println(msg)
       }
-      case JsError(msg) => println(msg)
-    }
   }
-  
-  /** OAuth consumer key and secret for Twitter Streaming API*/
+
+ /** OAuth consumer key and secret for Twitter Streaming API */
   val consumerKey = ConsumerKey(Conf.get("twitter.consumer.key"), Conf.get("twitter.consumer.secret"))
 
-  /** OAuth request key and secret for Twitter Streaming API*/  
+ /** OAuth request key and secret for Twitter Streaming API */
   val accessToken = RequestToken(Conf.get("twitter.accessToken.key"), Conf.get("twitter.accessToken.secret"))
- 
+
  /** Connect to Twitter Streaming API and retrieve a stream of Tweets for the specified search word or words.
   *  Individual words can be delimited by '%2C', see https://dev.twitter.com/docs/streaming-apis for reference.
   *  @param    track String with search word(s) */
   def listen(track: String) {
+
     WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=" + track).withTimeout(-1)
       .sign(OAuthCalculator(consumerKey, accessToken))
       .get(_ => tweetIteratee)

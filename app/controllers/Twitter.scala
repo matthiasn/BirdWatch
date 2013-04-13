@@ -54,7 +54,7 @@ object Twitter extends Controller {
         val (charCountMean, charCountStdDev) = Calc.stdDev(tweetList.map(t => t.charCount))
         val (wordCountMean, wordCountStdDev) = Calc.stdDev(tweetList.map(t => t.wordCount))
 
-        val tweetState = TweetState(tweetList.take(50), WordCount.topN(tweetList, 250), charCountMean, charCountStdDev,
+        val tweetState = TweetState(tweetList.take(1), WordCount.topN(tweetList, 250), charCountMean, charCountStdDev,
           wordCountMean, wordCountStdDev, tweetList.size)
 
         wsOutChannel.push(Json.stringify(Json.toJson(tweetState)))

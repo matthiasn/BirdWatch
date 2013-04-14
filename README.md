@@ -4,7 +4,7 @@ This is dynamic web application for visualizing a constant stream of live Tweets
 
 I will then start working a redesigned distributed application for Tweet analysis taking into account the lessons learned. The architecture presented here serves its purpose but will most certainly not be ideal for all the ideas I had about Tweet stream analysis since I came up with this project.
 
-You can **[try BirdWatch](http://144.76.59.136:9000/tweets)** without having to install anything. In the event that this link is down you can also see BirdWatch in action in this **[video](https://www.dropbox.com/s/druqusd2nk8dw9j/IMG_6095.MOV)**.
+You can **[try BirdWatch](http://144.76.59.136)** without having to install anything. In the event that this link is down you can also see BirdWatch in action in this **[video](https://www.dropbox.com/s/druqusd2nk8dw9j/IMG_6095.MOV)**.
 
 ![Screenshot](./docs/screenshot.png)
 The idea behind this reactive web app is to explore processing a live stream of information using Scala and the Play Framework (making use of Akka actors). A rolling window of Tweets is analyzed in terms of certain parameters and displayed graphically. The **[d3-cloud](https://github.com/jasondavies/d3-cloud)** project by Jason Davies is used for displaying the word cloud, adapted for dynamic updates as new data comes in through the WebSockets connection. Tweets are also stored within MongoDB. Storing the Tweets in a persistent data store allows reasoning time periods longer than the uptime of the application and also enables pre-loading the 500 most recent Tweets.

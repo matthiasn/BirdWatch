@@ -39,6 +39,8 @@ object RequestLogger {
         Mongo.accessLog.insert[JsValue](logItem ++ Json.obj(
           "country_code" -> response.json \ "country_code",
           "country" -> response.json \ "country_name",
+          "region_code" -> response.json \ "region_code",
+          "region" -> response.json \ "region_name",
           "city" -> response.json \ "city",
           "long" -> response.json \ "longitude",
           "lat" -> response.json \ "latitude"

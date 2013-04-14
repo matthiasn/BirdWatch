@@ -75,10 +75,11 @@ object Twitter extends Controller {
         }
       }))
 
-     /** Pre-load the last 500 tweets through WebSocket connection  */
+      ActorStage.system.eventStream.subscribe(subscriber, classOf[Tweet]) // subscribe to incoming tweets
+
+      /** Pre-load the last 500 tweets through WebSocket connection  */
       latestTweetQuery.map {
         tweets => tweets.take(500).reverse.foreach(t => tweetChannel.push(t)) // push last 500 tweets
-        ActorStage.system.eventStream.subscribe(subscriber, classOf[Tweet]) // subscribe to incoming tweets
       }
 
       (in, out) // in and out channels for WebSocket connection

@@ -78,8 +78,8 @@ object Twitter extends Controller {
       ActorStage.system.eventStream.subscribe(subscriber, classOf[Tweet]) // subscribe to incoming tweets
 
       /** Pre-load the last 500 tweets through WebSocket connection  */
-      latestTweetQuery.map {
-        tweets => tweets.take(500).reverse.foreach(t => tweetChannel.push(t)) // push last 500 tweets
+      latestTweetQuery(500).map {
+        tweets => tweets.reverse.foreach(t => tweetChannel.push(t)) // push last 500 tweets
       }
 
       (in, out) // in and out channels for WebSocket connection
@@ -87,26 +87,26 @@ object Twitter extends Controller {
 
 
  /** Query latest tweets (lazily evaluated stream, result could be od arbitrary size) */
-  def latestTweetQuery: Future[List[Tweet]] = {
+  def latestTweetQuery(n: Int): Future[List[Tweet]] = {
     val query = QueryBuilder().query(BSONDocument("created_at" -> BSONDocument("$lte" -> BSONDateTime(DateTime.now.getMillis))))
       .sort("created_at" -> SortOrder.Descending)
 
     // run this query over the collection
     val cursor = Mongo.tweets.find(query)
    
-    cursor.toList
+    cursor.toList(n)
   }
 
  /** Controller Action serving Tweets as JSON going backwards in time from the 
   * specified time in milliseconds from epoch
   * @param    millis time in millis
-  * @param    results number of results to return 
+  * @param    n number of results to return 
   */
-  def tweetsJson(millis: Long, results: Int) = Action {
+  def tweetsJson(millis: Long, n: Int) = Action {
     implicit request =>
       Async {
-        latestTweetQuery.map {
-          tweets => Ok(content = Json.toJson(tweets.take(results)))
+        latestTweetQuery(n).map {
+          tweets => Ok(content = Json.toJson(tweets))
         }
       }
   }

@@ -26,11 +26,7 @@ import scala.concurrent.Future
 object Twitter extends Controller {
 
   /** Serves HTML page (static content at the moment, page gets updates through WebSocket) */
-  def tweetList() = Action {
-    implicit request => {
-      RequestLogger.log(request)
-      Ok(views.html.twitter.tweets(Seq[Tweet]()))
-    }
+  def tweetList() = Action { implicit req => { RequestLogger.log(req); Ok(views.html.twitter.tweets(Seq[Tweet]())) }
   }
 
   /** Serves WebSocket connection updating the UI */
@@ -69,12 +65,9 @@ object Twitter extends Controller {
 
      /** Actor for subscribing to eventStream. Pushes received tweets into TweetChannel for
       * consumption through iteratee (and potentially other consumers, decoupled)  */
-      val subscriber = ActorStage.system.actorOf(Props(new Actor {
-        def receive = {
-          case t: Tweet => tweetChannel.push(t) // push received tweet into Concurrent.Channel[Tweet] 
-        }
+      val subscriber = ActorStage.system.actorOf(Props(new Actor {       
+        def receive = { case t: Tweet => tweetChannel.push(t) }         
       }))
-
       ActorStage.system.eventStream.subscribe(subscriber, classOf[Tweet]) // subscribe to incoming tweets
 
       /** Pre-load the last 500 tweets through WebSocket connection  */
@@ -91,24 +84,17 @@ object Twitter extends Controller {
     val query = QueryBuilder().query(BSONDocument("created_at" -> BSONDocument("$lte" -> BSONDateTime(DateTime.now.getMillis))))
       .sort("created_at" -> SortOrder.Descending)
 
-    // run this query over the collection
-    val cursor = Mongo.tweets.find(query)
-   
-    cursor.toList(n)
+    /** run this query over the collection, convert cursor to future list of size n, return future list */
+    Mongo.tweets.find(query).toList(n)   
   }
 
  /** Controller Action serving Tweets as JSON going backwards in time from the 
   * specified time in milliseconds from epoch
-  * @param    millis time in millis
-  * @param    n number of results to return 
+  * @param  millis time in millis
+  * @param  results number of results to return 
   */
-  def tweetsJson(millis: Long, n: Int) = Action {
-    implicit request =>
-      Async {
-        latestTweetQuery(n).map {
-          tweets => Ok(content = Json.toJson(tweets))
-        }
-      }
+  def tweetsJson(millis: Long, results: Int) = Action {
+    implicit request => Async { latestTweetQuery(results).map { tweets => Ok(content = Json.toJson(tweets)) } }
   }
 
  /** Controller Action serving Tweets as JSON going backwards in time from when
@@ -119,27 +105,20 @@ object Twitter extends Controller {
 
  /** Controller Action replaying the specified number of tweets from 
   * the specified time in millis forward.
-  * @param    minutesAgo time in minutes
-  * @param    results number of results to return 
+  * @param  minutesAgo time in minutes
+  * @param  results number of results to return
+  * @param  delayMS milliseconds of delay between replayed tweets                
   */
-  def tweetReplay(minutesAgo: Long, results: Int) = Action {
+  def tweetReplay(minutesAgo: Long, results: Int, delayMS: Int) = Action {
     implicit request =>
       Async {
         val query = QueryBuilder().query(BSONDocument("created_at" ->
           BSONDocument("$gte" -> BSONDateTime(DateTime.now.getMillis - (minutesAgo * 60 * 1000)))))
           .sort("created_at" -> SortOrder.Ascending)
 
-        // run this query over the collection
-        val cursor = Mongo.tweets.find(query)
-
-        // got the list of documents (in a fully non-blocking way)
-        cursor.toList.map {
-          tweets =>
-            tweets.take(results).foreach {
-              t => ActorStage.system.eventStream.publish(t)
-              Thread.sleep(250)
-            }
-            Ok(Json.toJson(tweets.take(results)))
+        Mongo.tweets.find(query).toList(results).map {
+          tweets => tweets.foreach { t => ActorStage.system.eventStream.publish(t); Thread.sleep(delayMS) }            
+          Ok(Json.toJson(tweets))
         }
       }
   }

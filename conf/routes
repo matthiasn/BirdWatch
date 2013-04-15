@@ -11,7 +11,7 @@ GET /tweetFeed                controllers.Twitter.tweetFeed()
 GET /tweets/latest            controllers.Twitter.tweetsJsonLatest(results: Int ?= 50)
 GET /tweets/:millis           controllers.Twitter.tweetsJson(millis: Long, results: Int ?= 50)
 
-GET /tweets/replay/:millis    controllers.Twitter.tweetReplay(millis: Long, results: Int ?= 50)
+GET /tweets/replay/:millis    controllers.Twitter.tweetReplay(millis: Long, results: Int ?= 50, delayMS: Int ?= 250)
 
 GET /images/:filename         controllers.Images.getImage(filename: String)
 

@@ -1,4 +1,4 @@
-@(tweets: Seq[Tweet])(implicit request: RequestHeader)
+@(topics: Iterable[String])(implicit request: RequestHeader)
 
 @mainEmpty("Tweets!") {
 
@@ -7,11 +7,12 @@
   <script src="@routes.Assets.at("javascripts/vendor/d3.layout.cloud.js")" type="text/javascript"></script>
   <script src="@routes.Assets.at("javascripts/vendor/nv.d3.min.js")" type="text/javascript"></script>
 
-  <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/dw.css")">
   <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bullet.css")">
   <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/nv.d3.css")">
  
-  <div id="header"><h1>BirdWatch</h1></div>
+  <div id="header">
+      <h1>BirdWatch</h1>
+  </div>
 
   <div id="wordcloud"></div>
 
@@ -87,5 +88,29 @@
    </script>
 
    <a href="https://github.com/matthiasn/BirdWatch"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png" alt="Fork me on GitHub" /></a>
-  
+    
+   <div id="description">
+       <h1>BirdWatch</h1>
+       
+       <p>This is a sample reactive web application making use of Play Framework 2.1 visualizing a live stream of tweets from the Twitter Streaming API and visualizes them.
+           The current search words are:
+
+           @topics.map { topic =>
+           <ul>
+               <li><span>@topic</span> 
+           </ul>
+           }
+
+       The search words for matching Tweets can be changed during runtime of the application, that requires authentication though. There will be blog posts about the technology soon, please follow me on Twitter to find out more. A description of the architecture and the full source code for this project is available on <a href="https://github.com/matthiasn/BirdWatch">github</a>. </p>
+       
+       <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a>
+       <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+       
+       <a href="https://twitter.com/_MNehlsen" class="twitter-follow-button" data-show-count="false">Follow &#64;_MNehlsen</a>
+       <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+       <p><br/>&copy; Matthias Nehlsen 2013</p>
+
+   </div>
+
 }

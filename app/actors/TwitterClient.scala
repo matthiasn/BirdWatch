@@ -80,8 +80,8 @@ object TwitterClient {
       case StartListening     => twitterClient ! StartListening
       case RestartListening   => twitterClient ! Kill
         
-      case AddTopic(topic)    => topics.add(topic)
-      case RemoveTopic(topic) => topics.remove(topic)
+      case AddTopic(topic)    => println("Topics: " + topics); topics.add(topic)
+      case RemoveTopic(topic) => println("Topics: " + topics); topics.remove(topic)
         
       case CheckStatus => {
         if ((DateTime.now.getMillis - lastTweetReceived.getMillis) > 15000) {
@@ -95,21 +95,26 @@ object TwitterClient {
     *  conversion actor. */
     class TwitterClient() extends Actor with ActorLogging {
       override val log = Logging(context.system, this)
-      override def preStart() { println("Starting TwitterClient actor") }
+      override def preStart() { println("Starting TwitterClient actor for topics: " + topics) }
 
       override def preRestart(reason: Throwable, message: Option[Any]) {
         log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
       }
-
+     val conn = WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=" + TwitterClient.topics.mkString("%2C").replace(" ", "%20"))
+       .withTimeout(-1)
+       .sign(OAuthCalculator(consumerKey, accessToken))
+       .get(_ => TwitterClient.tweetIteratee)
+          
      /** Connects to Twitter Streaming API and retrieve a stream of Tweets for the specified search word or words. 
       * Passes received chunks of data into tweetIteratee */
       def receive = {
         case StartListening => {
           println("Starting WS connection to Twitter")
-          WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=" + TwitterClient.topics.mkString("%2C")).withTimeout(-1)
-            .sign(OAuthCalculator(consumerKey, accessToken))
-            .get(_ => TwitterClient.tweetIteratee)
+          //WS.url("https://stream.twitter.com/1.1/statuses/filter.json?track=" + TwitterClient.topics.mkString("%2C")).withTimeout(-1)
+          //  .sign(OAuthCalculator(consumerKey, accessToken))
+          //  .get(_ => TwitterClient.tweetIteratee)
         }
+         
       }
     }
   }

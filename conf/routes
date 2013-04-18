@@ -2,10 +2,13 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET /                         controllers.Application.index
+GET /                         controllers.Twitter.tweetList
 
-GET /tweets                   controllers.Twitter.tweetList
-GET /tweetFeed                controllers.Twitter.tweetFeed()
+GET /tweets                   controllers.Application.named
+GET /tweetFeed                controllers.Twitter.tweetFeed
+
+GET /topic/add                controllers.Topics.add(topic: String, token: String ?="")
+GET /topic/remove             controllers.Topics.remove(topic: String, token: String ?="")
 
 # Tweets as JSON
 GET /tweets/latest            controllers.Twitter.tweetsJsonLatest(results: Int ?= 50)

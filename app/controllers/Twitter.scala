@@ -26,13 +26,12 @@ import scala.concurrent.Future
 object Twitter extends Controller {
 
   /** Serves HTML page (static content at the moment, page gets updates through WebSocket) */
-  def tweetList() = Action { implicit req => { RequestLogger.log(req); Ok(views.html.twitter.tweets(Seq[Tweet]())) }
+  def tweetList() = Action { implicit req => { RequestLogger.log(req); Ok(views.html.twitter.tweets(TwitterClient.topics)) }
   }
 
   /** Serves WebSocket connection updating the UI */
-  def tweetFeed() = WebSocket.using[String] {
+  def tweetFeed = WebSocket.using[String] {
     implicit request =>
-
      /** Iteratee for incoming messages on WebSocket connection, currently ignored */
       val in = Iteratee.ignore[String]
 
@@ -66,7 +65,7 @@ object Twitter extends Controller {
      /** Actor for subscribing to eventStream. Pushes received tweets into TweetChannel for
       * consumption through iteratee (and potentially other consumers, decoupled)  */
       val subscriber = ActorStage.system.actorOf(Props(new Actor {       
-        def receive = { case t: Tweet => tweetChannel.push(t) }         
+        def receive = { case t: Tweet => tweetChannel.push(t) }                         
       }))
       ActorStage.system.eventStream.subscribe(subscriber, classOf[Tweet]) // subscribe to incoming tweets
 

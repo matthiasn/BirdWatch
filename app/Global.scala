@@ -6,8 +6,7 @@ import actors.ActorStage
 object Global extends GlobalSettings {
 
   override def onStart(application: play.api.Application) { 
-    ActorStage.tweetClientSupervisor ! AddTopic("hamburg")
-    ActorStage.tweetClientSupervisor ! AddTopic("amsterdam")
+    ActorStage.tweetClientSupervisor ! AddTopic("daft punk")
     ActorStage.tweetClientSupervisor ! StartListening
   } 
    

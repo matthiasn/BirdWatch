@@ -73,7 +73,7 @@ object TwitterClient {
     val twitterClient = context.actorOf(Props(new TwitterClient()), "TwitterClient")
 
     /** Checking status of Twitter Streaming API connection every 5 seconds */
-    context.system.scheduler.schedule(10 seconds, 15 seconds, self, CheckStatus )
+    context.system.scheduler.schedule(60 seconds, 60 seconds, self, CheckStatus )
     
     /** Receives control messages for starting / restarting supervised client and adding or removing topics */
     def receive = {

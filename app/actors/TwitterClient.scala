@@ -73,7 +73,7 @@ object TwitterClient {
     val twitterClient = context.actorOf(Props(new TwitterClient()), "TwitterClient")
 
     /** Checking status of Twitter Streaming API connection every 5 seconds */
-    context.system.scheduler.schedule(60 seconds, 60 seconds, self, CheckStatus )
+    context.system.scheduler.schedule(30 seconds, 30 seconds, self, CheckStatus )
     
     /** Receives control messages for starting / restarting supervised client and adding or removing topics */
     def receive = {
@@ -104,7 +104,7 @@ object TwitterClient {
       val url = "https://stream.twitter.com/1.1/statuses/filter.json?track=" 
       val conn = WS.url(url + TwitterClient.topics.mkString("%2C").replace(" ", "%20"))
         .withTimeout(-1)
-        .sign(OAuthCalculator(consumerKey, accessToken))
+        .sign(OAuthCalculator(consumerKey, accessToken))      
         .get(_ => TwitterClient.tweetIteratee)
           
      /** Connects to Twitter Streaming API and retrieve a stream of Tweets for the specified search word or words. 

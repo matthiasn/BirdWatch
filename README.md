@@ -1,4 +1,4 @@
-#**[Check out my Blog](http://matthiasnehlsen.com)**, more to come soon
+#**[Check out my Blog](http://matthiasnehlsen.com)** for additional documentation
 
 #BirdWatch  
 

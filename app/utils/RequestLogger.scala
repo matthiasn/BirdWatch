@@ -1,11 +1,11 @@
-package utils
+package birdwatchUtils
 
 import play.api.mvc.{Request, AnyContent}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{JsValue, Json}
 import org.joda.time.DateTime
 
-import play.modules.reactivemongo.PlayBsonImplicits.JsValueWriter
+//import play.modules.reactivemongo.PlayBsonImplicits.JsValueWriter
 import play.api.libs.ws.WS
 import org.joda.time.format.ISODateTimeFormat
 

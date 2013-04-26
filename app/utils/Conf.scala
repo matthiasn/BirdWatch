@@ -1,4 +1,4 @@
-package utils
+package birdwatchUtils
 
 import play.api.Play.current
 

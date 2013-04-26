@@ -1,6 +1,6 @@
 import actors.TwitterClient.{ AddTopic, StartListening }
 import play.api.GlobalSettings
-import utils.Mongo
+import birdwatchUtils.Mongo
 import actors.ActorStage
 
 object Global extends GlobalSettings {

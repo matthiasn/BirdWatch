@@ -11,13 +11,13 @@ import play.api.libs.ws.WS
 import play.api.libs.oauth.{RequestToken, ConsumerKey, OAuthCalculator}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 
-import play.modules.reactivemongo.PlayBsonImplicits.JsValueWriter
+//import play.modules.reactivemongo.PlayBsonImplicits.JsValueWriter
 
 import org.joda.time.DateTime
 import scala.concurrent.duration._
 
 import models._
-import utils._
+import birdwatchUtils._
 import models.TweetImplicits._
 
 /** Actors related to image processing */

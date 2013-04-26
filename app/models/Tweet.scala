@@ -13,8 +13,8 @@ case class Tweet(
   location: String,
   profile_image_url: String,
   geo: Option[String],
-  created_at: DateTime,
-  id: Option[BSONObjectID]
+  created_at: DateTime//,
+  //id: Option[BSONObjectID]
 )
 
 /** holds the state for GUI updates (list of recent tweets and a word frequency map), used for Json serialization */

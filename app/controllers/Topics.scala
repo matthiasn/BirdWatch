@@ -5,7 +5,7 @@ import akka.actor.{Actor, Props}
 import play.api.libs.iteratee.{Iteratee, Concurrent}
 import play.api.mvc.{Action, Controller, WebSocket}
 
-import utils.Conf
+import birdwatchUtils.Conf
 import actors.ActorStage
 import actors.TwitterClient.{RemoveTopic, RestartListening, AddTopic}
 

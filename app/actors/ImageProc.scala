@@ -21,7 +21,7 @@ import reactivemongo.api.gridfs.Implicits._
 import scala.concurrent.duration._
 
 import models._
-import utils._
+import birdwatchUtils._
 
 /** Actors related to image processing */
 object ImageProc {
@@ -54,7 +54,8 @@ object ImageProc {
     *  to Image Retrieval Actor.
     */
     def receive = {
-      case t: Tweet if (t.id == None) => {
+//      case t: Tweet if (t.id == None) => {
+      case t: Tweet => {
         eventStream.publish(Proc(sender, t))    // acknowledge receipt (testing)
         retrievalActor ! Proc(sender, t)        // forward tweet to retrieval actor (child)
       }

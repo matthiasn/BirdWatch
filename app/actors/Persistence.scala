@@ -5,7 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import models._
 import models.TweetImplicits._
-import utils._
+import birdwatchUtils._
 
 /** Actors related to database persistence */
 object Persistence {
@@ -13,7 +13,8 @@ object Persistence {
   /** Actor for receiving Tweets from eventStream and inserting them into MongoDB. */
   class TweetWriteActor extends Actor {
     def receive = {
-      case t: Tweet if (t.id == None) => { Mongo.tweets.insert(t) }
+   //   case t: Tweet if (t.id == None) => { Mongo.tweets.insert(t) }
+      case t: Tweet => { Mongo.tweets.insert(t) }
     }
   }
   

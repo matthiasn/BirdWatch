@@ -11,10 +11,10 @@ GET /topic/add                controllers.Topics.add(topic: String, token: Strin
 GET /topic/remove             controllers.Topics.remove(topic: String, token: String ?="")
 
 # Tweets as JSON
-#GET /tweets/latest            controllers.Twitter.tweetsJsonLatest(results: Int ?= 50)
-#GET /tweets/:millis           controllers.Twitter.tweetsJson(millis: Long, results: Int ?= 50)
+GET /tweets/latest            controllers.Twitter.tweetsJsonLatest(results: Int ?= 50)
+GET /tweets/:millis           controllers.Twitter.tweetsJson(millis: Long, results: Int ?= 50)
 
-#GET /tweets/replay/:millis    controllers.Twitter.tweetReplay(millis: Long, results: Int ?= 50, delayMS: Int ?= 250)
+GET /tweets/replay/:results    controllers.Twitter.tweetReplay(results: Int, delayMS: Int ?= 250)
 
 GET /images/:filename         controllers.Images.getImage(filename: String)
 

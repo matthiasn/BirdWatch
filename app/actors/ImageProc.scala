@@ -64,7 +64,6 @@ object ImageProc {
         
         eventStream.publish(DoneProc(p))
         eventStream.publish(p.t)
-        ActorStage.tweetStreamSubscriber ! p.t
       }
     }
   }

@@ -5,7 +5,6 @@ import play.modules.reactivemongo.MongoController
 
 import reactivemongo.api.gridfs.Implicits.DefaultReadFileReader
 import reactivemongo.bson.{BSONString, BSONDocument}
-//import reactivemongo.bson.handlers.DefaultBSONHandlers.DefaultBSONDocumentWriter
 
 import birdwatchUtils._
 

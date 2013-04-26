@@ -1,9 +1,6 @@
 package controllers
 
-import akka.actor.{Actor, Props}
-
-import play.api.libs.iteratee.{Iteratee, Concurrent}
-import play.api.mvc.{Action, Controller, WebSocket}
+import play.api.mvc.{Action, Controller}
 
 import birdwatchUtils.Conf
 import actors.ActorStage

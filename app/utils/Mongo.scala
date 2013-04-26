@@ -3,14 +3,11 @@ package birdwatchUtils
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import reactivemongo.api.MongoDriver
-import reactivemongo.bson._
 import reactivemongo.api.gridfs.GridFS
 import play.api.libs.json.JsValue
 
 import play.modules.reactivemongo.json.collection.JSONCollection
 
-
-//TODO: ensure database indices 
 /** Mongo connection object */
 object Mongo {
 
@@ -23,12 +20,6 @@ object Mongo {
   val db = connection("BirdWatch")
   
   /** Representation of tweets collection in BirdWatch database */
-  //val tweets = db("tweets")
-  //val accessLog = db("accessLog")
-  //val rawTweets = db("rawTweets")
-
-  def tweets2 = db("tweets")
-
   def tweets: JSONCollection = db.collection[JSONCollection]("tweets")
 
   def accessLog: JSONCollection = db.collection[JSONCollection]("accessLog")

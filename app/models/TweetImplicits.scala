@@ -6,11 +6,6 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.libs.json.Reads.jodaDateReads
 
-import reactivemongo.bson.{ BSONDocument, BSONLong, BSONInteger, BSONObjectID, BSONString, BSONDateTime}
-//import reactivemongo.bson.handlers.{ BSONWriter, BSONReader }
-
-import reactivemongo.bson._
-
 import birdwatchUtils.TimeInterval
 
 object TweetImplicits {
@@ -27,41 +22,6 @@ object TweetImplicits {
     (__ \ "geo").read[Option[String]] and
     (__ \ "created_at").read[DateTime])(Tweet(_, _, _, 0, 0, _, _, _, _))
 //    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, 0, 0, _, _, _, _, None))
-
-//  implicit object TweetBSONWriter extends  BSONWriter[Tweet] {
-//    def toBSON(t: Tweet) = {
-//      BSONDocument(
-//        "_id" -> t.id.getOrElse(BSONObjectID.generate),
-//        "tweet_id" -> BSONLong(t.tweet_id),
-//        "screen_name" -> BSONString(t.screen_name),
-//        "text" -> BSONString(t.text),
-//        "wordCount" -> BSONInteger(t.wordCount),
-//        "charCount" -> BSONInteger(t.charCount),
-//        "location" -> BSONString(t.location),
-//        "profile_image_url" -> BSONString(t.profile_image_url),
-//        "geo" -> BSONString(t.geo.getOrElse("")),
-//        "created_at" -> BSONDateTime(t.created_at.getMillis)
-//      )
-//    }
-//  }
-  
-//  implicit object TweetBSONReader extends BSONReader[Tweet] {
-//    def fromBSON(doc: BSONDocument): Tweet = {
-//      //val doc = document.toTraversable
-//      Tweet(
-//        doc.getAs[BSONLong]("tweet_id").get.value,
-//        doc.getAs[BSONString]("screen_name").get.value,
-//        doc.getAs[BSONString]("text").get.value,
-//        doc.getAs[BSONInteger]("wordCount").get.value,
-//        doc.getAs[BSONInteger]("charCount").get.value,
-//        doc.getAs[BSONString]("location").get.value,
-//        doc.getAs[BSONString]("profile_image_url").get.value,
-//        None,
-//        new DateTime(doc.getAs[BSONDateTime]("created_at").get.value),
-//        doc.getAs[BSONObjectID]("_id")
-//      )
-//    }
-//  }
 
   implicit val TweetJsonWriter = new Writes[Tweet] {
     def writes(t: Tweet): JsValue = {

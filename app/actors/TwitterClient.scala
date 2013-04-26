@@ -11,8 +11,6 @@ import play.api.libs.ws.WS
 import play.api.libs.oauth.{RequestToken, ConsumerKey, OAuthCalculator}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 
-//import play.modules.reactivemongo.PlayBsonImplicits.JsValueWriter
-
 import org.joda.time.DateTime
 import scala.concurrent.duration._
 
@@ -49,7 +47,6 @@ object TwitterClient {
       val json = Json.parse(chunkString)
 
       // inserting raw Tweet
-      // TODO: make this the only representation within MongoDB, rehydrate Tweets from this representation 
       Mongo.rawTweets.insert[JsValue](json)
 
       TweetReads.reads(json) match {

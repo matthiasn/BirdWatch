@@ -8,8 +8,8 @@ object ApplicationBuild extends Build {
   val appVersion      = "1.0-SNAPSHOT"
 
   val appDependencies = Seq(
-    "org.reactivemongo" %% "reactivemongo" % "0.9-SNAPSHOT",
-    "org.reactivemongo" %% "play2-reactivemongo" % "0.9-SNAPSHOT",
+    "org.reactivemongo" %% "reactivemongo" % "0.9",
+    "org.reactivemongo" %% "play2-reactivemongo" % "0.9",
     "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",       
     "com.typesafe.akka" %% "akka-testkit" % "2.1.1"
   )

@@ -1,7 +1,15 @@
 package models
 
+import birdwatchUtils.Mongo
 import org.joda.time.DateTime
-import reactivemongo.bson._
+import scala.concurrent.Future
+import play.api.libs.json._
+import reactivemongo.api.Cursor
+import models.TweetImplicits._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.modules.reactivemongo.json.collection.JSONCollection
+import play.modules.reactivemongo.json.collection.JSONCollection
+import play.api.libs.json.JsObject
 
 /** Simple Tweet representation */
 case class Tweet(
@@ -27,3 +35,15 @@ case class TweetState(
   wordCountStdDev: Double,
   n: Int
 )
+
+/** Companion object for */
+object Tweet {
+  def rawTweets: JSONCollection = Mongo.db.collection[JSONCollection]("rawTweets")
+  def insertJson(json: JsValue) = rawTweets.insert[JsValue](json)
+
+  /** Query latest tweets (lazily evaluated stream, result could be of arbitrary size) */
+  def jsonLatestN(n: Int): Future[List[JsObject]] = {
+    val cursor: Cursor[JsObject] = rawTweets.find(Json.obj()).sort(Json.obj("_id" -> -1)).cursor[JsObject]
+    cursor.toList(n)
+  }
+}

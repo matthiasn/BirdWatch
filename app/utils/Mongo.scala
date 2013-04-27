@@ -8,8 +8,6 @@ import play.modules.reactivemongo.json.collection.JSONCollection
 
 /** Mongo connection object */
 object Mongo {
-
-  /** Connection to BirdWatch database inMongoDB */
   val driver = new MongoDriver
   val connection = driver.connection(List("localhost:27017"))
   val db = connection("BirdWatch")

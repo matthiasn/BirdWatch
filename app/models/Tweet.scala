@@ -41,7 +41,10 @@ object Tweet {
 
   /** Query latest tweets (lazily evaluated stream, result could be of arbitrary size) */
   def jsonLatestN(n: Int): Future[List[JsObject]] = {
-    val cursor: Cursor[JsObject] = rawTweets.find(Json.obj()).sort(Json.obj("_id" -> -1)).cursor[JsObject]
+    val cursor: Cursor[JsObject] = rawTweets
+      .find(Json.obj("text" -> Json.obj("$exists" -> true)))
+      .sort(Json.obj("_id" -> -1))
+      .cursor[JsObject]
     cursor.toList(n)
   }
 }

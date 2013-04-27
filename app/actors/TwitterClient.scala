@@ -9,7 +9,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.Iteratee
 import play.api.libs.ws.WS
 import play.api.libs.oauth.{RequestToken, ConsumerKey, OAuthCalculator}
-import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
+import play.api.libs.json.{JsError, JsSuccess, Json}
 
 import org.joda.time.DateTime
 import scala.concurrent.duration._
@@ -46,14 +46,14 @@ object TwitterClient {
       val chunkString = new String(chunk, "UTF-8")
       val json = Json.parse(chunkString)
 
-      // inserting raw Tweet
-      Mongo.rawTweets.insert[JsValue](json)
+      /** persist any valid JSON from Twitter Streaming API */
+      Tweet.insertJson(json)
 
       TweetReads.reads(json) match {
         case JsSuccess(t: Tweet, _) => {
           ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
         }
-        case JsError(msg) => println(chunkString)
+        case JsError(msg) => println(msg)
       }
   }
 

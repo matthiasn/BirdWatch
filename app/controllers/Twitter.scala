@@ -2,30 +2,22 @@ package controllers
 
 import akka.actor.{Actor, Props}
 
-import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
+import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.{Iteratee, Concurrent}
-import play.api.libs.json.{Writes, Reads, JsObject, Json}
 import play.api.mvc.{Action, Controller, WebSocket}
 
-import reactivemongo.api._
-
 import actors._
+import birdwatchUtils._
 import models._
 import models.TweetImplicits._
-import birdwatchUtils._
-import models.TweetState
-import scala.concurrent.Future
-import org.joda.time.DateTime
 
 /** Controller for serving main BirdWatch page including the WebSocket connection */
 object Twitter extends Controller {
 
   /** Serves HTML page (static content at the moment, page gets updates through WebSocket) */
   def tweetList() = Action {
-    implicit req => {
-      RequestLogger.log(req); Ok(views.html.twitter.tweets(TwitterClient.topics))
-    }
+    implicit req => RequestLogger.log(req); Ok(views.html.twitter.tweets(TwitterClient.topics))
   }
 
   /** Serves WebSocket connection updating the UI */
@@ -72,47 +64,28 @@ object Twitter extends Controller {
       ActorStage.system.eventStream.subscribe(subscriber, classOf[Tweet]) // subscribe to incoming tweets
 
       /** Pre-load the last 500 tweets through WebSocket connection  */
-      latestTweetQuery(500).map {
+      Tweet.jsonLatestN(500).map {
         tweets => tweets.reverse.foreach {
-          x => {
-            TweetReads.reads(x) match {
-              case JsSuccess(t: Tweet, _) => tweetChannel.push(t)
-              case JsError(msg) => println(x)
-            }
+          x => TweetReads.reads(x) match {
+            case JsSuccess(t: Tweet, _) => tweetChannel.push(WordCount.wordsChars(t)) // word and char count for each t
+            case JsError(msg) => println(x)
           }
         }
       }
       (in, out) // in and out channels for WebSocket connection
   }
 
-
-  /** Query latest tweets (lazily evaluated stream, result could be od arbitrary size) */
-  def latestTweetQuery(n: Int): Future[List[JsObject]] = {
-    val cursor: Cursor[JsObject] = Mongo.rawTweets.
-      find(Json.obj()).
-      sort(Json.obj("_id" -> -1)).
-      cursor[JsObject]
-    cursor.toList(n)
-  }
-
   /** Controller Action serving Tweets as JSON going backwards in time from the
     * specified time in milliseconds from epoch
-    * @param  millis time in millis
     * @param  results number of results to return
     */
-  def tweetsJson(millis: Long, results: Int) = Action {
+  def rawTweetsJson(results: Int) = Action {
     implicit request => Async {
-      latestTweetQuery(results).map {
-        tweets => Ok(content = Json.toJson(tweets))
+      Tweet.jsonLatestN(results).map {
+        tweets => Ok(content = Json.toJson(tweets.reverse))
       }
     }
   }
-
-  /** Controller Action serving Tweets as JSON going backwards in time from when
-    * the action is called
-    * @param    results number of results to return
-    */
-  def tweetsJsonLatest(results: Int) = tweetsJson(DateTime.now.getMillis, results)
 
   /** Controller Action replaying the specified number of tweets from
     * the specified time in millis forward.
@@ -123,7 +96,7 @@ object Twitter extends Controller {
     implicit request =>
       Async {
         /** Pre-load the last 500 tweets through WebSocket connection  */
-        latestTweetQuery(results).map {
+        Tweet.jsonLatestN(results).map {
 
           tweets => tweets.reverse.foreach {
             x => {

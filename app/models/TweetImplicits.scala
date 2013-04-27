@@ -12,8 +12,8 @@ object TweetImplicits {
   implicit val DefaultJodaDateReads = jodaDateReads("EEE MMM dd HH:mm:ss Z YYYY")
 
   // Fields specified because of hierarchical json. Otherwise:
-  // implicit val streamTweetReads = Json.reads[StreamTweet]
-  implicit val TweetReads = (
+  // implicit val TweetReads = Json.reads[Tweet]
+  implicit val TweetReads: Reads[Tweet] = (
     (__ \ "id").read[Long] and
     (__ \ "user" \ "screen_name").read[String] and
     (__ \ "text").read[String] and
@@ -21,7 +21,6 @@ object TweetImplicits {
     (__ \ "user" \ "profile_image_url").read[String] and
     (__ \ "geo").read[Option[String]] and
     (__ \ "created_at").read[DateTime])(Tweet(_, _, _, 0, 0, _, _, _, _))
-//    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, 0, 0, _, _, _, _, None))
 
   implicit val TweetJsonWriter = new Writes[Tweet] {
     def writes(t: Tweet): JsValue = {

@@ -1,15 +1,14 @@
 package models
 
-import birdwatchUtils.Mongo
 import org.joda.time.DateTime
 import scala.concurrent.Future
-import play.api.libs.json._
-import reactivemongo.api.Cursor
-import models.TweetImplicits._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.json.{ JsObject, JsValue }
+
+import reactivemongo.api.Cursor
 import play.modules.reactivemongo.json.collection.JSONCollection
-import play.modules.reactivemongo.json.collection.JSONCollection
-import play.api.libs.json.JsObject
+
+import birdwatchUtils.Mongo
 
 /** Simple Tweet representation */
 case class Tweet(
@@ -21,8 +20,7 @@ case class Tweet(
   location: String,
   profile_image_url: String,
   geo: Option[String],
-  created_at: DateTime//,
-  //id: Option[BSONObjectID]
+  created_at: DateTime
 )
 
 /** holds the state for GUI updates (list of recent tweets and a word frequency map), used for Json serialization */

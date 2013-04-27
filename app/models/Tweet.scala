@@ -36,7 +36,7 @@ case class TweetState(
   n: Int
 )
 
-/** Companion object for */
+/** Data Access Object for Tweets*/
 object Tweet {
   def rawTweets: JSONCollection = Mongo.db.collection[JSONCollection]("rawTweets")
   def insertJson(json: JsValue) = rawTweets.insert[JsValue](json)

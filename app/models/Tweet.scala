@@ -3,7 +3,7 @@ package models
 import org.joda.time.DateTime
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{ Json, JsObject, JsValue }
 
 import reactivemongo.api.Cursor
 import play.modules.reactivemongo.json.collection.JSONCollection

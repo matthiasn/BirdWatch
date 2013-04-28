@@ -18,9 +18,7 @@ case class Tweet(
   text: String,
   wordCount: Int,
   charCount: Int,
-  location: String,
   profile_image_url: String,
-  geo: Option[String],
   created_at: DateTime
 )
 

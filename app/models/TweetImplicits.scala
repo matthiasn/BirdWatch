@@ -17,10 +17,8 @@ object TweetImplicits {
     (__ \ "id").read[Long] and
     (__ \ "user" \ "screen_name").read[String] and
     (__ \ "text").read[String] and
-    (__ \ "user" \ "location").read[String] and
     (__ \ "user" \ "profile_image_url").read[String] and
-    (__ \ "geo").read[Option[String]] and
-    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, 0, 0, _, _, _, _))
+    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, 0, 0, _, _))
 
   implicit val TweetJsonWriter = new Writes[Tweet] {
     def writes(t: Tweet): JsValue = {
@@ -29,7 +27,6 @@ object TweetImplicits {
         "img_url" ->  ("/images/" + t.tweet_id.toString + ".png"),
         "screen_name" -> t.screen_name,
         "text" -> t.text,
-        "location" -> t.location,
         "timestamp" -> t.created_at.getMillis,
         "timeAgo" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString)
     }

@@ -6,6 +6,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{ Json, JsObject, JsValue }
 
 import reactivemongo.api.Cursor
+import reactivemongo.core.commands.Count
 import play.modules.reactivemongo.json.collection.JSONCollection
 
 import birdwatchUtils.Mongo
@@ -17,9 +18,7 @@ case class Tweet(
   text: String,
   wordCount: Int,
   charCount: Int,
-  location: String,
   profile_image_url: String,
-  geo: Option[String],
   created_at: DateTime
 )
 
@@ -39,9 +38,15 @@ object Tweet {
   def rawTweets: JSONCollection = Mongo.db.collection[JSONCollection]("rawTweets")
   def insertJson(json: JsValue) = rawTweets.insert[JsValue](json)
 
+  /** get collection size from MongoDB (fast) */
+  def count: Future[Int] = Mongo.db.command(Count("rawTweets"))
+
   /** Query latest tweets (lazily evaluated stream, result could be of arbitrary size) */
   def jsonLatestN(n: Int): Future[List[JsObject]] = {
-    val cursor: Cursor[JsObject] = rawTweets.find(Json.obj()).sort(Json.obj("_id" -> -1)).cursor[JsObject]
+    val cursor: Cursor[JsObject] = rawTweets
+      .find(Json.obj("text" -> Json.obj("$exists" -> true)))
+      .sort(Json.obj("_id" -> -1))
+      .cursor[JsObject]
     cursor.toList(n)
   }
 }

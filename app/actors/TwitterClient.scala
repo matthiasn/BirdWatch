@@ -40,7 +40,8 @@ object TwitterClient {
 
   /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
     * as Tweet instances and publishes them to eventStream. */
-  val tweetIteratee = Iteratee.foreach[Array[Byte]] { chunk =>
+  val tweetIteratee = Iteratee.foreach[Array[Byte]] {
+    chunk =>
       lastTweetReceived = DateTime.now()
 
       val chunkString = new String(chunk, "UTF-8")
@@ -48,6 +49,7 @@ object TwitterClient {
 
       /** persist any valid JSON from Twitter Streaming API */
       Tweet.insertJson(json)
+      Tweet.count.map(c => println("Tweets: " + c))
 
       TweetReads.reads(json) match {
         case JsSuccess(t: Tweet, _) => {

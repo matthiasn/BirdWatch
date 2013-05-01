@@ -24,7 +24,6 @@ object Twitter extends Controller {
   /** Serves HTML page (static content at the moment, page gets updates through WebSocket) */
   def tweetFeed() = Action {
     implicit req => {
-      println("tweetFeedSSE")
       RequestLogger.log(req);
       /** Creates enumerator and channel for Strings through Concurrent factory object
         * for pushing data through the WebSocket */
@@ -92,7 +91,7 @@ object Twitter extends Controller {
     * @param  delayMS milliseconds of delay between replayed tweets
     */
   def tweetReplay(results: Int, delayMS: Int) = Action {
-    implicit request =>
+    implicit request => {
       Async {
         /** Pre-load the last 500 tweets through WebSocket connection  */
         Tweet.jsonLatestN(results).map {
@@ -108,6 +107,7 @@ object Twitter extends Controller {
             Ok(Json.toJson(tweets))
         }
       }
+    }
   }
 
 }

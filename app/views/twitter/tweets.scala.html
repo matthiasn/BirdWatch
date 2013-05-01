@@ -35,11 +35,9 @@
   birdWatch = birdWatch || {};
 
    $(function() {
-     var ws = new WebSocket("@routes.Twitter.tweetFeed().webSocketURL()");
-          
-     ws.onopen = function(msg){
-       $('#preview').remove();
-     }
+     var feed = new EventSource('/tweetFeed');
+     // receive message
+     feed.addEventListener('message', handler, false);
 
      // Overall viewmodel for this screen, along with initial state
      var TweetsViewModel = function() { this.tweets = ko.observableArray(); };
@@ -52,8 +50,8 @@
      var lastCloudUpdate = new Date().getTime() - 2000;
      var lastBarUpdate = new Date().getTime() - 2000;
      var lastWordsUpdate = new Date().getTime() - 2000;
-     
-     ws.onmessage = function(msg){
+
+     function handler(msg){
        var data = JSON.parse(msg.data);
 
        viewModel.tweets.unshift(data.tweetList[0]);
@@ -94,9 +92,7 @@
    <a href="https://github.com/matthiasn/BirdWatch"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png" alt="Fork me on GitHub" /></a>
     
    <div id="description">
-       
-       
-       
+
        <h1><a href="http://matthiasnehlsen.com">Check out my Blog</a> - BirdWatch</h1>
        
        <p>This is a sample reactive web application making use of Play Framework 2.1 visualizing a live stream of tweets from the Twitter Streaming API.

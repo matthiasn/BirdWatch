@@ -1,8 +1,8 @@
 package controllers
 
-import akka.actor.{Actor, Props}
+import akka.actor.{PoisonPill, Actor, Props}
 
-import play.api.libs.json.{ JsError, JsSuccess, Json }
+import play.api.libs.json.{JsValue, JsError, JsSuccess, Json}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.{Iteratee, Concurrent}
 import play.api.mvc.{Action, Controller, WebSocket}
@@ -11,6 +11,7 @@ import actors._
 import birdwatchUtils._
 import models._
 import models.TweetImplicits._
+import play.api.libs.EventSource
 
 /** Controller for serving main BirdWatch page including the WebSocket connection */
 object Twitter extends Controller {
@@ -20,16 +21,14 @@ object Twitter extends Controller {
     implicit req => RequestLogger.log(req); Ok(views.html.twitter.tweets(TwitterClient.topics))
   }
 
-  /** Serves WebSocket connection updating the UI */
-  def tweetFeed = WebSocket.using[String] {
-    implicit request =>
-
-    /** Iteratee for incoming messages on WebSocket connection, currently ignored */
-      val in = Iteratee.ignore[String]
-
+  /** Serves HTML page (static content at the moment, page gets updates through WebSocket) */
+  def tweetFeed() = Action {
+    implicit req => {
+      println("tweetFeedSSE")
+      RequestLogger.log(req);
       /** Creates enumerator and channel for Strings through Concurrent factory object
         * for pushing data through the WebSocket */
-      val (out, wsOutChannel) = Concurrent.broadcast[String]
+      val (out, wsOutChannel) = Concurrent.broadcast[JsValue]
 
       /** "side-effecting" function to do something with the accumulator without possibly mutating it
         * e.g. push some computation to a WebSocket enumerator or to log file
@@ -37,14 +36,13 @@ object Twitter extends Controller {
         * @return   Unit, cannot interfere with the accumulator inside the Iteratee
         */
       def interceptTweetList(tweetList: List[Tweet]) {
-
         val (charCountMean, charCountStdDev) = Calc.stdDev(tweetList.map(t => t.charCount))
         val (wordCountMean, wordCountStdDev) = Calc.stdDev(tweetList.map(t => t.wordCount))
 
         val tweetState = TweetState(tweetList.take(1), WordCount.topN(tweetList, 250), charCountMean, charCountStdDev,
           wordCountMean, wordCountStdDev, tweetList.size)
 
-        wsOutChannel.push(Json.stringify(Json.toJson(tweetState)))
+        wsOutChannel.push(Json.toJson(tweetState))
       }
 
       /** Creates enumerator and channel for Tweets through Concurrent factory object */
@@ -72,7 +70,8 @@ object Twitter extends Controller {
           }
         }
       }
-      (in, out) // in and out channels for WebSocket connection
+      Ok.feed(out &> EventSource()).as("text/event-stream")
+    }
   }
 
   /** Controller Action serving Tweets as JSON going backwards in time from the
@@ -106,7 +105,7 @@ object Twitter extends Controller {
               }
             }
           }
-          Ok(Json.toJson(tweets))
+            Ok(Json.toJson(tweets))
         }
       }
   }

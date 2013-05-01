@@ -49,7 +49,7 @@ object TwitterClient {
 
       /** persist any valid JSON from Twitter Streaming API */
       Tweet.insertJson(json)
-      Tweet.count.map(c => println("Tweets: " + c))
+      //Tweet.count.map(c => println("Tweets: " + c))
 
       TweetReads.reads(json) match {
         case JsSuccess(t: Tweet, _) => {

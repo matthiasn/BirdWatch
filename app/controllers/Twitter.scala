@@ -1,11 +1,11 @@
 package controllers
 
-import akka.actor.{PoisonPill, Actor, Props}
+import akka.actor.{ Actor, Props}
 
 import play.api.libs.json.{JsValue, JsError, JsSuccess, Json}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.iteratee.{Iteratee, Concurrent}
-import play.api.mvc.{Action, Controller, WebSocket}
+import play.api.libs.iteratee.Concurrent
+import play.api.mvc.{Action, Controller}
 
 import actors._
 import birdwatchUtils._
@@ -21,10 +21,10 @@ object Twitter extends Controller {
     implicit req => RequestLogger.log(req); Ok(views.html.twitter.tweets(TwitterClient.topics))
   }
 
-  /** Serves HTML page (static content at the moment, page gets updates through WebSocket) */
+  /** Serves Server Sent Events over HTTP connection */
   def tweetFeed() = Action {
     implicit req => {
-      RequestLogger.log(req);
+      RequestLogger.log(req)
       /** Creates enumerator and channel for Strings through Concurrent factory object
         * for pushing data through the WebSocket */
       val (out, wsOutChannel) = Concurrent.broadcast[JsValue]

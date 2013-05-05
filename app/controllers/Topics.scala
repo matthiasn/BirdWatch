@@ -4,7 +4,7 @@ import play.api.mvc.{Action, Controller}
 
 import birdwatchUtils.Conf
 import actors.ActorStage
-import actors.TwitterClient.{RemoveTopic, RestartListening, AddTopic}
+import actors.TwitterClient.{RemoveTopic, AddTopic}
 
 object Topics extends Controller {
 
@@ -13,7 +13,6 @@ object Topics extends Controller {
     implicit req => {
       if (token == Conf.get("topics.accessToken")) {        
         ActorStage.tweetClientSupervisor ! AddTopic(topic)
-        ActorStage.tweetClientSupervisor ! RestartListening
 
         Ok("Topic added: " + topic + "\nToken: " + token)
       }
@@ -26,7 +25,6 @@ object Topics extends Controller {
     implicit req => {
       if (token == Conf.get("topics.accessToken")) {
         ActorStage.tweetClientSupervisor ! RemoveTopic(topic)
-        ActorStage.tweetClientSupervisor ! RestartListening
 
         Ok("Topic removed: " + topic + "\nToken: " + token)
       }

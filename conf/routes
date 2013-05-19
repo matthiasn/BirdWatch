@@ -4,16 +4,20 @@
 
 GET /                         controllers.Twitter.tweetList
 
+# had to do this because I did not want people bookmarking the IP, which was on Twitter...
 GET /tweets                   controllers.Application.named
+
 GET /tweetStateFeed           controllers.Twitter.tweetStateFeed
+GET /tweetFeed                controllers.Twitter.tweetFeed
+GET /rawTweetFeed             controllers.Twitter.rawTweetFeed
+
+GET /accessLog                controllers.AccessLog.index(token: String ?="")
 
 GET /topic/add                controllers.Topics.add(topic: String, token: String ?="")
 GET /topic/remove             controllers.Topics.remove(topic: String, token: String ?="")
 
 # Tweets as JSON
 GET /tweets/latest            controllers.Twitter.rawTweetsJson(results: Int ?= 50)
-
-GET /tweets/replay/:results    controllers.Twitter.tweetReplay(results: Int, delayMS: Int ?= 250)
 
 GET /images/:filename         controllers.Images.getImage(filename: String)
 

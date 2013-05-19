@@ -6,10 +6,10 @@ import akka.event.Logging
 import akka.actor.OneForOneStrategy
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.iteratee.Iteratee
+import play.api.libs.iteratee.{Concurrent, Iteratee}
 import play.api.libs.ws.WS
 import play.api.libs.oauth.{RequestToken, ConsumerKey, OAuthCalculator}
-import play.api.libs.json.{JsError, JsSuccess, Json}
+import play.api.libs.json.{JsValue, JsError, JsSuccess, Json}
 
 import org.joda.time.DateTime
 import scala.concurrent.duration._
@@ -20,6 +20,10 @@ import models.TweetImplicits._
 
 /** Actors related to image processing */
 object TwitterClient {
+
+  /** system-wide channels / enumerators for attaching SSE streams to clients*/
+  val (tweetsOut, tweetChannel) = Concurrent.broadcast[Tweet]
+  val (rawTweetsOut, rawTweetsChannel) = Concurrent.broadcast[JsValue]
 
   /** OAuth consumer key and secret for Twitter Streaming API */
   val consumerKey = ConsumerKey(Conf.get("twitter.consumer.key"), Conf.get("twitter.consumer.secret"))
@@ -52,6 +56,8 @@ object TwitterClient {
         case JsSuccess(t: Tweet, _) => {
           //ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
           ActorStage.system.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
+          tweetChannel.push(WordCount.wordsChars(stripImageUrl(t)))
+          rawTweetsChannel.push(json)
         }
         case JsError(msg) => println(chunkString)
       }

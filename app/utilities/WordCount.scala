@@ -1,4 +1,4 @@
-package birdwatchUtils
+package utilities
 
 import play.api.libs.iteratee.Iteratee
 import scala.collection.immutable.ListMap

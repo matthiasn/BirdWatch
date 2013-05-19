@@ -6,7 +6,7 @@ import play.modules.reactivemongo.MongoController
 import reactivemongo.api.gridfs.Implicits.DefaultReadFileReader
 import reactivemongo.bson.{BSONString, BSONDocument}
 
-import birdwatchUtils._
+import utilities._
 
 /** Controller for serving locally cached twitter profile images */
 object Images extends Controller with MongoController {

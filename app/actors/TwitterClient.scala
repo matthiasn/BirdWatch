@@ -15,7 +15,7 @@ import org.joda.time.DateTime
 import scala.concurrent.duration._
 
 import models._
-import birdwatchUtils._
+import utilities._
 import models.TweetImplicits._
 
 /** Actors related to image processing */
@@ -50,7 +50,8 @@ object TwitterClient {
 
       TweetReads.reads(json) match {
         case JsSuccess(t: Tweet, _) => {
-          ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
+          //ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
+          ActorStage.system.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
         }
         case JsError(msg) => println(chunkString)
       }

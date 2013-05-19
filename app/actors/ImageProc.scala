@@ -21,7 +21,7 @@ import reactivemongo.api.gridfs.Implicits._
 import scala.concurrent.duration._
 
 import models._
-import birdwatchUtils._
+import utilities._
 
 /** Actors related to image processing */
 object ImageProc {

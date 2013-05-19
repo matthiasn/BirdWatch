@@ -1,4 +1,4 @@
-package birdwatchUtils
+package utilities
 
 import scala.collection.immutable.ListMap
 

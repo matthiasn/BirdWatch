@@ -1,6 +1,5 @@
 import actors.TwitterClient.AddTopic
 import play.api.GlobalSettings
-import birdwatchUtils.Mongo
 import actors.ActorStage
 
 object Global extends GlobalSettings {
@@ -9,5 +8,4 @@ object Global extends GlobalSettings {
     ActorStage.tweetClientSupervisor ! AddTopic("daft punk")
   } 
    
-  override def onStop(application: play.api.Application) { Mongo.connection.close() }
 }

@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc.{Action, Controller}
 
-import birdwatchUtils.Conf
+import utilities.Conf
 import actors.ActorStage
 import actors.TwitterClient.{RemoveTopic, AddTopic}
 

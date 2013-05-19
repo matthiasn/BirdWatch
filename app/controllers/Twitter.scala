@@ -8,7 +8,7 @@ import play.api.libs.iteratee.Concurrent
 import play.api.mvc.{Action, Controller}
 
 import actors._
-import birdwatchUtils._
+import utilities._
 import models._
 import models.TweetImplicits._
 import play.api.libs.EventSource
@@ -22,7 +22,7 @@ object Twitter extends Controller {
   }
 
   /** Serves Server Sent Events over HTTP connection */
-  def tweetFeed() = Action {
+  def tweetStateFeed() = Action {
     implicit req => {
       RequestLogger.log(req)
       /** Creates enumerator and channel for Strings through Concurrent factory object

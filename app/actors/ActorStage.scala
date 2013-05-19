@@ -3,6 +3,7 @@ package actors
 import akka.actor.{ ActorSystem, Props }
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /** "Singleton" object for BirdWatch actor system (name ActorSystem already taken). 
  *   Well, actors perform on stages...  */

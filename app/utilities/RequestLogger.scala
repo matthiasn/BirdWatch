@@ -1,4 +1,4 @@
-package birdwatchUtils
+package utilities
 
 import play.api.mvc.{Request, AnyContent}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext

@@ -9,17 +9,19 @@ import reactivemongo.api.Cursor
 import reactivemongo.core.commands.Count
 import play.modules.reactivemongo.json.collection.JSONCollection
 
-import birdwatchUtils.Mongo
+import utilities.Mongo
 import play.api.libs.iteratee.Enumerator
 
 /** Simple Tweet representation */
-case class Tweet(
+case class Tweet(                  
   tweet_id: Long,
   screen_name: String,
   text: String,
+  followers: Int,
   wordCount: Int,
   charCount: Int,
   profile_image_url: String,
+  profile_image_url_orig: String,
   created_at: DateTime
 )
 
@@ -65,11 +67,11 @@ object Tweet {
     * without going from newest backwards
     * @param n number of results to enumerate over
     **/
-  def enumJsonLatestN(n: Int): Enumerator[JsObject] = {
-    val cursor: Cursor[JsObject] = rawTweets
+  def enumJsonLatestN(n: Int): Enumerator[JsValue] = {
+    val cursor: Cursor[JsValue] = rawTweets
       .find(Json.obj("text" -> Json.obj("$exists" -> true)))
       .sort(Json.obj("_id" -> -1))
-      .cursor[JsObject]
+      .cursor[JsValue]
     cursor.enumerate(n)
   }
 }

@@ -16,6 +16,8 @@ object ApplicationBuild extends Build {
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
     resolvers += "Local Play Repository" at "file://usr/local/Cellar/play/2.1.0/libexec/repository/local",
-    resolvers += "Sonatype Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
+    resolvers += "Sonatype Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/",
+    requireJs += "main.js",
+    scalacOptions += "-feature"
   )
 }

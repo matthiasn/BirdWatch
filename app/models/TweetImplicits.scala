@@ -6,7 +6,7 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.libs.json.Reads.jodaDateReads
 
-import birdwatchUtils.TimeInterval
+import utilities.TimeInterval
 
 object TweetImplicits {
   implicit val DefaultJodaDateReads = jodaDateReads("EEE MMM dd HH:mm:ss Z YYYY")
@@ -17,17 +17,23 @@ object TweetImplicits {
     (__ \ "id").read[Long] and
     (__ \ "user" \ "screen_name").read[String] and
     (__ \ "text").read[String] and
+    (__ \ "user" \ "followers_count").read[Int] and
     (__ \ "user" \ "profile_image_url").read[String] and
-    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, 0, 0, _, _))
+    (__ \ "user" \ "profile_image_url").read[String] and
+    (__ \ "created_at").read[DateTime])(Tweet(_, _, _, _, 0, 0, _, _, _))
 
   implicit val TweetJsonWriter = new Writes[Tweet] {
     def writes(t: Tweet): JsValue = {
       Json.obj(
         "tweet_id" -> t.tweet_id,
-        "img_url" ->  ("/images/" + t.tweet_id.toString + ".png"),
+        "img_url_local" ->  ("/images/" + t.tweet_id.toString + ".png"),
+        "img_url" ->  t.profile_image_url_orig,
         "screen_name" -> t.screen_name,
         "text" -> t.text,
-        "timestamp" -> t.created_at.getMillis,
+        "followers" -> t.followers,
+        "words" -> t.wordCount,
+        "chars" -> t.charCount,
+        "timestamp" -> t.created_at,
         "timeAgo" -> TimeInterval(DateTime.now.getMillis - t.created_at.getMillis).toString)
     }
   }

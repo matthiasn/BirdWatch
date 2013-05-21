@@ -61,7 +61,7 @@ define(function () {
                 .text(function(d) { return d.key; })
                 .on("end", draw);
 
-            svg = d3.select("#wordcloud").append("svg").attr("width", w).attr("height", h);
+            svg = d3.select("#wordCloud").append("svg").attr("width", w).attr("height", h);
 
             background = svg.append("g");
             vis = svg.append("g").attr("transform", "translate(" + [w >> 1, h >> 1] + ")");

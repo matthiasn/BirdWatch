@@ -56,16 +56,30 @@ object Twitter extends Controller {
     }
   }
 
-  def tweetsJson(n: Int) = Action {
+  def tweetsJson2(n: Int, q: String) = Action {
     implicit request => Async {
-      Tweet.jsonLatestN(n).map {
+      println(q)
+      Tweet.jsonLatestN(Math.min(n, 1000)).map {  // sorry, won't let you kill my server with LARGE results
         rawTweets => {
           val tweets = rawTweets.map {
             x => TweetReads.reads(x) match {
-              case JsSuccess(t: Tweet, _) => Some(t)
+              case JsSuccess(t: Tweet, _)  => if (t.text.toLowerCase.contains(q.toLowerCase)) Some(t) else None
               case _ => None
             }
           }
+          val tweets2 = tweets collect { case Some(t) => t }
+          Ok(Json.toJson(tweets2))
+        }
+      }
+    }
+  }
+
+  def tweetsJson(n: Int, q: String) = Action {
+    implicit request => Async {
+      Tweet.jsonLatestN(Math.min(n, 1000)).map {  // sorry, won't let you kill my server with LARGE results
+        rawTweets => {
+          val tweets = rawTweets.map { x => TweetReads.reads(x) } collect { case JsSuccess(t, _) if (t.text.toLowerCase.contains(q.toLowerCase)) => t}
+          //val tweets2 = tweets collect { case Some(t) => t }
           Ok(Json.toJson(tweets))
         }
       }

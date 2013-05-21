@@ -41,7 +41,7 @@ object Tweet {
       .cursor[JsObject]
     cursor.toList(n)
   }
-
+  
   /** Enumerate latest Tweets (descending order). Usage example:
     *
     * val dbTweetIteratee = Iteratee.foreach[JsObject] {

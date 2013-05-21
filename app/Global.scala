@@ -8,6 +8,8 @@ object Global extends GlobalSettings {
     /** setting up TwitterClient with interesting search words 
       * the should be UI for this, the REST endpoints exist */
     ActorStage.tweetClientSupervisor ! AddTopic("daft punk")
+    ActorStage.tweetClientSupervisor ! AddTopic("obama")
+
   } 
    
 }

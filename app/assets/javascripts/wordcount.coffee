@@ -10,7 +10,7 @@ define ->
         cases[word.toLowerCase()] = word
         word = word.toLowerCase()
         me.tags[word] = (me.tags[word] or 0) + 1
-
+       
     me = {}
     maxLength = 25
     # From Jonathan Feinberg's cue.language, see lib/cue.language/license.txt.
@@ -18,12 +18,9 @@ define ->
     punctuation = /[!"&()*+,-\.\/:;<=>?\[\\\]^`\{|\}~]+/g
     wordSeparators = /[\s\u3031-\u3035\u309b\u309c\u30a0\u30fc\uff70]+/g
     discard = /^(@|https?:)/
+  
     me.tags = {}
-
-    #me.tags = d3.entries(me.tags).sort(function(a, b) { return b.value - a.value; });
-    #me.tags.forEach(function(d) { d.key = cases[d.key]; });
-    #me.topN = (n) ->
-
+  
     me.insert = (data) -> data.forEach (d) -> parseText d.text
 
     me.getWords = -> d3.entries(me.tags).sort((a, b) -> b.value - a.value)

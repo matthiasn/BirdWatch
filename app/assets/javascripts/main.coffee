@@ -8,7 +8,6 @@ require ["barchart", "wordcloud", "wordcount"], (chart, cloud, wordCount) ->
     tweet = JSON.parse(msg.data)
     wordCount.insert [tweet]
     viewModel.tweets.unshift tweet
-    console.log viewModel
     viewModel.tweets.pop()
     if (new Date().getTime() - lastBarUpdate) > 800
       barchart.redraw wordCount.getWords()
@@ -29,7 +28,7 @@ require ["barchart", "wordcloud", "wordcount"], (chart, cloud, wordCount) ->
   wordCloud = cloud.WordCloud(700, 500, 250)
   wordCount = wordCount.WordCount()
 
-  d3.json "/tweets/latest?n=500", (tweets) ->
+  d3.json "/tweets/latest?n=1000", (tweets) ->
     wordCount.insert tweets
     barchart.redraw wordCount.getWords()
     wordCloud.redraw wordCount.getWords()    

@@ -1,19 +1,18 @@
 # BirdWatch Routes
 # ~~~~
 
-GET /                         controllers.Twitter.tweetList
+GET /                         controllers.Twitter.tweetList(q: String ?="")
 
 # had to do this because I did not want people bookmarking the IP, which was on Twitter...
 GET /tweets                   controllers.Application.named
-
-GET /tweetFeed                controllers.Twitter.tweetFeed
+GET /tweetFeed                controllers.Twitter.tweetFeed(q: String ?= "")
 GET /rawTweetFeed             controllers.Twitter.rawTweetFeed
 
 GET /accessLog                controllers.AccessLog.index(token: String ?="")
 
 # Adding and removing topics from Twitter stream
-GET /topic/add                controllers.Topics.add(topic: String, token: String ?="")
-GET /topic/remove             controllers.Topics.remove(topic: String, token: String ?="")
+GET /topic/add                controllers.Topics.add(topic: String ?="", token: String ?="")
+GET /topic/remove             controllers.Topics.remove(topic: String ?="", token: String ?="")
 
 # Tweets as JSON
 GET /tweets/latest            controllers.Twitter.tweetsJson(n: Int ?= 50)

@@ -17,7 +17,7 @@ require ["barChart", "wordCloud", "wordCount"], (chart, cloud, wordCount) ->
       lastCloudUpdate = new Date().getTime()
 
   # start feed, attach listener
-  feed = new EventSource("/tweetFeed")
+  feed = new EventSource("/tweetFeed?q=" + $("#queryString").text())
   feed.addEventListener "message", handler, false
 
   # ViewModel for knockout.js driven list of Tweets
@@ -27,11 +27,11 @@ require ["barChart", "wordCloud", "wordCount"], (chart, cloud, wordCount) ->
   ko.applyBindings viewModel
 
   barchart = chart.BarChart()
-  wordCloud = cloud.WordCloud(700, 500, 350)
+  wordCloud = cloud.WordCloud(700, 500, 250)
   wordCount = wordCount.WordCount()
 
   # preload latest 1000 tweets
-  d3.json "/tweets/latest?n=1000", (tweets) ->
+  d3.json "/tweets/latest?n=10", (tweets) ->
     wordCount.insert tweets
     barchart.redraw wordCount.getWords()
     wordCloud.redraw wordCount.getWords()

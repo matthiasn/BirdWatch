@@ -115,8 +115,10 @@ li {
     left:100px;
     width:1000px;
 }
-
 #description li {
     list-style:disc;
     height: 0.8em;
+}
+#queryString {
+    visibility: hidden;
 }

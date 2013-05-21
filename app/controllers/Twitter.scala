@@ -16,21 +16,23 @@ import play.api.libs.EventSource
 object Twitter extends Controller {
 
   /** Serves HTML page (static content at the moment, page gets updates through WebSocket) */
-  def tweetList = Action {
+  def tweetList(q: String) = Action {
     implicit req => {
-      RequestLogger.log(req, "/tweetList", 200)
-      Ok(views.html.twitter.tweets(TwitterClient.topics))
+      RequestLogger.log(req, "/tweetList?q=" + q, 200)
+      Ok(views.html.twitter.tweets(TwitterClient.topics, q))
     }
   }
   
   /** Enumeratee: Tweet to JsValue adapter */
   val tweetToJson: Enumeratee[Tweet, JsValue] = Enumeratee.map[Tweet] { t => Json.toJson(t) }
 
+  def textFilter(s: String) = Enumeratee.filter[Tweet] { t: Tweet => t.text.toLowerCase.contains(s.toLowerCase) }
+
   /** Serves Tweets as Server Sent Events over HTTP connection */
-  def tweetFeed = Action {
+  def tweetFeed(q: String) = Action {
     implicit req => {
       RequestLogger.log(req, "/tweetFeed", 200)
-      Ok.stream(TwitterClient.tweetsOut &> tweetToJson &> EventSource()).as("text/event-stream")
+      Ok.stream(TwitterClient.tweetsOut &> textFilter(q) &> tweetToJson &> EventSource()).as("text/event-stream")
     }
   }
 

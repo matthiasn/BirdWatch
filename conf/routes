@@ -1,5 +1,4 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
+# BirdWatch Routes
 # ~~~~
 
 GET /                         controllers.Twitter.tweetList
@@ -7,12 +6,12 @@ GET /                         controllers.Twitter.tweetList
 # had to do this because I did not want people bookmarking the IP, which was on Twitter...
 GET /tweets                   controllers.Application.named
 
-GET /tweetStateFeed           controllers.Twitter.tweetStateFeed
 GET /tweetFeed                controllers.Twitter.tweetFeed
 GET /rawTweetFeed             controllers.Twitter.rawTweetFeed
 
 GET /accessLog                controllers.AccessLog.index(token: String ?="")
 
+# Adding and removing topics from Twitter stream
 GET /topic/add                controllers.Topics.add(topic: String, token: String ?="")
 GET /topic/remove             controllers.Topics.remove(topic: String, token: String ?="")
 
@@ -23,8 +22,5 @@ GET /rawTweets/latest         controllers.Twitter.rawTweetsJson(n: Int ?= 50)
 GET /tweets/replay/:results    controllers.Twitter.tweetReplay(results: Int, delayMS: Int ?= 250)
 
 GET /images/:filename         controllers.Images.getImage(filename: String)
-
-GET /status                   controllers.WebSockets.statusPage()
-GET /statusFeed               controllers.WebSockets.statusFeed()
 
 GET /assets/*file             controllers.Assets.at(path="/public", file)

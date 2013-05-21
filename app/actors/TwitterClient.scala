@@ -54,8 +54,6 @@ object TwitterClient {
 
       TweetReads.reads(json) match {
         case JsSuccess(t: Tweet, _) => {
-          //ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
-          ActorStage.system.eventStream.publish(WordCount.wordsChars(stripImageUrl(t)))
           tweetChannel.push(WordCount.wordsChars(stripImageUrl(t)))
           rawTweetsChannel.push(json)
         }

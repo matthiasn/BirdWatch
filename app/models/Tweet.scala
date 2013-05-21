@@ -25,17 +25,6 @@ case class Tweet(
   created_at: DateTime
 )
 
-/** holds the state for GUI updates (list of recent tweets and a word frequency map), used for Json serialization */
-case class TweetState(
-  tweetList: List[Tweet],
-  wordMap: Map[String, Int],
-  charCountMean: Double,
-  charCountStdDev: Double,
-  wordCountMean: Double,
-  wordCountStdDev: Double,
-  n: Int
-)
-
 /** Data Access Object for Tweets*/
 object Tweet {
   def rawTweets: JSONCollection = Mongo.db.collection[JSONCollection]("rawTweets")

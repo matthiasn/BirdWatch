@@ -23,7 +23,9 @@ import scala.concurrent.duration._
 import models._
 import utilities._
 
-/** Actors related to image processing */
+/** Actors related to image processing 
+  * Usage: ActorStage.imgSupervisor ! WordCount.wordsChars(stripImageUrl(t))
+  * */
 object ImageProc {
 
   case class Proc(client: ActorRef, t: Tweet)  
@@ -38,16 +40,13 @@ object ImageProc {
       case _: Exception                  => Restart
     }
     
-    override val log = Logging(context.system, this)
-     
+    override val log = Logging(context.system, this)   
     override def preStart() { log.debug("Starting") }
-
     override def preRestart(reason: Throwable, message: Option[Any]) {
       log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
     }
         
     val conversionRouter = context.actorOf(Props[ImageProc.ConversionActor].withRouter(RoundRobinRouter(nrOfInstances = 5)), name = "ConvRouter")
-    
     val retrievalActor = context.actorOf(Props(new ImageProc.RetrievalActor( Some(conversionRouter))), "Retriever")
     
    /** Receives Tweet. If Tweet doesn't have a MongoID yet (not previously processed) it will be forwarded
@@ -60,8 +59,7 @@ object ImageProc {
         retrievalActor ! Proc(sender, t)        // forward tweet to retrieval actor (child)
       }
       case DoneProc(p: Proc) => {
-        log.debug("DONE: " + p.t.profile_image_url)
-        
+        log.debug("DONE: " + p.t.profile_image_url)  
         eventStream.publish(DoneProc(p))
         eventStream.publish(p.t)
       }

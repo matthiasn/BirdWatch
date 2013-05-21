@@ -17,7 +17,10 @@ GET /topic/add                controllers.Topics.add(topic: String, token: Strin
 GET /topic/remove             controllers.Topics.remove(topic: String, token: String ?="")
 
 # Tweets as JSON
-GET /tweets/latest            controllers.Twitter.rawTweetsJson(results: Int ?= 50)
+GET /tweets/latest            controllers.Twitter.tweetsJson(n: Int ?= 50)
+GET /rawTweets/latest         controllers.Twitter.rawTweetsJson(n: Int ?= 50)
+
+GET /tweets/replay/:results    controllers.Twitter.tweetReplay(results: Int, delayMS: Int ?= 250)
 
 GET /images/:filename         controllers.Images.getImage(filename: String)
 

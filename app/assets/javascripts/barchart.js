@@ -146,6 +146,8 @@ define(function () {
                 .style("stroke", "#ccc");
         };
 
+        me.init();
+        
         return me;
     }
   }

@@ -18,13 +18,13 @@ import play.api.libs.EventSource
 object Twitter extends Controller {
 
   /** Serves HTML page (static content at the moment, page gets updates through WebSocket) */
-  def tweetList() = Action {
+  def tweetList = Action {
     implicit req => {
       RequestLogger.log(req, "/tweetList", 200)
       Ok(views.html.twitter.tweets(TwitterClient.topics))
     }
   }
-
+  
   /** Serves Server Sent Events over HTTP connection */
   def tweetStateFeed() = Action {
     implicit req => {
@@ -96,19 +96,59 @@ object Twitter extends Controller {
       RequestLogger.log(req, "/rawTweetFeed", 200)
       Ok.stream(TwitterClient.rawTweetsOut &> EventSource()).as("text/event-stream")
     }
-
   }
 
   /** Controller Action serving Tweets as JSON going backwards in time from the
     * specified time in milliseconds from epoch
-    * @param  results number of results to return
+    * @param n number of results to return
     */
-  def rawTweetsJson(results: Int) = Action {
+  def rawTweetsJson(n: Int) = Action {
     implicit request => Async {
-      Tweet.jsonLatestN(results).map {
-        tweets => Ok(content = Json.toJson(tweets.reverse))
+      Tweet.jsonLatestN(n).map {
+        tweets => Ok(Json.toJson(tweets))
       }
     }
   }
 
+  def tweetsJson(n: Int) = Action {
+    implicit request => Async {
+      Tweet.jsonLatestN(n).map {
+        rawTweets => {
+          val tweets = rawTweets.map {
+            x => TweetReads.reads(x) match {
+              case JsSuccess(t: Tweet, _) => Some(t)
+              case _ => None
+            }
+          }
+          Ok(Json.toJson(tweets))
+        }
+      }
+    }
+  }
+
+  /** Controller Action replaying the specified number of tweets from
+    * the specified time in millis forward.
+    * @param n number of results to return
+    * @param delayMS milliseconds of delay between replayed tweets
+    */
+  def tweetReplay(n: Int, delayMS: Int) = Action {
+    implicit req => {
+      RequestLogger.log(req, "/tweets/replay/" + n, 200)
+      Async {
+        println("replay " + n)
+        Tweet.jsonLatestN(n).map {
+          tweets => tweets.reverse.foreach {
+            x => {
+              TweetReads.reads(x) match {
+                case JsSuccess(t: Tweet, _) => TwitterClient.tweetChannel.push(WordCount.wordsChars(t)); Thread.sleep(delayMS)
+                case JsError(msg) =>
+              }
+            }
+          }
+            Ok(Json.toJson(tweets))
+        }
+      }
+    }
+  }
+  
 }

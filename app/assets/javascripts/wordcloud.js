@@ -1,26 +1,20 @@
 define(function () {
   return {
-    WordCloud: function () {
-        var me = {};
-
-        // d3 word cloud
-        var fill = d3.scale.category20b();
-        var w = 700, h = 500;
-        var maxEntries = 250;
-        var words = [];
-        var max;
-        var scale = 1;
-        var complete = 0;
-        var keyword = "";
-        var tags;
-        var fontSize;
-        var maxLength = 30;
-        var statusText = d3.select("#status");
-
-        var layout, svg, background, vis;
+    WordCloud: function (w, h, maxEntries) {
+        var me = {},
+            fill = d3.scale.category20b(),
+            words = [],
+            max,
+            scale = 1,
+            complete = 0,
+            tags,
+            fontSize,
+            layout,
+            svg,
+            background,
+            vis;
 
         function draw(data, bounds) {
-            statusText.style("display", "none");
             scale = bounds ? Math.min(
                 w / Math.abs(bounds[1].x - w / 2),
                 w / Math.abs(bounds[0].x - w / 2),
@@ -67,31 +61,28 @@ define(function () {
                 .text(function(d) { return d.key; })
                 .on("end", draw);
 
-            svg = d3.select("#wordcloud").append("svg")
-                .attr("width", w)
-                .attr("height", h);
+            svg = d3.select("#wordcloud").append("svg").attr("width", w).attr("height", h);
 
             background = svg.append("g");
             vis = svg.append("g").attr("transform", "translate(" + [w >> 1, h >> 1] + ")");
         };
 
         function generate() {
-            layout
-                .font("Impact")
-                .spiral("archimedean");
+            layout.font("Impact").spiral("archimedean");
             fontSize = d3.scale.log().range([10, 85]);
 
             if (tags.length) fontSize.domain([+tags[tags.length - 1].value || 1, +tags[0].value]);
             complete = 0;
             words = [];
             layout.stop().words(tags.slice(0, max = Math.min(tags.length, maxEntries))).start();
-            lastUpdated = new Date().getTime();
         }
 
         me.redraw = function(dataSource) {
             tags = dataSource;
             generate();
         };
+        
+        me.init();
 
         return me;
     }

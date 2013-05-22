@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc.{Action, Controller}
 
 import utilities.Conf
-import actors.ActorStage
+import actors.TwitterClient
 import actors.TwitterClient.{RemoveTopic, AddTopic}
 
 object Topics extends Controller {
@@ -14,7 +14,7 @@ object Topics extends Controller {
   def add(topic: String, token: String) = Action {
     implicit req => {
       if (token == accessToken) {        
-        ActorStage.tweetClientSupervisor ! AddTopic(topic)
+        TwitterClient.tweetClientSupervisor ! AddTopic(topic)
 
         Ok("Topic added: " + topic + "\nToken: " + token)
       }
@@ -26,7 +26,7 @@ object Topics extends Controller {
   def remove(topic: String, token: String) = Action {
     implicit req => {
       if (token == accessToken) {
-        ActorStage.tweetClientSupervisor ! RemoveTopic(topic)
+        TwitterClient.tweetClientSupervisor ! RemoveTopic(topic)
 
         Ok("Topic removed: " + topic + "\nToken: " + token)
       }

@@ -13,6 +13,7 @@ import play.api.libs.json.{JsValue, JsSuccess, Json}
 
 import org.joda.time.DateTime
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 import models._
 import utilities._
@@ -20,6 +21,15 @@ import models.TweetImplicits._
 
 /** Actors related to image processing */
 object TwitterClient {
+
+  /** BirdWatch actor system */
+  val system = ActorSystem("BirdWatch")
+
+  /** Supervisor for Tweet stream client */
+  val tweetClientSupervisor = system.actorOf(Props(new TwitterClient.Supervisor(system.eventStream)), "TweetClientSupervisor")
+
+  /** Checking status of Twitter Streaming API connection every 30 seconds */
+  system.scheduler.schedule(30 seconds, 30 seconds, tweetClientSupervisor, TwitterClient.CheckStatus )
 
   /** system-wide channels / enumerators for attaching SSE streams to clients*/
   val (tweetsOut, tweetChannel) = Concurrent.broadcast[Tweet]
@@ -38,6 +48,7 @@ object TwitterClient {
   case class RemoveTopic(topic: String)
   case object CheckStatus
   case object TweetReceived
+  case object Start
 
   val topics: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
 
@@ -53,13 +64,21 @@ object TwitterClient {
 
       TweetReads.reads(json) match {
         case JsSuccess(t: Tweet, _) => {
-          ActorStage.tweetClientSupervisor ! TweetReceived
+          tweetClientSupervisor ! TweetReceived
           tweetChannel.push(WordCount.wordsChars(stripImageUrl(t)))
           rawTweetsChannel.push(json)
-          println(json)
+          //println(json)
         }
         case _ => println(chunkString)
       }
+  }
+
+  val url = "https://stream.twitter.com/1.1/statuses/filter.json?track="
+  def start() {
+    WS.url(url + topics.mkString("%2C").replace(" ", "%20"))
+      .withTimeout(-1)
+      .sign(OAuthCalculator(consumerKey, accessToken))
+      .get(_ => tweetIteratee)
   }
 
   class Supervisor(eventStream: akka.event.EventStream) extends Actor with ActorLogging {
@@ -72,8 +91,6 @@ object TwitterClient {
       log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
     }
 
-    val twitterClient = context.actorOf(Props(new TwitterClient()), "TwitterClient")
-
     var lastTweetReceived: Long = 0L
     var tweetCount = 0L
     var lastCountSent = 0L
@@ -81,57 +98,19 @@ object TwitterClient {
 
     /** Receives control messages for starting / restarting supervised client and adding or removing topics */
     def receive = {
-
-      case AddTopic(topic)  => {
-        topics.add(topic)
-        twitterClient ! Kill
-      }
-
-      case RemoveTopic(topic) => {
-        topics.remove(topic)
-        twitterClient ! Kill
-      }
+      case AddTopic(topic)  => topics.add(topic)
+      case RemoveTopic(topic) => topics.remove(topic)
+      case Start => start()
+      case CheckStatus => if ((DateTime.now.getMillis - lastTweetReceived) > 30000) start()
 
       case TweetReceived => {
         val now = DateTime.now.getMillis 
         lastTweetReceived = now
         tweetCount += 1
-        if (now - lastCountSent > 10000) {
+        if (now - lastCountSent > 5000) {
           countChannel.push(tweetCount.toString)
           lastCountSent = now
         }
-      }
-
-      case CheckStatus => {
-        if ((DateTime.now.getMillis - lastTweetReceived) > 15000) {
-          twitterClient ! Kill
-        }
-      }
-    }
-
-    /** Image retrieval actor, receives Tweets, retrieves the Twitter profile images for each user and passes them on to
-      * conversion actor. */
-    class TwitterClient() extends Actor with ActorLogging {
-      override val log = Logging(context.system, this)
-
-      override def preStart() {
-        println("Starting TwitterClient actor for topics: " + topics)
-      }
-
-      override def preRestart(reason: Throwable, message: Option[Any]) {
-        log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
-      }
-
-      val url = "https://stream.twitter.com/1.1/statuses/filter.json?track="
-      val conn = WS.url(url + TwitterClient.topics.mkString("%2C").replace(" ", "%20"))
-        .withTimeout(-1)
-        .sign(OAuthCalculator(consumerKey, accessToken))
-        .get(_ => TwitterClient.tweetIteratee)
-
-      /** Connects to Twitter Streaming API and retrieve a stream of Tweets for the specified search word or words.
-        * Passes received chunks of data into tweetIteratee */
-      def receive = {
-        case _ =>
       }
     }
   }

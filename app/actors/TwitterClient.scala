@@ -56,6 +56,7 @@ object TwitterClient {
           ActorStage.tweetClientSupervisor ! TweetReceived
           tweetChannel.push(WordCount.wordsChars(stripImageUrl(t)))
           rawTweetsChannel.push(json)
+          println(json)
         }
         case _ => println(chunkString)
       }

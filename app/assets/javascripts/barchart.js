@@ -61,8 +61,10 @@ define(function () {
                     .attr('stroke', 'white')
                     .attr('fill', 'steelblue')
                     .on("click", function(d) {
-                        if (q.indexOf(barLabel(d)) !=-1) window.location = "/?q=" + barLabel(d)
-                        else window.location = "/?q=" + barLabel(d)+ "," + q                        
+                        var tag = barLabel(d).replace('#','');
+                        if (q.indexOf(tag) !=-1) window.location = "/search?q=" + tag;
+                        else if (q.length > 0) window.location = "/search?q=" + tag + "," + q;
+                        else window.location = "/search?q=" + tag;
                     })
 
                 // bar value labels

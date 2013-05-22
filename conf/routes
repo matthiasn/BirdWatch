@@ -2,6 +2,7 @@
 # ~~~~
 
 GET /                         controllers.Twitter.tweetList(q: String ?="")
+GET /search                   controllers.Twitter.tweetList(q: String ?="")
 
 # had to do this because I did not want people bookmarking the IP, which was on Twitter...
 GET /tweets                   controllers.Application.named
@@ -21,7 +22,5 @@ GET /tweets/latest            controllers.Twitter.tweetsJson(n: Int ?= 50, q: St
 GET /rawTweets/latest         controllers.Twitter.rawTweetsJson(n: Int ?= 50)
 
 GET /tweets/replay/:results    controllers.Twitter.tweetReplay(results: Int, delayMS: Int ?= 250)
-
-GET /images/:filename         controllers.Images.getImage(filename: String)
 
 GET /assets/*file             controllers.Assets.at(path="/public", file)

@@ -21,9 +21,11 @@ define ->
       text.enter().append("text").attr("text-anchor", "middle")
         .attr("transform", (d) -> "translate(" + [ d.x, d.y ] + ")rotate(" + d.rotate + ")")
         .style("font-size", (d) -> d.size + "px")
-        .on("click", (d) -> 
-          if (q.indexOf(d.text) !=-1) then window.location = "/?q=" + d.text
-          else window.location = "/?q=" + d.text + "," + q
+        .on("click", (d) ->
+          tag = d.text.replace('#','')
+          if (q.indexOf(tag) !=-1) then window.location = "/search?q=" + tag
+          else if (q.length > 0) then window.location = "/search?q=" + tag + "," + q
+          else window.location = "/search?q=" + tag
         )
         .style("opacity", 1e-6)
         .transition().duration(1000).style("opacity", 1)

@@ -37,9 +37,13 @@ require ["barchart", "wordCloud", "wordCount"], (chart, cloud, wordCount) ->
     if (new Date().getTime() - lastCloudUpdate) > 5000
       wordCloud.redraw(wordCount.getWords())
       lastCloudUpdate = new Date().getTime()
+
+  # start feed, attach listener
+  feed = new EventSource("/tweetFeed?q=" + q)
+  feed.addEventListener "message", handler, false
   
   # preload latest 2000 tweets
-  d3.json "/tweets/latest?n=2000&q=" + q, (tweets) ->
+  d3.json "/tweets/latest?n=1000&q=" + q, (tweets) ->
     wordCount.insert tweets
     barchart.init(wordCount.getWords().slice(0, barChartLimit))
     wordCloud.redraw wordCount.getWords()
@@ -47,8 +51,4 @@ require ["barchart", "wordCloud", "wordCount"], (chart, cloud, wordCount) ->
     
     tweetsShort = tweets.slice(0, showTweets).reverse()
     viewModel.tweets.unshift t for t in tweetsShort
-
-    # start feed, attach listener
-    feed = new EventSource("/tweetFeed?q=" + q)
-    feed.addEventListener "message", handler, false
     

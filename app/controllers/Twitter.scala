@@ -69,12 +69,12 @@ object Twitter extends Controller {
 
   def tweetsJson(n: Int, q: String) = Action {
     implicit request => Async {
-      Tweet.jsonLatestN(Math.min(n, 2000)).map {  // sorry, won't let you kill my server with LARGE results
+      Tweet.jsonLatestN(Math.min(n, 5000)).map {  // sorry, won't let you kill my server with LARGE n
         rawTweets => {
-          val tweets = rawTweets.map { x => TweetReads.reads(x) } collect { 
+          val tweets = rawTweets.par.map { x => TweetReads.reads(x) }.par.collect { 
             case JsSuccess(t, _) if containsAll(t, q) => t
           }
-          Ok(Json.toJson(tweets))
+          Ok(Json.toJson(tweets.toList))
         }
       }
     }

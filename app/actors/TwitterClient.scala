@@ -22,27 +22,6 @@ import models.TweetImplicits._
 /** Actors related to image processing */
 object TwitterClient {
 
-  /** BirdWatch actor system */
-  val system = ActorSystem("BirdWatch")
-
-  /** Supervisor for Tweet stream client */
-  val tweetClientSupervisor = system.actorOf(Props(new TwitterClient.Supervisor(system.eventStream)), "TweetClientSupervisor")
-
-  /** Checking status of Twitter Streaming API connection every 30 seconds */
-  system.scheduler.schedule(30 seconds, 30 seconds, tweetClientSupervisor, TwitterClient.CheckStatus )
-
-  /** system-wide channels / enumerators for attaching SSE streams to clients*/
-  val (tweetsOut, tweetChannel) = Concurrent.broadcast[Tweet]
-  val (rawTweetsOut, rawTweetsChannel) = Concurrent.broadcast[JsValue]
-  val (countOut, countChannel) = Concurrent.broadcast[String]
-
-  /** OAuth consumer key and secret for Twitter Streaming API */
-  val consumerKey = ConsumerKey(Conf.get("twitter.consumer.key"), Conf.get("twitter.consumer.secret"))
-  /** OAuth request key and secret for Twitter Streaming API */
-  val accessToken = RequestToken(Conf.get("twitter.accessToken.key"), Conf.get("twitter.accessToken.secret"))
-
-  def stripImageUrl(t: Tweet) = t.copy(profile_image_url = t.profile_image_url.replaceAll("http://", "").replaceAll("_normal", ""))
-
   /** Protocol for Twitter Client actors */
   case class AddTopic(topic: String)
   case class RemoveTopic(topic: String)
@@ -50,6 +29,17 @@ object TwitterClient {
   case object TweetReceived
   case object Start
 
+  /** BirdWatch actor system, supervisor, timer*/
+  val system = ActorSystem("BirdWatch")
+  val tweetClientSupervisor = system.actorOf(Props(new TwitterClient.Supervisor(system.eventStream)), "TweetClientSupervisor")
+  system.scheduler.schedule(30 seconds, 30 seconds, tweetClientSupervisor, TwitterClient.CheckStatus )
+
+  /** system-wide channels / enumerators for attaching SSE streams to clients*/
+  val (tweetsOut, tweetChannel) = Concurrent.broadcast[Tweet]
+  val (rawTweetsOut, rawTweetsChannel) = Concurrent.broadcast[JsValue]
+  val (countOut, countChannel) = Concurrent.broadcast[String]
+  
+  /** Subscription topics stored in this MUTABLE collection */
   val topics: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
 
   /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
@@ -65,9 +55,8 @@ object TwitterClient {
       TweetReads.reads(json) match {
         case JsSuccess(t: Tweet, _) => {
           tweetClientSupervisor ! TweetReceived
-          tweetChannel.push(WordCount.wordsChars(stripImageUrl(t)))
+          tweetChannel.push(WordCount.wordsChars(t))
           rawTweetsChannel.push(json)
-          //println(json)
         }
         case _ => println(chunkString)
       }
@@ -77,7 +66,7 @@ object TwitterClient {
   def start() {
     WS.url(url + topics.mkString("%2C").replace(" ", "%20"))
       .withTimeout(-1)
-      .sign(OAuthCalculator(consumerKey, accessToken))
+      .sign(OAuthCalculator(Conf.consumerKey, Conf.accessToken))
       .get(_ => tweetIteratee)
   }
 

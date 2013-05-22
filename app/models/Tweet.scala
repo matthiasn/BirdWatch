@@ -21,7 +21,6 @@ case class Tweet(
   wordCount: Int,
   charCount: Int,
   profile_image_url: String,
-  profile_image_url_orig: String,
   created_at: DateTime
 )
 

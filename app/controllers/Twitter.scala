@@ -25,8 +25,17 @@ object Twitter extends Controller {
   
   /** Enumeratee: Tweet to JsValue adapter */
   val tweetToJson: Enumeratee[Tweet, JsValue] = Enumeratee.map[Tweet] { t => Json.toJson(t) }
+  
+  def containsAll(t: Tweet, q: String): Boolean = {
+    val tokens = q.toLowerCase.split(",")
+    val matches = tokens.foldLeft(0) {
+      case (acc, token) if (t.text.toLowerCase.contains(token)) =>  acc + 1
+      case (acc, token) => acc
+    }
+    matches == tokens.length 
+  }
 
-  def textFilter(s: String) = Enumeratee.filter[Tweet] { t: Tweet => t.text.toLowerCase.contains(s.toLowerCase) }
+  def textFilter(q: String) = Enumeratee.filter[Tweet] { t: Tweet => containsAll(t, q) }
 
   /** Serves Tweets as Server Sent Events over HTTP connection */
   def tweetFeed(q: String) = Action {
@@ -35,6 +44,8 @@ object Twitter extends Controller {
       Ok.stream(TwitterClient.tweetsOut &> textFilter(q) &> tweetToJson &> EventSource()).as("text/event-stream")
     }
   }
+  
+  def countFeed = Action { Ok.stream(TwitterClient.countOut &> EventSource()).as("text/event-stream") }
 
   /** Serves raw Tweets as Server Sent Events over HTTP connection */
   def rawTweetFeed = Action {
@@ -56,30 +67,13 @@ object Twitter extends Controller {
     }
   }
 
-  def tweetsJson2(n: Int, q: String) = Action {
-    implicit request => Async {
-      println(q)
-      Tweet.jsonLatestN(Math.min(n, 1000)).map {  // sorry, won't let you kill my server with LARGE results
-        rawTweets => {
-          val tweets = rawTweets.map {
-            x => TweetReads.reads(x) match {
-              case JsSuccess(t: Tweet, _)  => if (t.text.toLowerCase.contains(q.toLowerCase)) Some(t) else None
-              case _ => None
-            }
-          }
-          val tweets2 = tweets collect { case Some(t) => t }
-          Ok(Json.toJson(tweets2))
-        }
-      }
-    }
-  }
-
   def tweetsJson(n: Int, q: String) = Action {
     implicit request => Async {
-      Tweet.jsonLatestN(Math.min(n, 1000)).map {  // sorry, won't let you kill my server with LARGE results
+      Tweet.jsonLatestN(Math.min(n, 2000)).map {  // sorry, won't let you kill my server with LARGE results
         rawTweets => {
-          val tweets = rawTweets.map { x => TweetReads.reads(x) } collect { case JsSuccess(t, _) if (t.text.toLowerCase.contains(q.toLowerCase)) => t}
-          //val tweets2 = tweets collect { case Some(t) => t }
+          val tweets = rawTweets.map { x => TweetReads.reads(x) } collect { 
+            case JsSuccess(t, _) if containsAll(t, q) => t
+          }
           Ok(Json.toJson(tweets))
         }
       }

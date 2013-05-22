@@ -1,5 +1,5 @@
 define ->
-  WordCloud: (w, h, maxEntries) ->
+  WordCloud: (w, h, maxEntries, q) ->
     me = {}
     fill = d3.scale.category20b()
     fontSize = d3.scale.log().range([ 10, 85 ])
@@ -21,7 +21,10 @@ define ->
       text.enter().append("text").attr("text-anchor", "middle")
         .attr("transform", (d) -> "translate(" + [ d.x, d.y ] + ")rotate(" + d.rotate + ")")
         .style("font-size", (d) -> d.size + "px")
-        .on("click", (d) -> load d.text)
+        .on("click", (d) -> 
+          if (q.indexOf(d.text) !=-1) then window.location = "/?q=" + d.text
+          else window.location = "/?q=" + d.text + "," + q
+        )
         .style("opacity", 1e-6)
         .transition().duration(1000).style("opacity", 1)
         .style("font-family", (d) -> d.font)

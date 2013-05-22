@@ -1,7 +1,0 @@
-#Reverse proxy for Play Framework 2.1 with Nginx >= 1.3.13
-
-I wanted to run the BirdWatch application on port 80 on my Ubuntu server but I wasn't particularly comfortable with running it as root. Sure, I could have done a port redirect but I wanted more flexibility to run multiple applications, all accessible through the regular http port. So I decided to give **[Nginx](http://nginx.org)** a try. My initial attempt to set it up according to the play **[documentation](http://www.playframework.com/documentation/2.1.0/HTTPServer)** worked only partially, it didn't work with the WebSocket connection. 
-
-Another problem, besides the missing directives on WebSocket proxying, was that Nginx directly supports WebSocket proxying only with versions >= 1.3.13. Through the Ubuntu repositories you currently only get 1.2 something. Now you could either build from source or follow these **[instructions](https://github.com/mozilla-services/circus/issues/371)**, which worked fine for me on Ubuntu 12.10.
-
-The config file in this directory is adapted accordingly and seems to work fine, also for the WebSocket connection, thus achieving my goal of not exposing the Play application directly. Next I should block access to port 9000 from the outside world.

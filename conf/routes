@@ -8,6 +8,8 @@ GET /tweets                   controllers.Application.named
 GET /tweetFeed                controllers.Twitter.tweetFeed(q: String ?= "")
 GET /rawTweetFeed             controllers.Twitter.rawTweetFeed
 
+GET /countFeed                controllers.Twitter.countFeed
+
 GET /accessLog                controllers.AccessLog.index(token: String ?="")
 
 # Adding and removing topics from Twitter stream

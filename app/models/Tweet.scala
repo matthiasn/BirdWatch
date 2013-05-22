@@ -41,6 +41,14 @@ object Tweet {
       .cursor[JsObject]
     cursor.toList(n)
   }
+
+  def jsonMatchingLatestN(q: String, n: Int): Future[List[JsObject]] = {
+    val cursor: Cursor[JsObject] = rawTweets
+      .find(Json.obj("text" -> Json.obj("$exists" -> true)))
+      .sort(Json.obj("_id" -> -1))
+      .cursor[JsObject]
+    cursor.toList(n)
+  }
   
   /** Enumerate latest Tweets (descending order). Usage example:
     *

@@ -9,7 +9,6 @@ object Global extends GlobalSettings {
       * the should be UI for this, the REST endpoints exist */
     ActorStage.tweetClientSupervisor ! AddTopic("daft punk")
     ActorStage.tweetClientSupervisor ! AddTopic("obama")
-
   } 
    
 }

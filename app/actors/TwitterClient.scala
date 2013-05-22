@@ -9,7 +9,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.{Concurrent, Iteratee}
 import play.api.libs.ws.WS
 import play.api.libs.oauth.{RequestToken, ConsumerKey, OAuthCalculator}
-import play.api.libs.json.{JsValue, JsError, JsSuccess, Json}
+import play.api.libs.json.{JsValue, JsSuccess, Json}
 
 import org.joda.time.DateTime
 import scala.concurrent.duration._
@@ -24,6 +24,7 @@ object TwitterClient {
   /** system-wide channels / enumerators for attaching SSE streams to clients*/
   val (tweetsOut, tweetChannel) = Concurrent.broadcast[Tweet]
   val (rawTweetsOut, rawTweetsChannel) = Concurrent.broadcast[JsValue]
+  val (countOut, countChannel) = Concurrent.broadcast[String]
 
   /** OAuth consumer key and secret for Twitter Streaming API */
   val consumerKey = ConsumerKey(Conf.get("twitter.consumer.key"), Conf.get("twitter.consumer.secret"))
@@ -44,8 +45,6 @@ object TwitterClient {
     * as Tweet instances and publishes them to eventStream. */
   val tweetIteratee = Iteratee.foreach[Array[Byte]] {
     chunk =>
-      ActorStage.tweetClientSupervisor ! TweetReceived
-
       val chunkString = new String(chunk, "UTF-8")
       val json = Json.parse(chunkString)
 
@@ -54,10 +53,11 @@ object TwitterClient {
 
       TweetReads.reads(json) match {
         case JsSuccess(t: Tweet, _) => {
+          ActorStage.tweetClientSupervisor ! TweetReceived
           tweetChannel.push(WordCount.wordsChars(stripImageUrl(t)))
           rawTweetsChannel.push(json)
         }
-        case JsError(msg) => println(chunkString)
+        case _ => println(chunkString)
       }
   }
 
@@ -74,7 +74,8 @@ object TwitterClient {
     val twitterClient = context.actorOf(Props(new TwitterClient()), "TwitterClient")
 
     var lastTweetReceived: Long = 0L
-    var tweetCount = 0
+    var tweetCount = 0L
+    var lastCountSent = 0L
     Tweet.count.map(c => tweetCount += c) // only ask MongoDB for collection size once
 
     /** Receives control messages for starting / restarting supervised client and adding or removing topics */
@@ -91,9 +92,13 @@ object TwitterClient {
       }
 
       case TweetReceived => {
-        lastTweetReceived = DateTime.now.getMillis
+        val now = DateTime.now.getMillis 
+        lastTweetReceived = now
         tweetCount += 1
-        println("Tweets collected: " + tweetCount)  // use UI update instead
+        if (now - lastCountSent > 10000) {
+          countChannel.push(tweetCount.toString)
+          lastCountSent = now
+        }
       }
 
       case CheckStatus => {

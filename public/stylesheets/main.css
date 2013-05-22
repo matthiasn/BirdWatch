@@ -122,3 +122,8 @@ li {
 #queryString {
     visibility: hidden;
 }
+#count {
+    position: absolute;
+    left: 530px;
+    top: 20px;
+}

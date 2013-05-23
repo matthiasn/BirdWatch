@@ -1,14 +1,10 @@
 package actors
 
-import akka.actor.SupervisorStrategy.Restart
 import akka.actor._
-import akka.event.Logging
-import akka.actor.OneForOneStrategy
-
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.{Concurrent, Iteratee}
 import play.api.libs.ws.WS
-import play.api.libs.oauth.{RequestToken, ConsumerKey, OAuthCalculator}
+import play.api.libs.oauth.OAuthCalculator
 import play.api.libs.json.{JsValue, JsSuccess, Json}
 
 import org.joda.time.DateTime
@@ -19,8 +15,8 @@ import models._
 import utilities._
 import models.TweetImplicits._
 
-/** Actors related to image processing */
 object TwitterClient {
+  val url = "https://stream.twitter.com/1.1/statuses/filter.json?track="
 
   /** Protocol for Twitter Client actors */
   case class AddTopic(topic: String)
@@ -31,8 +27,8 @@ object TwitterClient {
 
   /** BirdWatch actor system, supervisor, timer*/
   val system = ActorSystem("BirdWatch")
-  val tweetClientSupervisor = system.actorOf(Props(new TwitterClient.Supervisor(system.eventStream)), "TweetClientSupervisor")
-  system.scheduler.schedule(30 seconds, 30 seconds, tweetClientSupervisor, TwitterClient.CheckStatus )
+  val tweetClientSupervisor = system.actorOf(Props(new Supervisor(system.eventStream)), "TweetClientSupervisor")
+  system.scheduler.schedule(60 seconds, 60 seconds, tweetClientSupervisor, CheckStatus )
 
   /** system-wide channels / enumerators for attaching SSE streams to clients*/
   val (tweetsOut, tweetChannel) = Concurrent.broadcast[Tweet]
@@ -62,24 +58,17 @@ object TwitterClient {
       }
   }
 
-  val url = "https://stream.twitter.com/1.1/statuses/filter.json?track="
+  /** Starts new WS connection to Twitter Streaming API. Twitter disconnects the previous one automatically.
+    * Can this be ended explicitly from here though, without resetting the whole underlying client? */
   def start() {
-    WS.url(url + topics.mkString("%2C").replace(" ", "%20"))
-      .withTimeout(-1)
+    println("Starting client for topics " + topics)
+    WS.url(url + topics.mkString("%2C").replace(" ", "%20")).withTimeout(-1)
       .sign(OAuthCalculator(Conf.consumerKey, Conf.accessToken))
       .get(_ => tweetIteratee)
   }
 
-  class Supervisor(eventStream: akka.event.EventStream) extends Actor with ActorLogging {
-    override val supervisorStrategy = OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1.minute) {
-      case _: Exception => Restart
-    }
-    override val log = Logging(context.system, this)
-    override def preStart() { println("TwitterClient Supervisor starting") }
-    override def preRestart(reason: Throwable, message: Option[Any]) {
-      log.error(reason, "Restarting due to [{}] when processing [{}]", reason.getMessage, message.getOrElse(""))
-    }
-
+  /** Actor taking care of monitoring the WS connection */
+  class Supervisor(eventStream: akka.event.EventStream) extends Actor {
     var lastTweetReceived: Long = 0L
     var tweetCount = 0L
     var lastCountSent = 0L
@@ -90,13 +79,13 @@ object TwitterClient {
       case AddTopic(topic)  => topics.add(topic)
       case RemoveTopic(topic) => topics.remove(topic)
       case Start => start()
-      case CheckStatus => if ((DateTime.now.getMillis - lastTweetReceived) > 30000) start()
+      case CheckStatus => if (DateTime.now.getMillis - lastTweetReceived > 30000) start()
 
       case TweetReceived => {
         val now = DateTime.now.getMillis 
         lastTweetReceived = now
         tweetCount += 1
-        if (now - lastCountSent > 5000) {
+        if (now - lastCountSent > 3000) {
           countChannel.push(tweetCount.toString)
           lastCountSent = now
         }

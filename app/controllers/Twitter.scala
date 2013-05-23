@@ -26,15 +26,17 @@ object Twitter extends Controller {
   /** Enumeratee: Tweet to JsValue adapter */
   val tweetToJson: Enumeratee[Tweet, JsValue] = Enumeratee.map[Tweet] { t => Json.toJson(t) }
   
+  /** Tests if all comma-separated words in q are contained in Tweet.text  */
   def containsAll(t: Tweet, q: String): Boolean = {
     val tokens = q.toLowerCase.split(",")
     val matches = tokens.foldLeft(0) {
-      case (acc, token) if (t.text.toLowerCase.contains(token)) =>  acc + 1
+      case (acc, token) if t.text.toLowerCase.contains(token) =>  acc + 1
       case (acc, token) => acc
     }
     matches == tokens.length 
   }
 
+  /** Filtering Enumeratee applying containsAll function*/
   def textFilter(q: String) = Enumeratee.filter[Tweet] { t: Tweet => containsAll(t, q) }
 
   /** Serves Tweets as Server Sent Events over HTTP connection */
@@ -45,6 +47,7 @@ object Twitter extends Controller {
     }
   }
   
+  /** Stream informing clients about Tweet collection size */
   def countFeed = Action { Ok.stream(TwitterClient.countOut &> EventSource()).as("text/event-stream") }
 
   /** Serves raw Tweets as Server Sent Events over HTTP connection */

@@ -15,7 +15,6 @@ object Topics extends Controller {
     implicit req => {
       if (token == accessToken) {        
         TwitterClient.tweetClientSupervisor ! AddTopic(topic)
-
         Ok("Topic added: " + topic + "\nToken: " + token)
       }
       else Unauthorized("You are not authorized to add topic " + topic)
@@ -27,7 +26,6 @@ object Topics extends Controller {
     implicit req => {
       if (token == accessToken) {
         TwitterClient.tweetClientSupervisor ! RemoveTopic(topic)
-
         Ok("Topic removed: " + topic + "\nToken: " + token)
       }
       else Unauthorized("You are not authorized to add topic " + topic)

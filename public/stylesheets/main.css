@@ -30,13 +30,6 @@ fieldset > div { margin: 12px 0; }
 .error .help-inline { padding-left: 9px; color: #B94A48; }
 footer { clear: both; text-align: right; }
 
-.chart rect {
-    stroke: white;
-    fill: steelblue;
-}
-.chart text {
-    font: 10px sans-serif;
-}
 #wordCloud {
     background-color: #FFF;
     padding: 20px;
@@ -55,7 +48,6 @@ footer { clear: both; text-align: right; }
     font-size: 36px;
     color: steelblue;
 }
-
 #tweets {
     position: absolute;
     height: 1060px;
@@ -102,22 +94,17 @@ li {
     height:auto;
     width: 500px;
 }
-#bulletChart {
-    position:absolute;
-    top: 997px;
-    left:51px;
-    width:650px;
-    heigth:200px;
-}
 #description {
     position:absolute;
     top: 1080px;
     left:100px;
     width:1000px;
+    line-height: 1.5;
 }
 #description li {
     list-style:disc;
     height: 0.8em;
+    padding-bottom: 15px;
 }
 #queryString {
     visibility: hidden;
@@ -126,4 +113,8 @@ li {
     position: absolute;
     left: 530px;
     top: 20px;
+}
+.thumbnail {
+    max-width: 48px;
+    max-height: 48px;
 }

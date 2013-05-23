@@ -12,7 +12,6 @@ object Conf {
   def get(key: String): String = current.configuration.getString(key)
     .getOrElse(throw new Exception("Couldn't find config for " + key))
 
-
   def getOrEmpty(key: String): String = current.configuration.getString(key).getOrElse("")
 
   /** OAuth consumer key and secret for Twitter Streaming API */

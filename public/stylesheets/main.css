@@ -41,19 +41,18 @@ footer { clear: both; text-align: right; }
 }
 #header h1{
     position: absolute;
-    left: 290px;
-    top: 10px;
-    font-family: Impact, Haettenschweiler, "Franklin Gothic Bold", "Arial Black", sans-serif;
+    left: 280px;
+    top: 0px;
     font-stretch: ultra-expanded;
-    font-size: 36px;
-    color: steelblue;
+    font-weight: 300;
+    font-size: 48px;
 }
 #tweets {
     position: absolute;
     height: 1060px;
     width: 700px;
     left: 750px;
-    top: 5px;
+    top: 50px;
 
 }
 .screen_name {
@@ -111,8 +110,9 @@ li {
 }
 #count {
     position: absolute;
-    left: 530px;
-    top: 20px;
+    left: 1200px;
+    top: 15px;
+    font-weight: 500;
 }
 .thumbnail {
     max-width: 48px;

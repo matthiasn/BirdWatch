@@ -30,7 +30,7 @@ define ->
     # gets wordcounts in descending order
     exports.getWords = -> d3.entries(tags).sort((a, b) -> b.value - a.value)
 
-    # resets data
+    # resets data to start over
     exports.reset = -> tags = {}
 
     exports

@@ -1,4 +1,4 @@
-require ["barchart", "wordCloud", "wordCount"], (chart, cloud, wordCount) ->
+require ["barchart", "cloud", "wordcount"], (chart, cloud, wordCount) ->
   showTweets = 10
   barChartLimit = 20
   lastCloudUpdate = new Date().getTime() - 2000

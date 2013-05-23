@@ -1,4 +1,5 @@
 define ->
+  # initializes word cloud of size w * h with maximum number of words for query string q 
   WordCloud: (w, h, maxEntries, q) ->
     me = {}
     fill = d3.scale.category20b()

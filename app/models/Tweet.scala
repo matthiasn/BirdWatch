@@ -21,9 +21,15 @@ case class Tweet(
   wordCount: Int,
   charCount: Int,
   profile_image_url: String,
-  profile_url: String,
-  created_at: DateTime
+  created_at: DateTime,
+  hashtags: Seq[HashTag],
+  user_mentions: Seq[UserMention],
+  urls: Seq[Url]
 )
+
+case class Url(url: String, expanded_url: String, display_url: String)
+case class HashTag(text: String, indices: Seq[Int])
+case class UserMention(screen_name: String, indices: Seq[Int])
 
 /** Data Access Object for Tweets*/
 object Tweet {
@@ -34,41 +40,16 @@ object Tweet {
   def count: Future[Int] = Mongo.db.command(Count("rawTweets"))
 
   /** Query latest tweets as List */
-  def jsonLatestN(n: Int): Future[List[JsObject]] = {
-    val cursor: Cursor[JsObject] = rawTweets
-      .find(Json.obj("text" -> Json.obj("$exists" -> true)))
-      .sort(Json.obj("_id" -> -1))
-      .cursor[JsObject]
-    cursor.toList(n)
-  }
+  def jsonLatestN(n: Int): Future[List[JsObject]] = rawTweets
+    .find(Json.obj("text" -> Json.obj("$exists" -> true))).sort(Json.obj("_id" -> -1)).cursor[JsObject].toList(n)
+ 
 
-  def jsonMatchingLatestN(q: String, n: Int): Future[List[JsObject]] = {
-    val cursor: Cursor[JsObject] = rawTweets
-      .find(Json.obj("text" -> Json.obj("$exists" -> true)))
-      .sort(Json.obj("_id" -> -1))
-      .cursor[JsObject]
-    cursor.toList(n)
-  }
-  
+  def jsonMatchingLatestN(q: String, n: Int): Future[List[JsObject]] = rawTweets
+      .find(Json.obj("text" -> Json.obj("$exists" -> true))).sort(Json.obj("_id" -> -1)).cursor[JsObject].toList(n)
+
   /** Enumerate latest Tweets (descending order). Usage example:
-    *
-    * val dbTweetIteratee = Iteratee.foreach[JsObject] {
-    * json => TweetReads.reads(json) match {
-    * case JsSuccess(t: Tweet, _) => tweetChannel.push(WordCount.wordsChars(t)) // word and char count for each t
-    * case JsError(msg) => println(json)
-    * }
-    * }
-    * Tweet.enumJsonLatestN(500)(dbTweetIteratee)
-    *
-    * Not currently usable: enumerates in wrong order, but there is no good way to pick latest n tweets otherwise,
-    * without going from newest backwards
     * @param n number of results to enumerate over
     **/
-  def enumJsonLatestN(n: Int): Enumerator[JsValue] = {
-    val cursor: Cursor[JsValue] = rawTweets
-      .find(Json.obj("text" -> Json.obj("$exists" -> true)))
-      .sort(Json.obj("_id" -> -1))
-      .cursor[JsValue]
-    cursor.enumerate(n)
-  }
+  def enumJsonLatestN(n: Int): Enumerator[JsValue] = rawTweets
+    .find(Json.obj("text" -> Json.obj("$exists" -> true))).sort(Json.obj("_id" -> -1)).cursor[JsValue].enumerate(n) 
 }

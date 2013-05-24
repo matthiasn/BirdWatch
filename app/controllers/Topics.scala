@@ -4,7 +4,7 @@ import play.api.mvc.{Action, Controller}
 
 import utilities.Conf
 import actors.TwitterClient
-import actors.TwitterClient.{RemoveTopic, AddTopic}
+import actors.TwitterClient.{Start, RemoveTopic, AddTopic}
 
 object Topics extends Controller {
 
@@ -15,6 +15,7 @@ object Topics extends Controller {
     implicit req => {
       if (token == accessToken) {        
         TwitterClient.tweetClientSupervisor ! AddTopic(topic)
+        TwitterClient.tweetClientSupervisor ! Start
         Ok("Topic added: " + topic + "\nToken: " + token)
       }
       else Unauthorized("You are not authorized to add topic " + topic)
@@ -26,6 +27,7 @@ object Topics extends Controller {
     implicit req => {
       if (token == accessToken) {
         TwitterClient.tweetClientSupervisor ! RemoveTopic(topic)
+        TwitterClient.tweetClientSupervisor ! Start
         Ok("Topic removed: " + topic + "\nToken: " + token)
       }
       else Unauthorized("You are not authorized to add topic " + topic)

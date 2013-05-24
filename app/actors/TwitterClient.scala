@@ -5,7 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.{Concurrent, Iteratee}
 import play.api.libs.ws.WS
 import play.api.libs.oauth.OAuthCalculator
-import play.api.libs.json.{JsValue, JsSuccess, Json}
+import play.api.libs.json.{JsError, JsValue, JsSuccess, Json}
 
 import org.joda.time.DateTime
 import scala.concurrent.duration._
@@ -44,7 +44,7 @@ object TwitterClient {
     chunk =>
       val chunkString = new String(chunk, "UTF-8")
       val json = Json.parse(chunkString)
-
+    
       /** persist any valid JSON from Twitter Streaming API */
       Tweet.insertJson(json)
 
@@ -54,7 +54,7 @@ object TwitterClient {
           tweetChannel.push(WordCount.wordsChars(t))
           rawTweetsChannel.push(json)
         }
-        case _ => println(chunkString)
+        case e: JsError => println(e)
       }
   }
 

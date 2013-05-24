@@ -51,15 +51,15 @@ footer { clear: both; text-align: right; }
     position: absolute;
     height: 1060px;
     width: 700px;
-    left: 750px;
+    left: 780px;
     top: 50px;
 
 }
 .screen_name {
     position:absolute;
     font-weight:bold;
-    top:2px;
-    left:100px;
+    top:0px;
+    left:80px;
 }
 .timeInterval {
     position:absolute;
@@ -68,13 +68,11 @@ footer { clear: both; text-align: right; }
     color:#99D;
     text-align:right;
     top:2px;
-    left:350px;
+    left:450px;
 }
-
 li {
     list-style:none;
 }
-
 #wordBars {
     position: absolute;
     height: 500px;
@@ -89,7 +87,7 @@ li {
 .tweettext {
     position:absolute;
     top:22px;
-    left:100px;
+    left:80px;
     height:auto;
     width: 500px;
 }
@@ -110,11 +108,13 @@ li {
 }
 #count {
     position: absolute;
-    left: 1200px;
+    left: 887px;
     top: 15px;
-    font-weight: 500;
+    font-weight: 600;
+    width: 400px;
 }
 .thumbnail {
+    padding-top: 2px;
     max-width: 48px;
     max-height: 48px;
 }

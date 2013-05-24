@@ -8,8 +8,15 @@ object Global extends GlobalSettings {
     /** setting up TwitterClient with interesting search words 
       * the should be UI for this, the REST endpoints exist */
     TwitterClient.tweetClientSupervisor ! AddTopic("daft punk")
+    TwitterClient.tweetClientSupervisor ! AddTopic("london")
+    TwitterClient.tweetClientSupervisor ! AddTopic("champions league")
     TwitterClient.tweetClientSupervisor ! AddTopic("obama")
+    TwitterClient.tweetClientSupervisor ! AddTopic("hamburg")
+    TwitterClient.tweetClientSupervisor ! AddTopic("amsterdam")
     TwitterClient.tweetClientSupervisor ! Start 
-  } 
-   
+  }
+
+  override def onStop(application: play.api.Application) {
+    TwitterClient.system.shutdown()
+  }
 }

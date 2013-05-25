@@ -4,6 +4,8 @@ require ["barchart", "cloud", "wordcount"], (chart, cloud, wordCount) ->
   lastCloudUpdate = new Date().getTime() - 2000
   lastBarUpdate = new Date().getTime() - 2000
   q = $("#queryString").text()
+  
+  $("#wordcloud_preview").remove()
 
   barchart = chart.BarChart(q)  
   wordCloud = cloud.WordCloud(700, 500, 250, q)
@@ -26,8 +28,7 @@ require ["barchart", "cloud", "wordcount"], (chart, cloud, wordCount) ->
   countFeed.addEventListener "message", countHandler, false
   
   formatTweet = (t) ->
-    console.log(t)
-    t.text = t.text.replace("RT", "<strong>RT</strong>")
+    t.text = t.text.replace("RT ", "<strong>RT </strong>")
     t.text = t.text.replace("#" + tag.text, "<a href='https://twitter.com/search?q=%23" + tag.text + " ' target='_blank'>#" + tag.text + "</a>") for tag in t.hashtags
     t.text = t.text.replace("@" + m.screen_name, "<a href='https://twitter.com/" + m.screen_name + " ' target='_blank'>@" + m.screen_name + "</a>") for m in t.user_mentions
     t.text = t.text.replace(url.url, "<a href='" + url.url + " ' target='_blank'>" + url.display_url + "</a>") for url in t.urls

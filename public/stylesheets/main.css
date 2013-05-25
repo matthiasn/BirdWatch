@@ -118,3 +118,7 @@ li {
     max-width: 48px;
     max-height: 48px;
 }
+#wordcloud_preview {
+    max-width:100%; 
+    max-height:100%;
+}

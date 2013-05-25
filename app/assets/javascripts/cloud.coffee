@@ -3,7 +3,7 @@ define ->
   WordCloud: (w, h, maxEntries, q) ->
     me = {}
     fill = d3.scale.category20b()
-    fontSize = d3.scale.log().range([ 10, 85 ])
+    fontSize = d3.scale.log().range([ 10, 85 ])    
     svg = d3.select("#wordCloud").append("svg").attr("width", w).attr("height", h)
     background = svg.append("g")
     vis = svg.append("g").attr("transform", "translate(" + [ w >> 1, h >> 1 ] + ")")

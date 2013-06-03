@@ -3,8 +3,8 @@ package controllers
 import play.api.mvc.{Action, Controller}
 
 import utilities.Conf
-import actors.TwitterClient
-import actors.TwitterClient.{Start, RemoveTopic, AddTopic}
+import actors.TweetsPublisher
+import actors.TweetsPublisher.{Start, RemoveTopic, AddTopic}
 
 object Topics extends Controller {
 
@@ -13,9 +13,9 @@ object Topics extends Controller {
   /** Serves HTML page (static content at the moment, page gets updates through WebSocket) */
   def add(topic: String, token: String) = Action {
     implicit req => {
-      if (token == accessToken) {        
-        TwitterClient.tweetClientSupervisor ! AddTopic(topic)
-        TwitterClient.tweetClientSupervisor ! Start
+      if (token == accessToken) {
+        TweetsPublisher.tweetClientSupervisor ! AddTopic(topic)
+        TweetsPublisher.tweetClientSupervisor ! Start
         Ok("Topic added: " + topic + "\nToken: " + token)
       }
       else Unauthorized("You are not authorized to add topic " + topic)
@@ -26,8 +26,8 @@ object Topics extends Controller {
   def remove(topic: String, token: String) = Action {
     implicit req => {
       if (token == accessToken) {
-        TwitterClient.tweetClientSupervisor ! RemoveTopic(topic)
-        TwitterClient.tweetClientSupervisor ! Start
+        TweetsPublisher.tweetClientSupervisor ! RemoveTopic(topic)
+        TweetsPublisher.tweetClientSupervisor ! Start
         Ok("Topic removed: " + topic + "\nToken: " + token)
       }
       else Unauthorized("You are not authorized to add topic " + topic)

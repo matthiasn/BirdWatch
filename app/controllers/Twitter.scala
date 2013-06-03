@@ -15,11 +15,11 @@ import play.api.libs.EventSource
 /** Controller for serving main BirdWatch page including the WebSocket connection */
 object Twitter extends Controller {
 
-  /** Serves HTML page (static content at the moment, page gets updates through WebSocket) */
+  /** Serves HTML page (static content for the most part, page gets updates through SSE) */
   def tweetList(q: String) = Action {
     implicit req => {
       RequestLogger.log(req, "/tweetList?q=" + q, 200)
-      Ok(views.html.twitter.tweets(TwitterClient.topics, q))
+      Ok(views.html.twitter.tweets(TweetsPublisher.topics, q))
     }
   }
   
@@ -29,11 +29,11 @@ object Twitter extends Controller {
   /** Tests if all comma-separated words in q are contained in Tweet.text  */
   def containsAll(t: Tweet, q: String): Boolean = {
     val tokens = q.toLowerCase.split(",")
-    val matches = tokens.foldLeft(0) {
-      case (acc, token) if t.text.toLowerCase.contains(token) =>  acc + 1
-      case (acc, token) => acc
+    val matches = tokens.foldLeft(0) {   // go through tokens with an accumulator for the number of matches 
+      case (acc, token) if t.text.toLowerCase.contains(token) =>  acc + 1 // increase acc by 1 if token contained in text
+      case (acc, token) => acc    // otherwise pass along acc 
     }
-    matches == tokens.length 
+    matches == tokens.length      // true if all tokens contained, otherwise matches won't match number of tokens
   }
 
   /** Filtering Enumeratee applying containsAll function*/
@@ -43,23 +43,22 @@ object Twitter extends Controller {
   def tweetFeed(q: String) = Action {
     implicit req => {
       RequestLogger.log(req, "/tweetFeed", 200)
-      Ok.stream(TwitterClient.tweetsOut &> textFilter(q) &> tweetToJson &> EventSource()).as("text/event-stream")
+      Ok.stream(TweetsConsumer.tweetsOut &> textFilter(q) &> tweetToJson &> EventSource()).as("text/event-stream")
     }
   }
   
   /** Stream informing clients about Tweet collection size */
-  def countFeed = Action { Ok.stream(TwitterClient.countOut &> EventSource()).as("text/event-stream") }
+  def countFeed = Action { Ok.stream(TweetsConsumer.countOut &> EventSource()).as("text/event-stream") }
 
   /** Serves raw Tweets as Server Sent Events over HTTP connection */
   def rawTweetFeed = Action {
     implicit req => {
       RequestLogger.log(req, "/rawTweetFeed", 200)
-      Ok.stream(TwitterClient.rawTweetsOut &> EventSource()).as("text/event-stream")
+      Ok.stream(TweetsConsumer.rawTweetsOut &> EventSource()).as("text/event-stream")
     }
   }
 
-  /** Controller Action serving Tweets as JSON going backwards in time from the
-    * specified time in milliseconds from epoch
+  /** Controller Action serving raw Tweets as JSON going backwards in time from the time of request
     * @param n number of results to return
     */
   def rawTweetsJson(n: Int) = Action {
@@ -70,9 +69,12 @@ object Twitter extends Controller {
     }
   }
 
+  /** Controller Action serving Tweets as JSON going backwards in time from the time of request, filtered by q
+    * @param n number of results to return
+    */
   def tweetsJson(n: Int, q: String) = Action {
     implicit request => Async {
-      Tweet.jsonLatestN(Math.min(n, 5000)).map {  // sorry, won't let you kill my server with LARGE n
+      Tweet.jsonLatestN(Math.min(n, 5000)).map {  // let's not allow really large result sets here -> constructs list
         rawTweets => {
           val tweets = rawTweets.par.map { x => TweetReads.reads(x) }.par.collect { 
             case JsSuccess(t, _) if containsAll(t, q) => t
@@ -97,7 +99,7 @@ object Twitter extends Controller {
           tweets => tweets.reverse.foreach {
             x => {
               TweetReads.reads(x) match {
-                case JsSuccess(t: Tweet, _) => TwitterClient.tweetChannel.push(WordCount.wordsChars(t)); Thread.sleep(delayMS)
+                case JsSuccess(t: Tweet, _) => TweetsConsumer.tweetChannel.push(WordCount.wordsChars(t)); Thread.sleep(delayMS)
                 case JsError(msg) =>
               }
             }

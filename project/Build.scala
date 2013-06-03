@@ -11,7 +11,8 @@ object ApplicationBuild extends Build {
     "org.reactivemongo" %% "reactivemongo" % "0.9",
     "org.reactivemongo" %% "play2-reactivemongo" % "0.9",
     "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",       
-    "com.typesafe.akka" %% "akka-testkit" % "2.1.1"
+    "com.typesafe.akka" %% "akka-testkit" % "2.1.1",
+    "com.typesafe.akka" %% "akka-zeromq" % "2.1.1"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(

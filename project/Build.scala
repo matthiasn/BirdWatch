@@ -8,6 +8,11 @@ object ApplicationBuild extends Build {
   val appVersion      = "1.0-SNAPSHOT"
 
   val appDependencies = Seq(
+    "org.webjars" %% "webjars-play" % "2.1.0-2",
+    "org.webjars" % "bootstrap" % "2.3.2",
+    "org.webjars" % "jquery" % "1.9.1",
+    "org.webjars" % "knockout" % "2.2.1",
+    "org.webjars" % "d3js" % "3.1.5",
     "org.reactivemongo" %% "reactivemongo" % "0.9",
     "org.reactivemongo" %% "play2-reactivemongo" % "0.9",
     "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",       

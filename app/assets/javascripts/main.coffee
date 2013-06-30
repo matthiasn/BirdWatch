@@ -5,6 +5,7 @@ require ["barchart", "cloud", "wordcount"], (chart, cloud, wordCount) ->
   lastBarUpdate = new Date().getTime() - 2000
   q = $("#queryString").text()
   
+  # preview for search engine / preview
   $("#wordcloud_preview").remove()
 
   barchart = chart.BarChart(q)  

@@ -23,9 +23,9 @@
 
             <div id="header">
                 <form ng-submit="newSearch()">
-                    <input type="text" name="chat" id="textField" ng-model="searchText"
+                    <input type="text" name="chat" id="textField" ng-model="searchText" autocomplete="off"
                     placeholder="Search here" class="ng-pristine ng-valid input-block-level" />
-                    <input type="button" class="btn btn-primary" id="saySomething" value="Search" ng-click="newSearch()" />
+                    <input type="button" class="btn btn-primary" id="searchBtn" value="Search" ng-click="newSearch()" />
                 </form>
             </div>
             
@@ -33,7 +33,7 @@
                 <div class="tweetlist" ng-repeat="t in lastTweets() | limitTo:50 ">
                     
                     <div class="tweet">
-                        <span><a href="http://www.twitter.com/{{ t._source.user.screen_name }}">
+                        <span><a href="http://www.twitter.com/{{ t._source.user.screen_name }}" target="_blank">
                             <img class="thumbnail" src="{{t._source.user.profile_image_url}}" />
                         </a></span>
                         <div class="username">

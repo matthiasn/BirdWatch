@@ -1,7 +1,7 @@
 'use strict';
 
-/** chatModel service, provides chat rooms (could as well be loaded from server) */
-angular.module('birdwatch.services', []).service('tools', function () {
+/** utils service */
+angular.module('birdwatch.services', []).service('utils', function () {
 
     var formatTweet = function(tweet) {
         var t = tweet._source;

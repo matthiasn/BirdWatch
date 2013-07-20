@@ -2,7 +2,7 @@
 
 /** Controllers */
 angular.module('birdwatch.controllers', ['birdwatch.services']).
-    controller('BirdWatchCtrl', function ($scope, $http, $location, tools) {
+    controller('BirdWatchCtrl', function ($scope, $http, $location, utils) {
         $scope.tweets = [];
         $scope.lastTweets = function () {
             return $scope.tweets.slice(Math.max($scope.tweets.length - 100, 1)).reverse();
@@ -20,7 +20,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
         /** handle incoming tweets: add to tweets array */
         $scope.addTweet = function (msg) {
             $scope.$apply(function () {        
-                $scope.tweets.push(tools.formatTweet(JSON.parse(msg.data)));
+                $scope.tweets.push(utils.formatTweet(JSON.parse(msg.data)));
             });
         };
 

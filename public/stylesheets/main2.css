@@ -1,7 +1,7 @@
 body {
     font-family: Helvetica, Arial, sans-serif;
     color: #333;
-    padding-left: 25px;
+    padding-left: 30px;
     background: #CCC;
 }
 
@@ -11,7 +11,7 @@ a {
     color: steelblue;
 }
 
-#chat {
+#tweets {
     min-height: 200px;
     right: 10px;
     left: 30px;
@@ -26,24 +26,25 @@ a {
     padding: 10px 10px 0 10px;
     position: relative;
     height: auto;
-    min-height: 80px;
+    min-height: 40px;
 }
 
 #textField {
     width: 420px;
     position: relative;
-    top: 4px;
+    top: 5px;
+    height: 30px
 }
 
-#userField {
-    width: 210px;
+#searchBtn {
     position: relative;
-    top: 1px;
+    left: 4px;
+    height: 32px;
 }
 
 #header {
     width: 500px;
-    height: 34px;
+    height: 36px;
     font-weight: bold;
     padding: 10px;
     background: #666;
@@ -52,35 +53,27 @@ a {
 .tweet {
     position: relative;
     height: auto;
-    min-height: 80px;
+    min-height: 70px;
 }
 
 .tweettext {
     position: absolute;
-    top: 22px;
+    top: 20px;
     left: 80px;
     height: auto;
     width: 400px;
 }
 
-#description {
-    position: absolute;
-    top: 1080px;
-    left: 100px;
-    width: 1000px;
-    line-height: 1.5;
-}
-
 .username {
     position:absolute;
-    top: 0px;
+    top: 0;
     left: 80px;
 }
 
 .username .name {
     font-weight: bold;
     font-size: 12px;
-    top: 0px;
+    top: 0;
     left: 80px;
 }
 

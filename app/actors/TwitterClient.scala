@@ -58,7 +58,6 @@ object TwitterClient {
 
       matchAndPush(json)
 
-
       TweetReads.reads(json) match {
         case JsSuccess(t: Tweet, _) => {
           supervisor ! TweetReceived

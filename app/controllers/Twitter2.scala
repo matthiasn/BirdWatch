@@ -14,6 +14,7 @@ import utilities._
 import models._
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTimeZone, DateTime}
+import scala.collection.immutable.HashSet
 
 /** Controller for serving main BirdWatch page including the SSE connection */
 object Twitter2 extends Controller {
@@ -65,8 +66,10 @@ object Twitter2 extends Controller {
 
       WS.url(elasticURL + "/_percolator/queries/").post(query).map {
         res => {
-          val queryID = (Json.parse(res.body) \ "_id").as[String]         
+          val queryID = (Json.parse(res.body) \ "_id").as[String]        
           
+          //TwitterClient.jsonTweetsChannel.push(Matches(Json.obj("type" -> "ping"), HashSet.empty[String] + queryID))
+
           // TODO: log query and ID
           
           Ok.feed(TwitterClient.jsonTweetsOut

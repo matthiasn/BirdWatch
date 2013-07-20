@@ -109,7 +109,7 @@ object TwitterClient {
   def matchAndPush(json: JsValue): Unit = {
     WS.url(elasticURL + "/queries/tweets/_percolate").post(Json.obj("doc" -> json)).map {
       res => (Json.parse(res.body) \ "matches").asOpt[Seq[String]].map {
-        m => jsonTweetsChannel.push(Matches(json, HashSet.empty[String] ++ m))
+        m => jsonTweetsChannel.push(Matches(Json.obj("_source" -> json), HashSet.empty[String] ++ m))
       }
     }
   }

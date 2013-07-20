@@ -8,8 +8,10 @@
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main2.css")">
         <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-
+        
+        <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))"></script>
+        <script src="@routes.Assets.at("javascripts/vendor/moment.min.js")"></script>
         <script src="@routes.Assets.at("javascripts/app.js")"></script>
         <script src="@routes.Assets.at("javascripts/services.js")"></script>
         <script src="@routes.Assets.at("javascripts/controllers.js")"></script> 
@@ -27,12 +29,24 @@
                 </form>
             </div>
             
-            <div id="chat">
-                <div class="msg" ng-repeat="t in lastTweets | limitTo:-3 | orderBy:reverse ">
-                    <strong>{{t.user.screen_name}}</strong><br/>
-                    {{t.text}}<br/>
-                    {{t.created_at}}<br/>
-                    Followers: {{t.user.followers_count}}<br/>
+            <div id="tweets">
+                <div class="tweetlist" ng-repeat="t in lastTweets() | limitTo:50 ">
+                    
+                    <div class="tweet">
+                        <span><a href="http://www.twitter.com/{{ t._source.user.screen_name }}">
+                            <img class="thumbnail" src="{{t._source.user.profile_image_url}}" />
+                        </a></span>
+                        <div class="username">
+                            <a href="http://www.twitter.com/{{ t._source.user.screen_name }}" target="_blank">
+                                <span class="name">{{t._source.user.name}}</span> 
+                            </a>
+                            <span class="screen">&#64;{{t._source.user.screen_name}}</span>
+                        </div>
+                        <div class="timeInterval">{{t._source.created_at | fromNow}}</div>
+                        <br />
+                        <div class="tweettext"><span ng-bind-html-unsafe="t._source.text"><br /></span></div>
+                    </div>
+                    
                 </div>
             </div>
 

@@ -1,34 +1,36 @@
 body {
-    font-family: helvetica;
+    font-family: Helvetica, Arial, sans-serif;
     color: #333;
     padding-left: 25px;
     background: #CCC;
+}
+
+a {
+    text-decoration: none;
+    font-weight: bold;
+    color: steelblue;
 }
 
 #chat {
     min-height: 200px;
     right: 10px;
     left: 30px;
-    background: #AAA;
-    width: 420px;
+    width: 520px;
 }
 
-.msg {
-    padding: 10px;
-    width: 400px;
-    background: #FF9966;
-}
-
-.others {
-    background: #99D8FF;
-}
-
-.juliet {
-    background: #FF69B4;
+.tweetlist {
+    width: 500px;
+    background: #DDD;
+    font-weight: 400;
+    font-size: 11px;
+    padding: 10px 10px 0 10px;
+    position: relative;
+    height: auto;
+    min-height: 80px;
 }
 
 #textField {
-    width: 320px;
+    width: 420px;
     position: relative;
     top: 4px;
 }
@@ -40,42 +42,66 @@ body {
 }
 
 #header {
-    color: #EEE;
-    width: 400px;
+    width: 500px;
     height: 34px;
     font-weight: bold;
     padding: 10px;
     background: #666;
 }
 
-#footer {
-    color: #EEE;
+.tweet {
+    position: relative;
+    height: auto;
+    min-height: 80px;
+}
+
+.tweettext {
+    position: absolute;
+    top: 22px;
+    left: 80px;
+    height: auto;
     width: 400px;
-    height: 34px;
+}
+
+#description {
+    position: absolute;
+    top: 1080px;
+    left: 100px;
+    width: 1000px;
+    line-height: 1.5;
+}
+
+.username {
+    position:absolute;
+    top: 0px;
+    left: 80px;
+}
+
+.username .name {
     font-weight: bold;
-    padding: 10px;
-    background: #666;
+    font-size: 12px;
+    top: 0px;
+    left: 80px;
 }
 
-.fadeIn-hide, .fadeIn-show {
-    -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.0s;
-    -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.0s;
-    -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.0s;
-    transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.0s;
+.username .screen {
+    font-size: 10px;
+    color: #999;
 }
 
-.fadeIn-show {
-    opacity:0;
+.timeInterval {
+    position: absolute;
+    font-size: 10px;
+    color:#999;
+    text-align: right;
+    top: 0;
+    left: 380px;
 }
-.fadeIn-show.fadeIn-show-active {
-    opacity:1;
-}
-.fadeIn-hide {
-    opacity:1;
-}
-.fadeIn-hide.fadeIn-hide-active {
-    opacity:0;
-}
-#roomSelect {
-    width: 80px;
+
+.thumbnail {
+    padding-top: 2px;
+    width: 60px;
+    height: 60px;
+    max-width: 60px;
+    max-height: 60px;
 }

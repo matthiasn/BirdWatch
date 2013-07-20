@@ -1,28 +1,28 @@
 # BirdWatch Routes
 # ~~~~
 
-GET     /                           controllers.Twitter.tweetList(q: String ?="")
-GET     /search                     controllers.Twitter.tweetList(q: String ?="")
+GET        /old                     controllers.Twitter.tweetList(q: String ?="")
 
-# had to do this because I did not want people bookmarking the IP, which was on Twitter...
-GET     /tweets                     controllers.Application.named
-GET     /tweetFeed                  controllers.Twitter.tweetFeed(q: String ?= "")
-GET     /rawTweetFeed               controllers.Twitter.rawTweetFeed
+GET        /search               controllers.Twitter.tweetList(q: String ?="")
+GET        /tweetFeed            controllers.Twitter.tweetFeed(q: String ?= "")
 
-GET     /countFeed                  controllers.Twitter.countFeed
+GET        /                     controllers.Twitter2.tweetList(q: String ?="")
 
-GET     /accessLog                  controllers.AccessLog.index(token: String ?="")
+GET        /tweetFeed2           controllers.Twitter2.tweetFeed(q: String ?= "*")
+
+GET        /tweets/search        controllers.Twitter2.tweetSearch(n: Int ?= 50, q: String ?="*", from: Int ?= 0)
+
+GET        /countFeed            controllers.Twitter.countFeed
+
+GET        /accessLog            controllers.AccessLog.index(token: String ?="")
 
 # Adding and removing topics from Twitter stream
-GET     /topic/add                  controllers.Topics.add(topic: String ?="", token: String ?="")
-GET     /topic/remove               controllers.Topics.remove(topic: String ?="", token: String ?="")
+GET        /topic/add            controllers.Topics.add(topic: String ?="", token: String ?="")
+GET        /topic/remove         controllers.Topics.remove(topic: String ?="", token: String ?="")
 
 # Tweets as JSON
-GET     /tweets/latest              controllers.Twitter.tweetsJson(n: Int ?= 50, q: String ?="")
-GET     /rawTweets/latest           controllers.Twitter.rawTweetsJson(n: Int ?= 50)
+GET        /tweets/latest        controllers.Twitter.tweetsJson(n: Int ?= 50, q: String ?="")
 
-GET     /tweets/replay/:results     controllers.Twitter.tweetReplay(results: Int, delayMS: Int ?= 250)
+GET        /assets/*file         controllers.Assets.at(path="/public", file)
 
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
-
-GET     /webjars/*file              controllers.WebJarAssets.at(file)
+GET        /webjars/*file        controllers.WebJarAssets.at(file)

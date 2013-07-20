@@ -1,0 +1,81 @@
+body {
+    font-family: helvetica;
+    color: #333;
+    padding-left: 25px;
+    background: #CCC;
+}
+
+#chat {
+    min-height: 200px;
+    right: 10px;
+    left: 30px;
+    background: #AAA;
+    width: 420px;
+}
+
+.msg {
+    padding: 10px;
+    width: 400px;
+    background: #FF9966;
+}
+
+.others {
+    background: #99D8FF;
+}
+
+.juliet {
+    background: #FF69B4;
+}
+
+#textField {
+    width: 320px;
+    position: relative;
+    top: 4px;
+}
+
+#userField {
+    width: 210px;
+    position: relative;
+    top: 1px;
+}
+
+#header {
+    color: #EEE;
+    width: 400px;
+    height: 34px;
+    font-weight: bold;
+    padding: 10px;
+    background: #666;
+}
+
+#footer {
+    color: #EEE;
+    width: 400px;
+    height: 34px;
+    font-weight: bold;
+    padding: 10px;
+    background: #666;
+}
+
+.fadeIn-hide, .fadeIn-show {
+    -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.0s;
+    -moz-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.0s;
+    -o-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.0s;
+    transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 1.0s;
+}
+
+.fadeIn-show {
+    opacity:0;
+}
+.fadeIn-show.fadeIn-show-active {
+    opacity:1;
+}
+.fadeIn-hide {
+    opacity:1;
+}
+.fadeIn-hide.fadeIn-hide-active {
+    opacity:0;
+}
+#roomSelect {
+    width: 80px;
+}

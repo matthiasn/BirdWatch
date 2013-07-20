@@ -1,0 +1,42 @@
+@(title: String)
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>@title</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main2.css")">
+        <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+
+        <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))"></script>
+        <script src="@routes.Assets.at("javascripts/app.js")"></script>
+        <script src="@routes.Assets.at("javascripts/services.js")"></script>
+        <script src="@routes.Assets.at("javascripts/controllers.js")"></script> 
+    </head>
+    
+    <body ng-app="birdwatch">
+        
+        <div ng-controller="BirdWatchCtrl">
+
+            <div id="header">
+                <form ng-submit="newSearch()">
+                    <input type="text" name="chat" id="textField" ng-model="searchText"
+                    placeholder="Search here" class="ng-pristine ng-valid input-block-level" />
+                    <input type="button" class="btn btn-primary" id="saySomething" value="Search" ng-click="newSearch()" />
+                </form>
+            </div>
+            
+            <div id="chat">
+                <div class="msg" ng-repeat="t in lastTweets | limitTo:-3 | orderBy:reverse ">
+                    <strong>{{t.user.screen_name}}</strong><br/>
+                    {{t.text}}<br/>
+                    {{t.created_at}}<br/>
+                    Followers: {{t.user.followers_count}}<br/>
+                </div>
+            </div>
+
+        </div>
+ 
+    </body>
+</html>

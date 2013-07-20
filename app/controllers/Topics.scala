@@ -14,8 +14,8 @@ object Topics extends Controller {
   def add(topic: String, token: String) = Action {
     implicit req => {
       if (token == accessToken) {        
-        TwitterClient.tweetClientSupervisor ! AddTopic(topic)
-        TwitterClient.tweetClientSupervisor ! Start
+        TwitterClient.supervisor ! AddTopic(topic)
+        TwitterClient.supervisor ! Start
         Ok("Topic added: " + topic + "\nToken: " + token)
       }
       else Unauthorized("You are not authorized to add topic " + topic)
@@ -26,8 +26,8 @@ object Topics extends Controller {
   def remove(topic: String, token: String) = Action {
     implicit req => {
       if (token == accessToken) {
-        TwitterClient.tweetClientSupervisor ! RemoveTopic(topic)
-        TwitterClient.tweetClientSupervisor ! Start
+        TwitterClient.supervisor ! RemoveTopic(topic)
+        TwitterClient.supervisor ! Start
         Ok("Topic removed: " + topic + "\nToken: " + token)
       }
       else Unauthorized("You are not authorized to add topic " + topic)

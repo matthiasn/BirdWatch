@@ -11,6 +11,7 @@ import play.modules.reactivemongo.json.collection.JSONCollection
 
 import utilities.Mongo
 import play.api.libs.iteratee.Enumerator
+import scala.collection.immutable.HashSet
 
 /** Simple Tweet representation */
 case class Tweet(                  
@@ -26,6 +27,8 @@ case class Tweet(
   user_mentions: Seq[UserMention],
   urls: Seq[Url]
 )
+
+case class Matches(json: JsValue, matches: HashSet[String])
 
 case class Url(url: String, expanded_url: String, display_url: String)
 case class HashTag(text: String, indices: Seq[Int])

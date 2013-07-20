@@ -4,12 +4,15 @@ import akka.actor._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.{Concurrent, Iteratee}
 import play.api.libs.ws.WS
+import play.api.libs.json.{JsError, JsValue, Json}
+import play.api.libs.json.JsSuccess
 import play.api.libs.oauth.OAuthCalculator
-import play.api.libs.json.{JsError, JsValue, JsSuccess, Json}
 
 import org.joda.time.DateTime
+
 import scala.concurrent.duration._
 import scala.language.postfixOps
+import scala.collection.immutable.HashSet
 
 import models._
 import utilities._
@@ -17,6 +20,9 @@ import models.TweetImplicits._
 
 object TwitterClient {
   val url = "https://stream.twitter.com/1.1/statuses/filter.json?track="
+
+  val twitterURL = Conf.get("twitter.URL")
+  val elasticURL = Conf.get("elastic.URL")
 
   /** Protocol for Twitter Client actors */
   case class AddTopic(topic: String)
@@ -27,12 +33,12 @@ object TwitterClient {
 
   /** BirdWatch actor system, supervisor, timer*/
   val system = ActorSystem("BirdWatch")
-  val tweetClientSupervisor = system.actorOf(Props(new Supervisor(system.eventStream)), "TweetClientSupervisor")
-  system.scheduler.schedule(60 seconds, 60 seconds, tweetClientSupervisor, CheckStatus )
+  val supervisor = system.actorOf(Props(new Supervisor(system.eventStream)), "TweetSupervisor")
+  system.scheduler.schedule(60 seconds, 60 seconds, supervisor, CheckStatus )
 
   /** system-wide channels / enumerators for attaching SSE streams to clients*/
   val (tweetsOut, tweetChannel) = Concurrent.broadcast[Tweet]
-  val (rawTweetsOut, rawTweetsChannel) = Concurrent.broadcast[JsValue]
+  val (jsonTweetsOut, jsonTweetsChannel) = Concurrent.broadcast[Matches]
   val (countOut, countChannel) = Concurrent.broadcast[String]
   
   /** Subscription topics stored in this MUTABLE collection */
@@ -44,15 +50,19 @@ object TwitterClient {
     chunk =>
       val chunkString = new String(chunk, "UTF-8")
       val json = Json.parse(chunkString)
+
+      (json \ "id_str").asOpt[String].map { id => WS.url(elasticURL + "/birdwatch/tweets/" + id).put(json) }
     
       /** persist any valid JSON from Twitter Streaming API */
       Tweet.insertJson(json)
 
+      matchAndPush(json)
+
+
       TweetReads.reads(json) match {
         case JsSuccess(t: Tweet, _) => {
-          tweetClientSupervisor ! TweetReceived
+          supervisor ! TweetReceived
           tweetChannel.push(WordCount.wordsChars(t))
-          rawTweetsChannel.push(json)
         }
         case e: JsError => println(e)
       }
@@ -62,7 +72,7 @@ object TwitterClient {
     * Can this be ended explicitly from here though, without resetting the whole underlying client? */
   def start() {
     println("Starting client for topics " + topics)
-    WS.url(url + topics.mkString("%2C").replace(" ", "%20")).withTimeout(-1)
+    WS.url(twitterURL + topics.mkString("%2C").replace(" ", "%20")).withTimeout(-1)
       .sign(OAuthCalculator(Conf.consumerKey, Conf.accessToken))
       .get(_ => tweetIteratee)
   }
@@ -89,6 +99,17 @@ object TwitterClient {
           countChannel.push(tweetCount.toString)
           lastCountSent = now
         }
+      }
+    }
+  }
+
+  /** Takes JSON and matches it with percolation queries in ElasticSearch
+    * @param json JsValue to match against 
+    */
+  def matchAndPush(json: JsValue): Unit = {
+    WS.url(elasticURL + "/queries/tweets/_percolate").post(Json.obj("doc" -> json)).map {
+      res => (Json.parse(res.body) \ "matches").asOpt[Seq[String]].map {
+        m => jsonTweetsChannel.push(Matches(json, HashSet.empty[String] ++ m))
       }
     }
   }

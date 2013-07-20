@@ -50,25 +50,6 @@ object Twitter extends Controller {
   /** Stream informing clients about Tweet collection size */
   def countFeed = Action { Ok.stream(TwitterClient.countOut &> EventSource()).as("text/event-stream") }
 
-  /** Serves raw Tweets as Server Sent Events over HTTP connection */
-  def rawTweetFeed = Action {
-    implicit req => {
-      RequestLogger.log(req, "/rawTweetFeed", 200)
-      Ok.stream(TwitterClient.rawTweetsOut &> EventSource()).as("text/event-stream")
-    }
-  }
-
-  /** Controller Action serving Tweets as JSON going backwards in time from the
-    * specified time in milliseconds from epoch
-    * @param n number of results to return
-    */
-  def rawTweetsJson(n: Int) = Action {
-    implicit request => Async {
-      Tweet.jsonLatestN(n).map {
-        tweets => Ok(Json.toJson(tweets))
-      }
-    }
-  }
 
   def tweetsJson(n: Int, q: String) = Action {
     implicit request => Async {
@@ -78,31 +59,6 @@ object Twitter extends Controller {
             case JsSuccess(t, _) if containsAll(t, q) => t
           }
           Ok(Json.toJson(tweets.toList))
-        }
-      }
-    }
-  }
-
-  /** Controller Action replaying the specified number of tweets from
-    * the specified time in millis forward.
-    * @param n number of results to return
-    * @param delayMS milliseconds of delay between replayed tweets
-    */
-  def tweetReplay(n: Int, delayMS: Int) = Action {
-    implicit req => {
-      RequestLogger.log(req, "/tweets/replay/" + n, 200)
-      Async {
-        println("replay " + n)
-        Tweet.jsonLatestN(n).map {
-          tweets => tweets.reverse.foreach {
-            x => {
-              TweetReads.reads(x) match {
-                case JsSuccess(t: Tweet, _) => TwitterClient.tweetChannel.push(WordCount.wordsChars(t)); Thread.sleep(delayMS)
-                case JsError(msg) =>
-              }
-            }
-          }
-            Ok(Json.toJson(tweets))
         }
       }
     }

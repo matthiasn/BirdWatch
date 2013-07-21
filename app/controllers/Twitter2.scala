@@ -29,19 +29,16 @@ object Twitter2 extends Controller {
   /** Serves HTML page (static content at the moment, page gets updates through WebSocket) */
   def tweetList(q: String) = Action {
     implicit req => { 
-      //Ok(views.html.twitter.tweets(TwitterClient.topics, q)) 
       Ok(views.html.index("BirdWatch"))
     }
   }
 
-  /** Controller Action serving Tweets as JSON going backwards in time 
-    * @param n number of results to return
-    * @param q query string
+  /** Controller Action serving Tweets as JSON going backwards in time. Query passed in as JSON
     */
-  def tweetSearch(n: Int, q: String, from: Int) = Action {
+  def search =  Action(parse.json) {
     implicit req => Async {
-      val url = searchUrl + q.replace(" ", "%20") + "&size=" + n + "&from=" + from + queryDefaults
-      WS.url(url).get().map { res => Ok(res.body) }
+      val url =  elasticURL + "/birdwatch/tweets/_search"      
+      WS.url(url).post(req.body).map { res => Ok(res.body) }
     }
   }
 

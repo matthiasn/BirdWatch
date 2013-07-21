@@ -10,7 +10,7 @@ GET        /                     controllers.Twitter2.tweetList(q: String ?="")
 
 GET        /tweetFeed2           controllers.Twitter2.tweetFeed(q: String ?= "*")
 
-GET        /tweets/search        controllers.Twitter2.tweetSearch(n: Int ?= 50, q: String ?="*", from: Int ?= 0)
+POST       /tweets/search        controllers.Twitter2.search
 
 GET        /countFeed            controllers.Twitter.countFeed
 
@@ -21,7 +21,7 @@ GET        /topic/add            controllers.Topics.add(topic: String ?="", toke
 GET        /topic/remove         controllers.Topics.remove(topic: String ?="", token: String ?="")
 
 # Tweets as JSON
-GET        /tweets/latest        controllers.Twitter.tweetsJson(n: Int ?= 50, q: String ?="")
+GET        /tweets/latest        controllers.Twitter.tweetsJson(n: Int ?= 0, q: String ?="")
 
 GET        /assets/*file         controllers.Assets.at(path="/public", file)
 

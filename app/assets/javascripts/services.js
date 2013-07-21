@@ -3,7 +3,7 @@
 /** utils service */
 angular.module('birdwatch.services', []).service('utils', function () {
 
-    var formatTweet = function(t) {
+    var formatTweet = function (t) {
 
         /** results from ElasticSearch are wrapped in object inside _source property */
         if (t.hasOwnProperty('_source')) { t = t._source; }
@@ -28,6 +28,20 @@ angular.module('birdwatch.services', []).service('utils', function () {
                 + " ' target='_blank'>" + urls[k].display_url + "</a>");
         }
         return t;
+    };
+
+    var buildQuery = function (queryString, size, from) {
+        return {
+            size: size,
+            from: from,
+            query: {
+                query_string: {
+                    default_field: "text",
+                    query: queryString,
+                    default_operator: "AND"
+                }
+            }
+        };
     };
     
     /** initially from Jason Davies, transformed into CoffeeScript and then back into JavaScript. Needs work. */
@@ -246,6 +260,5 @@ angular.module('birdwatch.services', []).service('utils', function () {
         return me;
     };
     
-    
-    return { formatTweet: formatTweet, wordCount: wordCount, barChart: barChart };
+    return { formatTweet: formatTweet, wordCount: wordCount, barChart: barChart, buildQuery: buildQuery };
 });

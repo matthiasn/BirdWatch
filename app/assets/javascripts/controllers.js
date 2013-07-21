@@ -45,8 +45,8 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
                 searchString = $scope.searchText;
                 $location.path(searchString);
             }
-
-            $http({method: "GET", url: "/tweets/search?q=" + searchString + "&n=5000"}).
+            
+            $http({method: "POST", data: utils.buildQuery(searchString, 5000, 0), url: "/tweets/search"}).
                 success(function (data, status, headers, config) {
                     $scope.tweets = data.hits.hits.reverse()
                         .map(function (t) { return t._source; })

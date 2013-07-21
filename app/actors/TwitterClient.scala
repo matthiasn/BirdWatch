@@ -63,7 +63,7 @@ object TwitterClient {
           supervisor ! TweetReceived
           tweetChannel.push(WordCount.wordsChars(t))
         }
-        case e: JsError => println(e)
+        case e: JsError => println(chunkString)
       }
   }
 
@@ -71,7 +71,10 @@ object TwitterClient {
     * Can this be ended explicitly from here though, without resetting the whole underlying client? */
   def start() {
     println("Starting client for topics " + topics)
-    WS.url(twitterURL + topics.mkString("%2C").replace(" ", "%20")).withTimeout(-1)
+    val url = twitterURL + topics.mkString("%2C").replace(" ", "%20")
+    println("URL: " + url)
+
+    WS.url(url).withTimeout(-1)
       .sign(OAuthCalculator(Conf.consumerKey, Conf.accessToken))
       .get(_ => tweetIteratee)
   }
@@ -106,13 +109,9 @@ object TwitterClient {
     * @param json JsValue to match against 
     */
   def matchAndPush(json: JsValue): Unit = {
-    (json \ "lang").asOpt[String].map { 
-      lang => if (lang == "en") {
-        WS.url(elasticURL + "/queries/tweets/_percolate").post(Json.obj("doc" -> json)).map {
-          res => (Json.parse(res.body) \ "matches").asOpt[Seq[String]].map {
-            m => jsonTweetsChannel.push(Matches(json, HashSet.empty[String] ++ m))
-          }
-        }
+    WS.url(elasticURL + "/queries/tweets/_percolate").post(Json.obj("doc" -> json)).map {
+      res => (Json.parse(res.body) \ "matches").asOpt[Seq[String]].map {
+        m => jsonTweetsChannel.push(Matches(json, HashSet.empty[String] ++ m))
       }
     }
   }

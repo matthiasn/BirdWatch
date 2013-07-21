@@ -8,7 +8,8 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
             return $scope.tweets
                 .slice(Math.max($scope.tweets.length - 100, 1)).reverse();
         };
-        
+
+        $scope.barchartDefined = false;
         $scope.searchText = $location.path().substr(1);
 
         /** starting new search */
@@ -32,12 +33,14 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
                 var t = utils.formatTweet(JSON.parse(msg.data));                 
                 $scope.tweets.push(t);
                 $scope.wordCount.insert([t]);
+                $scope.barchart.redraw($scope.wordCount.getWords().slice(0, 25));
             });
         };
 
+        $scope.barchart = utils.barChart("q");
+
         /** start listening for tweets with given query */
         $scope.listen = function () {
-
             $scope.wordCount = utils.wordCount();
 
             var searchString = "*";
@@ -53,6 +56,14 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
                         .map(utils.formatTweet);
 
                     $scope.wordCount.insert($scope.tweets);
+
+                    if ( $scope.barchartDefined === false ) {
+                        $scope.barchart.init($scope.wordCount.getWords().slice(0, 26));
+                        $scope.barchartDefined = true;
+                    } else {
+                        $scope.barchart.redraw($scope.wordCount.getWords().slice(0, 26))                        
+                    }
+
                     $scope.tweetFeed = new EventSource("/tweetFeed2?q=" + searchString);
                     $scope.tweetFeed.addEventListener("message", $scope.addTweet, false);
                 }).

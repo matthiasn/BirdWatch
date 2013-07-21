@@ -37,10 +37,11 @@ angular.module('birdwatch.services', []).service('utils', function () {
             query: {
                 query_string: {
                     default_field: "text",
-                    query: queryString,
+                    query: queryString + " lang:en",
                     default_operator: "AND"
                 }
-            }
+            },
+            sort: { "id": "desc" } 
         };
     };
     
@@ -70,7 +71,7 @@ angular.module('birdwatch.services', []).service('utils', function () {
                 }
             });
         };
-        stopWords = /^(i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|whose|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|will|would|should|can|could|ought|i'm|you're|he's|she's|it's|we're|they're|i've|you've|we've|they've|i'd|you'd|he'd|she'd|we'd|they'd|i'll|you'll|he'll|she'll|we'll|they'll|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|won't|wouldn't|shan't|shouldn't|can't|cannot|couldn't|mustn't|let's|that's|who's|what's|here's|there's|when's|where's|why's|how's|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|upon|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|say|says|said|shall|via)$/;
+        stopWords = /^(amp|just|now|like|til|new|get|one|i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|whose|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|will|would|should|can|could|ought|i'm|you're|he's|she's|it's|we're|they're|i've|you've|we've|they've|i'd|you'd|he'd|she'd|we'd|they'd|i'll|you'll|he'll|she'll|we'll|they'll|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|won't|wouldn't|shan't|shouldn't|can't|cannot|couldn't|mustn't|let's|that's|who's|what's|here's|there's|when's|where's|why's|how's|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|upon|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|say|says|said|shall|via)$/;
         punctuation = /[!"&()*+,-\.\/:;<=>?\[\\\]^`\{|\}~]+/g;
         wordSeparators = /[\s\u3031-\u3035\u0027\u309b\u309c\u30a0\u30fc\uff70]+/g;
         discard = /^(@|https?:)/;
@@ -96,7 +97,7 @@ angular.module('birdwatch.services', []).service('utils', function () {
         var sortedData, xScale, yScale,chart, rect, gridContainer, labelContainer, barsContainer;
 
         var valueLabelWidth = 40; // space reserved for value labels (right)
-        var barHeight = 20;       // height of one bar
+        var barHeight = 15;       // height of one bar
         var barLabelWidth = 150;  // space reserved for bar labels
         var barLabelPadding = 5;  // padding between bar and bar labels (left)
         var gridLabelHeight = 18; // space reserved for gridline labels
@@ -188,7 +189,7 @@ angular.module('birdwatch.services', []).service('utils', function () {
 
         me.init = function(initialData) {
             me.update(initialData);
-            renderBarChart();
+            render();
         };
 
         me.redraw = function(dataSource) {

@@ -37,7 +37,7 @@ object Twitter2 extends Controller {
     */
   def search =  Action(parse.json) {
     implicit req => Async {
-      val url =  elasticURL + "/birdwatch/tweets/_search"      
+      val url =  elasticURL + "/birdwatch/tweets/_search?pretty"      
       WS.url(url).post(req.body).map { res => Ok(res.body) }
     }
   }
@@ -52,12 +52,13 @@ object Twitter2 extends Controller {
   def connDeathWatch(queryID: String): Enumeratee[Matches, Matches] =
     Enumeratee.onIterateeDone{ () => println(queryID + " closed"); WS.url(elasticURL + "/_percolator/queries/" + queryID).delete() }
 
-  /** Serves Tweets as Server Sent Events over HTTP connection */
+  /** Serves Tweets as Server Sent Events over HTTP connection TODO: change to POST*/
   def tweetFeed(q: String) = Action {
     implicit req => Async {
       
       val query = Json.obj(
-        "query" -> Json.obj("query_string" -> Json.obj("default_field" -> "text", "default_operator" -> "AND", "query" -> q, "use_dis_max" -> true)), 
+        "query" -> Json.obj("query_string" -> Json.obj("default_field" -> "text", 
+          "default_operator" -> "AND", "query" -> (q + " lang:en"))), 
         "timestamp" -> dtFormat.print(new DateTime(DateTimeZone.UTC))
       )
 
@@ -65,8 +66,8 @@ object Twitter2 extends Controller {
         res => {
           val queryID = (Json.parse(res.body) \ "_id").as[String]
 
-          TwitterClient.jsonTweetsChannel.push(Matches(Json.obj("type" -> "ping"), HashSet.empty[String] + queryID))
-
+          //TwitterClient.jsonTweetsChannel.push(Matches(Json.obj("type" -> "ping"), HashSet.empty[String] +queryID))
+          
           // TODO: log query and ID
           
           Ok.feed(TwitterClient.jsonTweetsOut

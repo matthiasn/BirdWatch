@@ -2,10 +2,11 @@
 
 /** Controllers */
 angular.module('birdwatch.controllers', ['birdwatch.services']).
-    controller('BirdWatchCtrl', function ($scope, $http, $location, utils) {
+    controller('BirdWatchCtrl', function ($scope, $http, $location, utils, $timeout) {
         $scope.tweets = [];
         $scope.lastTweets = function () {
-            return $scope.tweets.slice(Math.max($scope.tweets.length - 100, 1)).reverse();
+            return $scope.tweets
+                .slice(Math.max($scope.tweets.length - 100, 1)).reverse();
         };
         
         $scope.searchText = $location.path().substr(1);
@@ -16,7 +17,15 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
             $scope.tweets = [];
             $scope.listen();
         };
-        
+
+        /** update UI every 10 seconds to keep time ago for tweets accurate */
+        $scope.updateInterval = 10000;
+        $scope.onTimeout = function (){
+            $scope.$apply();
+            updateTimeout = $timeout($scope.onTimeout, $scope.updateInterval);
+        }
+        var updateTimeout = $timeout($scope.onTimeout, $scope.updateInterval);
+
         /** handle incoming tweets: add to tweets array */
         $scope.addTweet = function (msg) {
             $scope.$apply(function () {        
@@ -27,10 +36,11 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
         /** start listening for tweets with given query */
         $scope.listen = function () {
 
-            $http({method: "GET", url: "/tweets/search?q=" + $scope.searchText + "&n=1000"}).
+            $http({method: "GET", url: "/tweets/search?q=" + $scope.searchText + "&n=10000"}).
                 success(function (data, status, headers, config) {
                     $scope.tweets = data.hits.hits.reverse();
-
+                    $scope.tweets.forEach(utils.formatTweet);
+                    
                     var searchString = "*";
                     if ($scope.searchText.length > 0) {
                         searchString = $scope.searchText;
@@ -43,7 +53,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
         };
 
         $scope.listen();
-    }).filter('fromNow', function() {
+    }).filter("fromNow", function () {
         return function(date) {
             return moment(date).fromNow();
         }

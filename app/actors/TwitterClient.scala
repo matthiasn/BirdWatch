@@ -55,7 +55,7 @@ object TwitterClient {
     
       /** persist any valid JSON from Twitter Streaming API */
       Tweet.insertJson(json)
-
+    
       matchAndPush(json)
 
       TweetReads.reads(json) match {
@@ -106,9 +106,13 @@ object TwitterClient {
     * @param json JsValue to match against 
     */
   def matchAndPush(json: JsValue): Unit = {
-    WS.url(elasticURL + "/queries/tweets/_percolate").post(Json.obj("doc" -> json)).map {
-      res => (Json.parse(res.body) \ "matches").asOpt[Seq[String]].map {
-        m => jsonTweetsChannel.push(Matches(Json.obj("_source" -> json), HashSet.empty[String] ++ m))
+    (json \ "lang").asOpt[String].map { 
+      lang => if (lang == "en") {
+        WS.url(elasticURL + "/queries/tweets/_percolate").post(Json.obj("doc" -> json)).map {
+          res => (Json.parse(res.body) \ "matches").asOpt[Seq[String]].map {
+            m => jsonTweetsChannel.push(Matches(json, HashSet.empty[String] ++ m))
+          }
+        }
       }
     }
   }

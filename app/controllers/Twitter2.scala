@@ -20,6 +20,8 @@ import scala.collection.immutable.HashSet
 object Twitter2 extends Controller {
   val elasticURL = Conf.get("elastic.URL")
   val dtFormat = ISODateTimeFormat.dateTime()
+  val queryDefaults = "&default_field:text$default_operator:AND&sort=id:desc"
+  val searchUrl = elasticURL + "/birdwatch/tweets/_search?q=" 
 
   /** Controller action serving chat page */
   def index = Action { Ok(views.html.index("Birdwatch")) }
@@ -38,9 +40,7 @@ object Twitter2 extends Controller {
     */
   def tweetSearch(n: Int, q: String, from: Int) = Action {
     implicit req => Async {
-      val url = elasticURL + "/birdwatch/tweets/_search?q=" +
-        q.replace(" ", "%20") + "&sort=id:desc&size=" + n + "&from=" + from + "&default_field:text"
-
+      val url = searchUrl + q.replace(" ", "%20") + "&size=" + n + "&from=" + from + queryDefaults
       WS.url(url).get().map { res => Ok(res.body) }
     }
   }
@@ -60,22 +60,22 @@ object Twitter2 extends Controller {
     implicit req => Async {
       
       val query = Json.obj(
-        "query" -> Json.obj("query_string" -> Json.obj("default_field" -> "text", "query" -> q, "use_dis_max" -> true)), 
+        "query" -> Json.obj("query_string" -> Json.obj("default_field" -> "text", "default_operator" -> "AND", "query" -> q, "use_dis_max" -> true)), 
         "timestamp" -> dtFormat.print(new DateTime(DateTimeZone.UTC))
       )
 
       WS.url(elasticURL + "/_percolator/queries/").post(query).map {
         res => {
-          val queryID = (Json.parse(res.body) \ "_id").as[String]        
-          
-          //TwitterClient.jsonTweetsChannel.push(Matches(Json.obj("type" -> "ping"), HashSet.empty[String] + queryID))
+          val queryID = (Json.parse(res.body) \ "_id").as[String]
+
+          TwitterClient.jsonTweetsChannel.push(Matches(Json.obj("type" -> "ping"), HashSet.empty[String] + queryID))
 
           // TODO: log query and ID
           
           Ok.feed(TwitterClient.jsonTweetsOut
             &> connDeathWatch(queryID)
             &> matchesFilter(queryID)
-            &> Concurrent.buffer(50)
+            &> Concurrent.buffer(100)
             &> matchesToJson
             &> EventSource()).as("text/event-stream")
         }

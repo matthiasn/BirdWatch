@@ -23,29 +23,36 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
         $scope.onTimeout = function (){
             $scope.$apply();
             updateTimeout = $timeout($scope.onTimeout, $scope.updateInterval);
-        }
+        };
         var updateTimeout = $timeout($scope.onTimeout, $scope.updateInterval);
 
         /** handle incoming tweets: add to tweets array */
         $scope.addTweet = function (msg) {
             $scope.$apply(function () {        
-                $scope.tweets.push(utils.formatTweet(JSON.parse(msg.data)));
+                var t = utils.formatTweet(JSON.parse(msg.data));                 
+                $scope.tweets.push(t);
+                $scope.wordCount.insert([t]);
             });
         };
 
         /** start listening for tweets with given query */
         $scope.listen = function () {
 
-            $http({method: "GET", url: "/tweets/search?q=" + $scope.searchText + "&n=10000"}).
+            $scope.wordCount = utils.wordCount();
+
+            var searchString = "*";
+            if ($scope.searchText.length > 0) {
+                searchString = $scope.searchText;
+                $location.path(searchString);
+            }
+
+            $http({method: "GET", url: "/tweets/search?q=" + searchString + "&n=5000"}).
                 success(function (data, status, headers, config) {
-                    $scope.tweets = data.hits.hits.reverse();
-                    $scope.tweets.forEach(utils.formatTweet);
-                    
-                    var searchString = "*";
-                    if ($scope.searchText.length > 0) {
-                        searchString = $scope.searchText;
-                        $location.path(searchString);
-                    }
+                    $scope.tweets = data.hits.hits.reverse()
+                        .map(function (t) { return t._source; })
+                        .map(utils.formatTweet);
+
+                    $scope.wordCount.insert($scope.tweets);
                     $scope.tweetFeed = new EventSource("/tweetFeed2?q=" + searchString);
                     $scope.tweetFeed.addEventListener("message", $scope.addTweet, false);
                 }).
@@ -53,6 +60,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
         };
 
         $scope.listen();
+        
     }).filter("fromNow", function () {
         return function(date) {
             return moment(date).fromNow();

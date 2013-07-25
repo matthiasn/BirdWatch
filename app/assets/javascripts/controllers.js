@@ -1,8 +1,8 @@
 'use strict';
 
 /** Controllers */
-angular.module('birdwatch.controllers', ['birdwatch.services']).
-    controller('BirdWatchCtrl', function ($scope, $http, $location, utils, $timeout) {
+angular.module('birdwatch.controllers', ['birdwatch.services', 'birdwatch.d3Services']).
+    controller('BirdWatchCtrl', function ($scope, $http, $location, utils, d3Services, $timeout) {
         $scope.tweets = [];
         $scope.lastTweets = function () {
             return $scope.tweets
@@ -43,7 +43,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
             });
         };
 
-        $scope.barchart = utils.barChart($scope.addSearchString);
+        $scope.barchart = d3Services.barChart($scope.addSearchString);
 
         /** start listening for tweets with given query */
         $scope.listen = function () {
@@ -55,7 +55,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
                 $location.path(searchString);
             }
             
-            $http({method: "POST", data: utils.buildQuery(searchString, 5000, 0), url: "/tweets/search"}).
+            $http({method: "POST", data: utils.buildQuery(searchString, 10000, 0), url: "/tweets/search"}).
                 success(function (data, status, headers, config) {
                     $scope.tweets = data.hits.hits.reverse()
                         .map(function (t) { return t._source; })

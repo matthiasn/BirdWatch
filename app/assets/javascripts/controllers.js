@@ -20,7 +20,8 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'birdwatch.d3Serv
         };
         
         $scope.addSearchString = function (searchString) {
-            $scope.searchText = $scope.searchText + " " + searchString;
+            if ($scope.searchText.length === 0) $scope.searchText = searchString;
+            else $scope.searchText = $scope.searchText + " " + searchString;
             $scope.$apply();  // I want the term to appear immediately, not only after search returns
             $scope.newSearch();
         };
@@ -54,7 +55,8 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'birdwatch.d3Serv
                 searchString = $scope.searchText;
                 $location.path(searchString);
             }
-            
+            else $location.path("");
+
             $http({method: "POST", data: utils.buildQuery(searchString, 10000, 0), url: "/tweets/search"}).
                 success(function (data, status, headers, config) {
                     $scope.tweets = data.hits.hits.reverse()

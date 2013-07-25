@@ -152,12 +152,8 @@ angular.module('birdwatch.services', []).service('utils', function () {
                 .attr('stroke', 'white')
                 .attr('fill', 'steelblue')
                 .on("click", function(d) {
-                    var tag = barLabel(d).replace('#','');
-                    
+                    var tag = barLabel(d).replace('#','');                    
                     addSearch(tag);
-                    
-                    //$scope.searchText = $scope.searchText + " " + tag;
-                    //$scope.$apply();
                 });
 
             // bar value labels
@@ -196,6 +192,17 @@ angular.module('birdwatch.services', []).service('utils', function () {
 
         me.redraw = function(dataSource) {
             me.update(dataSource);
+                        
+            barsContainer.selectAll("rect").data(sortedData).enter().append("rect")
+                .attr('y', y)
+                .attr('height', yScale.rangeBand())
+                .attr('width', function (d) { return xScale(barValue(d)); })
+                .attr('stroke', 'white')
+                .attr('fill', 'steelblue')
+                .on("click", function(d) {
+                    var tag = barLabel(d).replace('#','');
+                    addSearch(tag);
+                });
 
             barsContainer.selectAll("rect")
                 .data(sortedData)
@@ -203,7 +210,23 @@ angular.module('birdwatch.services', []).service('utils', function () {
                 .attr('y', y)
                 .attr('height', yScale.rangeBand())
                 .attr('width', function (d) { return xScale(barValue(d)); });
+            
+            barsContainer.selectAll("rect")
+                .data(sortedData)
+                .exit()
+                .transition()
+                .remove();
 
+            barsContainer.selectAll("text").data(sortedData).enter().append("text")
+                .attr("x", function (d) { return xScale(barValue(d)); })
+                .attr("y", yText)
+                .attr("dx", 3) // padding-left
+                .attr("dy", ".35em") // vertical-align: middle
+                .attr("text-anchor", "start") // text-align: right
+                .attr("fill", "black")
+                .attr("stroke", "none")
+                .text(function (d) { return d3.round(barValue(d), 2); });
+            
             barsContainer.selectAll("text").data(sortedData)
                 .transition()
                 .attr("x", function (d) { return xScale(barValue(d)); })
@@ -215,6 +238,25 @@ angular.module('birdwatch.services', []).service('utils', function () {
                 .attr("stroke", "none")
                 .text(function (d) { return d3.round(barValue(d), 2); });
 
+            barsContainer.selectAll("text")
+                .data(sortedData)
+                .exit()
+                .transition()
+                .remove();
+
+            barsContainer.selectAll("line")
+                .attr("y1", -gridChartOffset)
+                .attr("y2", yScale.rangeExtent()[1] + gridChartOffset)
+                .style("stroke", "#000");
+
+            labelContainer.selectAll("text").data(sortedData).enter().append("text")
+                .attr('y', yText)
+                .attr('stroke', 'none')
+                .attr('fill', 'black')
+                .attr("dy", ".35em") // vertical-align: middle
+                .attr('text-anchor', 'end')
+                .text(barLabel);
+            
             labelContainer.selectAll('text').data(sortedData)
                 .transition()
                 .attr('y', yText)
@@ -223,6 +265,12 @@ angular.module('birdwatch.services', []).service('utils', function () {
                 .attr("dy", ".35em") // vertical-align: middle
                 .attr('text-anchor', 'end')
                 .text(barLabel);
+
+            labelContainer.selectAll("text")
+                .data(sortedData)
+                .exit()
+                .transition()
+                .remove();
 
             /** insert, update and change grid text */
             var gridText = gridContainer.selectAll("text").data(xScale.ticks(10))
@@ -242,22 +290,17 @@ angular.module('birdwatch.services', []).service('utils', function () {
             gridText.exit().remove();
 
             /** insert, update and change grid lines */
-            var gridLines = gridContainer.selectAll("line").data(xScale.ticks(10))
-
-            gridLines.enter().insert("line")
+            gridContainer.selectAll("line").data(xScale.ticks(10))
                 .attr("x1", xScale)
                 .attr("x2", xScale)
                 .attr("y1", 0)
                 .attr("y2", yScale.rangeExtent()[1] + gridChartOffset)
-                .style("stroke", "#ccc");
-
-            gridLines.attr("x1", xScale)
-                .attr("x2", xScale)
-                .attr("y1", 0)
+                .style("stroke", "#ccc").exit().remove();
+            
+            barsContainer.append("line")
+                .attr("y1", -gridChartOffset)
                 .attr("y2", yScale.rangeExtent()[1] + gridChartOffset)
-                .style("stroke", "#ccc");
-
-            gridLines.exit().remove();
+                .style("stroke", "#000");
         };
 
         return me;

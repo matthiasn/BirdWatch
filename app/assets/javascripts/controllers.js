@@ -1,8 +1,8 @@
 'use strict';
 
 /** Controllers */
-angular.module('birdwatch.controllers', ['birdwatch.services', 'birdwatch.d3Services']).
-    controller('BirdWatchCtrl', function ($scope, $http, $location, utils, d3Services, $timeout) {
+angular.module('birdwatch.controllers', ['birdwatch.services', 'd3services.charts']).
+    controller('BirdWatchCtrl', function ($scope, $http, $location, utils, charts, $timeout) {
         $scope.tweets = [];
         $scope.lastTweets = function () {
             return $scope.tweets
@@ -44,7 +44,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'birdwatch.d3Serv
             });
         };
 
-        $scope.barchart = d3Services.barChart($scope.addSearchString);
+        $scope.barchart = charts.BarChart($scope.addSearchString);
 
         /** start listening for tweets with given query */
         $scope.listen = function () {

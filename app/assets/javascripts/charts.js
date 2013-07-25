@@ -1,9 +1,9 @@
 'use strict';
 
 /** utils service */
-angular.module('birdwatch.d3Services', []).service('d3Services', function () {
+angular.module('d3services.charts', []).service('charts', function () {
 
-    var barChart = function (addSearch) {
+    var BarChart = function (addSearch) {
         var me = {};
 
         var sortedData, xScale, yScale,chart, rect, gridContainer, labelContainer, barsContainer;
@@ -218,5 +218,5 @@ angular.module('birdwatch.d3Services', []).service('d3Services', function () {
         return me;
     };
     
-    return { barChart: barChart };
+    return { BarChart: BarChart };
 });

@@ -52,21 +52,19 @@ object Twitter2 extends Controller {
   def connDeathWatch(queryID: String): Enumeratee[Matches, Matches] =
     Enumeratee.onIterateeDone{ () => println(queryID + " closed"); WS.url(elasticURL + "/_percolator/queries/" + queryID).delete() }
 
-  /** Serves Tweets as Server Sent Events over HTTP connection TODO: change to POST*/
+  /** Serves Tweets as Server Sent Events over HTTP connection TODO: change to POST */
   def tweetFeed(q: String) = Action {
     implicit req => Async {
       
       val query = Json.obj(
         "query" -> Json.obj("query_string" -> Json.obj("default_field" -> "text", 
-          "default_operator" -> "AND", "query" -> (q + " lang:en"))), 
+          "default_operator" -> "AND", "query" -> ("(" + q + ") AND lang:en"))), 
         "timestamp" -> dtFormat.print(new DateTime(DateTimeZone.UTC))
       )
 
       WS.url(elasticURL + "/_percolator/queries/").post(query).map {
         res => {
           val queryID = (Json.parse(res.body) \ "_id").as[String]
-
-          //TwitterClient.jsonTweetsChannel.push(Matches(Json.obj("type" -> "ping"), HashSet.empty[String] +queryID))
           
           // TODO: log query and ID
           

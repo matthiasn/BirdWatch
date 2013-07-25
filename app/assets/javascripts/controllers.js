@@ -6,7 +6,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
         $scope.tweets = [];
         $scope.lastTweets = function () {
             return $scope.tweets
-                .slice(Math.max($scope.tweets.length - 100, 1)).reverse();
+                .slice(Math.max($scope.tweets.length - 100, 0)).reverse();
         };
 
         $scope.barchartDefined = false;
@@ -18,9 +18,15 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
             $scope.tweets = [];
             $scope.listen();
         };
+        
+        $scope.addSearchString = function (searchString) {
+            $scope.searchText = $scope.searchText + " " + searchString;
+            $scope.$apply();  // I want the term to appear immediately, not only after search returns
+            $scope.newSearch();
+        };
 
         /** update UI every 10 seconds to keep time ago for tweets accurate */
-        $scope.updateInterval = 10000;
+        $scope.updateInterval = 1000;
         $scope.onTimeout = function (){
             $scope.$apply();
             updateTimeout = $timeout($scope.onTimeout, $scope.updateInterval);
@@ -37,7 +43,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services']).
             });
         };
 
-        $scope.barchart = utils.barChart("q");
+        $scope.barchart = utils.barChart($scope.addSearchString);
 
         /** start listening for tweets with given query */
         $scope.listen = function () {

@@ -4,6 +4,8 @@
 angular.module('birdwatch.controllers', ['birdwatch.services', 'd3services.charts']).
     controller('BirdWatchCtrl',function ($scope, $http, $location, utils, charts, $timeout) {
         $scope.tweets = [];
+        $scope.prevSize = 1000;
+        
         $scope.lastTweets = function () {
             return $scope.tweets
                 .slice(Math.max($scope.tweets.length - 100, 0)).reverse();
@@ -56,11 +58,13 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'd3services.chart
                 $http({method: "POST", data: utils.buildQuery(searchString, chunkSize, offset), url: "/tweets/search"}).
                     success(function (data, status, headers, config) {
 
-                        $scope.tweets = data.hits.hits.reverse()
+                        var tempData = data.hits.hits.reverse()
                             .map(function (t) { return t._source; })
-                            .map(utils.formatTweet).concat($scope.tweets);
+                            .map(utils.formatTweet);
+                        
+                        $scope.tweets = tempData.concat($scope.tweets);
 
-                        $scope.wordCount.insert($scope.tweets);
+                        $scope.wordCount.insert(tempData);
 
                         if ($scope.barchartDefined === false) {
                             $scope.barchart.init($scope.wordCount.getWords().slice(0, 26));
@@ -92,7 +96,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'd3services.chart
             $scope.tweetFeed = new EventSource("/tweetFeed2?q=" + searchString);
             $scope.tweetFeed.addEventListener("message", $scope.addTweet, false);
 
-            $scope.loadPrev(searchString, 1000, 100, 0);
+            $scope.loadPrev(searchString, $scope.prevSize, 100, 0);
         };
 
         $scope.listen();

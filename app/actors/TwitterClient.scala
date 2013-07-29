@@ -47,8 +47,11 @@ object TwitterClient {
   /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
     * as Tweet instances and publishes them to eventStream. */
   val tweetIteratee = Iteratee.foreach[Array[Byte]] {
-    chunk =>
+    chunk => {
       val chunkString = new String(chunk, "UTF-8")
+    
+      println(chunkString)
+    
       val json = Json.parse(chunkString)
 
       (json \ "id_str").asOpt[String].map { id => WS.url(elasticURL + "/birdwatch/tweets/" + id).put(json) }
@@ -65,6 +68,7 @@ object TwitterClient {
         }
         case e: JsError => println(chunkString)
       }
+    }
   }
 
   /** Starts new WS connection to Twitter Streaming API. Twitter disconnects the previous one automatically.

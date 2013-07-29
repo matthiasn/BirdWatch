@@ -104,5 +104,13 @@ a {
     height: 500px;
     width: 700px;
     left: 550px;
-    top: 15px;
+    top: 80px;
+}
+
+#stats {
+    position: absolute;
+    height: 50px;
+    width: 700px;
+    left: 580px;
+    top: 20px;    
 }

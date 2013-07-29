@@ -30,7 +30,9 @@
                     <input type="button" class="btn btn-primary" id="searchBtn" value="Search" ng-click="newSearch()" />
                 </form>
             </div>
-            
+
+            <div id="stats">Tweet count: {{tweets.length}}</div>
+
             <div id="tweets">
                 <div class="tweetlist" ng-repeat="t in lastTweets() | limitTo:50 ">
                     

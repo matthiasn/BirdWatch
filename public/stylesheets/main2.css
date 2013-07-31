@@ -102,9 +102,9 @@ a {
 #wordBars {
     position: absolute;
     height: 500px;
-    width: 700px;
-    left: 550px;
-    top: 80px;
+    width: 650px;
+    left: 540px;
+    top: 470px;
 }
 
 #stats {
@@ -113,4 +113,13 @@ a {
     width: 700px;
     left: 580px;
     top: 20px;    
+}
+
+#wordCloud {
+    padding: 20px;
+    height: 400px;
+    width: 650px;
+    position: absolute;
+    left: 580px;
+    top: 57px;
 }

@@ -15,6 +15,9 @@ import models._
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTimeZone, DateTime}
 import scala.collection.immutable.HashSet
+import models.Matches
+import java.security.MessageDigest
+import models.Matches
 
 /** Controller for serving main BirdWatch page including the SSE connection */
 object Twitter2 extends Controller {
@@ -55,21 +58,24 @@ object Twitter2 extends Controller {
   /** Serves Tweets as Server Sent Events over HTTP connection TODO: change to POST */
   def tweetFeed(q: String) = Action {
     implicit req => Async {
-      
+      Logger.logRequest(req, "/elasticTweetFeed?q=" + q, 200)
+
       val query = Json.obj(
         "query" -> Json.obj("query_string" -> Json.obj("default_field" -> "text", 
           "default_operator" -> "AND", "query" -> ("(" + q + ") AND lang:en"))), 
         "timestamp" -> dtFormat.print(new DateTime(DateTimeZone.UTC))
       )
 
-      WS.url(elasticURL + "/_percolator/queries/").post(query).map {
+      /** identify queries by hash, only store unique queries once */
+      val md = MessageDigest.getInstance("SHA-256")
+      val queryID = md.digest(q.getBytes).map("%02x".format(_)).mkString
+
+      WS.url(elasticURL + "/_percolator/queries/" + queryID).post(query).map {
         res => {
           val queryID = (Json.parse(res.body) \ "_id").as[String]
           
-          // TODO: log query and ID
-          
           Ok.feed(TwitterClient.jsonTweetsOut
-            &> connDeathWatch(queryID)
+            //&> connDeathWatch(queryID)
             &> matchesFilter(queryID)
             &> Concurrent.buffer(100)
             &> matchesToJson
@@ -77,6 +83,6 @@ object Twitter2 extends Controller {
         }
       }
     }
-  }
+  }  
   
 }

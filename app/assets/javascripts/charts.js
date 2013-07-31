@@ -1,7 +1,7 @@
 'use strict';
 
 /** utils service */
-angular.module('d3services.charts', []).service('charts', function () {
+angular.module('charts.barchart', []).service('barchart', function () {
 
     var BarChart = function (addSearch) {
         var me = {};

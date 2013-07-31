@@ -1,11 +1,13 @@
 'use strict';
 
 /** Controllers */
-angular.module('birdwatch.controllers', ['birdwatch.services', 'd3services.charts']).
-    controller('BirdWatchCtrl',function ($scope, $http, $location, utils, charts, $timeout) {
+angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud']).
+    controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout) {
         $scope.tweets = [];
         $scope.prevSize = 1000;
         
+        $scope.lastCloudUpdate = new Date().getTime() - 2000;
+
         $scope.lastTweets = function () {
             return $scope.tweets
                 .slice(Math.max($scope.tweets.length - 100, 0)).reverse();
@@ -44,17 +46,24 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'd3services.chart
                 $scope.tweets.push(t);
                 $scope.wordCount.insert([t]);
                 $scope.barchart.redraw($scope.wordCount.getWords().slice(0, 25));
+
+                if ((new Date().getTime() - $scope.lastCloudUpdate) > 5000) {
+                    $scope.wordCloud.redraw($scope.wordCount.getWords());
+                    $scope.lastCloudUpdate = new Date().getTime();   
+                }
             });
         };
 
-        $scope.barchart = charts.BarChart($scope.addSearchString);
+        $scope.barchart = barchart.BarChart($scope.addSearchString);
+        
+        $scope.wordCloud = wordcloud.WordCloud(650, 400, 250, "");
+
 
         /** load previous tweets, paginated. recursive function, calls itself with the next chunk to load until 
          *  eventually n, the remaining tweets to load, is not larger than 0 any longer. guarantees at least n hits
          *  if available, potentially more if (n % chunkSize != 0) */
         $scope.loadPrev = function (searchString, n, chunkSize, offset) {
             if (n > 0) {
-                console.log(n + ";" + chunkSize + ";" + offset);
                 $http({method: "POST", data: utils.buildQuery(searchString, chunkSize, offset), url: "/tweets/search"}).
                     success(function (data, status, headers, config) {
 
@@ -65,6 +74,10 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'd3services.chart
                         $scope.tweets = tempData.concat($scope.tweets);
 
                         $scope.wordCount.insert(tempData);
+
+                        if (n < 101) {
+                            $scope.wordCloud.redraw($scope.wordCount.getWords())
+                        }
 
                         if ($scope.barchartDefined === false) {
                             $scope.barchart.init($scope.wordCount.getWords().slice(0, 26));

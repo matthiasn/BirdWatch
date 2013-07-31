@@ -1,124 +1,125 @@
-body, p, label { 
-    font-size:15px;
-    font-family: "Helvetica Neue", Helvetica, sans-serif;
+body {
+    font-family: Helvetica, Arial, sans-serif;
+    color: #333;
+    padding-left: 30px;
+    background: #CCC;
 }
+
 a {
     text-decoration: none;
     font-weight: bold;
     color: steelblue;
 }
-h1 {
-    font-size: 20px;
-}
-.label { font-size:13px; line-height:16px; }
-.alert-info { border-color:transparent; background-color:#3A87AD;
-    color:white; font-weight:bold; }
-div.screenshot { width: 1000px; margin:20px; background-color:#D0E7EF; }
-.navbar-fixed-top .navbar-inner { padding-left:20px; }
-.navbar .nav > li > a { color:#bbb; }
-.screenshot > .container { width: 960px; padding: 20px; }
-.navbar-fixed-top, .navbar-fixed-bottom { position:relative; }
-table { border-collapse: collapse; width:100%; }
-th, td { text-align:left; padding: 0.3em 0;
-    border-bottom: 1px solid white; }
-tr.odd td { }
-form { float:left; margin-right: 1em; }
-legend { border: none; }
-fieldset > div { margin: 12px 0; }
-.help-block { display: inline; vertical-align: middle; }
-.error .help-block { display: none; }
-.error .help-inline { padding-left: 9px; color: #B94A48; }
-footer { clear: both; text-align: right; }
 
-#wordCloud {
-    background-color: #FFF;
-    padding: 20px;
-    height: 500px;
-    width: 700px;
-    position: absolute;
-    left: 30px;
-    top: 85px;
-}
-#header h1{
-    position: absolute;
-    left: 280px;
-    top: 0px;
-    font-stretch: ultra-expanded;
-    font-weight: 300;
-    font-size: 48px;
-}
 #tweets {
-    position: absolute;
-    height: 1060px;
-    width: 700px;
-    left: 780px;
-    top: 50px;
+    min-height: 200px;
+    right: 10px;
+    left: 35px;
+    width: 520px;
+}
 
+.tweetlist {
+    width: 500px;
+    background: #DDD;
+    font-weight: 400;
+    font-size: 11px;
+    padding: 10px 10px 0 10px;
+    position: relative;
+    height: auto;
+    min-height: 40px;
 }
-.screen_name {
+
+#textField {
+    width: 420px;
+    position: relative;
+    top: 5px;
+    height: 30px
+}
+
+#searchBtn {
+    position: relative;
+    left: 4px;
+    height: 32px;
+}
+
+#header {
+    width: 500px;
+    height: 36px;
+    font-weight: bold;
+    padding: 10px;
+    background: #666;
+}
+
+.tweet {
+    position: relative;
+    height: auto;
+    min-height: 70px;
+}
+
+.tweettext {
+    position: absolute;
+    top: 20px;
+    left: 80px;
+    height: auto;
+    width: 400px;
+}
+
+.username {
     position:absolute;
-    font-weight:bold;
-    top:0px;
-    left:80px;
+    top: 0;
+    left: 80px;
 }
+
+.username .name {
+    font-weight: bold;
+    font-size: 12px;
+    top: 0;
+    left: 80px;
+}
+
+.username .screen {
+    font-size: 10px;
+    color: #999;
+}
+
 .timeInterval {
-    position:absolute;
-    font-weight:bold;
-    font-size:10px;
-    color:#99D;
-    text-align:right;
-    top:2px;
-    left:450px;
+    position: absolute;
+    font-size: 10px;
+    color:#999;
+    text-align: right;
+    top: 0;
+    left: 380px;
 }
-li {
-    list-style:none;
+
+.thumbnail {
+    padding-top: 2px;
+    width: 64px;
+    height: 64px;
+    max-width: 64px;
+    max-height: 64px;
 }
+
 #wordBars {
     position: absolute;
     height: 500px;
-    width: 700px;
-    left: 20px;
-    top: 605px;
+    width: 650px;
+    left: 540px;
+    top: 470px;
 }
-.tweetlist {
-    position:relative;
-    height: 105px;
-}
-.tweettext {
-    position:absolute;
-    top:22px;
-    left:80px;
-    height:auto;
-    width: 500px;
-}
-#description {
-    position:absolute;
-    top: 1080px;
-    left:100px;
-    width:1000px;
-    line-height: 1.5;
-}
-#description li {
-    list-style:disc;
-    height: 0.8em;
-    padding-bottom: 15px;
-}
-#queryString {
-    visibility: hidden;
-}
-#count {
+
+#stats {
     position: absolute;
-    left: 887px;
-    top: 15px;
-    font-weight: 600;
-    width: 400px;
+    height: 50px;
+    width: 700px;
+    left: 580px;
+    top: 20px;    
 }
-.thumbnail {
-    padding-top: 2px;
-    max-width: 48px;
-    max-height: 48px;
-}
-#wordcloud_preview {
-    max-width:100%; 
-    max-height:100%;
+
+#wordCloud {
+    padding: 20px;
+    height: 400px;
+    width: 650px;
+    position: absolute;
+    left: 580px;
+    top: 57px;
 }

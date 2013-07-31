@@ -11,16 +11,14 @@ import scala.language.reflectiveCalls
 
 import actors._
 import utilities._
-import models._
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTimeZone, DateTime}
 import scala.collection.immutable.HashSet
-import models.Matches
 import java.security.MessageDigest
 import models.Matches
 
 /** Controller for serving main BirdWatch page including the SSE connection */
-object Twitter2 extends Controller {
+object BirdWatch extends Controller {
   val elasticURL = Conf.get("elastic.URL")
   val dtFormat = ISODateTimeFormat.dateTime()
   val queryDefaults = "&default_field:text$default_operator:AND&sort=id:desc"

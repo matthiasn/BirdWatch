@@ -5,12 +5,11 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
     controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout) {
         $scope.tweets = [];
         $scope.prevSize = 1000;
-        
+
         $scope.lastCloudUpdate = new Date().getTime() - 2000;
 
         $scope.lastTweets = function () {
-            return $scope.tweets
-                .slice(Math.max($scope.tweets.length - 100, 0)).reverse();
+            return $scope.tweets.slice(Math.max($scope.tweets.length - 100, 0)).reverse();
         };
 
         $scope.barchartDefined = false;
@@ -49,17 +48,17 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
 
                 if ((new Date().getTime() - $scope.lastCloudUpdate) > 5000) {
                     $scope.wordCloud.redraw($scope.wordCount.getWords());
-                    $scope.lastCloudUpdate = new Date().getTime();   
+                    $scope.lastCloudUpdate = new Date().getTime();
                 }
             });
         };
 
         $scope.barchart = barchart.BarChart($scope.addSearchString);
-        
+
         $scope.wordCloud = wordcloud.WordCloud(650, 400, 250, "");
 
 
-        /** load previous tweets, paginated. recursive function, calls itself with the next chunk to load until 
+        /** load previous tweets, paginated. recursive function, calls itself with the next chunk to load until
          *  eventually n, the remaining tweets to load, is not larger than 0 any longer. guarantees at least n hits
          *  if available, potentially more if (n % chunkSize != 0) */
         $scope.loadPrev = function (searchString, n, chunkSize, offset) {
@@ -70,12 +69,12 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
                         var tempData = data.hits.hits.reverse()
                             .map(function (t) { return t._source; })
                             .map(utils.formatTweet);
-                        
-                        $scope.tweets = tempData.concat($scope.tweets);
+
+                        $scope.tweets = tempData.concat($scope.tweets); // prepend whole array
 
                         $scope.wordCount.insert(tempData);
 
-                        if (n < 101) {
+                        if (n < 101) {     // only trigger drawing of wordcloud on last chunk of data, expensive 
                             $scope.wordCloud.redraw($scope.wordCount.getWords())
                         }
 
@@ -106,7 +105,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
             }
             else $location.path("");
 
-            $scope.tweetFeed = new EventSource("/tweetFeed2?q=" + searchString);
+            $scope.tweetFeed = new EventSource("/tweetFeed?q=" + searchString);
             $scope.tweetFeed.addEventListener("message", $scope.addTweet, false);
 
             $scope.loadPrev(searchString, $scope.prevSize, 100, 0);
@@ -118,5 +117,4 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         return function (date) {
             return moment(date).fromNow();
         }
-    })
-;
+    });

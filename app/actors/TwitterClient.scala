@@ -16,7 +16,6 @@ import scala.collection.immutable.HashSet
 
 import models._
 import utilities._
-import models.TweetImplicits._
 
 object TwitterClient {
   val url = "https://stream.twitter.com/1.1/statuses/filter.json?track="
@@ -37,7 +36,6 @@ object TwitterClient {
   system.scheduler.schedule(60 seconds, 60 seconds, supervisor, CheckStatus )
 
   /** system-wide channels / enumerators for attaching SSE streams to clients*/
-  val (tweetsOut, tweetChannel) = Concurrent.broadcast[Tweet]
   val (jsonTweetsOut, jsonTweetsChannel) = Concurrent.broadcast[Matches]
   val (countOut, countChannel) = Concurrent.broadcast[String]
   
@@ -56,18 +54,7 @@ object TwitterClient {
 
       (json \ "id_str").asOpt[String].map { id => WS.url(elasticURL + "/birdwatch/tweets/" + id).put(json) }
     
-      /** persist any valid JSON from Twitter Streaming API */
-      Tweet.insertJson(json)
-    
       matchAndPush(json)
-
-      TweetReads.reads(json) match {
-        case JsSuccess(t: Tweet, _) => {
-          supervisor ! TweetReceived
-          tweetChannel.push(WordCount.wordsChars(t))
-        }
-        case e: JsError => println(chunkString)
-      }
     }
   }
 
@@ -88,7 +75,7 @@ object TwitterClient {
     var lastTweetReceived: Long = 0L
     var tweetCount = 0L
     var lastCountSent = 0L
-    Tweet.count.map(c => tweetCount += c) // only ask MongoDB for collection size once
+    //Tweet.count.map(c => tweetCount += c) // only ask MongoDB for collection size once
 
     /** Receives control messages for starting / restarting supervised client and adding or removing topics */
     def receive = {

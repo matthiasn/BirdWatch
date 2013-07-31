@@ -1,28 +1,13 @@
 # BirdWatch Routes
 # ~~~~
 
-GET        /old                     controllers.Twitter.tweetList(q: String ?="")
-
-GET        /search               controllers.Twitter.tweetList(q: String ?="")
-GET        /tweetFeed            controllers.Twitter.tweetFeed(q: String ?= "")
-
-GET        /                     controllers.Twitter2.tweetList(q: String ?="")
-
-GET        /tweetFeed2           controllers.Twitter2.tweetFeed(q: String ?= "*")
-
-POST       /tweets/search        controllers.Twitter2.search
-
-GET        /countFeed            controllers.Twitter.countFeed
-
-GET        /accessLog            controllers.AccessLog.index(token: String ?="")
+GET        /                     controllers.BirdWatch.tweetList(q: String ?="")
+GET        /tweetFeed           controllers.BirdWatch.tweetFeed(q: String ?= "*")
+POST       /tweets/search        controllers.BirdWatch.search
 
 # Adding and removing topics from Twitter stream
 GET        /topic/add            controllers.Topics.add(topic: String ?="", token: String ?="")
 GET        /topic/remove         controllers.Topics.remove(topic: String ?="", token: String ?="")
 
-# Tweets as JSON
-GET        /tweets/latest        controllers.Twitter.tweetsJson(n: Int ?= 0, q: String ?="")
-
 GET        /assets/*file         controllers.Assets.at(path="/public", file)
-
 GET        /webjars/*file        controllers.WebJarAssets.at(file)

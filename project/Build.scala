@@ -14,8 +14,6 @@ object ApplicationBuild extends Build {
     "org.webjars" % "jquery" % "1.9.1",
     "org.webjars" % "knockout" % "2.2.1",
     "org.webjars" % "d3js" % "3.1.5",
-    "org.reactivemongo" %% "reactivemongo" % "0.9",
-    "org.reactivemongo" %% "play2-reactivemongo" % "0.9",
     "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",       
     "com.typesafe.akka" %% "akka-testkit" % "2.1.1"
   )

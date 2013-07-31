@@ -24,10 +24,12 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
 
         /** adds a string to the search bar when for example clicking on a chart element */
         $scope.addSearchString = function (searchString) {
-            if ($scope.searchText.length === 0) $scope.searchText = searchString;
-            else $scope.searchText = $scope.searchText + " " + searchString;
+            if ($scope.searchText.length === 0) { $scope.searchText = searchString; }
+            else if ($scope.searchText.indexOf(searchString) === -1) {
+                $scope.searchText = $scope.searchText + " " + searchString;
+            }
             $scope.$apply();  // I want the term to appear immediately, not only after search returns
-            $scope.newSearch();
+            $scope.newSearch();            
         };
 
         /** update UI every 10 seconds to keep time ago for tweets accurate */
@@ -55,7 +57,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
 
         $scope.barchart = barchart.BarChart($scope.addSearchString);
 
-        $scope.wordCloud = wordcloud.WordCloud(650, 400, 250, "");
+        $scope.wordCloud = wordcloud.WordCloud(650, 400, 250, $scope.addSearchString);
 
 
         /** load previous tweets, paginated. recursive function, calls itself with the next chunk to load until
@@ -114,7 +116,5 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.listen();
 
     }).filter("fromNow", function () {
-        return function (date) {
-            return moment(date).fromNow();
-        }
+        return function (date) { return moment(date).fromNow(); }
     });

@@ -9,7 +9,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
 object Logger {
-  val elasticURL = Conf.get("elastic.URL")
+  val elasticLogURL = Conf.get("elastic.LogURL")
   val instanceID = Conf.getOrEmpty("application.instanceID")
 
   val dtFormat = ISODateTimeFormat.dateTime()
@@ -23,7 +23,7 @@ object Logger {
       "event" -> event,
       "desc" -> desc
     )
-    WS.url(elasticURL + "/birdwatch/log/").post(logItem)
+    WS.url(elasticLogURL).post(logItem)
   }
 
   /** Simple request logger, stores IP-Address, User-Agent, request, geo data and timestamp 
@@ -59,18 +59,18 @@ object Logger {
             "long" -> response.json \ "longitude",
             "lat" -> response.json \ "latitude"
           )
-          WS.url(elasticURL + "/birdwatch/log/").post(geoLogItem)
+          WS.url(elasticLogURL).post(geoLogItem)
         }
       }
       /** log without geo data in case of failure such as connection timeout */
       geoRequest.onFailure {
         case _ => {
-          WS.url(elasticURL + "/birdwatch/log/").post(logItem)
+          WS.url(elasticLogURL).post(logItem)
         }
       }
     }
     else {
-      WS.url(elasticURL + "/birdwatch/log/").post(logItem)
+      WS.url(elasticLogURL).post(logItem)
     }
   }
 }

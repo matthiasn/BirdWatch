@@ -115,6 +115,19 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
 
         $scope.listen();
 
-    }).filter("fromNow", function () {
+    })
+    .filter("fromNow", function () {
         return function (date) { return moment(date).fromNow(); }
+    })
+    .directive('profileImage', function () {
+        return {
+            restrict: 'A',
+            template: '<span ng-model="tweet"><a href="http://www.twitter.com/{{ t.user.screen_name }}" target="_blank">' +
+                      '<img class="thumbnail" src="{{t.user.profile_image_url}}" />' +
+                      '</a></span>',
+            scope: { tweet: "=" },
+            link: function (scope, elem, attrs) {
+                console.log(attrs);
+            }
+        }
     });

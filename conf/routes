@@ -1,8 +1,7 @@
 # BirdWatch Routes
-# ~~~~
 
-GET        /                     controllers.BirdWatch.tweetList(q: String ?="")
-GET        /tweetFeed           controllers.BirdWatch.tweetFeed(q: String ?= "*")
+GET        /                     controllers.BirdWatch.index
+GET        /tweetFeed            controllers.BirdWatch.tweetFeed(q: String ?= "*")
 POST       /tweets/search        controllers.BirdWatch.search
 
 # Adding and removing topics from Twitter stream
@@ -11,3 +10,5 @@ GET        /topic/remove         controllers.Topics.remove(topic: String ?="", t
 
 GET        /assets/*file         controllers.Assets.at(path="/public", file)
 GET        /webjars/*file        controllers.WebJarAssets.at(file)
+
+#GET        /                     controllers.Assets.at(path="/public", file="/index.html")

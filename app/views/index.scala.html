@@ -36,21 +36,22 @@
             <div id="stats">Tweet count: {{tweets.length}}</div>
 
             <div id="tweets">
-                <div class="tweetlist" ng-repeat="t in lastTweets() | limitTo:50 ">
+                <div class="tweetlist" ng-repeat="tweet in lastTweets() | limitTo:50 ">
                     
                     <div class="tweet">
-                        <span><a href="http://www.twitter.com/{{ t.user.screen_name }}" target="_blank">
-                            <img class="thumbnail" src="{{t.user.profile_image_url}}" />
+                        
+                        <span><a href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+                            <img class="thumbnail" src="{{tweet.user.profile_image_url}}" />
                         </a></span>
                         <div class="username">
-                            <a href="http://www.twitter.com/{{ t.user.screen_name }}" target="_blank">
-                                <span class="name">{{t.user.name}}</span> 
+                            <a href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+                                <span class="name">{{tweet.user.name}}</span> 
                             </a>
-                            <span class="screen">&#64;{{t.user.screen_name}}</span>
+                            <span class="screen">&#64;{{tweet.user.screen_name}}</span>
                         </div>
-                        <div class="timeInterval">{{t.created_at | fromNow}}</div>
+                        <div class="timeInterval">{{tweet.created_at | fromNow}}</div>
                         <br />
-                        <div class="tweettext"><span ng-bind-html-unsafe="t.htmlText"><br /></span></div>
+                        <div class="tweettext"><span ng-bind-html-unsafe="tweet.htmlText"><br /></span></div>
                     </div>
                     
                 </div>
@@ -59,7 +60,7 @@
             <div id="wordBars"></div>
 
             <div id="wordCloud"></div>
-            
+
         </div>
  
     </body>

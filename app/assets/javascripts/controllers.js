@@ -1,17 +1,22 @@
 'use strict';
 
 /** Controllers */
-angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud']).
+angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud', 'ui.bootstrap']).
     controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout) {
         $scope.tweets = [];
         $scope.prevSize = 1000;
+        $scope.pageSize = 30;
 
+        $scope.noOfPages = function () { return Math.ceil($scope.tweets.length / $scope.pageSize); };
+        $scope.currentPage = 4;
+        $scope.maxSize = 13;
+        
         $scope.lastCloudUpdate = new Date().getTime() - 2000;
 
         $scope.lastTweets = function () {
             return $scope.tweets.slice(Math.max($scope.tweets.length - 100, 0)).reverse();
         };
-
+        
         $scope.barchartDefined = false;
         $scope.searchText = $location.path().substr(1);
 

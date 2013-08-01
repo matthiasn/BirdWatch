@@ -3,7 +3,7 @@ package controllers
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.{Concurrent, Enumeratee}
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{AnyContent, Request, Action, Controller}
 import play.api.libs.EventSource
 import play.api.libs.ws.WS
 
@@ -35,6 +35,13 @@ object BirdWatch extends Controller {
     }
   }
 
+  /** calculates milliseconds between passed in DateTime and time of function call */
+  def duration(since: DateTime) = DateTime.now.getMillis - since.getMillis
+  
+  /** Enumeratee for detecting disconnect of SSE stream */
+  def connDeathWatch(req: Request[AnyContent], since: DateTime): Enumeratee[JsValue, JsValue] =
+    Enumeratee.onIterateeDone { () => Logger.logRequest(req, "SSE disconnected", 200, duration(since))}
+  
   /** Filtering Enumeratee applying containsAll function */
   def matchesFilter(qID: String) = Enumeratee.filter[Matches] { pm => pm.matches.contains(qID) }
 
@@ -44,7 +51,7 @@ object BirdWatch extends Controller {
   /** Serves Tweets as Server Sent Events over HTTP connection TODO: change to POST */
   def tweetFeed(q: String) = Action {
     implicit req => Async {
-      Logger.logRequest(req, "/tweetFeed?q=" + q, 200)
+      Logger.logRequest(req, "/tweetFeed?q=" + q, 200, 0)
 
       val query = Json.obj(
         "query" -> Json.obj("query_string" -> Json.obj("default_field" -> "text", 
@@ -61,6 +68,7 @@ object BirdWatch extends Controller {
           &> matchesFilter(queryID)  
           &> Concurrent.buffer(100)
           &> matchesToJson
+          &> connDeathWatch(req, new DateTime(DateTimeZone.UTC)  )
           &> EventSource()).as("text/event-stream")       
       }
     }

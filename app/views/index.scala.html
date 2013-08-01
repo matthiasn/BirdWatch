@@ -14,6 +14,7 @@
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("d3.min.js"))"></script>
         <script src='@routes.Assets.at("javascripts/vendor/d3.layout.cloud.js")' type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/vendor/moment.min.js")"></script>
+        <script src="@routes.Assets.at("javascripts/vendor/ui-bootstrap-tpls-0.4.0.min.js")"></script>
         <script src="@routes.Assets.at("javascripts/app.js")"></script>
         <script src="@routes.Assets.at("javascripts/services.js")"></script>
         <script src="@routes.Assets.at("javascripts/barchart.js")"></script>
@@ -24,7 +25,7 @@
     <body ng-app="birdwatch">
         
         <div ng-controller="BirdWatchCtrl">
-            
+
             <div id="header">
                 <form ng-submit="newSearch()">
                     <input type="text" name="chat" id="textField" ng-model="searchText" autocomplete="off"
@@ -36,6 +37,9 @@
             <div id="stats">Tweet count: {{tweets.length}}</div>
 
             <div id="tweets">
+
+                <pagination rotate="false" num-pages="noOfPages()" current-page="currentPage" max-size="maxSize" class="pagination-mini" boundary-links="true"></pagination>
+                
                 <div class="tweetlist" ng-repeat="tweet in lastTweets() | limitTo:50 ">
                     
                     <div class="tweet">

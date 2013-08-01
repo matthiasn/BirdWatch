@@ -29,16 +29,18 @@
             <div id="header">
                 <form ng-submit="newSearch()">
                     <input type="text" name="chat" id="textField" ng-model="searchText" autocomplete="off"
-                    placeholder="Search here" class="ng-pristine ng-valid input-block-level" />
-                    <input type="button" class="btn btn-primary" id="searchBtn" value="Search" ng-click="newSearch()" />
+                    placeholder="Search here, example: java (job OR hiring)" class="ng-pristine ng-valid input-block-level" />
+                    <input tooltip-placement="bottom" tooltip="click to refine search" type="button" class="btn btn-primary" id="searchBtn" value="Search" ng-click="newSearch()" />
                 </form>
             </div>
 
-            <div id="stats">Tweet count: {{tweets.length}}</div>
+            <div id="stats">Tweet count: <a><span tooltip-placement="bottom" tooltip="Tweets currently loaded">{{tweets.length}}</span></a> </div>            
 
             <div id="tweets">
 
-                <pagination rotate="false" num-pages="noOfPages()" current-page="currentPage" max-size="maxSize" class="pagination-mini" boundary-links="true"></pagination>
+                <pagination tooltip-placement="bottom" tooltip="page selection (not working yet)" rotate="false" 
+                    num-pages="noOfPages()" current-page="currentPage" max-size="maxSize" class="pagination-mini" 
+                    boundary-links="true"></pagination>
                 
                 <div class="tweetlist" ng-repeat="tweet in lastTweets() | limitTo:50 ">
                     
@@ -48,7 +50,8 @@
                             <img class="thumbnail" src="{{tweet.user.profile_image_url}}" />
                         </a></span>
                         <div class="username">
-                            <a href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+                            <a tooltip-placement="bottom" tooltip="click to visit Twitter profile" 
+                                  href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
                                 <span class="name">{{tweet.user.name}}</span> 
                             </a>
                             <span class="screen">&#64;{{tweet.user.screen_name}}</span>
@@ -61,9 +64,8 @@
                 </div>
             </div>
 
-            <div id="wordBars"></div>
-
-            <div id="wordCloud"></div>
+            <div tooltip-placement="right" tooltip="click word to refine search" id="wordCloud"></div>
+            <div tooltip-placement="right" tooltip="click bar to refine search" id="wordBars"></div>
 
         </div>
  

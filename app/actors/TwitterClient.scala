@@ -50,7 +50,7 @@ object TwitterClient {
     chunk => {
       val chunkString = new String(chunk, "UTF-8")
       supervisor ! TweetReceived
-
+      
       if (chunkString.contains("Easy there, Turbo. Too many requests recently. Enhance your calm.")) {
         supervisor ! BackOff
         println("\n" + chunkString + "\n")

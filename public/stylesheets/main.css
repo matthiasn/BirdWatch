@@ -1,7 +1,6 @@
 body {
     font-family: Helvetica, Arial, sans-serif;
     color: #333;
-    padding-left: 30px;
     background: #CCC;
 }
 
@@ -12,10 +11,12 @@ a {
 }
 
 #tweets {
+    position: absolute;
     min-height: 200px;
     right: 10px;
     left: 35px;
     width: 520px;
+    top: 100px;
 }
 
 .tweetlist {
@@ -42,11 +43,8 @@ a {
     height: 32px;
 }
 
-#header {
-    width: 500px;
-    height: 36px;
-    font-weight: bold;
-    padding: 10px;
+.header {
+    height:40px;
     background: #666;
 }
 
@@ -122,4 +120,57 @@ a {
     position: absolute;
     left: 575px;
     top: 57px;
+}
+
+.pagination-mini {
+    display: inline-block;
+    padding-left: 0;
+    margin: 10px 0;
+}
+
+.pagination-mini > li {
+    display: inline;
+}
+
+.pagination-mini > li > a,
+.pagination-mini > li > span {
+    float: left;
+    padding: 4px 5px;
+    line-height: 1.428571429;
+    text-decoration: none;
+    background-color: #CCC;
+    font-size: 11px;
+}
+
+.pagination-mini > li:first-child > a,
+.pagination-mini > li:first-child > span {
+    border-bottom-left-radius: 3px;
+    border-top-left-radius: 3px;
+    padding-left: 10px;
+}
+
+.pagination-mini > li:last-child > a,
+.pagination-mini > li:last-child > span {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px; 
+    padding-right: 10px;
+}
+
+.pagination-mini > li > a:hover,
+.pagination-mini > li > a:focus,
+.pagination-mini > .active > a,
+.pagination-mini > .active > span {
+    background-color: #AAA;
+}
+
+.pagination-mini > .active > a,
+.pagination-mini > .active > span {
+    color: #333;
+    cursor: default;
+}
+
+#pager {
+    position: absolute;
+    top: 50px;
+    left: 10px
 }

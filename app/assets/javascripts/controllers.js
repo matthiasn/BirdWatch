@@ -9,7 +9,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
 
         $scope.noOfPages = function () { return Math.ceil($scope.tweets.length / $scope.pageSize); };
         $scope.currentPage = 4;
-        $scope.maxSize = 13;
+        $scope.maxSize = 12;
         
         $scope.lastCloudUpdate = new Date().getTime() - 2000;
 

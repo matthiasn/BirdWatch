@@ -5,16 +5,18 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
     controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout) {
         $scope.tweets = [];
         $scope.prevSize = 1000;
-        $scope.pageSize = 30;
+        $scope.pageSize = 15;
 
         $scope.noOfPages = function () { return Math.ceil($scope.tweets.length / $scope.pageSize); };
-        $scope.currentPage = 4;
+        $scope.currentPage = 1;
         $scope.maxSize = 12;
         
         $scope.lastCloudUpdate = new Date().getTime() - 2000;
 
-        $scope.lastTweets = function () {
-            return $scope.tweets.slice(Math.max($scope.tweets.length - 100, 0)).reverse();
+        $scope.tweetPage = function () {
+            var startIndex = ($scope.currentPage - 1) * $scope.pageSize;
+            var endIndex = Math.min(startIndex + $scope.pageSize, $scope.tweets.length);            
+            return $scope.tweets.slice(startIndex, endIndex).reverse();
         };
         
         $scope.barchartDefined = false;

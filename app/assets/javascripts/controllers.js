@@ -98,6 +98,10 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
                             $scope.barchart.redraw($scope.wordCount.getWords().slice(0, 26))
                         }
 
+                        if ($scope.stayOnLastPage) {
+                            $scope.currentPage = Math.ceil($scope.tweets.length / $scope.pageSize);
+                        }
+                        
                         $scope.loadPrev(searchString, n - chunkSize, chunkSize, offset + chunkSize);
                     }).
                     error(function (data, status, headers, config) {

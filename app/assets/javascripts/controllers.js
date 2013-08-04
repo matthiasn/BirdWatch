@@ -147,7 +147,11 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
     })
     /** Todo: this shouldn't be here */
     .filter("fromNow", function () {
-        return function (date) { return moment(date).fromNow(true); }
+        return function (date) { 
+            var timeString = moment(date).fromNow(true); 
+            if (timeString === "a few seconds") { return "just now"; }
+            else { return timeString; } 
+        }
     })
     /** Todo: this shouldn't be here */
     .directive('profileImage', function () {

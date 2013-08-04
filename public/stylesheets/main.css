@@ -1,7 +1,6 @@
 body {
-    font-family: Helvetica, Arial, sans-serif;
-    color: #333;
-    background: #CCC;
+    position: relative;
+    padding-top: 63px;
 }
 
 a {
@@ -10,122 +9,45 @@ a {
     color: steelblue;
 }
 
-#tweets {
-    position: absolute;
-    min-height: 200px;
-    right: 10px;
-    left: 35px;
-    width: 520px;
-    top: 100px;
-}
-
-.tweetlist {
-    width: 500px;
-    background: #DDD;
-    font-weight: 400;
-    font-size: 11px;
-    padding: 10px 10px 0 10px;
-    position: relative;
-    height: auto;
-    min-height: 40px;
-}
-
-#textField {
-    width: 420px;
-    position: relative;
-    top: 5px;
-    height: 30px
-}
-
-#searchBtn {
-    position: relative;
-    left: 4px;
-    height: 32px;
-}
-
-.header {
-    height:40px;
-    background: #666;
-}
-
-.tweet {
-    position: relative;
-    height: auto;
-    min-height: 70px;
-}
-
 .tweettext {
-    position: absolute;
-    top: 20px;
-    left: 80px;
-    height: auto;
-    width: 400px;
+    padding-left: 10px;
+    padding-bottom: 10px;
+    font-size: 10px;
+    overflow: auto;
 }
 
 .username {
-    position:absolute;
-    top: 0;
-    left: 80px;
-}
-
-.username .name {
+    padding-left: 10px;
     font-weight: bold;
     font-size: 12px;
-    top: 0;
-    left: 80px;
 }
 
-.username .screen {
+.username_screen {
     font-size: 10px;
     color: #999;
 }
 
 .timeInterval {
-    position: absolute;
+    padding-top: 2px;
     font-size: 10px;
     color:#999;
     text-align: right;
-    top: 0;
-    left: 380px;
 }
 
 .thumbnail {
-    padding-top: 2px;
-    width: 64px;
-    height: 64px;
+    padding-right: 5px;
+    margin-top: 5px;
+    width: auto;
+    height: auto;
     max-width: 64px;
     max-height: 64px;
-}
-
-#wordBars {
-    position: absolute;
-    height: 500px;
-    width: 650px;
-    left: 540px;
-    top: 470px;
-}
-
-#stats {
-    position: absolute;
-    height: 50px;
-    width: 700px;
-    left: 580px;
-    top: 20px;    
-}
-
-#wordCloud {
-    padding: 20px;
-    height: 400px;
-    width: 650px;
-    position: absolute;
-    left: 575px;
-    top: 57px;
+    float:left; /* add this */
 }
 
 .pagination-mini {
     display: inline-block;
     padding-left: 0;
-    margin: 10px 0;
+    margin: 0 0 5px 0;
 }
 
 .pagination-mini > li {
@@ -138,29 +60,15 @@ a {
     padding: 4px 5px;
     line-height: 1.428571429;
     text-decoration: none;
-    background-color: #CCC;
+    background-color: #EEE;
     font-size: 11px;
-}
-
-.pagination-mini > li:first-child > a,
-.pagination-mini > li:first-child > span {
-    border-bottom-left-radius: 3px;
-    border-top-left-radius: 3px;
-    padding-left: 10px;
-}
-
-.pagination-mini > li:last-child > a,
-.pagination-mini > li:last-child > span {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px; 
-    padding-right: 10px;
 }
 
 .pagination-mini > li > a:hover,
 .pagination-mini > li > a:focus,
 .pagination-mini > .active > a,
 .pagination-mini > .active > span {
-    background-color: #AAA;
+    background-color: #BBB;
 }
 
 .pagination-mini > .active > a,
@@ -169,8 +77,19 @@ a {
     cursor: default;
 }
 
-#pager {
-    position: absolute;
-    top: 50px;
-    left: 10px
+#wordCloud {
+    padding-top: 10px;
+}
+
+#tweet-frame {
+    background-color: #EEE;
+    padding-bottom: 5px;
+}
+
+.tweet {
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    background-color: #FFF;
+    overflow: auto;
 }

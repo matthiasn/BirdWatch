@@ -2,11 +2,12 @@
 
 /** Controllers */
 angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud', 'ui.bootstrap']).
-    controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout) {
+    controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout, $dialog, $window) {
         $scope.tweets = [];
         $scope.prevSize = 1000;
-        $scope.pageSize = 15;
-
+        $scope.pageSize = 10;
+        $scope.stayOnLastPage = true;
+        
         $scope.noOfPages = function () { return Math.ceil($scope.tweets.length / $scope.pageSize); };
         $scope.currentPage = 1;
         $scope.maxSize = 12;
@@ -59,13 +60,16 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
                     $scope.wordCloud.redraw($scope.wordCount.getWords());
                     $scope.lastCloudUpdate = new Date().getTime();
                 }
+                
+                if ($scope.stayOnLastPage) {
+                    $scope.currentPage = Math.ceil($scope.tweets.length / $scope.pageSize);                    
+                }
             });
         };
+        
+        $scope.barchart = barchart.BarChart($scope.addSearchString, $("#wordBars").width() - 180);
 
-        $scope.barchart = barchart.BarChart($scope.addSearchString);
-
-        $scope.wordCloud = wordcloud.WordCloud(650, 400, 250, $scope.addSearchString);
-
+        $scope.wordCloud = wordcloud.WordCloud($("#wordCloud").width(), $("#wordCloud").width() * 0.6, 250, $scope.addSearchString);
 
         /** load previous tweets, paginated. recursive function, calls itself with the next chunk to load until
          *  eventually n, the remaining tweets to load, is not larger than 0 any longer. guarantees at least n hits
@@ -122,10 +126,26 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
 
         $scope.listen();
 
+        $scope.openMessageBox = function(){          
+            alert("Simple. Project is delivered as is. Use it in whichever way you see fit. The author, Matthias Nehlsen, does not make claims of any kind and cannot be held responsible for anything.\n\nHere in more legal terms, adapted from \nhttps://github.com/mbostock/d3/blob/master/LICENSE. Thanks, Michael Bostock!\n\nTHIS SOFTWARE AND ITS ONLINE DEMO IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 'AS IS'AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL MATTHIAS NEHLSEN BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.");
+
+            /** Todo: does not work as expected, shows black window in firefox, chrome and safari */
+//            var title = 'This is a message box';
+//            var msg = 'This is the content of the message box';
+//            var btns = [{result:'cancel', label: 'Cancel'}, {result:'ok', label: 'OK', cssClass: 'btn-primary'}];
+//            $dialog.messageBox(title, msg, btns)
+//                .open()
+//                .then(function(result){
+//                    alert('dialog closed with result: ' + result);
+//                });
+        };
+
     })
+    /** Todo: this shouldn't be here */
     .filter("fromNow", function () {
-        return function (date) { return moment(date).fromNow(); }
+        return function (date) { return moment(date).fromNow(true); }
     })
+    /** Todo: this shouldn't be here */
     .directive('profileImage', function () {
         return {
             restrict: 'A',

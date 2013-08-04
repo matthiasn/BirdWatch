@@ -3,18 +3,18 @@
 /** utils service */
 angular.module('charts.barchart', []).service('barchart', function () {
 
-    var BarChart = function (addSearch) {
+    var BarChart = function (addSearch, maxBarWidth) {
         var me = {};
 
+        me.maxBarWidth = maxBarWidth;
         var sortedData, xScale, yScale,chart, rect, gridContainer, labelContainer, barsContainer;
 
         var valueLabelWidth = 40; // space reserved for value labels (right)
         var barHeight = 15;       // height of one bar
-        var barLabelWidth = 150;  // space reserved for bar labels
+        var barLabelWidth = 130;  // space reserved for bar labels
         var barLabelPadding = 5;  // padding between bar and bar labels (left)
         var gridLabelHeight = 18; // space reserved for grid line labels
         var gridChartOffset = 5;  // space between start of grid and first bar
-        var maxBarWidth = 500;    // width of the bar with the max value
 
         // accessor functions 
         var barLabel = function (d) { return d.key; };
@@ -97,8 +97,9 @@ angular.module('charts.barchart', []).service('barchart', function () {
             xScale = d3.scale.linear().domain([0, d3.max(sortedData, barValue)]).range([0, maxBarWidth]);
         };
 
-        me.init = function(initialData) {
+        me.init = function(initialData, maxBarWidth) {
             me.update(initialData);
+            me.maxBarWidth = maxBarWidth;
             render();
         };
 

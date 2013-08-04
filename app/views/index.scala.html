@@ -8,11 +8,104 @@
 
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-
+        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-glyphicons.css")">
         <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-
+    </head>
+    
+    <body ng-app="birdwatch">
         
+        <div ng-controller="BirdWatchCtrl">
+
+            <div class="navbar navbar-fixed-top">
+                <div class="container">
+
+                    <span class="navbar-brand">BirdWatch</span>
+                    
+                    <div class="navbar-form pull-left col-lg-6 input-group">
+                        <form ng-submit="newSearch()" class="input-group">
+                            <input type="text" class="form-control" ng-model="searchText" placeholder="Example search: java (job OR jobs OR hiring)">
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="button" ng-click="newSearch()">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </span>
+
+                        </form>
+                    </div>
+
+                    <ul class="nav navbar-nav pull-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">About
+                                <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="http://matthiasnehlsen.com" target="_blank">Project Introduction</a></li>
+                                <li><a href="http://matthiasnehlsen.com" target="_blank">Blog</a></li>
+                                <li><a href="https://github.com/matthiasn" target="_blank">Project on GitHub</a></li>
+                                <li><a href="#" ng-click="openMessageBox()">Legal stuff</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <ul class="nav navbar-nav pull-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings  
+                                <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                
+                                <li class="divider"></li>
+                                <li class="dropdown-header">Dropdown header</li>
+                                <li><a href="#">Separated link</a></li>
+                                <li><a href="#">One more separated link</a></li>
+                            </ul>
+                        </li>    
+                    </ul>
+
+                    <div class="navbar-text col-lg-2 pull-right">Tweet count: <a>
+                        <span tooltip-placement="bottom" tooltip="Tweets currently loaded">{{tweets.length}}</span></a>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="container container-fluid">
+                <div class="row">
+                    <pagination rotate="false" num-pages="noOfPages()" current-page="currentPage" max-size="maxSize"
+                    boundary-links="true"></pagination>
+                    <div>
+                        Always stay on last page <input type="checkbox" ng-model="stayOnLastPage"/>                       
+                    </div>
+
+                </div>
+                
+                <div class="row">
+                    <div class="col-lg-4" id="tweet-frame">
+                        <div class="tweet" ng-repeat="tweet in tweetPage()">                      
+                            <img class="thumbnail" src="{{tweet.user.profile_image_url}}">
+                            <a tooltip-placement="bottom" tooltip="click to visit Twitter profile"
+                            href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+                                <span class="username">{{tweet.user.name}}</span>
+                            </a>
+                            <span class="username_screen">&#64;{{tweet.user.screen_name}}</span>
+                            <div class="pull-right timeInterval">{{tweet.created_at | fromNow}}</div>
+                            <div class="tweettext" ng-bind-html-unsafe="tweet.htmlText"><br /></div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-8">
+                        <div tooltip-placement="right" tooltip="click word to refine search" id="wordCloud"></div>
+                        <div tooltip-placement="right" tooltip="click bar to refine search" id="wordBars"></div>  
+                        
+                    </div>
+                    
+                </div>
+            </div>            
+        </div>
+        
+        <!-- Placed at the end of the document so the pages load faster -->
+
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))"></script>
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("d3.min.js"))"></script>
@@ -23,86 +116,8 @@
         <script src="@routes.Assets.at("javascripts/services.js")"></script>
         <script src="@routes.Assets.at("javascripts/barchart.js")"></script>
         <script src="@routes.Assets.at("javascripts/wordcloud.js")"></script>
-        <script src="@routes.Assets.at("javascripts/controllers.js")"></script> 
-    </head>
-    
-    <body ng-app="birdwatch">
+        <script src="@routes.Assets.at("javascripts/controllers.js")"></script>
         
-        <div ng-controller="BirdWatchCtrl" class="container">
-
-            <div class="navbar navbar-fixed-top">
-                <div class="container">
-
-                    <a href="http://matthiasnehlsen.com" target="_blank" tooltip-placement="bottom" tooltip="Visit my Blog for more info" class="navbar-brand">BirdWatch</a>
-
-                    <div class="navbar-form pull-left col-lg-7">
-                        <div class="col-lg-9">
-                            <form ng-submit="newSearch()">
-                                <input type="text" name="chat" ng-model="searchText" autocomplete="off"
-                                placeholder="Search here, example: java (job OR hiring)"
-                                class="ng-pristine ng-valid form-control"/> 
-                            </form>
-
-                        </div>
-                        <input tooltip-placement="bottom" tooltip="click to refine search" type="button" c
-                            class="btn btn-primary" value="Search" ng-click="newSearch()" />                        
-                    </div>
-
-                    <ul class="nav navbar-nav pull-right">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                <li><a href="#">Something else here</a></li>
-                                <li class="divider"></li>
-                                <li class="dropdown-header">Dropdown header</li>
-                                <li><a href="#">Separated link</a></li>
-                                <li><a href="#">One more separated link</a></li>
-                            </ul>
-                        </li>    
-                    </ul>
-                    
-                    <div class="navbar-text">Tweet count: <a>
-                        <span tooltip-placement="bottom" tooltip="Tweets currently loaded">{{tweets.length}}</span></a>
-                    </div>
-                    
-                </div>
-            </div>
-
-
-            <pagination rotate="false" num-pages="noOfPages()" current-page="currentPage" max-size="maxSize"
-            boundary-links="true" id="pager"></pagination>
-            
-            <div id="tweets">
-
-
-                <div class="tweetlist" ng-repeat="tweet in tweetPage() | limitTo:50 ">
-                    
-                    <div class="tweet">
-                        
-                        <span><a href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
-                                <img class="img-rounded" src="{{tweet.user.profile_image_url}}" />
-                        </a></span>
-                        <div class="username">
-                            <a tooltip-placement="bottom" tooltip="click to visit Twitter profile" 
-                                  href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
-                                <span class="name">{{tweet.user.name}}</span> 
-                            </a>
-                            <span class="screen">&#64;{{tweet.user.screen_name}}</span>
-                        </div>
-                        <div class="timeInterval">{{tweet.created_at | fromNow}}</div>
-                        <br />
-                        <div class="tweettext"><span ng-bind-html-unsafe="tweet.htmlText"><br /></span></div>
-                    </div>
-                    
-                </div>
-            </div>
-
-            <div tooltip-placement="right" tooltip="click word to refine search" id="wordCloud"></div>
-            <div tooltip-placement="right" tooltip="click bar to refine search" id="wordBars"></div>
-            
-        </div>
-
+        <!-- Analytics ================================================== -->
     </body>
 </html>

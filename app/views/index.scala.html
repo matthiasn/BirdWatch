@@ -7,6 +7,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <title>@title</title>
+        
+        <!-- Stylesheets -->
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-glyphicons.css")">
         <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))">
@@ -17,11 +19,12 @@
         
         <div ng-controller="BirdWatchCtrl">
 
+            <!-- Navigation Bar -->
             <div class="navbar navbar-fixed-top">
                 <div class="container">
-
                     <span class="navbar-brand">BirdWatch</span>
-                    
+
+                    <!-- Search field in NavBar -->
                     <div class="navbar-form pull-left col-lg-6 input-group">
                         <form ng-submit="newSearch()" class="input-group">
                             <input type="text" class="form-control" ng-model="searchText" placeholder="Example search: java (job OR jobs OR hiring)">
@@ -30,10 +33,10 @@
                                     <span class="glyphicon glyphicon-search"></span>
                                 </button>
                             </span>
-
                         </form>
                     </div>
 
+                    <!-- Tweets. Project info -->
                     <ul class="nav navbar-nav pull-right">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">About
@@ -42,23 +45,30 @@
                                 <li><a href="http://matthiasnehlsen.com" target="_blank">Project Introduction</a></li>
                                 <li><a href="http://matthiasnehlsen.com" target="_blank">Blog</a></li>
                                 <li><a href="https://github.com/matthiasn" target="_blank">Project on GitHub</a></li>
-                                <li><a href="#" ng-click="openMessageBox()">Legal stuff</a></li>
+                                <li><a href="#" ng-click="legalStuff()">Legal stuff</a></li>
                             </ul>
                         </li>
                     </ul>
 
+                    <!-- Settings -->
                     <ul class="nav navbar-nav pull-right">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings  
                                 <b class="caret"></b></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Action</a></li>
-                                <li><a href="#">Another action</a></li>
-                                
-                                <li class="divider"></li>
-                                <li class="dropdown-header">Dropdown header</li>
-                                <li><a href="#">Separated link</a></li>
-                                <li><a href="#">One more separated link</a></li>
+                                <li><a href="#">Previous Tweets:</a></li>
+                                <li>
+                                    <a>
+                                        <select class="form-control" ng-model="prevSize" ng-options="p for p in prevSizeOpts"></select>
+                                    </a>
+                                </li>
+                                <li><hr></li>
+                                <li><a href="#">Page Size:</a></li>
+                                <li>
+                                    <a>
+                                        <select class="form-control" ng-model="pageSize" ng-options="p for p in pageSizeOpts"></select>
+                                    </a>
+                                </li>
                             </ul>
                         </li>    
                     </ul>
@@ -70,8 +80,10 @@
                 </div>
             </div>
 
+            <!-- Tweets column with Pagination -->
             <div class="container container-fluid">
                 <div class="row">
+                    <!-- Pagination. TODO: layout for "Stay on last Page" -->
                     <pagination rotate="false" num-pages="noOfPages()" current-page="currentPage" max-size="maxSize"
                     boundary-links="true"></pagination>
                     <div>
@@ -79,32 +91,26 @@
                     </div>
 
                 </div>
-                
+
+                <!-- Main page layout -->
                 <div class="row">
-                    <div class="col-lg-4" id="tweet-frame">
-                        <div class="tweet" ng-repeat="tweet in tweetPage()">                      
-                            <img class="thumbnail" src="{{tweet.user.profile_image_url}}">
-                            <a tooltip-placement="bottom" tooltip="click to visit Twitter profile"
-                            href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
-                                <span class="username">{{tweet.user.name}}</span>
-                            </a>
-                            <span class="username_screen">&#64;{{tweet.user.screen_name}}</span>
-                            <div class="pull-right timeInterval">{{tweet.created_at | fromNow}}</div>
-                            <div class="tweettext" ng-bind-html-unsafe="tweet.htmlText"><br /></div>
-                        </div>
-                    </div>
                     
+                    <!-- Tweet Cards inside frame -->
+                    <div class="col-lg-4" id="tweet-frame">
+                        <div class="tweetCard" ng-repeat="tweet in tweetPage()" tweet="tweet"></div>
+                    </div>
+
+                    <!-- Charts column -->
                     <div class="col-lg-8">
                         <div tooltip-placement="right" tooltip="click word to refine search" id="wordCloud"></div>
-                        <div tooltip-placement="right" tooltip="click bar to refine search" id="wordBars"></div>  
-                        
+                        <div tooltip-placement="right" tooltip="click bar to refine search" id="wordBars"></div>                   
                     </div>
                     
                 </div>
             </div>            
         </div>
         
-        <!-- Placed at the end of the document so the pages load faster -->
+        <!-- Scripts placed at the end of the document so the pages load faster -->
 
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))"></script>
@@ -116,11 +122,11 @@
         <script src="@routes.Assets.at("javascripts/services.js")"></script>
         <script src="@routes.Assets.at("javascripts/barchart.js")"></script>
         <script src="@routes.Assets.at("javascripts/wordcloud.js")"></script>
+        <script src="@routes.Assets.at("javascripts/directives.js")"></script>
+        <script src="@routes.Assets.at("javascripts/filters.js")"></script>
         <script src="@routes.Assets.at("javascripts/controllers.js")"></script>
         
-        <!-- Analytics, replace this if you want to run it yourself ================================= -->
-
-        <!-- Todo: move analytics ID to config -->
+        <!-- Analytics, replace or remove in your own project. Todo: move analytics ID to config -->
         <script>
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

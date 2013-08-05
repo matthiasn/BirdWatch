@@ -1,0 +1,15 @@
+<div class="tweet">
+    <span> 
+        <a href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+            <img class="thumbnail" src="{{ tweet.user.profile_image_url }}" />
+        </a>
+    </span>
+
+    <a tooltip-placement="bottom" tooltip="click to visit Twitter profile"
+       href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+        <span class="username">{{tweet.user.name}}</span>
+    </a>
+    <span class="username_screen">&#64;{{tweet.user.screen_name}}</span>
+    <div class="pull-right timeInterval">{{tweet.created_at | fromNow}}</div>
+    <div class="tweettext" ng-bind-html-unsafe="tweet.htmlText"><br /></div>
+</div>

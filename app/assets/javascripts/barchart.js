@@ -62,7 +62,7 @@ angular.module('charts.barchart', []).service('barchart', function () {
                 .attr('height', yScale.rangeBand())
                 .attr('width', function (d) { return xScale(barValue(d)); })
                 .attr('stroke', 'white')
-                .attr('fill', 'steelblue')
+                .attr('fill', '#428bca')
                 .on("click", function(d) {
                     var tag = barLabel(d).replace('#','');                    
                     addSearch(tag);

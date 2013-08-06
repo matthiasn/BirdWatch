@@ -1,6 +1,4 @@
 body {
-    position: relative;
-    padding-top: 63px;
 }
 
 a {
@@ -55,7 +53,7 @@ a {
 }
 
 .pagination-mini > li > a,
-.pagination-mini > li > span {
+.pagination-mini > li > span, .toggleLive {
     float: left;
     padding: 4px 5px;
     line-height: 1.428571429;
@@ -96,4 +94,10 @@ a {
     margin-bottom: 5px;
     background-color: #FFF;
     overflow: auto;
+}
+
+.toggleLiveActive {
+    background: #428bca;
+    color: #fff;
+    cursor: default;
 }

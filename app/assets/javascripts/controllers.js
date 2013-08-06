@@ -12,6 +12,8 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.pageSizeOpts = ['5', '10', '25', '50', '100'];
         $scope.pageSize = $scope.pageSizeOpts[2];
         $scope.stayOnLastPage = true;
+        $scope.toggleLive = function () { $scope.stayOnLastPage = !$scope.stayOnLastPage};
+        
         $scope.currentPage = 1;
         $scope.maxSize = 12;
         $scope.barchartDefined = false;

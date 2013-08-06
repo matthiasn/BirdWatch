@@ -20,8 +20,14 @@
         <div ng-controller="BirdWatchCtrl">
 
             <!-- Navigation Bar -->
-            <div class="navbar navbar-fixed-top">
+            <div class="navbar">
                 <div class="container">
+                    <button type="button" data-toggle="collapse" data-target=".navbar-responsive-collapse" class="navbar-toggle collapsed">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    
                     <span class="navbar-brand">BirdWatch</span>
 
                     <!-- Search field in NavBar -->
@@ -35,48 +41,52 @@
                             </span>
                         </form>
                     </div>
-
-                    <!-- Tweets. Project info -->
-                    <ul class="nav navbar-nav pull-right">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">About
-                                <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="http://matthiasnehlsen.com" target="_blank">Project Introduction</a></li>
-                                <li><a href="http://matthiasnehlsen.com" target="_blank">Blog</a></li>
-                                <li><a href="https://github.com/matthiasn" target="_blank">Project on GitHub</a></li>
-                                <li><a href="#" ng-click="legalStuff()">Legal stuff</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-
-                    <!-- Settings -->
-                    <ul class="nav navbar-nav pull-right">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings  
-                                <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a href="#">Previous Tweets:</a></li>
-                                <li>
-                                    <a>
-                                        <select class="form-control" ng-model="prevSize" ng-options="p for p in prevSizeOpts"></select>
-                                    </a>
-                                </li>
-                                <li><hr></li>
-                                <li><a href="#">Page Size:</a></li>
-                                <li>
-                                    <a>
-                                        <select class="form-control" ng-model="pageSize" ng-options="p for p in pageSizeOpts"></select>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>    
-                    </ul>
-
-                    <div class="navbar-text col-lg-2 pull-right">Tweet count: <a>
-                        <span tooltip-placement="bottom" tooltip="Tweets currently loaded">{{tweets.length}}</span></a>
-                    </div>
                     
+                    <div class="nav-collapse">
+                        
+                            <!-- Tweets. Project info -->
+                        <ul class="nav navbar-nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About
+                                    <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="http://matthiasnehlsen.com" target="_blank">Project Introduction</a></li>
+                                    <li><a href="http://matthiasnehlsen.com" target="_blank">Blog</a></li>
+                                    <li><a href="https://github.com/matthiasn" target="_blank">Project on GitHub</a></li>
+                                    <li><a href="#" ng-click="legalStuff()">Legal stuff</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                            <!-- Settings -->
+                        <ul class="nav navbar-nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings
+                                    <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Previous Tweets:</a></li>
+                                    <li>
+                                        <a>
+                                            <select class="form-control" ng-model="prevSize" ng-options="p for p in prevSizeOpts"></select>
+                                        </a>
+                                    </li>
+                                    <li><hr></li>
+                                    <li><a href="#">Page Size:</a></li>
+                                    <li>
+                                        <a>
+                                            <select class="form-control" ng-model="pageSize" ng-options="p for p in pageSizeOpts"></select>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <div class="navbar-text col-lg-2 pull-right">Tweet count: <a>
+                            <span tooltip-placement="bottom" tooltip="Tweets currently loaded" ng-bind="tweets.length"></span></a>
+                        </div>
+                        
+                    </div>
+
                 </div>
             </div>
 
@@ -86,10 +96,7 @@
                     <!-- Pagination. TODO: layout for "Stay on last Page" -->
                     <pagination rotate="false" num-pages="noOfPages()" current-page="currentPage" max-size="maxSize"
                     boundary-links="true"></pagination>
-                    <div>
-                        Always stay on last page <input type="checkbox" ng-model="stayOnLastPage"/>                       
-                    </div>
-
+                    <span class="toggleLive" ng-class="stayOnLastPage ? 'toggleLiveActive' : ''" ng-click="toggleLive()">Live</span>
                 </div>
 
                 <!-- Main page layout -->
@@ -117,7 +124,8 @@
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("d3.min.js"))"></script>
         <script src='@routes.Assets.at("javascripts/vendor/d3.layout.cloud.js")' type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/vendor/moment.min.js")"></script>
-        <script src="@routes.Assets.at("javascripts/vendor/ui-bootstrap-tpls-0.4.0.js")"></script>
+        
+        <script src="@routes.Assets.at("javascripts/ui-bootstrap-custom.js")"></script>
         <script src="@routes.Assets.at("javascripts/app.js")"></script>
         <script src="@routes.Assets.at("javascripts/services.js")"></script>
         <script src="@routes.Assets.at("javascripts/barchart.js")"></script>

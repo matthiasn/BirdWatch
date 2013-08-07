@@ -78,14 +78,14 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         };
         
         /** charts */
-        $scope.barchart = barchart.BarChart($scope.addSearchString, $("#wordBars").width() - 180);
-        $scope.wordCloud = wordcloud.WordCloud($("#wordCloud").width(), $("#wordCloud").width() * 0.75, 250, 
+        $scope.barchart = barchart.BarChart($scope.addSearchString, $("#wordBars").width() - 150);
+        $scope.wordCloud = wordcloud.WordCloud($("#wordCloud").width() * 1.1, $("#wordCloud").width() * 0.75, 250, 
             $scope.addSearchString);
 
         /** resize charts on window resize (currently only working for wordcloud) */
         function resizeCharts() {
             $("#wordCloud").empty();
-            $scope.wordCloud = wordcloud.WordCloud($("#wordCloud").width(), $("#wordCloud").width() * 0.75,
+            $scope.wordCloud = wordcloud.WordCloud($("#wordCloud").width() * 1.1, $("#wordCloud").width() * 0.75,
                 250, $scope.addSearchString);
         }
         var TO = false;

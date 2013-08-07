@@ -10,7 +10,7 @@ angular.module('charts.wordcloud', []).service('wordcloud', function () {
         var svg = d3.select("#wordCloud").append("svg").attr("width", w).attr("height", h);
         var background = svg.append("g");
         var vis = svg.append("g").attr("transform", "translate(" + [w >> 1, h >> 1] + ")");
-        var layout = d3.layout.cloud()
+        var cloud = d3.layout.cloud()
             .timeInterval(1)
             .size([w, h])
             .fontSize(function (d) { return fontSize(+d.value); })
@@ -50,10 +50,10 @@ angular.module('charts.wordcloud', []).service('wordcloud', function () {
             exitGroup.transition().duration(600).style("opacity", 1e-6).remove();
             return vis.transition().delay(400).duration(600).attr("transform", "translate(" + [w >> 1, h >> 1] + ")scale(" + scale + ")");
         };
-        layout.on("end", draw);
+        cloud.on("end", draw);
         me.redraw = function (tags) {
-            if (tags.length) { fontSize.domain([+tags[tags.length - 1].value || 1, +tags[0].value]); }
-            return layout.stop().words(tags.slice(0, Math.min(tags.length, maxEntries))).start();
+            if (tags.length) { fontSize.domain([+tags[tags.length - 1].value || 1, +tags[0].value]); }     
+            return cloud.stop().words(tags.slice(0, Math.min(tags.length, maxEntries))).start();
         };
         return me;
     };

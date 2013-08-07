@@ -77,10 +77,24 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
             });
         };
         
-        /** Charts */
+        /** charts */
         $scope.barchart = barchart.BarChart($scope.addSearchString, $("#wordBars").width() - 180);
-        $scope.wordCloud = wordcloud.WordCloud($("#wordCloud").width(), $("#wordCloud").width() * 0.6, 250, $scope.addSearchString);
+        $scope.wordCloud = wordcloud.WordCloud($("#wordCloud").width(), $("#wordCloud").width() * 0.75, 250, 
+            $scope.addSearchString);
 
+        /** resize charts on window resize (currently only working for wordcloud) */
+        function resizeCharts() {
+            $("#wordCloud").empty();
+            $scope.wordCloud = wordcloud.WordCloud($("#wordCloud").width(), $("#wordCloud").width() * 0.75,
+                250, $scope.addSearchString);
+        }
+        var TO = false;
+        $(window).resize(function(){
+            if(TO !== false)
+                clearTimeout(TO);
+            TO = setTimeout(resizeCharts, 2000); //200 is time in miliseconds
+        });
+        
         /** Load previous Tweets, paginated. Recursive function, calls itself with the next chunk to load until
          *  eventually n, the remaining tweets to load, is not larger than 0 any longer. guarantees at least n hits
          *  if available, potentially more if (n % chunkSize != 0) */
@@ -97,7 +111,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
                         $scope.wordCount.insert(tempData);
 
                         if (n < 101) {     // only trigger drawing of wordcloud on last chunk of data, expensive 
-                            $scope.wordCloud.redraw($scope.wordCount.getWords())
+                            $scope.wordCloud.redraw($scope.wordCount.getWords());
                         }
 
                         if ($scope.barchartDefined === false) {

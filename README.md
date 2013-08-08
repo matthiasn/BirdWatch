@@ -1,17 +1,65 @@
 #BirdWatch  
 
-This is a dynamic web application for visualizing a stream of live Tweet. This web application is based on **[Play 2.1](http://www.playframework.com)**. I have written it for trying out **[Iteratees](http://www.playframework.com/documentation/2.0.4/Iteratees)** in combination with consuming the **[Twitter Streaming API](https://dev.twitter.com/docs/streaming-apis)** and updating a single page web app using **[Server Sent Events](http://dev.w3.org/html5/eventsource/)**. The visualization is done through the **[D3.js](http://d3js.org)** data visualization library. Tweets are persisted using **[MongoDB](http://www.mongodb.org)** and **[ReactiveMongo](http://reactivemongo.org)**, the reactive Scala driver for MongoDB. 
-
-The words in the word cloud and in the bar chart are clickable and allow you to drill further into the data by filtering to only Tweets that contain all words in the search string. This filter is also applied to Tweets coming in live. Clicking a word again that is already in your current selection will set the query to just that word. Just observe the address bar of your browser and you'll see how it works.
-
-You can **[try BirdWatch](http://birdwatch.matthiasnehlsen.com)** without having to install anything. **[Check out my Blog](http://matthiasnehlsen.com)** for additional documentation on this project.
+BirdWatch is a reactive web application for visualizing a stream of live Tweets making use of AngularJS, BootStrap, D3.js, ElasticSearch and Play Framework (in alphabetical order).
 
 ![Screenshot](./docs/screenshot.png)
-The idea behind this reactive web app is to explore processing a live stream of information using Scala and the Play Framework (making use of Akka actors). A rolling window of Tweets is analyzed in terms of certain parameters and displayed graphically. The **[d3-cloud](https://github.com/jasondavies/d3-cloud)** project by Jason Davies is used for displaying the word cloud, adapted for dynamic updates as new data comes in as **[Server Sent Events](http://dev.w3.org/html5/eventsource/)**. Tweets are also stored within MongoDB. Storing the Tweets in a persistent data store allows pre-loading a selection of the most recent Tweets when the page is loaded.
 
-###Setup
+A Play application connects to the Twitter Streaming API and receives all Tweets that include at least one of a set of configured words. Twitter caps this to 1% of the FireHose, which basically means that the application will not receive more than one percent of all Tweets at any given moment of time. This limit still falls in the range of millions of Tweets per day; a well-defined area of interest should comfortable fit in.
+ 
+Incoming Tweets are inserted into ElasticSearch where they are almost instantly available for querying. Each Tweet is also compared with what is called a percolation query, a pre-registered query for each connected client. Every thus pre-registered query is run on every new Tweet. For every Tweet on which the query matches the client will immediately be informed by means of Server Sent Events. 
 
-Twitter API consumer key and access token are required to consume the **[Twitter Streaming API](https://dev.twitter.com/docs/streaming-apis)**. You need to **[create a Twitter application](https://dev.twitter.com/apps)** and store keys and secrets in a twitter.conf file, using the commented out section in the **[application.conf](https://github.com/matthiasn/BirdWatch/blob/master/conf/application.conf)** as a template. Please feel free to **[contact me](mailto:matthias.nehlsen@gmail.com)** if there are problems getting the application up and running. You may want to remove or alter the Google Analytics script in main.scala.html
+Clients hold a local data copy of all the Tweets they have asked for using the ElasticSearch query syntax, with 'AND' being the default operator. Every query is not only run on the existing Tweets in the ElasticSearch index but is also registered as a percolation query. A user selectable amount of previous Tweets is loaded, and then every new Tweet for which the query matches is appended immediately, allowing Tweets analysis in near-realtime. Queries are bookmarkable, making it easy to frequently look at interesting and potentially complex queries.
+
+Holding all data on the client may or may not be the most elegant way of doing this. Having loaded the Tweets already certainly means that the application can fully utilize a fast CPU on the client machine and respond instantly without having to ask the server every time the set of Tweets changes through new Tweets being added.  
+
+A live version of this application is **[available](http://birdwatch.matthiasnehlsen.com)**. This instance listens to a bunch of software and data related terms, see the application.conf file for details. Interesting queries on this data set include:
+
+java (job OR hiring)
+
+python -monty
+
+sql london
+
+
+Please feel free to contribute, pull requests are happily accepted. I use this project to study the technologies involved and I would appreciate learning better ways of doing things. Contributions would for example be helpful in these areas:
+
+- More sophisticated charts and data filters. This is a rich data set and the current tools only scratch the surface of what could be done with it. You have a question that a live stream of Tweets could answer? Share it or even better write the code yourself and contribute it.
+
+- Code organization. Particularly the AngularJS part is far from ideal, it should be much cleaner and more modularized.
+ 
+- Design. You have ideas for a flat and clean design and know Twitter Bootstrap? Awesome, let's see it. Please tidy up the CSS as you go :-) Particularly there should no be any handwritten CSS anywhere.
+
+- Documentation
+
+- Online help, something animated unobtrusively offered on startup that highlights how the application can be used would be really cool. 
+
+- Any of the issues listed on here on github.
+
+For more information check out my **[blog](http://matthiasnehlsen.com)**.
+
+##Setup
+
+Play Framework. You need a JVM on your machine. On a Mac the easiest way is to then install play using brew: 
+ 
+    brew install play
+
+You also need ElasticSearch:
+ 
+    brew install elasticsearch
+    
+You then run
+
+    elasticsearch -f
+    
+An inside the application folder:
+    
+    play run
+
+Twitter API consumer key and access token are required to consume the **[Twitter Streaming API](https://dev.twitter.com/docs/streaming-apis)**. You need to **[create a Twitter application](https://dev.twitter.com/apps)** and store keys and secrets in a twitter.conf file, using the commented out section in the **[application.conf](https://github.com/matthiasn/BirdWatch/blob/master/conf/application.conf)** as a template. 
+
+That should be all there is to it before you can run your own instance listening on http://localhost:9000. 
+
+You may want to remove or alter the Google Analytics script in main.scala.html.
 
 ###Streaming API limitations 
 Please be aware that only one connection to the Twitter Streaming API is possible from any one public IP address. Starting a connection to the Streaming API will potentially end other connections from the same network if **[NAT](http://en.wikipedia.org/wiki/Network_address_translation)** is in place using the same public IP address. Access from mobile networks is discouraged and most likely won't work.

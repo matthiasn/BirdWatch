@@ -15,7 +15,7 @@ Holding all data on the client may or may not be the most elegant way of doing t
 
 A live version of this application is **[available](http://birdwatch.matthiasnehlsen.com)**. This instance listens to a bunch of software and data related terms, see the application.conf file for details. Interesting queries on this data set include:
 
-<a target="_blank" href="http://birdwatch2.matthiasnehlsen.com/#/(job%20OR%20hiring)%20java"><strong>(job OR hiring) java</strong></a>
+<a target="_blank" href="http://birdwatch.matthiasnehlsen.com/#/(job%20OR%20hiring)%20java"><strong>(job OR hiring) java</strong></a>
 
 <a target="_blank" href="http://birdwatch.matthiasnehlsen.com/#/python%20-monty"><strong>python -monty</strong></a>
 

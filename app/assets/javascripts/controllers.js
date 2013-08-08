@@ -4,7 +4,10 @@
 angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud', 'ui.bootstrap']).
     controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout) {
         /** Main Data Structure: Array for Tweets */
-        $scope.tweets = [];
+        var tweets = [];
+
+        /** Last update timestamp for WordCLoud */
+        var lastCloudUpdate = new Date().getTime() - 10000;
         
         /** Settings */
         $scope.prevSizeOpts = ['100', '500', '1000', '2000', '5000'];
@@ -21,25 +24,20 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.legalStuff = utils.legalStuff;
 
         /** Dynamically calculate number of pages total*/
-        $scope.noOfPages = function () { return Math.ceil($scope.tweets.length / $scope.pageSize); };
-
-        /** Last update timestamp for WordCLoud */
-        $scope.lastCloudUpdate = new Date().getTime() - 10000;
-        
-        var wordCloudDiv = $("#wordCloud");
+        $scope.noOfPages = function () { return Math.ceil(tweets.length / $scope.pageSize); };
 
         /** Return paginated selection of Tweets array */
         $scope.tweetPage = function () {
             var startIndex = ($scope.currentPage - 1) * $scope.pageSize;
-            var endIndex = Math.min(startIndex + $scope.pageSize, $scope.tweets.length);            
-            return $scope.tweets.slice(startIndex, endIndex).reverse();
+            var endIndex = Math.min(startIndex + $scope.pageSize, tweets.length);            
+            return tweets.slice(startIndex, endIndex).reverse();
         };
         
         /** Start new search */
         $scope.newSearch = function () {
             $scope.tweetFeed.close();
-            $scope.tweets = [];
-            $scope.listen();
+            tweets = [];
+            listen();
         };
 
         /** Add a string to the search bar when for example clicking on a chart element */
@@ -53,49 +51,52 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         };
 
         /** update UI every 10 seconds to keep time ago for tweets accurate */
-        $scope.updateInterval = 10000;
-        $scope.onTimeout = function () {
+        var updateInterval = 10000;
+        var onTimeout = function () {
             $scope.$apply();
-            updateTimeout = $timeout($scope.onTimeout, $scope.updateInterval);
+            updateTimeout = $timeout(onTimeout, updateInterval);
         };
-        var updateTimeout = $timeout($scope.onTimeout, $scope.updateInterval);
+        var updateTimeout = $timeout(onTimeout, updateInterval);
 
         /** handle incoming tweets: add to tweets array */
-        $scope.addTweet = function (msg) {
+        var addTweet = function (msg) {
             $scope.$apply(function () {
                 var t = utils.formatTweet(JSON.parse(msg.data));
-                $scope.tweets.push(t);
+                tweets.push(t);
                 $scope.wordCount.insert([t]);
                 $scope.barchart.redraw($scope.wordCount.getWords().slice(0, 25));
 
-                if ((new Date().getTime() - $scope.lastCloudUpdate) > 5000) {
+                if ((new Date().getTime() - lastCloudUpdate) > 5000) {
                     $scope.wordCloud.redraw($scope.wordCount.getWords());
-                    $scope.lastCloudUpdate = new Date().getTime();
+                    lastCloudUpdate = new Date().getTime();
                 }
                 
                 if ($scope.stayOnLastPage) {
-                    $scope.currentPage = Math.ceil($scope.tweets.length / $scope.pageSize);                    
+                    $scope.currentPage = Math.ceil(tweets.length / $scope.pageSize);                    
                 }
             });
         };
         
         /** charts */
-        $scope.barchart = barchart.BarChart($scope.addSearchString, $("#wordBars").width() - 150);
-        $scope.wordCloud = wordcloud.WordCloud(wordCloudDiv.width() * 1.1, wordCloudDiv.width() * 0.75, 250, 
-            $scope.addSearchString);
 
+        var wordCloudDiv = $("#wordCloud");
+        
+        $scope.barchart = barchart.BarChart($scope.addSearchString, $("#wordBars").width() - 170);
+        $scope.wordCloud = wordcloud.WordCloud(wordCloudDiv.width(), wordCloudDiv.width() * 0.75, 250,
+            $scope.addSearchString, "#wordCloud");
+        
         /** resize charts on window resize (currently only working for wordcloud) */
-        function resizeCharts() {
-            $("#wordCloud").empty();
-            $scope.wordCloud = wordcloud.WordCloud(wordCloudDiv.width() * 1.1, wordCloudDiv.width() * 0.75,
-                250, $scope.addSearchString);
-        }
-        var TO = false;
-        $(window).resize(function(){
-            if(TO !== false)
-                clearTimeout(TO);
-            TO = setTimeout(resizeCharts, 2000); //200 is time in milliseconds
-        });
+//        function resizeCharts() {
+//            wordCloudDiv.empty();
+//            $scope.wordCloud = wordcloud.WordCloud(wordCloudDiv.width() * 1.1, wordCloudDiv.width() * 0.75,
+//                250, $scope.addSearchString, "#wordCloud");
+//        }
+//        var TO = false;
+//        $(window).resize(function(){
+//            if(TO !== false)
+//                clearTimeout(TO);
+//            TO = setTimeout(resizeCharts, 2000); //200 is time in milliseconds
+//        });
         
         /** Load previous Tweets, paginated. Recursive function, calls itself with the next chunk to load until
          *  eventually n, the remaining tweets to load, is not larger than 0 any longer. guarantees at least n hits
@@ -109,7 +110,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
                             .map(function (t) { return t._source; })
                             .map(utils.formatTweet);
 
-                        $scope.tweets = tempData.concat($scope.tweets); // prepend whole array
+                        tweets = tempData.concat(tweets); // prepend whole array
                         $scope.wordCount.insert(tempData);
 
                         if (n < 101) {     // only trigger drawing of wordcloud on last chunk of data, expensive 
@@ -124,7 +125,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
                         }
 
                         if ($scope.stayOnLastPage) {
-                            $scope.currentPage = Math.ceil($scope.tweets.length / $scope.pageSize);
+                            $scope.currentPage = Math.ceil(tweets.length / $scope.pageSize);
                         }
                         
                         $scope.loadPrev(searchString, n - chunkSize, chunkSize, offset + chunkSize);
@@ -134,8 +135,8 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         };
 
         /** Start Listening for Tweets with given query */
-        $scope.listen = function () {
-            $scope.tweets = [];
+        var listen = function () {
+            tweets = [];
             $scope.wordCount = utils.wordCount();
 
             var searchString = "*";
@@ -146,11 +147,11 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
             else $location.path("");
 
             $scope.tweetFeed = new EventSource("/tweetFeed?q=" + searchString);
-            $scope.tweetFeed.addEventListener("message", $scope.addTweet, false);
+            $scope.tweetFeed.addEventListener("message", addTweet, false);
 
             $scope.loadPrev(searchString, $scope.prevSize, 100, 0);
         };
 
         /** start listening to new Tweets immediately */
-        $scope.listen();
+        listen();
     });

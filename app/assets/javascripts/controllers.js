@@ -25,6 +25,8 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
 
         /** Last update timestamp for WordCLoud */
         $scope.lastCloudUpdate = new Date().getTime() - 10000;
+        
+        var wordCloudDiv = $("#wordCloud");
 
         /** Return paginated selection of Tweets array */
         $scope.tweetPage = function () {
@@ -79,20 +81,20 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         
         /** charts */
         $scope.barchart = barchart.BarChart($scope.addSearchString, $("#wordBars").width() - 150);
-        $scope.wordCloud = wordcloud.WordCloud($("#wordCloud").width() * 1.1, $("#wordCloud").width() * 0.75, 250, 
+        $scope.wordCloud = wordcloud.WordCloud(wordCloudDiv.width() * 1.1, wordCloudDiv.width() * 0.75, 250, 
             $scope.addSearchString);
 
         /** resize charts on window resize (currently only working for wordcloud) */
         function resizeCharts() {
             $("#wordCloud").empty();
-            $scope.wordCloud = wordcloud.WordCloud($("#wordCloud").width() * 1.1, $("#wordCloud").width() * 0.75,
+            $scope.wordCloud = wordcloud.WordCloud(wordCloudDiv.width() * 1.1, wordCloudDiv.width() * 0.75,
                 250, $scope.addSearchString);
         }
         var TO = false;
         $(window).resize(function(){
             if(TO !== false)
                 clearTimeout(TO);
-            TO = setTimeout(resizeCharts, 2000); //200 is time in miliseconds
+            TO = setTimeout(resizeCharts, 2000); //200 is time in milliseconds
         });
         
         /** Load previous Tweets, paginated. Recursive function, calls itself with the next chunk to load until

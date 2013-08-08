@@ -22,7 +22,7 @@ angular.module('ui.bootstrap.dropdownToggle', []).directive('dropdownToggle', ['
       closeMenu   = angular.noop;
   return {
     restrict: 'CA',
-    link: function(scope, element, attrs) {
+    link: function(scope, element) {
       scope.$watch('$location.path', function() { closeMenu(); });
       element.parent().bind('click', function() { closeMenu(); });
       element.bind('click', function (event) {
@@ -161,7 +161,7 @@ angular.module('ui.bootstrap.pagination', [])
             startPage = ((Math.ceil(paginationCtrl.currentPage / scope.maxSize) - 1) * scope.maxSize) + 1;
 
             // Adjust last page if limit is exceeded
-            endPage = Math.min(startPage + scope.maxSize - 1, scope.numPages);
+            endPage = Math.min(startPage + scope.maxSize - 1, +scope.numPages);
           }
         }
 

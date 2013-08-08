@@ -97,3 +97,7 @@ a {
     color: #fff;
     cursor: default;
 }
+
+.container {
+    max-width: 1600px;
+}

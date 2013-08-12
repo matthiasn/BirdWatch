@@ -2,7 +2,7 @@
 
 /** Controllers */
 angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud', 'ui.bootstrap']).
-    controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout) {
+    controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout, wordCount, tweets) {
         /** Main Data Structure: Array for Tweets */
         $scope.tweets = [];
 
@@ -12,7 +12,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         /** Settings */
         $scope.prevSizeOpts = ['100', '500', '1000', '2000', '5000'];
         $scope.prevSize = $scope.prevSizeOpts[2];
-        $scope.pageSizeOpts = ['5', '10', '25', '50', '100'];
+        $scope.pageSizeOpts = [5, 10, 25, 50, 100];
         $scope.pageSize = $scope.pageSizeOpts[2];
         $scope.stayOnLastPage = true;
         $scope.toggleLive = function () { $scope.stayOnLastPage = !$scope.stayOnLastPage};
@@ -27,17 +27,31 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.noOfPages = function () { return Math.ceil($scope.tweets.length / $scope.pageSize); };
 
         /** Return paginated selection of Tweets array */
+//        $scope.tweetPage = function () {
+//            var startIndex = ($scope.currentPage - 1) * $scope.pageSize;
+//            var endIndex = Math.min(startIndex + $scope.pageSize, $scope.tweets.length);            
+//            return $scope.tweets.slice(startIndex, endIndex).reverse();
+//        };
+// 
+//       /** Return paginated selection of Tweets array */
+//        $scope.tweetPage = function () {
+//            var startIndex = ($scope.currentPage - 1) * $scope.pageSize;
+//            var endIndex = Math.min(startIndex + $scope.pageSize, $scope.tweets.length);            
+//            return $scope.tweets.slice(startIndex, endIndex).reverse();
+//        };
+        
         $scope.tweetPage = function () {
-            var startIndex = ($scope.currentPage - 1) * $scope.pageSize;
-            var endIndex = Math.min(startIndex + $scope.pageSize, $scope.tweets.length);            
-            return $scope.tweets.slice(startIndex, endIndex).reverse();
+            return tweets.tweetPage($scope.currentPage, parseInt($scope.pageSize));
         };
+        
+        
         
         /** Start new search */
         $scope.newSearch = function () {
             $scope.tweetFeed.close();
             $scope.tweets = [];
             listen();
+            //tweets.newSearch($scope.searchText);
         };
 
         /** Add a string to the search bar when for example clicking on a chart element */
@@ -46,12 +60,12 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
             else if ($scope.searchText.indexOf(searchString) === -1) {
                 $scope.searchText = $scope.searchText + " " + searchString;
             }
-            $scope.$apply();  // I want the term to appear immediately, not only after search returns
+            $scope.$apply();  // Term should appear immediately, not only after search returns
             $scope.newSearch();            
         };
 
         /** update UI every 10 seconds to keep time ago for tweets accurate */
-        var updateInterval = 10000;
+        var updateInterval = 1000;
         var onTimeout = function () {
             $scope.$apply();
             updateTimeout = $timeout(onTimeout, updateInterval);
@@ -105,7 +119,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         /** Load previous Tweets, paginated. Recursive function, calls itself with the next chunk to load until
          *  eventually n, the remaining tweets to load, is not larger than 0 any longer. guarantees at least n hits
          *  if available, potentially more if (n % chunkSize != 0) */
-        $scope.loadPrev = function (searchString, n, chunkSize, offset) {
+        $scope.loadPrev = function (searchString, n, chunkSize, offset) {            
             if (n > 0) {
                 $http({method: "POST", data: utils.buildQuery(searchString, chunkSize, offset), url: "/tweets/search"}).
                     success(function (data, status, headers, config) {
@@ -141,7 +155,9 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         /** Start Listening for Tweets with given query */
         var listen = function () {
             $scope.tweets = [];
-            $scope.wordCount = utils.wordCount();
+            $scope.wordCount = wordCount.wordCount();
+
+            tweets.search($scope.searchText, $scope.pageSize);
 
             var searchString = "*";
             if ($scope.searchText.length > 0) {

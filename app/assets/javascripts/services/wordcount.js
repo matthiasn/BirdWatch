@@ -27,7 +27,7 @@ angular.module('birdwatch.services').service('wordCount', function () {
         var discard = /^(@|https?:)/;
         exports.insert = function(data) { return data.forEach(function(d) { return parseText(d.text); }); };
         exports.getWords = function() {
-            return d3.entries(tags).sort(function(a, b) { return b.value - a.value; });
+            return d3.entries(tags).sort(function(a, b) { return b.value - a.value; }).slice(0, 500);
         };
         exports.reset = function() { return tags = {}; };
         return exports;

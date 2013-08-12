@@ -29,6 +29,7 @@ angular.module('birdwatch.services').service('utils', function () {
         return t;
     };
 
+    /** build paginated query */
     var buildQuery = function (queryString, size, from) {
         return {
             size: size,

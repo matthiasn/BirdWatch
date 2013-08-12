@@ -2,58 +2,23 @@
 
 /** Controllers */
 angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud', 'ui.bootstrap']).
-    controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout, wordCount, tweets) {
-        /** Main Data Structure: Array for Tweets */
-        $scope.tweets = [];
-
-        /** Last update timestamp for WordCLoud */
-        var lastCloudUpdate = new Date().getTime() - 10000;
-        
+    controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout, wordCount, tweets) {      
         /** Settings */
         $scope.prevSizeOpts = ['100', '500', '1000', '2000', '5000'];
         $scope.prevSize = $scope.prevSizeOpts[2];
         $scope.pageSizeOpts = [5, 10, 25, 50, 100];
         $scope.pageSize = $scope.pageSizeOpts[2];
         $scope.stayOnLastPage = true;
-        $scope.toggleLive = function () { $scope.stayOnLastPage = !$scope.stayOnLastPage};
-        
+        $scope.toggleLive = function () { $scope.stayOnLastPage = !$scope.stayOnLastPage};      
         $scope.currentPage = 1;
         $scope.maxSize = 12;
         $scope.barchartDefined = false;
         $scope.searchText = $location.path().substr(1);
         $scope.legalStuff = utils.legalStuff;
-
-        /** Dynamically calculate number of pages total*/
-        $scope.noOfPages = function () { return Math.ceil($scope.tweets.length / $scope.pageSize); };
-
-        /** Return paginated selection of Tweets array */
-//        $scope.tweetPage = function () {
-//            var startIndex = ($scope.currentPage - 1) * $scope.pageSize;
-//            var endIndex = Math.min(startIndex + $scope.pageSize, $scope.tweets.length);            
-//            return $scope.tweets.slice(startIndex, endIndex).reverse();
-//        };
-// 
-//       /** Return paginated selection of Tweets array */
-//        $scope.tweetPage = function () {
-//            var startIndex = ($scope.currentPage - 1) * $scope.pageSize;
-//            var endIndex = Math.min(startIndex + $scope.pageSize, $scope.tweets.length);            
-//            return $scope.tweets.slice(startIndex, endIndex).reverse();
-//        };
+        $scope.count = tweets.count;
+        $scope.noOfPages = tweets.noOfPages;
+        $scope.tweetPage = tweets.tweetPage;
         
-        $scope.tweetPage = function () {
-            return tweets.tweetPage($scope.currentPage, parseInt($scope.pageSize));
-        };
-        
-        
-        
-        /** Start new search */
-        $scope.newSearch = function () {
-            $scope.tweetFeed.close();
-            $scope.tweets = [];
-            listen();
-            //tweets.newSearch($scope.searchText);
-        };
-
         /** Add a string to the search bar when for example clicking on a chart element */
         $scope.addSearchString = function (searchString) {
             if ($scope.searchText.length === 0) { $scope.searchText = searchString; }
@@ -61,46 +26,27 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
                 $scope.searchText = $scope.searchText + " " + searchString;
             }
             $scope.$apply();  // Term should appear immediately, not only after search returns
-            $scope.newSearch();            
+            $scope.search();            
         };
 
         /** update UI every 10 seconds to keep time ago for tweets accurate */
-        var updateInterval = 1000;
+        var updateInterval = 10000;
         var onTimeout = function () {
             $scope.$apply();
             updateTimeout = $timeout(onTimeout, updateInterval);
         };
         var updateTimeout = $timeout(onTimeout, updateInterval);
 
-        /** handle incoming tweets: add to tweets array */
-        var addTweet = function (msg) {
-            $scope.$apply(function () {
-                var t = utils.formatTweet(JSON.parse(msg.data));
-                $scope.tweets.push(t);
-                $scope.wordCount.insert([t]);
-                $scope.barchart.redraw($scope.wordCount.getWords().slice(0, 25));
-
-                if ((new Date().getTime() - lastCloudUpdate) > 5000) {
-                    $scope.wordCloud.redraw($scope.wordCount.getWords());
-                    lastCloudUpdate = new Date().getTime();
-                }
-                
-                if ($scope.stayOnLastPage) {
-                    $scope.currentPage = Math.ceil($scope.tweets.length / $scope.pageSize);                    
-                }
-            });
-        };
-        
         /** charts */
-
         var wordCloudDiv = $("#wordCloud");
         var wordCloudWidth = wordCloudDiv.width();
+        var lastCloudUpdate = new Date().getTime() - 10000;
         
         $scope.barchart = barchart.BarChart($scope.addSearchString, $("#wordBars").width() - 170);
         $scope.wordCloud = wordcloud.WordCloud(wordCloudDiv.width(), wordCloudDiv.width() * 0.75, 250,
             $scope.addSearchString, "#wordCloud");
         
-        /** resize wordCloud on window resize when div size changes by at least 5%  */
+        /** resize wordCloud on window resize when div size changes by at least 5% */
         function resizeWordcloud() {
             wordCloudDiv.empty();
             $scope.wordCloud = wordcloud.WordCloud(wordCloudDiv.width(), wordCloudDiv.width() * 0.75,
@@ -108,70 +54,37 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
             $scope.wordCloud.redraw($scope.wordCount.getWords());
             wordCloudWidth = wordCloudDiv.width();
         }
-
+        /** limit execution to max once every 2 seconds because resize fires multiple times (from StackOverflow) */
         var TO = false;
         $(window).resize(function(){
             if(TO !== false)
                 clearTimeout(TO);
-            TO = setTimeout(resizeWordcloud, 2000); //200 is time in milliseconds
+            TO = setTimeout(resizeWordcloud, 2000); 
         });
-        
-        /** Load previous Tweets, paginated. Recursive function, calls itself with the next chunk to load until
-         *  eventually n, the remaining tweets to load, is not larger than 0 any longer. guarantees at least n hits
-         *  if available, potentially more if (n % chunkSize != 0) */
-        $scope.loadPrev = function (searchString, n, chunkSize, offset) {            
-            if (n > 0) {
-                $http({method: "POST", data: utils.buildQuery(searchString, chunkSize, offset), url: "/tweets/search"}).
-                    success(function (data, status, headers, config) {
 
-                        var tempData = data.hits.hits.reverse()
-                            .map(function (t) { return t._source; })
-                            .map(utils.formatTweet);
+        /** callback to perform when new tweets available */
+        tweets.registerCallback(function (t) {
+            $scope.wordCount.insert(t);
 
-                        $scope.tweets = tempData.concat($scope.tweets); // prepend whole array
-                        $scope.wordCount.insert(tempData);
-
-                        if (n < 101) {     // only trigger drawing of wordcloud on last chunk of data, expensive 
-                            $scope.wordCloud.redraw($scope.wordCount.getWords());
-                        }
-
-                        if ($scope.barchartDefined === false) {
-                            $scope.barchart.init($scope.wordCount.getWords().slice(0, 26));
-                            $scope.barchartDefined = true;
-                        } else {
-                            $scope.barchart.redraw($scope.wordCount.getWords().slice(0, 26))
-                        }
-
-                        if ($scope.stayOnLastPage) {
-                            $scope.currentPage = Math.ceil($scope.tweets.length / $scope.pageSize);
-                        }
-                        
-                        $scope.loadPrev(searchString, n - chunkSize, chunkSize, offset + chunkSize);
-                    }).error(function (data, status, headers, config) { }
-                );
+            if ($scope.barchartDefined === false) {
+                $scope.barchart.init($scope.wordCount.getWords().slice(0, 26));
+                $scope.barchartDefined = true;
+            } else {
+                $scope.barchart.redraw($scope.wordCount.getWords().slice(0, 26))
             }
-        };
 
-        /** Start Listening for Tweets with given query */
-        var listen = function () {
-            $scope.tweets = [];
+            if ((new Date().getTime() - lastCloudUpdate) > 5000) {
+                $scope.wordCloud.redraw($scope.wordCount.getWords());
+                lastCloudUpdate = new Date().getTime();
+            }
+
+            if ($scope.stayOnLastPage) { $scope.currentPage = Math.ceil(tweets.count() / $scope.pageSize); }
+        });
+
+        /** Search for Tweets with given query, run on startup */
+        $scope.search = function () {
             $scope.wordCount = wordCount.wordCount();
-
-            tweets.search($scope.searchText, $scope.pageSize);
-
-            var searchString = "*";
-            if ($scope.searchText.length > 0) {
-                searchString = $scope.searchText;
-                $location.path(searchString);
-            }
-            else $location.path("");
-
-            $scope.tweetFeed = new EventSource("/tweetFeed?q=" + searchString);
-            $scope.tweetFeed.addEventListener("message", addTweet, false);
-
-            $scope.loadPrev(searchString, $scope.prevSize, 100, 0);
+            tweets.search($scope.searchText, $scope.prevSize);
         };
-
-        /** start listening to new Tweets immediately */
-        listen();
+        $scope.search();
     });

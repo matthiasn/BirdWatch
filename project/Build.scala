@@ -8,8 +8,6 @@ object ApplicationBuild extends Build {
   val appVersion      = "0.2-SNAPSHOT"
 
   val appDependencies = Seq(
-    "org.webjars" %% "webjars-play" % "2.1.0-2",
-    "org.webjars" % "d3js" % "3.1.5",
     "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",       
     "com.typesafe.akka" %% "akka-testkit" % "2.1.1"
   )

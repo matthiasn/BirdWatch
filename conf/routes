@@ -9,6 +9,3 @@ GET        /topic/add            controllers.Topics.add(topic: String ?="", toke
 GET        /topic/remove         controllers.Topics.remove(topic: String ?="", token: String ?="")
 
 GET        /assets/*file         controllers.Assets.at(path="/public", file)
-GET        /webjars/*file        controllers.WebJarAssets.at(file)
-
-#GET        /                     controllers.Assets.at(path="/public", file="/index.html")

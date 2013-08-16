@@ -1,18 +1,16 @@
-@(title: String)
-
 <!DOCTYPE html>
 
 <html lang="en">
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <title>@title</title>
+        <title>BirdWatch</title>
         
         <!-- Stylesheets -->
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap-glyphicons.css")">
-        <link rel="stylesheet" media="screen" href="@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/main.css">
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/bootstrap-glyphicons.css">
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/bootstrap.min.css">
+        <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
     </head>
     
     <body ng-app="birdwatch">
@@ -117,9 +115,10 @@
         
         <!-- Scripts placed at the end of the document so the pages load faster -->
 
-        <script src="@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))"></script>
-        <script src="@routes.WebJarAssets.at(WebJarAssets.locate("angular.min.js"))"></script>
+        <script src="/assets/javascripts/vendor/jquery-1.9.1.js"></script>
+        <script src="/assets/javascripts/vendor/angular.min.js"></script>
         <script src="@routes.WebJarAssets.at(WebJarAssets.locate("d3.min.js"))"></script>
+        
         <script src='@routes.Assets.at("javascripts/vendor/d3.layout.cloud.js")' type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/vendor/moment.min.js")"></script>
         

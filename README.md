@@ -42,6 +42,11 @@ For more information check out my **[blog](http://matthiasnehlsen.com)**.
 Play Framework. You need a JVM on your machine. On a Mac the easiest way is to then install play using **[HomeBrew](http://brew.sh)**: 
  
     brew install play
+    
+If brew was installed on your machine already you want to run this first: 
+
+    brew update
+    brew upgrade
 
 You also need ElasticSearch:
  

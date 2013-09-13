@@ -2,7 +2,7 @@
 
 /** Controllers */
 angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud', 'ui.bootstrap']).
-    controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout, wordCount, tweets) {      
+    controller('BirdWatchCtrl',function ($scope, $http, $location, utils, barchart, wordcloud, $timeout, wordCount, cf, tweets) {
         /** Settings */
         $scope.prevSizeOpts = ['100', '500', '1000', '2000', '5000'];
         $scope.prevSize = $scope.prevSizeOpts[2];
@@ -26,7 +26,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
                 $scope.searchText = $scope.searchText + " " + searchString;
             }
             $scope.$apply();  // Term should appear immediately, not only after search returns
-            $scope.search();            
+            $scope.search();
         };
 
         /** update UI every 10 seconds to keep time ago for tweets accurate */
@@ -65,6 +65,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         /** callback to perform when new tweets available */
         tweets.registerCallback(function (t) {
             $scope.wordCount.insert(t);
+            cf.add(t);
 
             if ($scope.barchartDefined === false) {
                 $scope.barchart.init($scope.wordCount.getWords().slice(0, 26));
@@ -73,7 +74,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
                 $scope.barchart.redraw($scope.wordCount.getWords().slice(0, 26))
             }
 
-            if ((new Date().getTime() - lastCloudUpdate) > 5000) {
+            if ((new Date().getTime() - lastCloudUpdate) > 10000) {
                 $scope.wordCloud.redraw($scope.wordCount.getWords());
                 lastCloudUpdate = new Date().getTime();
             }
@@ -85,6 +86,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.search = function () {
             $scope.wordCount = wordCount.wordCount();
             tweets.search($scope.searchText, $scope.prevSize);
+            cf.clear();
         };
         $scope.search();
     });

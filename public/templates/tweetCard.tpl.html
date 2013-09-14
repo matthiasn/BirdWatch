@@ -13,8 +13,8 @@
     <div class="pull-right timeInterval">{{tweet.created_at | fromNow}}</div>
     <div class="tweettext">
         <div ng-bind-html-unsafe="tweet.htmlText"></div>
-        <div class="pull-left timeInterval">{{tweet.user.followers_count}} followers</div>
+        <div class="pull-left timeInterval">{{tweet.user.followers_count | numberFormat}} followers</div>
         <div ng-show="tweet.retweeted_status.retweet_count" class="pull-right timeInterval">
-            {{tweet.retweeted_status.retweet_count}} retweets</div>
+            {{tweet.retweeted_status.retweet_count | numberFormat}} retweets</div>
     </div>
 </div>

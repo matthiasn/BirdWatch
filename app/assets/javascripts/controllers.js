@@ -77,7 +77,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
                 $scope.barchart.redraw($scope.wordCount.getWords().slice(0, 26))
             }
 
-            if ((new Date().getTime() - lastCloudUpdate) > 10000) {
+            if ((new Date().getTime() - lastCloudUpdate) > 10000 && $scope.stayOnLastPage ) {
                 $scope.wordCloud.redraw($scope.wordCount.getWords());
                 lastCloudUpdate = new Date().getTime();
             }

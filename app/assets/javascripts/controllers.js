@@ -8,16 +8,16 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.prevSize = $scope.prevSizeOpts[2];
         $scope.pageSizeOpts = [5, 10, 25, 50, 100];
         $scope.pageSize = $scope.pageSizeOpts[2];
-        $scope.stayOnLastPage = true;
-        $scope.toggleLive = function () { $scope.stayOnLastPage = !$scope.stayOnLastPage};      
+        $scope.live = true;
+        $scope.toggleLive = function () { $scope.live = !$scope.live};
         $scope.currentPage = 1;
         $scope.maxSize = 12;
         $scope.barchartDefined = false;
         $scope.searchText = $location.path().substr(1);
         $scope.legalStuff = utils.legalStuff;
         $scope.count = tweets.count;
-        $scope.noOfPages = tweets.noOfPages;
-        $scope.tweetPage = tweets.tweetPage;
+        $scope.numPages = cf.numPages;
+        $scope.tweetPage = function() { return cf.tweetPage($scope.currentPage, $scope.pageSize, $scope.sortModel, $scope.live) };
 
         $scope.cf = cf;
         $scope.sortModel = 'latest';

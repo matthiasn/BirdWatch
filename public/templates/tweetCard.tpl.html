@@ -11,5 +11,10 @@
     </a>
     <span class="username_screen">&#64;{{tweet.user.screen_name}}</span>
     <div class="pull-right timeInterval">{{tweet.created_at | fromNow}}</div>
-    <div class="tweettext" ng-bind-html-unsafe="tweet.htmlText"><br /></div>
+    <div class="tweettext">
+        <div ng-bind-html-unsafe="tweet.htmlText"></div>
+        <div class="pull-left timeInterval">{{tweet.user.followers_count}} followers</div>
+        <div ng-show="tweet.retweeted_status.retweet_count" class="pull-right timeInterval">
+            {{tweet.retweeted_status.retweet_count}} retweets</div>
+    </div>
 </div>

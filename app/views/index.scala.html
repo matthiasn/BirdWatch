@@ -94,7 +94,7 @@
                     <!-- Pagination. TODO: layout for "Stay on last Page" -->
                     <pagination rotate="false" num-pages="noOfPages(pageSize)" current-page="currentPage" max-size="maxSize"
                     boundary-links="true"></pagination>
-                    <span class="toggleLive" ng-class="stayOnLastPage ? 'toggleLiveActive' : ''" ng-click="toggleLive()">Live</span>
+                    <span class="toggleLive" ng-class="stayOnLastPage ? 'toggleActive' : ''" ng-click="toggleLive()">Live</span>
                 </div>
 
                 <div class="btn-group">
@@ -112,16 +112,7 @@
 
                     <!-- Tweet Cards inside frame -->
                     <div class="col-lg-4" id="tweet-frame">
-                        <div class="tweetCard" ng-repeat="tweet in cf.tweetIdDim.top(3)"
-                            data-tweet="tweet"></div>
-                        <div class="tweetCard"></div>
-                        <div class="tweetCard" ng-repeat="tweet in tweetPage(currentPage, 3)"
-                            data-tweet="tweet"></div>
-                        <div class="tweetCard"></div>
-                        <div class="tweetCard" ng-repeat="tweet in mostFollowers.top(3)"
-                            data-tweet="tweet"></div>
-                        <div class="tweetCard"></div>
-                        <div class="tweetCard" ng-repeat="tweet in retweets.top(3)"
+                        <div class="tweetCard" ng-repeat="tweet in cf.tweetPage(0, pageSize, sortModel, true)"
                             data-tweet="tweet"></div>
                     </div>
 

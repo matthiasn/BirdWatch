@@ -92,7 +92,7 @@ a {
     overflow: auto;
 }
 
-.toggleLiveActive {
+.toggleActive {
     background: #428bca;
     color: #fff;
     cursor: default;

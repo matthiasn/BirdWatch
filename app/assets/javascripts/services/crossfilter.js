@@ -13,26 +13,18 @@ angular.module('birdwatch.services').service('cf', function (utils) {
         else return 0;
     });
 
-    exports.add = function(data) {
-        cf.add(data);
-    };
+    exports.add = function(data) { cf.add(data); };
+    exports.clear = function()   { cf.remove(); };
 
-    exports.clear = function() {
-        cf.remove();
-    };
+    var retweetMapper = function(t) { return utils.formatTweet(t.retweeted_status); };
+    var retweeted     = function(t) { return t.hasOwnProperty("retweeted_status"); };
+    var tweetId       = function(t) { return t.id_str };
 
     exports.tweetPage = function(currentPage, pageSize, order, live) {
-      if (order === "latest") {
-          return tweetIdDim.top(pageSize);
-      }
-      else if (order === "followers") {
-          return followersDim.top(pageSize);
-      }
+      if      (order === "latest")    { return tweetIdDim.top(pageSize); }
+      else if (order === "followers") { return followersDim.top(pageSize);}
       else if (order === "retweets") {
-          return retweetsDim.top(pageSize).map(function(rt) {
-              var t = utils.formatTweet(rt.retweeted_status);
-              return t;
-          });
+          return _.uniq(retweetsDim.top(1000).filter(retweeted).map(retweetMapper), false, tweetId);
       }
       else {return [];}
     };

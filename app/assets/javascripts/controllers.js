@@ -19,8 +19,12 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.noOfPages = tweets.noOfPages;
         $scope.tweetPage = tweets.tweetPage;
 
+        $scope.cf = cf;
+
         $scope.mostFollowers = cf.followersDim;
         $scope.retweets = cf.retweetsDim;
+
+        $scope.sortModel = 'latest';
 
         /** Add a string to the search bar when for example clicking on a chart element */
         $scope.addSearchString = function (searchString) {

@@ -1,7 +1,7 @@
 'use strict';
 
 /** utils service */
-angular.module('birdwatch.services').service('cf', function () {
+angular.module('birdwatch.services').service('cf', function (utils) {
     var exports = {};
 
     var cf = crossfilter([]);
@@ -29,7 +29,10 @@ angular.module('birdwatch.services').service('cf', function () {
           return followersDim.top(pageSize);
       }
       else if (order === "retweets") {
-          return retweetsDim.top(pageSize);
+          return retweetsDim.top(pageSize).map(function(rt) {
+              var t = utils.formatTweet(rt.retweeted_status);
+              return t;
+          });
       }
       else {return [];}
     };

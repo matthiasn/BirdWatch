@@ -16,5 +16,7 @@
         <div class="pull-left timeInterval">{{tweet.user.followers_count | numberFormat}} followers</div>
         <div ng-show="tweet.retweeted_status.retweet_count" class="pull-right timeInterval">
             {{tweet.retweeted_status.retweet_count | numberFormat}} retweets</div>
+        <div ng-show="tweet.retweet_count" class="pull-right timeInterval">
+            {{tweet.retweet_count | numberFormat}} retweets</div>
     </div>
 </div>

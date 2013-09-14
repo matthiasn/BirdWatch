@@ -23,7 +23,6 @@ angular.module('birdwatch.services').service('tweets', function ($http, utils, $
         var t = utils.formatTweet(JSON.parse(msg.data));
         tweets.push(t);
         onNewTweets([t]);
-        console.log(t);
     };
 
     /** Load previous Tweets, paginated. Recursive function, calls itself with the next chunk to load until

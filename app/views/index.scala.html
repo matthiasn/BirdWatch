@@ -26,7 +26,8 @@
                     <!-- Search field in NavBar -->
                     <div class="navbar-form pull-left col-lg-6 input-group">
                         <form ng-submit="search()" class="input-group">
-                            <input type="text" class="form-control" ng-model="searchText" placeholder="Example search: java (job OR jobs OR hiring)">
+                            <input type="text" class="form-control" ng-model="searchText"
+                                placeholder="Example search: java (job OR jobs OR hiring)">
                             <span class="input-group-btn">
                                 <button class="btn btn-primary" type="button" ng-click="search()">
                                     <span class="glyphicon glyphicon-search"></span>
@@ -43,7 +44,8 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">About
                                     <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="http://matthiasnehlsen.com" target="_blank">Project Introduction</a></li>
+                                    <li><a href="http://matthiasnehlsen.com"
+                                        target="_blank">Project Introduction</a></li>
                                     <li><a href="http://matthiasnehlsen.com" target="_blank">Blog</a></li>
                                     <li><a href="https://github.com/matthiasn" target="_blank">Project on GitHub</a></li>
                                     <li><a href="#" ng-click="legalStuff()">Legal stuff</a></li>
@@ -77,7 +79,8 @@
                         </ul>
 
                         <div class="navbar-text col-lg-2 pull-right">Tweet count: <a>
-                            <span tooltip-placement="bottom" tooltip="Tweets currently loaded" ng-bind="count()"></span></a>
+                            <span tooltip-placement="bottom" tooltip="Tweets currently loaded"
+                                ng-bind="count()"></span></a>
                         </div>
                         
                     </div>
@@ -99,14 +102,26 @@
                     
                     <!-- Tweet Cards inside frame -->
                     <div class="col-lg-4" id="tweet-frame">
-                        <div class="tweetCard" ng-repeat="tweet in tweetPage(currentPage, pageSize)" tweet="tweet"></div>
+                        <div class="tweetCard" ng-repeat="tweet in tweetPage(currentPage, 3)"
+                            tweet="tweet"></div>
+                        <div class="tweetCard"></div>
+                        <div class="tweetCard" ng-repeat="tweet in mostFollowers.top(3)"
+                            tweet="tweet"></div>
+                        <div class="tweetCard"></div>
+                        <div class="tweetCard" ng-repeat="tweet in retweets.top(3)"
+                            tweet="tweet"></div>
                     </div>
 
                     <!-- Charts column -->
                     <div class="col-lg-8">
-                        <div tooltip-placement="right" tooltip="click word to refine search" id="wordCloud"></div>
-                        <div tooltip-placement="right" tooltip="click word to refine search" id="wordcloud"></div>
-                        <div tooltip-placement="right" tooltip="click bar to refine search" id="wordBars"></div>                   
+                        <div tooltip-placement="right"
+                            tooltip="click word to refine search"
+                            id="wordCloud"></div>
+                        <div tooltip-placement="right"
+                            tooltip="click word to refine search" id="wordcloud"></div>
+                        <div tooltip-placement="right" tooltip="click bar to refine search"
+                            id="wordBars"></div>
+                        </div>
                     </div>
                     
                 </div>

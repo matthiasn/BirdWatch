@@ -80,6 +80,7 @@ a {
 }
 
 #tweet-frame {
+    margin-top: 10px;
     background-color: #EEE;
     padding-bottom: 5px;
 }

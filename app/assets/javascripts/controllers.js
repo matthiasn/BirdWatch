@@ -63,7 +63,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $(window).resize(function(){
             if(TO !== false)
                 clearTimeout(TO);
-            TO = setTimeout(resizeWordcloud, 2000); 
+            TO = setTimeout(resizeWordcloud, 2000);
         });
 
         var insertionCache = [];
@@ -72,9 +72,9 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         tweets.registerCallback(function (t) {
             insertionCache = insertionCache.concat(t);    // every received item is appended to insertionCache.
             _.throttle(function() {                       // throttle because every insertion triggers expensive
-                $scope.wordCount.insert(insertionCache);  // $scope.apply(), insert cache once per second,
+                $scope.wordCount.insert(insertionCache);  // $scope.apply(), insert cache once every 3 seconds,
                 insertionCache = [];                      // then empty cache.
-            }, 1000)();
+            }, 3000)();
 
             cf.add(t);
 

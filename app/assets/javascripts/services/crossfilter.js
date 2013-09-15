@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';
 
 // crossfilter service
 angular.module('birdwatch.services').service('cf', function (utils) {
@@ -7,12 +7,17 @@ angular.module('birdwatch.services').service('cf', function (utils) {
     // crossfilter object: browser side analytics library, holds array type data (w/incremental updates).
     // dimensions are fast queries on data, e.g. view sorted by followers_count or retweet_count of the original message
     var cf = crossfilter([]);
-    var tweetIdDim   = cf.dimension(function(t) { return t.id_str; });
+    var tweetIdDim   = cf.dimension(function(t) { return t.id; });
     var followersDim = cf.dimension(function(t) { return t.user.followers_count; });
     var retweetsDim  = cf.dimension(function(t) {
-        if (t.hasOwnProperty("retweeted_status")) {return t.retweeted_status.retweet_count; }
+        if (t.hasOwnProperty("retweeted_status")) { return t.retweeted_status.retweet_count; }
         else return 0;
     });
+
+    // freeze imposes filter on crossfilter that only shows anything older than and including the latest
+    // tweet at the time of calling freeze. Accordingly unfreeze clears the filter
+    exports.freeze = function() { tweetIdDim.filter([0, tweetIdDim.top(1)[0].id]); };
+    exports.unfreeze = function() { tweetIdDim.filterAll(); };
 
     exports.add = function(data) { cf.add(data); };        // add new items, as array
     exports.clear   = function() { cf.remove(); };         // reset crossfilter

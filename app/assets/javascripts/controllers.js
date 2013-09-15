@@ -9,7 +9,10 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.pageSizeOpts = [5, 10, 25, 50, 100];
         $scope.pageSize = $scope.pageSizeOpts[2];
         $scope.live = true;
-        $scope.toggleLive = function () { $scope.live = !$scope.live};
+        $scope.toggleLive = function () {                            // freezes view when switched off by having the
+            if ($scope.live) { cf.freeze() } else { cf.unfreeze() }  // crossfilter limit results to tweets older
+            $scope.live = !$scope.live                               // than the latest at the time of calling freeze()
+        };
         $scope.currentPage = 1;
         $scope.maxSize = 12;
         $scope.barchartDefined = false;

@@ -18,8 +18,6 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.count = tweets.count;
         $scope.numPages = cf.numPages;
         $scope.tweetPage = function() { return cf.tweetPage($scope.currentPage, $scope.pageSize, $scope.sortModel, $scope.live) };
-
-        $scope.cf = cf;
         $scope.sortModel = 'latest';
 
         /** Add a string to the search bar when for example clicking on a chart element */
@@ -65,9 +63,16 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
             TO = setTimeout(resizeWordcloud, 2000); 
         });
 
-        /** callback to perform when new tweets available */
+        var insertionCache = [];
+
+        // callback to perform when new tweets available
         tweets.registerCallback(function (t) {
-            $scope.wordCount.insert(t);
+            insertionCache = insertionCache.concat(t);    // every received item is appended to insertionCache.
+            _.throttle(function() {                       // throttle because every insertion triggers expensive
+                $scope.wordCount.insert(insertionCache);  // $scope.apply(), insert cache once per second,
+                insertionCache = [];                      // then empty cache.
+            }, 1000)();
+
             cf.add(t);
 
             if ($scope.barchartDefined === false) {
@@ -77,12 +82,12 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
                 $scope.barchart.redraw($scope.wordCount.getWords().slice(0, 26))
             }
 
-            if ((new Date().getTime() - lastCloudUpdate) > 10000 && $scope.stayOnLastPage ) {
+            if ((new Date().getTime() - lastCloudUpdate) > 10000 && $scope.live ) {
                 $scope.wordCloud.redraw($scope.wordCount.getWords());
                 lastCloudUpdate = new Date().getTime();
             }
 
-            if ($scope.stayOnLastPage) { $scope.currentPage = Math.ceil(tweets.count() / $scope.pageSize); }
+            //if ($scope.live) { $scope.currentPage = Math.ceil(tweets.count() / $scope.pageSize); }
         });
 
         /** Search for Tweets with given query, run on startup */

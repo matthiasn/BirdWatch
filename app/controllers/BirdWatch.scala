@@ -63,10 +63,12 @@ object BirdWatch extends Controller {
       val md = MessageDigest.getInstance("SHA-256")
       val queryID = md.digest(q.getBytes).map("%02x".format(_)).mkString
 
-      WS.url(elasticPercolatorURL + queryID).post(query).map {
+      println("queryID " + queryID);
+
+      WS.url("http://localhost:9200/_percolator/queries/" + queryID).post(query).map {
         res => Ok.feed(TwitterClient.jsonTweetsOut     
           &> matchesFilter(queryID)  
-          &> Concurrent.buffer(100)
+          &> Concurrent.buffer(1000)
           &> matchesToJson
           &> connDeathWatch(req, new DateTime(DateTimeZone.UTC)  )
           &> EventSource()).as("text/event-stream")       

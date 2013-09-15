@@ -19,7 +19,7 @@ import models.Matches
 /** Controller for serving main BirdWatch page including the SSE connection */
 object BirdWatch extends Controller {
   val elasticTweetURL = Conf.get("elastic.TweetURL")
-  val elasticPercolatorURL = Conf.get("elastic.PercolatorURL")
+  val PercolationQueryURL = Conf.get("elastic.PercolationQueryURL")
 
   val dtFormat = ISODateTimeFormat.dateTime()
   val queryDefaults = "&default_field:text$default_operator:AND&sort=id:desc"
@@ -63,9 +63,7 @@ object BirdWatch extends Controller {
       val md = MessageDigest.getInstance("SHA-256")
       val queryID = md.digest(q.getBytes).map("%02x".format(_)).mkString
 
-      println("queryID " + queryID);
-
-      WS.url("http://localhost:9200/_percolator/queries/" + queryID).post(query).map {
+      WS.url(PercolationQueryURL + queryID).post(query).map {
         res => Ok.feed(TwitterClient.jsonTweetsOut     
           &> matchesFilter(queryID)  
           &> Concurrent.buffer(1000)

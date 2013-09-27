@@ -3,7 +3,7 @@
 /** utils service */
 angular.module('charts.wordcloud', []).service('wordcloud', function () {
 
-    var WordCloud = function (w, h, maxEntries, addSearch, div) {
+    var WordCloud = function (w, h, maxEntries, addSearch, elem) {
 
         var me = {},
             fill = d3.scale.category20b(),
@@ -70,7 +70,7 @@ angular.module('charts.wordcloud', []).service('wordcloud', function () {
                 .text(function(d) { return d.key; })
                 .on("end", draw);
 
-            svg = d3.select(div).append("svg").attr("width", w).attr("height", h);
+            svg = d3.select("#" + elem.context.id).append("svg").attr("width", w).attr("height", h);
 
             background = svg.append("g");
             vis = svg.append("g").attr("transform", "translate(" + [w >> 1, h >> 1] + ")");

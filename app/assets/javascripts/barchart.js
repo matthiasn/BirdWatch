@@ -3,7 +3,7 @@
 /** utils service */
 angular.module('charts.barchart', []).service('barchart', function () {
 
-    var BarChart = function (addSearch, maxBarWidth) {
+    var BarChart = function (addSearch, maxBarWidth, element) {
         var me = {};
 
         me.maxBarWidth = maxBarWidth;
@@ -25,7 +25,7 @@ angular.module('charts.barchart', []).service('barchart', function () {
 
         function render() {
             // svg container element
-            chart = d3.select('#wordBars').append("svg")
+            chart = d3.select("#" + element.context.id).append("svg")
                 .attr('width', maxBarWidth + barLabelWidth + valueLabelWidth)
                 .attr('height', gridLabelHeight + gridChartOffset + sortedData.length * barHeight);
 

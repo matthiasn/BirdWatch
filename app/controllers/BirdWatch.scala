@@ -28,11 +28,8 @@ object BirdWatch extends Controller {
   def index = Action { Ok(views.html.index()) }
 
   /** Controller Action serving Tweets as JSON going backwards in time. Query passed in as JSON */
-  def search =  Action(parse.json) {
-    implicit req => Async {
-      val url =  elasticTweetURL + "_search"      
-      WS.url(url).post(req.body).map { res => Ok(res.body) }
-    }
+  def search =  Action.async(parse.json) {
+    req => WS.url(elasticTweetURL + "_search").post(req.body).map { res => Ok(res.body) }
   }
 
   /** calculates milliseconds between passed in DateTime and time of function call */
@@ -49,15 +46,12 @@ object BirdWatch extends Controller {
   val matchesToJson: Enumeratee[Matches, JsValue] = Enumeratee.map[Matches] { pm => pm.json }
 
   /** Serves Tweets as Server Sent Events over HTTP connection TODO: change to POST */
-  def tweetFeed(q: String) = Action {
-    implicit req => Async {
+  def tweetFeed(q: String) = Action.async { req => {
       Logger.logRequest(req, "/tweetFeed?q=" + q, 200, 0)
 
-      val query = Json.obj(
-        "query" -> Json.obj("query_string" -> Json.obj("default_field" -> "text", 
+      val query = Json.obj("query" -> Json.obj("query_string" -> Json.obj("default_field" -> "text",
           "default_operator" -> "AND", "query" -> ("(" + q + ") AND lang:en"))), 
-        "timestamp" -> dtFormat.print(new DateTime(DateTimeZone.UTC))
-      )
+        "timestamp" -> dtFormat.print(new DateTime(DateTimeZone.UTC)))
 
       /** identify queries by hash, only store unique queries once */
       val md = MessageDigest.getInstance("SHA-256")

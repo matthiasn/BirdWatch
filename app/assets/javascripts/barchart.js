@@ -3,18 +3,17 @@
 /** utils service */
 angular.module('charts.barchart', []).service('barchart', function () {
 
-    var BarChart = function (addSearch, maxBarWidth, element) {
+    var BarChart = function (callback, maxBarWidth, element, noItems) {
         var me = {};
 
         me.maxBarWidth = maxBarWidth;
-        var sortedData, xScale, yScale,chart, rect, gridContainer, labelContainer, barsContainer;
+        var sortedData, xScale, yScale, chart, rect, labelContainer, barsContainer;
 
         var valueLabelWidth = 40; // space reserved for value labels (right)
         var barHeight = 15;       // height of one bar
-        var barLabelWidth = 130;  // space reserved for bar labels
+        var barLabelWidth = 120;  // space reserved for bar labels
         var barLabelPadding = 5;  // padding between bar and bar labels (left)
         var gridLabelHeight = 18; // space reserved for grid line labels
-        var gridChartOffset = 5;  // space between start of grid and first bar
 
         // accessor functions 
         var barLabel = function (d) { return d.key; };
@@ -27,26 +26,11 @@ angular.module('charts.barchart', []).service('barchart', function () {
             // svg container element
             chart = d3.select("#" + element.context.id).append("svg")
                 .attr('width', maxBarWidth + barLabelWidth + valueLabelWidth)
-                .attr('height', gridLabelHeight + gridChartOffset + sortedData.length * barHeight);
+                .attr('height', gridLabelHeight + noItems * barHeight);
 
-            // grid line labels
-            gridContainer = chart.append('g')
-                .attr('transform', 'translate(' + barLabelWidth + ',' + gridLabelHeight + ')');
-            gridContainer.selectAll("text").data(xScale.ticks(10)).enter().append("text")
-                .attr("x", xScale)
-                .attr("dy", -3)
-                .attr("text-anchor", "middle")
-                .text(String);
-            // vertical grid lines
-            gridContainer.selectAll("line").data(xScale.ticks(10)).enter().append("line")
-                .attr("x1", xScale)
-                .attr("x2", xScale)
-                .attr("y1", 0)
-                .attr("y2", yScale.rangeExtent()[1] + gridChartOffset)
-                .style("stroke", "#ccc");
             // bar labels
             labelContainer = chart.append('g')
-                .attr('transform', 'translate(' + (barLabelWidth - barLabelPadding) + ',' + (gridLabelHeight + gridChartOffset) + ')');
+                .attr('transform', 'translate(' + (barLabelWidth - barLabelPadding) + ',' + (gridLabelHeight) + ')');
             labelContainer.selectAll('text').data(sortedData).enter().append('text')
                 .attr('y', yText)
                 .attr('stroke', 'none')
@@ -56,7 +40,7 @@ angular.module('charts.barchart', []).service('barchart', function () {
                 .text(barLabel);
             // bars
             barsContainer = chart.append('g')
-                .attr('transform', 'translate(' + barLabelWidth + ',' + (gridLabelHeight + gridChartOffset) + ')');
+                .attr('transform', 'translate(' + barLabelWidth + ',' + gridLabelHeight + ')');
             barsContainer.selectAll("rect").data(sortedData).enter().append("rect")
                 .attr('y', y)
                 .attr('height', yScale.rangeBand())
@@ -65,7 +49,7 @@ angular.module('charts.barchart', []).service('barchart', function () {
                 .attr('fill', '#428bca')
                 .on("click", function(d) {
                     var tag = barLabel(d).replace('#','');                    
-                    addSearch(tag);
+                    callback(tag);
                 });
 
             // bar value labels
@@ -80,8 +64,8 @@ angular.module('charts.barchart', []).service('barchart', function () {
                 .text(function (d) { return d3.round(barValue(d), 2); });
             // start line
             barsContainer.append("line")
-                .attr("y1", -gridChartOffset)
-                .attr("y2", yScale.rangeExtent()[1] + gridChartOffset)
+                .attr("y1", 0)
+                .attr("y2", yScale.rangeExtent()[1])
                 .style("stroke", "#000");
         }
 
@@ -105,7 +89,7 @@ angular.module('charts.barchart', []).service('barchart', function () {
 
         me.redraw = function(dataSource) {
             me.update(dataSource);
-                        
+
             barsContainer.selectAll("rect").data(sortedData).enter().append("rect")
                 .attr('y', y)
                 .attr('height', yScale.rangeBand())
@@ -114,7 +98,7 @@ angular.module('charts.barchart', []).service('barchart', function () {
                 .attr('fill', 'steelblue')
                 .on("click", function(d) {
                     var tag = barLabel(d).replace('#','');
-                    addSearch(tag);
+                    callback(tag);
                 });
 
             barsContainer.selectAll("rect")
@@ -123,7 +107,7 @@ angular.module('charts.barchart', []).service('barchart', function () {
                 .attr('y', y)
                 .attr('height', yScale.rangeBand())
                 .attr('width', function (d) { return xScale(barValue(d)); });
-            
+
             barsContainer.selectAll("rect")
                 .data(sortedData)
                 .exit()
@@ -137,7 +121,7 @@ angular.module('charts.barchart', []).service('barchart', function () {
                 .attr("dy", ".35em") // vertical-align: middle
                 .attr("text-anchor", "start") // text-align: right
                 .attr("fill", "black")
-                .attr("stroke", "none")
+                .attr("stroke", "black")
                 .text(function (d) { return d3.round(barValue(d), 2); });
             
             barsContainer.selectAll("text").data(sortedData)
@@ -156,11 +140,6 @@ angular.module('charts.barchart', []).service('barchart', function () {
                 .exit()
                 .transition()
                 .remove();
-
-            barsContainer.selectAll("line")
-                .attr("y1", -gridChartOffset)
-                .attr("y2", yScale.rangeExtent()[1] + gridChartOffset)
-                .style("stroke", "#000");
 
             labelContainer.selectAll("text").data(sortedData).enter().append("text")
                 .attr('y', yText)
@@ -185,34 +164,9 @@ angular.module('charts.barchart', []).service('barchart', function () {
                 .transition()
                 .remove();
 
-            /** insert, update and change grid text */
-            var gridText = gridContainer.selectAll("text").data(xScale.ticks(10));
-
-            gridText.enter().insert("text")
-                .attr("x", xScale)
-                .attr("dy", -3)
-                .attr("text-anchor", "middle")
-                .text(String);
-
-            gridText.transition()
-                .attr("x", xScale)
-                .attr("dy", -3)
-                .attr("text-anchor", "middle")
-                .text(String);
-
-            gridText.exit().remove();
-
-            /** insert, update and change grid lines */
-            gridContainer.selectAll("line").data(xScale.ticks(10))
-                .attr("x1", xScale)
-                .attr("x2", xScale)
-                .attr("y1", 0)
-                .attr("y2", yScale.rangeExtent()[1] + gridChartOffset)
-                .style("stroke", "#ccc").exit().remove();
-            
             barsContainer.append("line")
-                .attr("y1", -gridChartOffset)
-                .attr("y2", yScale.rangeExtent()[1] + gridChartOffset)
+                .attr("y1", 0)
+                .attr("y2", yScale.rangeExtent()[1])
                 .style("stroke", "#000");
         };
 

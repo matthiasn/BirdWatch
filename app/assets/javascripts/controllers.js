@@ -6,7 +6,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.prevSizeOpts = ['100', '500', '1000', '2000', '5000', '10000', '20000'];
         $scope.prevSize = $scope.prevSizeOpts[2];
         $scope.pageSizeOpts = [5, 10, 25, 50, 100];
-        $scope.pageSize = $scope.pageSizeOpts[2];
+        $scope.pageSize = $scope.pageSizeOpts[1];
         $scope.live = true;
         $scope.toggleLive = function () {                             // freezes view when switched off by having the
             if ($scope.live) { cf.freeze(); } else { cf.unfreeze(); } // crossfilter limit results to tweets older

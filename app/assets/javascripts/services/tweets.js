@@ -1,7 +1,7 @@
 'use strict';
 
 /** tweets service, load previous tweets and receives subsequent live tweets for given query */
-angular.module('birdwatch.services').service('tweets', function ($http, utils, $location) {
+angular.module('birdwatch.services').factory('tweets', function ($http, utils, $location) {
     
     var tweets = [];
     var tweetFeed;

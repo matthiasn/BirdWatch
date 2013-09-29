@@ -1,7 +1,7 @@
 'use strict';
 
 /** utils service */
-angular.module('birdwatch.services').service('wordCount', function () {
+angular.module('birdwatch.services').factory('wordCount', function () {
     
     /** initially from Jason Davies, transformed into CoffeeScript and then back into JavaScript. Needs work. */
     var wordCount = function() {

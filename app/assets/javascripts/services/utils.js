@@ -1,7 +1,7 @@
 'use strict';
 
 /** utils service */
-angular.module('birdwatch.services').service('utils', function () {
+angular.module('birdwatch.services').factory('utils', function () {
 
     var formatTweet = function (t) {
         /** results from ElasticSearch are wrapped in object inside _source property */

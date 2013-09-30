@@ -1,10 +1,8 @@
-//'use strict';
+'use strict';
 
 // crossfilter service
 angular.module('birdwatch.services').factory('cf', function (utils) {
     var exports = {};
-
-    var df = d3.time.format.utc("%a %b %d %H:%M:%S %Z %Y");
 
     // crossfilter object: browser side analytics library, holds array type data (w/incremental updates).
     // dimensions are fast queries on data, e.g. view sorted by followers_count or retweet_count of the original message

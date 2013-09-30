@@ -1,4 +1,4 @@
-//'use strict';
+'use strict';
 
 /** Controllers */
 angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud', 'ui.bootstrap']).
@@ -28,10 +28,10 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
             $scope.search();
         };
 
-        /** update UI every second to keep time ago for tweets accurate */
+        /** update UI every two seconds to keep time ago for tweets accurate */
         var onTimeout = function () {
             $scope.tsdata1 = cf.timeseries();
-            updateTimeout = $timeout(onTimeout, 1000);
+            updateTimeout = $timeout(onTimeout, 2000);
         };
         var updateTimeout = onTimeout();
 

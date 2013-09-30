@@ -54,4 +54,31 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
                 $(window).resize(function () { _.throttle(init, 1000)(); });
             }
         }
+    })
+    .directive('timeseries', function () {
+        return {
+            restrict: 'C',
+            scope: { tsdata: "=tsdata", live: "=live", interval: "=interval", height: "=height" },
+            link: function ($scope, elem, attrs) {
+                var graph = new Rickshaw.Graph( {
+                    element: elem.context,
+                    width: elem.width(),
+                    height: $scope.height,
+                    renderer: 'bar',
+                    series: [ {
+                        color: 'steelblue',
+                        data: [ { x: 0, y: 0 } ]
+                    } ]
+                } );
+                new Rickshaw.Graph.Axis.Time({ graph: graph });
+                graph.render();
+
+                $scope.$watch("tsdata", function() {
+                    if ($scope.tsdata.length > 0) {
+                        graph.series[0].data = $scope.tsdata;
+                        graph.update();
+                    }
+                });
+            }
+        }
     });

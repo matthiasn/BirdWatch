@@ -10,6 +10,7 @@
         <link rel="stylesheet" media="screen" href="/assets/stylesheets/main.css">
         <link rel="stylesheet" media="screen" href="/assets/stylesheets/bootstrap-glyphicons.css">
         <link rel="stylesheet" media="screen" href="/assets/stylesheets/bootstrap.min.css">
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/rickshaw.min.css">
         <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
     </head>
     
@@ -111,14 +112,23 @@
 
                     <!-- Tweet Cards inside frame -->
                     <div class="col-lg-4" id="tweet-frame">
-                        <div class="tweetCard" ng-repeat="tweet in cf.tweetPage(currentPage, pageSize, sortModel, live)"
+                        <div class="tweetCard" ng-repeat="tweet in cf.tweetPage(currentPage, pageSize, sortModel)"
                             data-tweet="tweet"></div>
                     </div>
 
                     <!-- Charts column -->
                     <div class="col-lg-8">
+
+                        <h6>Activity by Hour of the Day</h6>
+                        <div id="timeseries1" class="timeseries" data-tsdata="tsdata1" data-live="live" data-height="100"></div>
+                        <hr />
+
+                        <h6>Word Frequency</h6>
                         <div id="wordCloud" class="cloud" data-words="words" data-live="live" data-interval="20000"
                             data-callback="addSearchString"></div>
+
+                        <hr />
+
                         <div id="wordBars" class="barchart" data-words="words" data-live="live"
                             data-callback="addSearchString"></div>
                     </div>
@@ -134,8 +144,9 @@
 
         <script src="/assets/javascripts/vendor/d3.layout.cloud.js"></script>
         <script src="/assets/javascripts/vendor/moment.min.js"></script>
-        <script src="/assets/javascripts/vendor/crossfilter.js"></script>
+        <script src="/assets/javascripts/vendor/crossfilter.v1.min.js"></script>
         <script src="/assets/javascripts/vendor/underscore.js"></script>
+        <script src="/assets/javascripts/vendor/rickshaw.min.js"></script>
 
         <script src="/assets/javascripts/ui-bootstrap-custom.js"></script>
         <script src="/assets/javascripts/app.js"></script>

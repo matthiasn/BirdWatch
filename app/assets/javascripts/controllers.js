@@ -1,4 +1,4 @@
-'use strict';
+//'use strict';
 
 /** Controllers */
 angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud', 'ui.bootstrap']).
@@ -18,6 +18,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.cf = cf;
         $scope.sortModel = 'latest';
         $scope.words = [];
+        $scope.tsdata1 = cf.timeseries();
 
         /** Add a string to the search bar when for example clicking on a chart element */
         $scope.addSearchString = function (searchString) {
@@ -27,8 +28,11 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
             $scope.search();
         };
 
-        /** update UI every 10 seconds to keep time ago for tweets accurate */
-        var onTimeout = function () { updateTimeout = $timeout(onTimeout, 10000); };
+        /** update UI every second to keep time ago for tweets accurate */
+        var onTimeout = function () {
+            $scope.tsdata1 = cf.timeseries();
+            updateTimeout = $timeout(onTimeout, 1000);
+        };
         var updateTimeout = onTimeout();
 
         var insertionCache = [];

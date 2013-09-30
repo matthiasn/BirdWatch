@@ -1,8 +1,10 @@
-'use strict';
+//'use strict';
 
 // crossfilter service
 angular.module('birdwatch.services').factory('cf', function (utils) {
     var exports = {};
+
+    var df = d3.time.format.utc("%a %b %d %H:%M:%S %Z %Y");
 
     // crossfilter object: browser side analytics library, holds array type data (w/incremental updates).
     // dimensions are fast queries on data, e.g. view sorted by followers_count or retweet_count of the original message
@@ -17,6 +19,17 @@ angular.module('birdwatch.services').factory('cf', function (utils) {
         if (t.hasOwnProperty("retweeted_status")) { return t.retweeted_status.id; }
         else return 0;
     });
+
+    var hour = cf.dimension(function(t) {
+        var created = new Date(Date.parse(t.created_at));
+        return created.getHours() + created.getMinutes() / 60;
+    });
+    exports.hours = hour.group(Math.floor);
+    exports.timeseries = function() { return exports.hours.all()
+        .map(function(el) {
+            return { x: el.key * 60 * 60, y: el.value }
+        });
+    };
 
     // freeze imposes filter on crossfilter that only shows anything older than and including the latest
     // tweet at the time of calling freeze. Accordingly unfreeze clears the filter
@@ -44,7 +57,7 @@ angular.module('birdwatch.services').factory('cf', function (utils) {
 
     // deliver tweets for current page. fetches all tweets up to the current page,
     // throws tweets for previous pages away.
-    exports.tweetPage = function(currentPage, pageSize, order, live) {
+    exports.tweetPage = function(currentPage, pageSize, order) {
         return _.rest(fetchTweets(currentPage * pageSize, order), (currentPage - 1) * pageSize);
     };
 

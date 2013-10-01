@@ -68,7 +68,7 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
                     series: [ {
                         color: 'steelblue',
                         name: 'Tweets',
-                        data: [{ x: 0, y: 0 }, { x: 12*60*60, y: 0 }]
+                        data: [{ x: 0, y: 0 }]
                     } ]
                 } );
                 new Rickshaw.Graph.Axis.Time({ graph: graph });
@@ -76,7 +76,6 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
 
                 new Rickshaw.Graph.HoverDetail({
                     graph: graph,
-                    xFormatter: function(x) { return x/3600+ "" },
                     yFormatter: function(y) { return y === null ? y : y.toFixed(0); }
                 });
 

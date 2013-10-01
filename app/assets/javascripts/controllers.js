@@ -4,7 +4,7 @@
 angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud', 'ui.bootstrap']).
     controller('BirdWatchCtrl',function ($scope, $location, utils, barchart, wordcloud, $timeout, wordCount, cf, tweets) {
         $scope.prevSizeOpts = ['100', '500', '1000', '2000', '5000', '10000', '20000'];
-        $scope.prevSize = $scope.prevSizeOpts[2];
+        $scope.prevSize = $scope.prevSizeOpts[3];
         $scope.pageSizeOpts = [5, 10, 25, 50, 100];
         $scope.pageSize = $scope.pageSizeOpts[1];
         $scope.live = true;
@@ -18,7 +18,6 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         $scope.cf = cf;
         $scope.sortModel = 'latest';
         $scope.words = [];
-        $scope.tsdata1 = cf.timeseries();
 
         /** Add a string to the search bar when for example clicking on a chart element */
         $scope.addSearchString = function (searchString) {
@@ -28,11 +27,8 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
             $scope.search();
         };
 
-        /** update UI every two seconds to keep time ago for tweets accurate */
-        var onTimeout = function () {
-            $scope.tsdata1 = cf.timeseries();
-            updateTimeout = $timeout(onTimeout, 2000);
-        };
+        /** update UI every ten seconds to keep time ago for tweets accurate */
+        var onTimeout = function () { updateTimeout = $timeout(onTimeout, 10000); };
         var updateTimeout = onTimeout();
 
         var insertionCache = [];

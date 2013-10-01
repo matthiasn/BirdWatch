@@ -18,15 +18,26 @@ angular.module('birdwatch.services').factory('cf', function (utils) {
         else return 0;
     });
 
-    var hour = cf.dimension(function(t) {
-        var created = new Date(Date.parse(t.created_at));
-        return created.getHours() + created.getMinutes() / 60;
-    });
-    exports.hours = hour.group(Math.floor);
-    exports.timeseries = function() { return exports.hours.all()
-        .map(function(el) {
-            return { x: el.key * 60 * 60, y: el.value }
-        });
+    var rsMapper = function(el) { return { x: el.key, y: el.value }};
+
+    var parseDateRoundedByMin    = function(t) { return 60 * Math.floor(Date.parse(t.created_at) / 60000) };
+    var parseDateRoundedBy15Min  = function(t) { return 900 * Math.floor(Date.parse(t.created_at) / 900000) };
+    var parseDateRoundedByHour   = function(t) { return 3600 * Math.floor(Date.parse(t.created_at) / 3600000) };
+    var parseDateRoundedBy6Hour  = function(t) { return 6*3600 * Math.floor(Date.parse(t.created_at) / 3600000 / 6) };
+    var parseDateRoundedByDay    = function(t) { return 24*3600 * Math.floor(Date.parse(t.created_at) / 3600000 / 24) };
+
+    var byMinGrp   = cf.dimension(parseDateRoundedByMin).group();
+    var by15MinGrp = cf.dimension(parseDateRoundedBy15Min).group();
+    var byHourGrp  = cf.dimension(parseDateRoundedByHour).group();
+    var by6HourGrp = cf.dimension(parseDateRoundedBy6Hour).group();
+    var byDayGrp   = cf.dimension(parseDateRoundedByDay).group();
+
+    exports.timeseries = function() {
+      if (byMinGrp.size() < 60)        { return byMinGrp.all().map(rsMapper); }
+      else if (by15MinGrp.size() < 48) { return by15MinGrp.all().map(rsMapper); }
+      else if (byHourGrp.size() < 96)  { return byHourGrp.all().map(rsMapper); }
+      else if (by6HourGrp.size() < 40) { return by6HourGrp.all().map(rsMapper); }
+      else                             { return byDayGrp.all().map(rsMapper); }
     };
 
     // freeze imposes filter on crossfilter that only shows anything older than and including the latest

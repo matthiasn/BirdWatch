@@ -61,7 +61,7 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
             scope: { tsdata: "=tsdata", live: "=live", interval: "=interval", height: "=height" },
             link: function ($scope, elem, attrs) {
                 var graph = new Rickshaw.Graph( {
-                    element: elem.context,
+                    element: elem[0],
                     width: elem.width(),
                     height: $scope.height,
                     renderer: 'bar',

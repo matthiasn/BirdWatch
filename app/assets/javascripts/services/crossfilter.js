@@ -20,10 +20,10 @@ angular.module('birdwatch.services').factory('cf', function (utils) {
 
     var rsMapper = function(el) { return { x: el.key, y: el.value }};
 
-    var parseDateRoundedByMin    = function(t) { return 60 * Math.floor(Date.parse(t.created_at) / 60000) };
-    var parseDateRoundedBy15Min  = function(t) { return 900 * Math.floor(Date.parse(t.created_at) / 900000) };
-    var parseDateRoundedByHour   = function(t) { return 3600 * Math.floor(Date.parse(t.created_at) / 3600000) };
-    var parseDateRoundedBy6Hour  = function(t) { return 6*3600 * Math.floor(Date.parse(t.created_at) / 3600000 / 6) };
+    var parseDateRoundedByMin    = function(t) { return      60 * Math.floor(Date.parse(t.created_at) / 60000) };
+    var parseDateRoundedBy15Min  = function(t) { return     900 * Math.floor(Date.parse(t.created_at) / 900000) };
+    var parseDateRoundedByHour   = function(t) { return    3600 * Math.floor(Date.parse(t.created_at) / 3600000) };
+    var parseDateRoundedBy6Hour  = function(t) { return  6*3600 * Math.floor(Date.parse(t.created_at) / 3600000 / 6) };
     var parseDateRoundedByDay    = function(t) { return 24*3600 * Math.floor(Date.parse(t.created_at) / 3600000 / 24) };
 
     var byMinGrp   = cf.dimension(parseDateRoundedByMin).group();
@@ -74,9 +74,7 @@ angular.module('birdwatch.services').factory('cf', function (utils) {
     // potentially mapped and filtered
     var fetchTweets = function(pageSize, order) {
       if      (order === "latest")    { return tweetIdDim.top(pageSize); }    // latest: desc order of tweets by ID
-      else if (order === "followers") {
-          return followersDim.top(pageSize).map(maxRetweets);
-      }   // desc order of tweets by followers
+      else if (order === "followers") { return followersDim.top(pageSize).map(maxRetweets); } // desc order of tweets by followers
       else if (order === "retweets") {  // descending order of tweets by total retweets of original message
           return _.first(               // filtered to be unique, would appear for each retweet in window otherwise
               _.uniq(retweetsDim.top(cf.size()).filter(retweeted).map(originalTweet), false, tweetId), pageSize);

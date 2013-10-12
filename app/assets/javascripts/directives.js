@@ -81,7 +81,7 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
 
                 $scope.$watch("tsdata", function() {
                     if ($scope.tsdata.length > 0) {
-                        graph.series[0].data = $scope.tsdata;
+                        graph.series[0].data = $scope.tsdata.map(function(el) { return { x: el.key, y: el.value } });
                         graph.update();
                     }
                 });

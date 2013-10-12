@@ -21,21 +21,7 @@ A live version of this application is **[available](http://birdwatch.matthiasneh
 
 <a target="_blank" href="http://birdwatch.matthiasnehlsen.com/#/sql%20london)"><strong>sql london</strong></a>
 
-Please feel free to contribute, pull requests are happily accepted. I use this project to study the technologies involved and I would appreciate learning better ways of doing things. Contributions would for example be helpful in these areas:
-
-- More sophisticated charts and data filters. This is a rich data set and the current tools only scratch the surface of what could be done with it. You have a question that a live stream of Tweets could answer? Share it or even better write the code yourself and contribute it.
-
-- Code organization. Particularly the AngularJS part is far from ideal, it should be much cleaner and more modularized.
- 
-- Design. You have ideas for a flat and clean design and know Twitter Bootstrap? Awesome, let's see it. Please tidy up the CSS as you go :-) Particularly there should no be any handwritten CSS anywhere.
-
-- Documentation
-
-- Online help, something animated unobtrusively offered on startup that highlights how the application can be used would be really cool. 
-
-- Any of the issues listed on here on github.
-
-For more information check out my **[blog](http://matthiasnehlsen.com)**.
+Please feel free to contribute, pull requests are happily accepted. I use this project to study the technologies involved and I would appreciate learning better ways of doing things. For more information check out my **[blog](http://matthiasnehlsen.com)**.
 
 ##Setup
 
@@ -56,7 +42,7 @@ You then run
 
     elasticsearch -f
     
-An inside the application folder:
+And inside the application folder:
     
     play run
 

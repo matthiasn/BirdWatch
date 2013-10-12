@@ -8,7 +8,7 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
             restrict: 'C',
             scope: { tweet: "=tweet" },
             templateUrl: "/assets/templates/tweetCard.tpl.html",
-            link: function (scope, elem, attrs) { }
+            link: function (scope, elem, attrs) { console.log(scope) }
         }
     })
     .directive('barchart', function (barchart) {
@@ -87,4 +87,22 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
                 });
             }
         }
-    });
+    })
+    //from http://stackoverflow.com/questions/18340872/how-do-you-use-sce-trustashtmlstring-to-replicate-ng-bind-html-unsafe-in-angu
+    .directive('ngBindHtmlUnsafe', ['$sce', function($sce){
+    return {
+        scope: {
+            ngBindHtmlUnsafe: '='
+        },
+        template: "<div ng-bind-html='trustedHtml'></div>",
+        link: function($scope, iElm, iAttrs, controller) {
+            $scope.updateView = function() {
+                $scope.trustedHtml = $sce.trustAsHtml($scope.ngBindHtmlUnsafe);
+            }
+
+            $scope.$watch('ngBindHtmlUnsafe', function(newVal, oldVal) {
+                $scope.updateView(newVal);
+            });
+        }
+    };
+}]);

@@ -1,6 +1,6 @@
 #BirdWatch  
 
-BirdWatch is a reactive web application for visualizing a stream of live Tweets making use of **[AngularJS](http://angularjs.org)**, **[BootStrap](http://getbootstrap.com)**, **[D3.js](http://d3js.org)**, **[ElasticSearch](http://www.elasticsearch.org)** and **[Play Framework](http://www.playframework.com)** (in alphabetical order).    
+BirdWatch is a reactive web application for visualizing a stream of live Tweets making use of **[AngularJS](http://angularjs.org)**, **[BootStrap](http://getbootstrap.com)**, **[Crossfilter](http://square.github.io/crossfilter/)**, **[D3.js](http://d3js.org)**, **[ElasticSearch](http://www.elasticsearch.org)** and **[Play Framework](http://www.playframework.com)** (in alphabetical order).
 
 ![Screenshot](./docs/screenshot.png)
 
@@ -11,7 +11,7 @@ Incoming Tweets are inserted into an **[ElasticSearch](http://www.elasticsearch.
 **[AngularJS](http://angularjs.org)** clients hold a local data copy of all the Tweets they have asked for using the 
 **[ElasticSearch query syntax](http://www.elasticsearch.org/guide/reference/query-dsl/query-string-query/)**, with 'AND' being the default operator. Every query is not only run on the existing Tweets in the ElasticSearch index but is also registered as a percolation query. A user selectable amount of previous Tweets is loaded, and then every new Tweet for which the query matches is appended immediately, allowing Tweets analysis in near-realtime. Queries are bookmarkable, making it easy to frequently look at interesting and potentially complex queries.
 
-Holding all data on the client may or may not be the most elegant way of doing this. Having loaded the Tweets already certainly means that the application can fully utilize a fast CPU on the client machine and respond instantly without having to ask the server every time the set of Tweets changes through new Tweets being added.  
+Client-side analysis of the (live) search result is performed using **[Crossfilter](http://square.github.io/crossfilter/)**.
 
 A live version of this application is **[available](http://birdwatch.matthiasnehlsen.com)**. This instance listens to a bunch of software and data related terms, see the application.conf file for details. Interesting queries on this data set include:
 
@@ -21,7 +21,9 @@ A live version of this application is **[available](http://birdwatch.matthiasneh
 
 <a target="_blank" href="http://birdwatch.matthiasnehlsen.com/#/sql%20london)"><strong>sql london</strong></a>
 
-Please feel free to contribute, pull requests are happily accepted. I use this project to study the technologies involved and I would appreciate learning better ways of doing things. For more information check out my **[blog](http://matthiasnehlsen.com)**.
+Please feel free to contribute, pull requests are happily accepted. I use this project to study the technologies involved and I would appreciate learning better ways of doing things.
+
+A detailed description of the application can be found on my **[blog](http://matthiasnehlsen.com/blog/2013/09/10/birdwatch-explained/)**.
 
 ##Setup
 

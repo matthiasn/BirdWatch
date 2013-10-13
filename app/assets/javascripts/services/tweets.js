@@ -3,13 +3,11 @@
 /** tweets service, load previous tweets and receives subsequent live tweets for given query */
 angular.module('birdwatch.services').factory('tweets', function ($http, utils, $location) {
     var tweetFeed;
+    var tweetsCache = [];
     
     /** callback function to perform when new tweet(s) arrive */
     var onNewTweets = function (t) {};
     var registerCallback = function (callback) { onNewTweets = callback; };
-
-    /** handle incoming tweets: add to tweets array */
-    var addTweet = function (msg) { onNewTweets([utils.formatTweet(JSON.parse(msg.data))]); };
 
     /** Load previous Tweets, paginated. Recursive function, calls itself with the next chunk to load until
      *  eventually n, the remaining tweets to load, is not larger than 0 any longer. guarantees at least n hits
@@ -20,8 +18,7 @@ angular.module('birdwatch.services').factory('tweets', function ($http, utils, $
                 .success(function (data) {
                     onNewTweets(data.hits.hits.reverse().map(function (t) { return t._source; }).map(utils.formatTweet));
                     loadPrev(searchString, n - chunkSize, chunkSize, offset + chunkSize);
-                }).error(function (data, status, headers, config) { }
-            );
+                }).error(function (data, status, headers, config) { });
         }
     };
 
@@ -36,10 +33,19 @@ angular.module('birdwatch.services').factory('tweets', function ($http, utils, $
         }
         else $location.path("");
 
-        tweetFeed = new EventSource("/tweetFeed?q=" + searchString);
-        tweetFeed.addEventListener("message", addTweet, false);
+        /** handle incoming tweets: add to tweetsCache array, run callback at most every second */
+        var cachedCallback = function(msg) {
+            tweetsCache = tweetsCache.concat(utils.formatTweet(JSON.parse(msg.data)));
+            _.throttle(function() {        // throttle because insertion too expensive on high traffic searches
+                onNewTweets(tweetsCache);  // run callback with all items in cache
+                tweetsCache = [];          // then empty cache.
+            }, 1000)();
+        };
 
-        loadPrev(searchString, prevSize, 100, 0);
+        tweetFeed = new EventSource("/tweetFeed?q=" + searchString);
+        tweetFeed.addEventListener("message", cachedCallback, false);
+
+        loadPrev(searchString, prevSize, 500, 0); // load previous tweets in chunks of size 500
     };
 
     return { search: search, registerCallback: registerCallback};

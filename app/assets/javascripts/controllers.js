@@ -4,7 +4,7 @@
 angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud', 'ui.bootstrap']).
     controller('BirdWatchCtrl',function ($scope, $location, utils, barchart, wordcloud, $timeout, wordCount, cf, tweets) {
         $scope.prevSizeOpts = ['100', '500', '1000', '2000', '5000', '10000', '20000'];
-        $scope.prevSize = $scope.prevSizeOpts[3];
+        $scope.prevSize = $scope.prevSizeOpts[4];
         $scope.pageSizeOpts = [5, 10, 25, 50, 100];
         $scope.pageSize = $scope.pageSizeOpts[1];
         $scope.live = true;
@@ -31,16 +31,10 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         var onTimeout = function () { updateTimeout = $timeout(onTimeout, 10000); };
         var updateTimeout = onTimeout();
 
-        var insertionCache = [];
-        // callback to perform when new tweets available
+        /** actions to perform when new tweets are available through the streaming connection */
         tweets.registerCallback(function (t) {
-            insertionCache = insertionCache.concat(t);      // every received item is appended to insertionCache.
-            _.throttle(function() {                         // throttle because every insertion triggers expensive
-                $scope.wordCount.insert(insertionCache);    // $scope.apply(), insert cache once every 2 seconds,
-                insertionCache = [];                        // then empty cache.
-                $scope.words = $scope.wordCount.getWords();
-            }, 2000)();
-
+            $scope.wordCount.insert(t);
+            $scope.words = $scope.wordCount.getWords();
             cf.add(t);
         });
 

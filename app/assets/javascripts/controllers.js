@@ -36,10 +36,10 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         tweets.registerCallback(function (t) {
             insertionCache = insertionCache.concat(t);      // every received item is appended to insertionCache.
             _.throttle(function() {                         // throttle because every insertion triggers expensive
-                $scope.wordCount.insert(insertionCache);    // $scope.apply(), insert cache once every 3 seconds,
+                $scope.wordCount.insert(insertionCache);    // $scope.apply(), insert cache once every 2 seconds,
                 insertionCache = [];                        // then empty cache.
                 $scope.words = $scope.wordCount.getWords();
-            }, 3000)();
+            }, 2000)();
 
             cf.add(t);
         });

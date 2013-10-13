@@ -4,6 +4,10 @@ BirdWatch is a reactive web application for visualizing a stream of live Tweets 
 
 ![Screenshot](./docs/screenshot.png)
 
+Here is an overview of the information flow in the system:
+
+![Screenshot](./docs/dataflow.gif)
+
 A Play application connects to the **[Twitter Streaming API](https://dev.twitter.com/docs/streaming-apis)** and receives all Tweets that include at least one of a set of configured words. Twitter caps this to 1% of the FireHose, which basically means that the application will not receive more than one percent of all Tweets at any given moment of time. This limit still falls in the range of millions of Tweets per day; a well-defined area of interest should comfortably fit in.
  
 Incoming Tweets are inserted into an **[ElasticSearch](http://www.elasticsearch.org)** index where they are almost instantly available for querying. Each Tweet is also compared with what is called a percolation query, a pre-registered query for each connected client. Every thus pre-registered query is run on every new Tweet. For every Tweet on which the query matches the client will immediately be informed by means of **[Server Sent Events (SSE)](http://dev.w3.org/html5/eventsource/)**. 

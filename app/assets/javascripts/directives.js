@@ -98,7 +98,7 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
         link: function($scope, iElm, iAttrs, controller) {
             $scope.updateView = function() {
                 $scope.trustedHtml = $sce.trustAsHtml($scope.ngBindHtmlUnsafe);
-            }
+            };
 
             $scope.$watch('ngBindHtmlUnsafe', function(newVal, oldVal) {
                 $scope.updateView(newVal);

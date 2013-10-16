@@ -1,0 +1,31 @@
+<html>
+<head>
+    <title>BirdWatch - Activator Template</title>
+</head>
+<body>
+<div>
+    <h2>Explore the App</h2>
+
+    <p>This is a reactive web application that consumes the Twitter Streaming API and allows users to do a real-time
+        search within all tweets that contain a set of terms.</p>
+
+    <h2>Setup</h2>
+
+    <p>You need a running instance of <strong>ElasticSearch</strong>. On a mac it is the easiest to use homebrew, on other websites see the installation instructions on the <a href="http://www.elasticsearch.org" target="_blank">ElasticSearch website</a></p>.
+
+    <code>brew install elasticsearch</code>
+
+    <p>You then run</p>
+
+    <code>elasticsearch -f</code>
+
+    <p>Twitter API consumer key and access token are required to consume the <a href="http://dev.twitter.com/docs/streaming-apis" target="_blank">Twitter Streaming API</a>. You need to <a href="https://dev.twitter.com/apps" target="_blank">create a Twitter application</a> and store keys and secrets in a twitter.conf file, using the
+        commented out section in the
+        <a href="https://github.com/matthiasn/BirdWatch/blob/master/conf/application.conf" target="_blank">application.conf</a> as a template. </p>
+
+    <p> For more information on this application please visit <a
+            href="http://matthiasnehlsen.com/blog/2013/09/10/birdwatch-explained/" target="_blank">matthiasnehlsen.com</a>
+    </p>
+</div>
+</body>
+</html>

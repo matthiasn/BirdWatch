@@ -7,8 +7,7 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
         return {
             restrict: 'C',
             scope: { tweet: "=tweet" },
-            templateUrl: "/assets/templates/tweetCard.tpl.html",
-            link: function (scope, elem, attrs) { }
+            templateUrl: "/assets/templates/tweetCard.tpl.html"
         }
     })
     .directive('barchart', function (barchart) {

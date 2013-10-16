@@ -1,5 +1,5 @@
 import org.scalatest.FeatureSpec
-import utils._
+import utilities.Calc
 
 class CalcSpec extends FeatureSpec {
 

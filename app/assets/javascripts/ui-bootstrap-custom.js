@@ -3,19 +3,6 @@
 // customized file downloaded from UI bootstrap page, version 0.5.0, modified
 
 angular.module("ui.bootstrap", ["ui.bootstrap.dropdownToggle","ui.bootstrap.pagination", "ui.bootstrap.buttons"]);
-/**
- * dropdownToggle - Provides dropdown menu functionality in place of bootstrap js
- * @restrict class or attribute
- * @example:
-   <li class="dropdown">
-     <a class="dropdown-toggle">My Dropdown Menu</a>
-     <ul class="dropdown-menu">
-       <li ng-repeat="choice in dropChoices">
-         <a ng-href="{{choice.href}}">{{choice.text}}</a>
-       </li>
-     </ul>
-   </li>
- */
 
 angular.module('ui.bootstrap.dropdownToggle', []).directive('dropdownToggle', ['$document', '$location', function ($document, $location) {
   var openElement = null,

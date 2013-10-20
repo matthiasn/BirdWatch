@@ -67,7 +67,7 @@ object TwitterClient {
   def start() {
     println("Starting client for topics " + topics)
     val url = twitterURL + topics.mkString("%2C").replace(" ", "%20")
-    WS.url(url).withTimeout(-1).sign(OAuthCalculator(Conf.consumerKey, Conf.accessToken)).get(_ => tweetIteratee)
+    WS.url(url).withRequestTimeout(-1).sign(OAuthCalculator(Conf.consumerKey, Conf.accessToken)).get(_ => tweetIteratee)
   }
 
   /** Actor taking care of monitoring the WS connection */

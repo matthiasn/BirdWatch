@@ -58,7 +58,7 @@ object Logger {
 
     /** freegeoip needs IPv4 addresses, ignore local requests with IPv6 addresses for logging */
     if (!req.remoteAddress.contains(":")) {
-      val geoRequest = WS.url("http://freegeoip.net/json/" + req.remoteAddress).withTimeout(2000).get()
+      val geoRequest = WS.url("http://freegeoip.net/json/" + req.remoteAddress).withRequestTimeout(2000).get()
 
       /** log with geo data if service accessible */
       geoRequest.onSuccess {

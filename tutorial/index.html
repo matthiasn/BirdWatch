@@ -19,6 +19,10 @@
 
     <code>elasticsearch -f</code>
 
+    <p>Then, before running the play application for the first time, you need to create the percolation index in ElasticSearch:</p>:
+
+    <code>curl -XPUT localhost:9200/queries</code>
+
     <p>Twitter API consumer key and access token are required to consume the <a href="http://dev.twitter.com/docs/streaming-apis" target="_blank">Twitter Streaming API</a>. You need to <a href="https://dev.twitter.com/apps" target="_blank">create a Twitter application</a> and store keys and secrets in a twitter.conf file, using the
         commented out section in the
         <a href="https://github.com/matthiasn/BirdWatch/blob/master/conf/application.conf" target="_blank">application.conf</a> as a template. </p>

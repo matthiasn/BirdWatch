@@ -47,6 +47,10 @@ You also need ElasticSearch:
 You then run
 
     elasticsearch -f
+
+Before running the play application for the first time, you need to create the percolation index:
+
+    curl -XPUT localhost:9200/queries
     
 And inside the application folder:
     

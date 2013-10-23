@@ -60,7 +60,7 @@ Twitter API consumer key and access token are required to consume the **[Twitter
 
 That should be all there is to it before you can run your own instance listening on **[localhost:9000](http://localhost:9000)**. 
 
-You may want to remove or alter the Google Analytics script in main.scala.html.
+You may want to remove Google Analytics script in main.scala.html or adapt the Analytics setting in the application.conf according to your own needs.
 
 ###Streaming API limitations 
 Please be aware that only one connection to the Twitter Streaming API is possible from any one public IP address. Starting a connection to the Streaming API will potentially end other connections from the same network if **[NAT](http://en.wikipedia.org/wiki/Network_address_translation)** is in place using the same public IP address. Access from mobile networks is discouraged and most likely won't work.

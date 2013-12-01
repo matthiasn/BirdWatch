@@ -2,7 +2,8 @@
 
 /** Controllers */
 angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart', 'charts.wordcloud', 'ui.bootstrap']).
-    controller('BirdWatchCtrl',function ($scope, $location, utils, barchart, wordcloud, $timeout, wordCount, cf, tweets) {
+    controller('BirdWatchCtrl',['$scope', '$location', 'utils', 'barchart', 'wordcloud', '$timeout', 'wordCount',
+        'cf', 'tweets', function ($scope, $location, utils, barchart, wordcloud, $timeout, wordCount, cf, tweets) {
         $scope.prevSizeOpts = ['100', '500', '1000', '2000', '5000', '10000', '20000'];
         $scope.prevSize = $scope.prevSizeOpts[4];
         $scope.pageSizeOpts = [5, 10, 25, 50, 100];
@@ -45,4 +46,4 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
             cf.clear();
         };
         $scope.search();
-    });
+    }]);

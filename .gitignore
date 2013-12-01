@@ -25,3 +25,10 @@ bin
 activator-sbt-atmos-play-shim.sbt
 activator-sbt-eclipse-shim.sbt
 activator-sbt-idea-shim.sbt
+
+web_app/node_modules
+web_app/src/bower_components
+
+web_app/build/
+web_app/dist/
+

@@ -7,10 +7,10 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
         return {
             restrict: 'C',
             scope: { tweet: "=tweet" },
-            templateUrl: "/assets/templates/tweetCard.tpl.html"
+            templateUrl: "/templates/tweetCard.tpl.html"
         }
     })
-    .directive('barchart', function (barchart) {
+    .directive('barchart', ['barchart', function (barchart) {
         return {
             restrict: 'C',
             scope: { words: "=words", live: "=live", callback: "=callback" },
@@ -30,8 +30,8 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
                 });
             }
         }
-    })
-    .directive('cloud', function (wordcloud) {
+    }])
+    .directive('cloud', ['wordcloud', function (wordcloud) {
         return {
             restrict: 'C',
             scope: { words: "=words", live: "=live", interval: "=interval", callback: "=callback" },
@@ -53,7 +53,7 @@ angular.module('birdwatch.directives', ['charts.barchart', 'charts.wordcloud'])
                 $(window).resize(function () { _.throttle(init, 1000)(); });
             }
         }
-    })
+    }])
     .directive('timeseries', function () {
         return {
             restrict: 'C',

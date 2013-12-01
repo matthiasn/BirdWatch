@@ -24,11 +24,6 @@ object BirdWatch extends Controller {
   val dtFormat = ISODateTimeFormat.dateTime()
   val queryDefaults = "&default_field:text$default_operator:AND&sort=id:desc"
 
-  /** Controller action serving single page application */
-  def index = Action {
-    Ok(views.html.index(Conf.getOrEmpty("ga.hostname"), Conf.getOrEmpty("ga.domain"), Conf.getOrEmpty("ga.id")))
-  }
-
   /** Controller Action serving Tweets as JSON going backwards in time. Query passed in as JSON */
   def search =  Action.async(parse.json) {
     req => WS.url(elasticTweetURL + "_search").post(req.body).map { res => Ok(res.body) }

@@ -1,7 +1,7 @@
 'use strict';
 
 // crossfilter service
-angular.module('birdwatch.services').factory('cf', function (utils) {
+angular.module('birdwatch.services').factory('cf', ['utils', function (utils) {
     var exports = {};
 
     // crossfilter object: browser side analytics library, holds array type data (w/incremental updates).
@@ -79,4 +79,4 @@ angular.module('birdwatch.services').factory('cf', function (utils) {
     };
 
     return exports;
-});
+}]);

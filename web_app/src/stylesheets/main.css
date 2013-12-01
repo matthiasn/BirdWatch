@@ -1,0 +1,117 @@
+body {
+}
+
+a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #428bca;
+}
+
+.tweettext {
+    padding-left: 10px;
+    padding-bottom: 10px;
+    font-size: 10px;
+    overflow: auto;
+}
+
+.username {
+    padding-left: 10px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.username_screen {
+    font-size: 10px;
+    color: #999;
+}
+
+.timeInterval {
+    padding-top: 2px;
+    font-size: 10px;
+    color:#999;
+    text-align: right;
+}
+
+.thumbnail {
+    padding-right: 5px;
+    margin-top: 5px;
+    width: 64px;
+    height: 64px;
+    max-width: 64px;
+    max-height: 64px;
+    float: left;
+}
+
+.pagination-mini {
+    display: inline-block;
+    padding-left: 0;
+    margin: 0 0 5px 0;
+}
+
+.pagination-mini > li {
+    display: inline;
+}
+
+.pagination-mini > li > a,
+.pagination-mini > li > span, .toggleLive {
+    float: left;
+    padding: 4px 5px;
+    line-height: 1.428571429;
+    text-decoration: none;
+    background-color: #EEE;
+    font-size: 11px;
+    font-weight: normal;
+    color: #999;
+}
+
+.pagination-mini > li > a:hover,
+.pagination-mini > li > a:focus,
+.pagination-mini > .active > a,
+.pagination-mini > .active > span {
+    background-color: #BBB;
+}
+
+.pagination-mini > .active > a,
+.pagination-mini > .active > a:hover,
+.pagination-mini > .active > span {
+    background: #428bca;
+    color: #fff;
+    cursor: default;
+}
+
+#tweet-frame {
+    margin-top: 10px;
+    background-color: #EEE;
+    padding-bottom: 5px;
+}
+
+.tweet {
+    padding: 10px 10px 5px 10px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    background-color: #FFF;
+    overflow: auto;
+}
+
+.toggleActive {
+    background: #428bca;
+    color: #fff;
+    cursor: default;
+}
+
+.container {
+    max-width: 1600px;
+}
+
+.x_label {
+    font-family: Arial, sans-serif;
+    border-radius: 3px;
+    padding: 6px;
+    opacity: .5;
+    border: 1px solid #e0e0e0;
+    font-size: 12px;
+    position: absolute;
+    top: 100px;
+    background: #fff;
+    white-space: nowrap
+}

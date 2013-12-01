@@ -1,7 +1,7 @@
 'use strict';
 
 /** tweets service, load previous tweets and receives subsequent live tweets for given query */
-angular.module('birdwatch.services').factory('tweets', function ($http, utils, $location) {
+angular.module('birdwatch.services').factory('tweets', ['$http', 'utils', '$location', function ($http, utils, $location) {
     var tweetFeed;
     var tweetsCache = [];
     
@@ -49,4 +49,4 @@ angular.module('birdwatch.services').factory('tweets', function ($http, utils, $
     };
 
     return { search: search, registerCallback: registerCallback};
-});
+}]);

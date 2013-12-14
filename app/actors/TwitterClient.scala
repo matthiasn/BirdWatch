@@ -90,7 +90,7 @@ object TwitterClient {
     * @param json JsValue to match against 
     */
   def matchAndPush(json: JsValue): Unit = {
-    WS.url("http://localhost:9200/queries/tweets/_percolate").post(Json.obj("doc" -> json)).map {
+    WS.url(elasticPercolatorURL).post(Json.obj("doc" -> json)).map {
       res => (Json.parse(res.body) \ "matches").asOpt[Seq[String]].map {
         m => jsonTweetsChannel.push(Matches(json, HashSet.empty[String] ++ m))
       }

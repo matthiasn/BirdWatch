@@ -115,3 +115,7 @@ a {
     background: #fff;
     white-space: nowrap
 }
+
+#tweet-count {
+    font-weight: bold;
+}

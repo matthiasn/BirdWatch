@@ -1,10 +1,10 @@
-name := """BirdWatch"""
+name := "BirdWatch"
 
-version := "1.0"
+version := "0.2-SNAPSHOT"
 
 libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",
-  "com.typesafe.akka" %% "akka-testkit" % "2.2.0"
+  "com.typesafe.akka" %% "akka-testkit" % "2.2.1"
 )
 
 testOptions += Tests.Argument(TestFrameworks.JUnit, "-v")

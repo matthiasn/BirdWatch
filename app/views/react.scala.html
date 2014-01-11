@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>BirdWatch</title>
+        
+        <!-- Stylesheets -->
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/main.css">
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/bootstrap-glyphicons.css">
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/bootstrap.min.css">
+        <link rel="stylesheet" media="screen" href="/assets/stylesheets/rickshaw.min.css">
+        <link rel="shortcut icon" type="image/png" href="/assets/images/favicon.png">
+    </head>
+    
+    <body>
+        
+        <div>
+
+            <!-- Navigation Bar -->
+            <div class="navbar">
+                <div class="container">
+                    
+                    <span class="navbar-brand">BirdWatch</span>
+
+                    <!-- Search field in NavBar -->
+                    <div class="navbar-form pull-left col-lg-6 input-group">
+                        <form id="searchForm" class="input-group">
+                            <input type="text" id="searchField" class="form-control"
+                                placeholder="Example search: java (job OR jobs OR hiring)" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="button" onclick="BirdWatch.search()">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>
+                            </span>
+                        </form>
+                    </div>
+
+                    <div class="nav-collapse">
+
+                            <!-- Tweets. Project info -->
+                        <ul class="nav navbar-nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About
+                                    <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="http://matthiasnehlsen.com"
+                                        target="_blank">Project Introduction</a></li>
+                                    <li><a href="http://matthiasnehlsen.com" target="_blank">Blog</a></li>
+                                    <li><a href="https://github.com/matthiasn" target="_blank">Project on GitHub</a></li>
+                                    <li><a href="#" ng-click="legalStuff()">Legal stuff</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                            <!-- Settings -->
+                        <ul class="nav navbar-nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings
+                                    <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Previous Tweets:</a></li>
+                                    <li>
+                                        <a>
+                                            <select class="form-control" id="prev-size">
+                                                <option value="5000">5000</option>
+                                                <option value="10000">10000</option>
+                                                <option value="20000">20000</option>
+                                                <option value="50000">50000</option>
+                                                <option value="100000">100000</option>
+                                            </select>
+                                        </a>
+                                    </li>
+                                    <li><hr></li>
+                                    <li><a href="#">Page Size:</a></li>
+                                    <li>
+                                        <a>
+                                            <select class="form-control" id="page-size">
+                                                <option value="5">5</option>
+                                                <option value="10" selected="selected">10</option>
+                                                <option value="25">25</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                            </select>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a>
+                                            <select class="form-control" id="offset-size">
+                                                <option value="0" selected>0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                            </select>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <div class="nav navbar-text col-lg-2 pull-right">Tweet count: <span id="tweet-count"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tweets column with Pagination -->
+            <div class="container container-fluid">
+                <div class="row">
+                    <!-- Pagination -->
+                    <pagination rotate="false" num-pages="cf.numPages(pageSize)" current-page="currentPage" max-size="12"
+                    boundary-links="true"></pagination>
+                    <span class="toggleLive" ng-class="live ? 'toggleActive' : ''" ng-click="toggleLive()">Live</span>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn">Sort by</button>
+                    <button type="button" class="btn btn-primary" data-btn-radio="'latest'"
+                      onclick="BirdWatch.sortByLatest()">latest</button>
+                    <button type="button" class="btn btn-primary" data-btn-radio="'followers'"
+                      onclick="BirdWatch.sortByFollowers()">followers</button>
+                    <button type="button" class="btn btn-primary" data-btn-radio="'retweets'"
+                      onclick="BirdWatch.sortByRetweets()">retweets</button>
+                    <button type="button" class="btn btn-primary" data-btn-radio="'favourites'"
+                      onclick="BirdWatch.sortByFavorites()">favorites</button>
+                </div>
+
+                <!-- Main page layout -->
+                <div class="row">
+                    <!-- Tweet Cards inside frame -->
+                    <div class="col-lg-4" id="tweet-frame"></div>
+
+                    <!-- Charts column -->
+                    <div class="col-lg-8">
+                        <h6>Word Frequency (Processing queue size: <span id="word-queue-size"></span>)</h6>
+                        <div id="wordBars" class="barchart" ></div>
+                        <hr />
+                        <div id="wordCloud" class="cloud" ></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts placed at the end of the document so the pages load faster -->
+
+        <script src="/assets/javascripts/vendor/jquery-1.10.2.min.js"></script>
+        <script src="/assets/javascripts/vendor/bootstrap.min.js"></script>
+        <script src="/assets/javascripts/vendor/d3.v3.js"></script>
+
+        <script src="/assets/javascripts/vendor/d3.layout.cloud.js"></script>
+        <script src="/assets/javascripts/vendor/moment.min.js"></script>
+        <script src="/assets/javascripts/vendor/underscore.min.js"></script>
+
+        <script src="/assets/javascripts/vendor//react-0.8.0.min.js"></script>
+        <script src="/assets/javascripts/vendor/jsx-transformer-0.8.0.js"></script>
+
+        <script type="text/javascript" src="assets/js/react-interop.js"></script>
+        <script type="text/javascript" src="assets/js/react-barchart.js"></script>
+        <script type="text/javascript" src="assets/js/react-wordcloud.js"></script>
+
+        <script type="text/javascript" src="assets/scala-js/example-extdeps.js"></script>
+        <script type="text/javascript" src="assets/scala-js/example-intdeps.js"></script>
+        <script type="text/javascript" src="assets/scala-js/example.js"></script>
+
+        <script type="text/jsx" src="assets/js/react-app.js"></script>
+
+
+    </body>
+</html>

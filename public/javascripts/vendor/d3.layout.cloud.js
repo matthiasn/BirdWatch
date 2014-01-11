@@ -35,7 +35,7 @@
           }).sort(function(a, b) { return b.size - a.size; });
 
       if (timer) clearInterval(timer);
-      timer = setInterval(step, 0);
+      timer = setInterval(step, 1);
       step();
 
       return cloud;
@@ -61,6 +61,10 @@
         if (i >= n) {
           cloud.stop();
           event.end(tags, bounds);
+            BirdWatch.renderingFinished = true;
+            BirdWatch.lastCloudUpdate = new Date().getTime();
+
+            console.log("  BirdWatch.renderingFinished = true;")
         }
       }
     }

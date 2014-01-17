@@ -31,7 +31,7 @@ object WordCount {
   def addWord(word: String): Unit = {
     val lowerCaseWord = word.toLowerCase
     if (!stopWords.contains(lowerCaseWord) && lowerCaseWord.length > 2) {
-      addToPQueue(Exec(Some(countWord(lowerCaseWord)_), 0, 20))
+      addToPQueue(Exec(Some(countWord(lowerCaseWord)_), 0, 0))
     }
   }
 

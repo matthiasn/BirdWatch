@@ -63,11 +63,9 @@
           event.end(tags, bounds);
             BirdWatch.renderingFinished = true;
             BirdWatch.lastCloudUpdate = new Date().getTime();
-
-            console.log("  BirdWatch.renderingFinished = true;")
         }
       }
-    }
+    };
 
     cloud.stop = function() {
       if (timer) {

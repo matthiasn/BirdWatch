@@ -21,7 +21,7 @@ object PrioExecQueue {
         if (exec.timeout > 0) { InterOp.setTimeout(pQueueNext, exec.timeout) }
         else if (dequeueCounter % 200 == 0) {
           InterOp.setTimeout(pQueueNext, 0)
-          InterOp.triggerReactWordcount()
+          InterOp.triggerReact()
           BirdWatch.setPQueueSize(execPQueue.size)
         }
         else pQueueNext()

@@ -41,7 +41,7 @@ var BirdWatch = BirdWatch || {};
 
     /** single Tweet component */
     var Tweet = React.createClass({
-        render: function() { return (
+        render: function () { return (
             <div className="tweet">
                 <span>
                     <a href={"http://www.twitter.com/" + this.props.t.screen_name} target="_blank">
@@ -60,7 +60,7 @@ var BirdWatch = BirdWatch || {};
                     <FavoriteCount count={this.props.t.favorite_count} />
                 </div>
             </div>
-        );}
+        ); }
     });
 
     /** Tweet list component, renders all Tweet items (above) */
@@ -74,6 +74,8 @@ var BirdWatch = BirdWatch || {};
             return <div id="tweet-list">{tweetNodes}</div>;
         }
     });
+
+    var tweetListComp = React.renderComponent(<TweetList />, document.getElementById('tweet-frame'));
 
     /** TweetCount shows the number of tweets analyzed */
     var TweetCount = React.createClass({
@@ -96,7 +98,6 @@ var BirdWatch = BirdWatch || {};
     /** render BirdWatch components */
     var tweetCount = React.renderComponent(<TweetCount count={0}/>, document.getElementById('tweet-count'));
     var WordQueueSize = React.renderComponent(<WordQueueSize count={0}/>, document.getElementById('word-queue-size'));
-    var tweetListComp = React.renderComponent(<TweetList />, document.getElementById('tweet-frame'));
 
     BirdWatch.setTweetCount = function (n) { tweetCount.setProps({count: n}); };
     BirdWatch.setPQueueSize = function (n) { WordQueueSize.setProps({count: n}); };
@@ -113,7 +114,6 @@ var BirdWatch = BirdWatch || {};
 
         if (BirdWatch.renderingFinished && (new Date().getTime() - BirdWatch.lastCloudUpdate) > 10000) {
             BirdWatch.renderingFinished = false;
-            console.log("cloud render started")
             //BirdWatch.haltQueue();
             wordCloud.redraw(wordCounts);
         }

@@ -28,3 +28,7 @@ activator-sbt-idea-shim.sbt
 
 public/scala-js/
 
+react-js/build/
+react-js/dist/
+react-js/reports/
+react-js/node_modules/

@@ -47,7 +47,7 @@ var BirdWatch = BirdWatch || {};
         BirdWatch.addWords(words);
     };
 
-    /** POST chat message */
+    /** POST search */
     BirdWatch.loadPrevious = function (q, n, chunkSize, offset) {
         if (n > 0) {
             $.ajax(

@@ -87,5 +87,4 @@ var BirdWatch = BirdWatch || {};
 
     BirdWatch.setTweetCount = function (n) { tweetCount.setProps({count: n}); };
     BirdWatch.setTweetList = function (tweetList) { tweetListComp.setProps({tweets: tweetList}); };
-
 })();

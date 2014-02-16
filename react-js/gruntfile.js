@@ -30,11 +30,21 @@ module.exports = function (grunt) {
                     { expand: true, cwd: 'dist/', src: ['birdwatch.js'], dest: '../public/react-js/' }
                 ]
             }
+        },
+        watch: {
+            scripts: {
+                files: ['src/*.js', 'build/*.js'],
+                tasks: ['bw'],
+                options: {
+                    spawn: false
+                }
+            }
         }
     });
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-plato');
     grunt.registerTask('bw', ['jshint', 'concat', 'copy', 'plato']);
 };

@@ -16,7 +16,7 @@
         var gridLabelHeight = 18; // space reserved for grid line labels
 
         // accessor functions
-        var barLabel = function (d) { return d.text; };
+        var barLabel = function (d) { return d.key; };
         var barValue = function (d) { return parseFloat(d.value); };
 
         var y = function (d, i) { return yScale(i); };

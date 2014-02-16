@@ -110,9 +110,6 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (res) {
-                        var tweets = res.hits.hits;
-                        console.log(res);
-
                         onNewTweets(res.hits.hits.reverse().map(function (t) { return t._source; }).map(BirdWatch.formatTweet));
 
                         BirdWatch.triggerReact();
@@ -137,7 +134,8 @@
 
         /** handle incoming tweets: add to tweetsCache array, run callback at most every second */
         var cachedCallback = function(msg) {
-            tweetsCache = tweetsCache.concat(utils.formatTweet(JSON.parse(msg.data)));
+            BirdWatch.triggerReact();
+            tweetsCache = tweetsCache.concat(BirdWatch.formatTweet(JSON.parse(msg.data)));
             _.throttle(function() {        // throttle because insertion too expensive on high traffic searches
                 onNewTweets(tweetsCache);  // run callback with all items in cache
                 tweetsCache = [];          // then empty cache.
@@ -306,7 +304,7 @@
                 .timeInterval(1)
                 .size([w, h])
                 .fontSize(function(d) { return fontSize(+d.value); })
-                .text(function(d) { return d.text; })
+                .text(function(d) { return d.key; })
                 .on("end", draw);
 
             svg = d3.select(elem).append("svg").attr("width", w).attr("height", h);
@@ -353,7 +351,7 @@
         var gridLabelHeight = 18; // space reserved for grid line labels
 
         // accessor functions
-        var barLabel = function (d) { return d.text; };
+        var barLabel = function (d) { return d.key; };
         var barValue = function (d) { return parseFloat(d.value); };
 
         var y = function (d, i) { return yScale(i); };
@@ -556,18 +554,18 @@ var BirdWatch = BirdWatch || {};
         render: function () { return (
             React.DOM.div( {className:"tweet"}, 
                 React.DOM.span(null, 
-                    React.DOM.a( {href:"http://www.twitter.com/" + this.props.t.screen_name, target:"_blank"}, 
-                        React.DOM.img( {className:"thumbnail", src:this.props.t.profile_image_url} )
+                    React.DOM.a( {href:"http://www.twitter.com/" + this.props.t.user.screen_name, target:"_blank"}, 
+                        React.DOM.img( {className:"thumbnail", src:this.props.t.user.profile_image_url} )
                     )
                 ),
-                React.DOM.a( {href:"http://www.twitter.com/" + this.props.t.screen_name, target:"_blank"}, 
-                    React.DOM.span( {className:"username"}, this.props.t.name)
+                React.DOM.a( {href:"http://www.twitter.com/" + this.props.t.user.screen_name, target:"_blank"}, 
+                    React.DOM.span( {className:"username"}, this.props.t.user.name)
                 ),
-                React.DOM.span( {className:"username_screen"}, " @",this.props.t.screen_name),
+                React.DOM.span( {className:"username_screen"}, " @",this.props.t.user.screen_name),
                 React.DOM.div( {className:"pull-right timeInterval"}, fromNow(this.props.t.created_at)),
                 React.DOM.div( {className:"tweettext"}, 
-                    React.DOM.div(null, this.props.t.text),
-                    React.DOM.div( {className:"pull-left timeInterval"}, numberFormat(this.props.t.followers_count), " followers"),
+                    React.DOM.div( {dangerouslySetInnerHTML:{__html: this.props.t.htmlText}, className:""}),
+                    React.DOM.div( {className:"pull-left timeInterval"}, numberFormat(this.props.t.user.followers_count), " followers"),
                     RetweetCount( {count:this.props.t.retweet_count} ),
                     FavoriteCount( {count:this.props.t.favorite_count} )
                 )
@@ -594,19 +592,45 @@ var BirdWatch = BirdWatch || {};
         render: function () { return React.DOM.span(null, this.props.count);}
     });
 
-    var barChartElem = $("#wordBars");
-    var barchart = BirdWatch.BarChart(function(){}, barChartElem.width() - 180, "#wordBars", 25);
-    var barChartInit = false;
-
-    var wordCloudElem = $("#wordCloud");
-    var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, function(){}, "#wordCloud");
-    BirdWatch.lastCloudUpdate = (new Date().getTime()) - 7000;
-
     /** render BirdWatch components */
     var tweetCount = React.renderComponent(TweetCount( {count:0}), document.getElementById('tweet-count'));
 
     BirdWatch.setTweetCount = function (n) { tweetCount.setProps({count: n}); };
     BirdWatch.setTweetList = function (tweetList) { tweetListComp.setProps({tweets: tweetList}); };
+
+})();
+;(function () {
+    'use strict';
+
+    window.BirdWatch = window.BirdWatch || {};
+
+    var timeSeries1 = $("#timeseries1");
+    var graph = new Rickshaw.Graph( {
+        element: document.querySelector("#timeseries1"),
+        width: timeSeries1.width(),
+        height: 100,
+        renderer: 'bar',
+        series: [ {
+            color: 'steelblue',
+            name: 'Tweets',
+            data: [{ x: 0, y: 0 }]
+        } ]
+    } );
+    new Rickshaw.Graph.Axis.Time({ graph: graph });
+    graph.render();
+
+    new Rickshaw.Graph.HoverDetail({
+        graph: graph,
+        yFormatter: function(y) { return y === null ? y : y.toFixed(0); }
+    });
+
+    var barChartElem = $("#wordBars");
+    var barchart = BirdWatch.BarChart(function(){}, barChartElem.width() - 180, "#wordBars", 25);
+    var barChartInit = false;
+
+    var wordCloudElem = $("#wordCloud");
+    var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, function (){}, "#wordCloud");
+    BirdWatch.lastCloudUpdate = (new Date().getTime()) - 7000;
 
     BirdWatch.setWordCount = function (wordCounts) {
         if (!barChartInit) {
@@ -615,32 +639,48 @@ var BirdWatch = BirdWatch || {};
         }
         barchart.redraw(wordCounts);
 
-        if (BirdWatch.renderingFinished && (new Date().getTime() - BirdWatch.lastCloudUpdate) > 10000) {
-            BirdWatch.renderingFinished = false;
-            //BirdWatch.haltQueue();
+        if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 10000) {
             wordCloud.redraw(wordCounts);
         }
     };
-})();
-;(function () {
-    'use strict';
 
-    window.BirdWatch = window.BirdWatch || {};
+    $('#searchForm').submit(function (e) {
+        BirdWatch.search();
+        e.preventDefault();
+        return false;
+    });
 
+    var sortOrder = "latest";
+
+    var pageSize = $("#page-size");
     BirdWatch.triggerReact = function () {
-        console.log("triggerReact");
-
         BirdWatch.setTweetCount(BirdWatch.crossfilter.noItems());
+
+        graph.series[0].data = BirdWatch.crossfilter.timeseries().map(function(el) { return { x: el.key, y: el.value }; });
+        graph.update();
+
+        BirdWatch.setTweetList(BirdWatch.crossfilter.tweetPage(1, pageSize.val(), sortOrder));
     };
+
+    BirdWatch.sortByLatest = function () { sortOrder = "latest"; BirdWatch.triggerReact(); };
+    BirdWatch.sortByFollowers = function () { sortOrder = "followers"; BirdWatch.triggerReact();};
+    BirdWatch.sortByRetweets = function () { sortOrder = "retweets"; BirdWatch.triggerReact(); };
+    BirdWatch.sortByFavorites = function () { sortOrder = "favorites"; BirdWatch.triggerReact(); };
 
     BirdWatch.tweets.registerCallback(function (t) {
         BirdWatch.wordcount.insert(t);
         BirdWatch.crossfilter.add(t);
+        BirdWatch.setWordCount(BirdWatch.wordcount.getWords());
     });
 
-    BirdWatch.search = function (searchText, prevSize) {
-        BirdWatch.tweets.search(searchText, prevSize);
+    BirdWatch.search = function () {
+        var searchField = $("#searchField");
+
+        BirdWatch.wordcount.reset();
         BirdWatch.crossfilter.clear();
+        BirdWatch.tweets.search(searchField.val(), $("#prev-size").val());
+        searchField.focus();
     };
 
+    BirdWatch.search();
 }());

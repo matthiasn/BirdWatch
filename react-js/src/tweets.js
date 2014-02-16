@@ -26,9 +26,6 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (res) {
-                        var tweets = res.hits.hits;
-                        console.log(res);
-
                         onNewTweets(res.hits.hits.reverse().map(function (t) { return t._source; }).map(BirdWatch.formatTweet));
 
                         BirdWatch.triggerReact();
@@ -53,7 +50,8 @@
 
         /** handle incoming tweets: add to tweetsCache array, run callback at most every second */
         var cachedCallback = function(msg) {
-            tweetsCache = tweetsCache.concat(utils.formatTweet(JSON.parse(msg.data)));
+            BirdWatch.triggerReact();
+            tweetsCache = tweetsCache.concat(BirdWatch.formatTweet(JSON.parse(msg.data)));
             _.throttle(function() {        // throttle because insertion too expensive on high traffic searches
                 onNewTweets(tweetsCache);  // run callback with all items in cache
                 tweetsCache = [];          // then empty cache.

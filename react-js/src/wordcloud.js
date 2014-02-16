@@ -67,7 +67,7 @@
                 .timeInterval(1)
                 .size([w, h])
                 .fontSize(function(d) { return fontSize(+d.value); })
-                .text(function(d) { return d.text; })
+                .text(function(d) { return d.key; })
                 .on("end", draw);
 
             svg = d3.select(elem).append("svg").attr("width", w).attr("height", h);

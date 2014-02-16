@@ -44,18 +44,18 @@ var BirdWatch = BirdWatch || {};
         render: function () { return (
             <div className="tweet">
                 <span>
-                    <a href={"http://www.twitter.com/" + this.props.t.screen_name} target="_blank">
-                        <img className="thumbnail" src={this.props.t.profile_image_url} />
+                    <a href={"http://www.twitter.com/" + this.props.t.user.screen_name} target="_blank">
+                        <img className="thumbnail" src={this.props.t.user.profile_image_url} />
                     </a>
                 </span>
-                <a href={"http://www.twitter.com/" + this.props.t.screen_name} target="_blank">
-                    <span className="username">{this.props.t.name}</span>
+                <a href={"http://www.twitter.com/" + this.props.t.user.screen_name} target="_blank">
+                    <span className="username">{this.props.t.user.name}</span>
                 </a>
-                <span className="username_screen">&nbsp;&#64;{this.props.t.screen_name}</span>
+                <span className="username_screen">&nbsp;&#64;{this.props.t.user.screen_name}</span>
                 <div className="pull-right timeInterval">{fromNow(this.props.t.created_at)}</div>
                 <div className="tweettext">
-                    <div>{this.props.t.text}</div>
-                    <div className="pull-left timeInterval">{numberFormat(this.props.t.followers_count)} followers</div>
+                    <div dangerouslySetInnerHTML={{__html: this.props.t.htmlText}} className=""></div>
+                    <div className="pull-left timeInterval">{numberFormat(this.props.t.user.followers_count)} followers</div>
                     <RetweetCount count={this.props.t.retweet_count} />
                     <FavoriteCount count={this.props.t.favorite_count} />
                 </div>
@@ -82,40 +82,10 @@ var BirdWatch = BirdWatch || {};
         render: function () { return <span>{this.props.count}</span>;}
     });
 
-    /** WordQueueSize shows the number of words queued for processing */
-    var WordQueueSize = React.createClass({
-        render: function () { return <strong>{this.props.count}</strong>;}
-    });
-
-    var barChartElem = $("#wordBars");
-    var barchart = BirdWatch.BarChart(function(){}, barChartElem.width() - 180, "#wordBars", 25);
-    var barChartInit = false;
-
-    var wordCloudElem = $("#wordCloud");
-    var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, function(){}, "#wordCloud");
-    BirdWatch.lastCloudUpdate = (new Date().getTime()) - 7000;
-
     /** render BirdWatch components */
     var tweetCount = React.renderComponent(<TweetCount count={0}/>, document.getElementById('tweet-count'));
-    var WordQueueSize = React.renderComponent(<WordQueueSize count={0}/>, document.getElementById('word-queue-size'));
 
     BirdWatch.setTweetCount = function (n) { tweetCount.setProps({count: n}); };
-    BirdWatch.setPQueueSize = function (n) { WordQueueSize.setProps({count: n}); };
     BirdWatch.setTweetList = function (tweetList) { tweetListComp.setProps({tweets: tweetList}); };
 
-    BirdWatch.renderingFinished = true;
-
-    BirdWatch.setWordCount = function (wordCounts) {
-        if (!barChartInit) {
-            barchart.init(wordCounts, 500);
-            barChartInit = true;
-        }
-        barchart.redraw(wordCounts);
-
-        if (BirdWatch.renderingFinished && (new Date().getTime() - BirdWatch.lastCloudUpdate) > 10000) {
-            BirdWatch.renderingFinished = false;
-            //BirdWatch.haltQueue();
-            wordCloud.redraw(wordCounts);
-        }
-    };
 })();

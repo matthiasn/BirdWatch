@@ -4,7 +4,7 @@ import akka.actor._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.{Concurrent, Iteratee}
 import play.api.libs.ws.WS
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsObject, JsArray, JsValue, Json}
 import play.api.libs.oauth.OAuthCalculator
 
 import org.joda.time.DateTime
@@ -91,8 +91,11 @@ object TwitterClient {
     */
   def matchAndPush(json: JsValue): Unit = {
     WS.url(elasticPercolatorURL).post(Json.obj("doc" -> json)).map {
-      res => (Json.parse(res.body) \ "matches").asOpt[Seq[String]].map {
-        m => jsonTweetsChannel.push(Matches(json, HashSet.empty[String] ++ m))
+      res => (Json.parse(res.body) \ "matches").asOpt[List[JsValue]].map {
+        matches => {
+          val items = matches.map { m => (m \ "_id").as[String] }
+          jsonTweetsChannel.push(Matches(json, HashSet.empty[String] ++ items))
+        }
       }
     }
   }

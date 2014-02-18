@@ -59,7 +59,7 @@ object BirdWatch extends Controller {
       val md = MessageDigest.getInstance("SHA-256")
       val queryID = md.digest(q.getBytes).map("%02x".format(_)).mkString
 
-      WS.url(PercolationQueryURL + queryID).post(query).map {
+      WS.url(PercolationQueryURL + queryID).put(query).map {
         res => Ok.feed(TwitterClient.jsonTweetsOut     
           &> matchesFilter(queryID)  
           &> Concurrent.buffer(1000)

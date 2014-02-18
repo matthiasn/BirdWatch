@@ -43,14 +43,13 @@ If brew was installed on your machine already you want to run this first:
 You also need ElasticSearch:
  
     brew install elasticsearch
+
     
 You then run
 
-    elasticsearch -f
+    elasticsearch
 
-Before running the play application for the first time, you need to create the percolation index:
-
-    curl -XPUT localhost:9200/queries
+BEWARE: this application has recently been upgraded to work with ElasticSearch v1.0.0. There have been breaking changes in the Percolation Query API (for the better, for sure) but because of these changes the latest version will not work with previous versions of ElasticSearch. If for some reason you cannot run v1.0.0 yet, you can check out an earlier commit of this application.
     
 And inside the application folder:
     

@@ -91,8 +91,11 @@ object TwitterClient {
     */
   def matchAndPush(json: JsValue): Unit = {
     WS.url(elasticPercolatorURL).post(Json.obj("doc" -> json)).map {
-      res => (Json.parse(res.body) \ "matches").asOpt[Seq[String]].map {
-        m => jsonTweetsChannel.push(Matches(json, HashSet.empty[String] ++ m))
+      res => (Json.parse(res.body) \ "matches").asOpt[List[JsValue]].map {
+        matches => {
+          val items = matches.map { m => (m \ "_id").as[String] }
+          jsonTweetsChannel.push(Matches(json, HashSet.empty[String] ++ items))
+        }
       }
     }
   }

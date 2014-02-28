@@ -27,6 +27,7 @@ object TwitterClient {
 
   /** Protocol for Twitter Client actors */
   case class AddTopic(topic: String)
+  case class AddUser(user: String)
   case class RemoveTopic(topic: String)
   case object CheckStatus
   case object TweetReceived
@@ -43,6 +44,7 @@ object TwitterClient {
   
   /** Subscription topics stored in this MUTABLE collection */
   val topics: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
+  val users: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
 
   /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
     * as Tweet instances and publishes them to eventStream. */
@@ -66,7 +68,11 @@ object TwitterClient {
     * Can this be ended explicitly from here though, without resetting the whole underlying client? */
   def start() {
     println("Starting client for topics " + topics)
-    val url = twitterURL + topics.mkString("%2C").replace(" ", "%20")
+    println("Starting client for users " + users)
+
+    val topicString = topics.mkString("%2C").replace(" ", "%20")
+    val userString = users.mkString("%2C").replace(" ", "%20")
+    val url = twitterURL + "track=" + topicString + "&follow=" + userString
     WS.url(url).withRequestTimeout(-1).sign(OAuthCalculator(Conf.consumerKey, Conf.accessToken)).get(_ => tweetIteratee)
   }
 
@@ -78,6 +84,7 @@ object TwitterClient {
     /** Receives control messages for starting / restarting supervised client and adding or removing topics */
     def receive = {
       case AddTopic(topic)  => topics.add(topic)
+      case AddUser(user)  => users.add(user)
       case RemoveTopic(topic) => topics.remove(topic)
       case Start => start()
       case CheckStatus => if (now - lastTweetReceived > retryInterval && now - lastBackOff > backOffInterval) start()

@@ -11,10 +11,6 @@
     var cf = crossfilter([]);
     var tweetIdDim   = cf.dimension(function(t) { return t.id; });
     var followersDim = cf.dimension(function(t) { return t.user.followers_count; });
-    var favoritesDim  = cf.dimension(function(t) {
-        if (t.hasOwnProperty("retweeted_status")) { return t.retweeted_status.favorite_count; }
-        else return 0;
-    });
     var retweetsDim  = cf.dimension(function(t) {
         if (t.hasOwnProperty("retweeted_status")) { return t.retweeted_status.retweet_count; }
         else return 0;
@@ -77,7 +73,6 @@
     var fetchTweets = function(pageSize, order) {
         if (order === "latest")    { return tweetIdDim.top(pageSize); }    // latest: desc order of tweets by ID
         else if (order === "followers") { return followersDim.top(pageSize).map(maxRetweets); } // desc order of tweets by followers
-        else if (order === "favorites") { return favoritesDim.top(pageSize).map(maxRetweets); } // desc order of tweets by followers
         else if (order === "retweets")  { // descending order of tweets by total retweets of original message
             return _.first(               // filtered to be unique, would appear for each retweet in window otherwise
                 _.uniq(retweetsDim.top(cf.size()).filter(retweeted).map(originalTweet), false, tweetId), pageSize);

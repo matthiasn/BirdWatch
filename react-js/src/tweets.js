@@ -27,9 +27,6 @@
                     dataType: "json",
                     success: function (res) {
                         onNewTweets(res.hits.hits.reverse().map(function (t) { return t._source; }).map(BirdWatch.formatTweet));
-
-                        BirdWatch.triggerReact();
-
                         setTimeout(function () {
                             loadPrev(q, n - chunkSize, chunkSize, offset + chunkSize);
                         }, 0);
@@ -48,14 +45,15 @@
             searchString = queryString;
         }
 
+        var throttled = _.throttle(function() {        // throttle because insertion too expensive on high traffic searches
+            onNewTweets(tweetsCache);  // run callback with all items in cache
+            tweetsCache = [];          // then empty cache.
+        }, 1000);
+
         /** handle incoming tweets: add to tweetsCache array, run callback at most every second */
         var cachedCallback = function(msg) {
-            BirdWatch.triggerReact();
             tweetsCache = tweetsCache.concat(BirdWatch.formatTweet(JSON.parse(msg.data)));
-            _.throttle(function() {        // throttle because insertion too expensive on high traffic searches
-                onNewTweets(tweetsCache);  // run callback with all items in cache
-                tweetsCache = [];          // then empty cache.
-            }, 1000)();
+            throttled();
         };
 
         tweetFeed = new EventSource("/tweetFeed?q=" + searchString);

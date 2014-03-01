@@ -61,8 +61,6 @@
         if (i >= n) {
           cloud.stop();
           event.end(tags, bounds);
-            BirdWatch.renderingFinished = true;
-            BirdWatch.lastCloudUpdate = new Date().getTime();
         }
       }
     };

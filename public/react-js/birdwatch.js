@@ -11,10 +11,6 @@
     var cf = crossfilter([]);
     var tweetIdDim   = cf.dimension(function(t) { return t.id; });
     var followersDim = cf.dimension(function(t) { return t.user.followers_count; });
-    var favoritesDim  = cf.dimension(function(t) {
-        if (t.hasOwnProperty("retweeted_status")) { return t.retweeted_status.favorite_count; }
-        else return 0;
-    });
     var retweetsDim  = cf.dimension(function(t) {
         if (t.hasOwnProperty("retweeted_status")) { return t.retweeted_status.retweet_count; }
         else return 0;
@@ -77,7 +73,6 @@
     var fetchTweets = function(pageSize, order) {
         if (order === "latest")    { return tweetIdDim.top(pageSize); }    // latest: desc order of tweets by ID
         else if (order === "followers") { return followersDim.top(pageSize).map(maxRetweets); } // desc order of tweets by followers
-        else if (order === "favorites") { return favoritesDim.top(pageSize).map(maxRetweets); } // desc order of tweets by followers
         else if (order === "retweets")  { // descending order of tweets by total retweets of original message
             return _.first(               // filtered to be unique, would appear for each retweet in window otherwise
                 _.uniq(retweetsDim.top(cf.size()).filter(retweeted).map(originalTweet), false, tweetId), pageSize);
@@ -116,9 +111,6 @@
                     dataType: "json",
                     success: function (res) {
                         onNewTweets(res.hits.hits.reverse().map(function (t) { return t._source; }).map(BirdWatch.formatTweet));
-
-                        BirdWatch.triggerReact();
-
                         setTimeout(function () {
                             loadPrev(q, n - chunkSize, chunkSize, offset + chunkSize);
                         }, 0);
@@ -137,14 +129,15 @@
             searchString = queryString;
         }
 
+        var throttled = _.throttle(function() {        // throttle because insertion too expensive on high traffic searches
+            onNewTweets(tweetsCache);  // run callback with all items in cache
+            tweetsCache = [];          // then empty cache.
+        }, 1000);
+
         /** handle incoming tweets: add to tweetsCache array, run callback at most every second */
         var cachedCallback = function(msg) {
-            BirdWatch.triggerReact();
             tweetsCache = tweetsCache.concat(BirdWatch.formatTweet(JSON.parse(msg.data)));
-            _.throttle(function() {        // throttle because insertion too expensive on high traffic searches
-                onNewTweets(tweetsCache);  // run callback with all items in cache
-                tweetsCache = [];          // then empty cache.
-            }, 1000)();
+            throttled();
         };
 
         tweetFeed = new EventSource("/tweetFeed?q=" + searchString);
@@ -581,16 +574,50 @@ var BirdWatch = BirdWatch || {};
     /** Tweet list component, renders all Tweet items (above) */
     var TweetList = React.createClass({displayName: 'TweetList',
         render: function() {
-            var tweets = [].concat(this.props.tweets);
-            var tweetNodes = tweets.map(function (tweet) {
+            var tweetNodes = this.props.tweets.map(function (tweet) {
                 if (!tweet) return "";
-                return Tweet( {t:tweet} );
+                return Tweet( {t:tweet, key:tweet.id} );
             }.bind(this));
             return React.DOM.div( {id:"tweet-list"}, tweetNodes);
         }
     });
 
-    var tweetListComp = React.renderComponent(TweetList(null ), document.getElementById('tweet-frame'));
+    /** Pagination component, allows selecting the current page in the Tweet list */
+    var PaginationItem = React.createClass({displayName: 'PaginationItem',
+        setActive: function () {this.props.setPage(this.props.page)},
+        render: function() {
+            return React.DOM.li( {className:this.props.active ? "active" : "", onClick:this.setActive}, 
+                      React.DOM.a(null, this.props.page)
+                   )
+        }
+    });
+
+    var Pagination = React.createClass({displayName: 'Pagination',
+        toggleLive: function() { this.props.toggleLive(); },
+        handleFirst: function() { this.props.setPage(1); },
+        handleLast: function() { this.props.setPage(this.props.numPages); },
+        handleNext: function() { this.props.setNext(); },
+        handlePrevious: function() { this.props.setPrev(); },
+
+        render: function() {
+            var numPages = Math.min(+this.props.numPages, 25);
+            var paginationItems = _.range(1, numPages+1).map(function (p) {
+                return PaginationItem( {page:p, active:p==this.props.activePage, setPage:this.props.setPage, key:p} );
+            }.bind(this));
+
+            return React.DOM.ul( {className:"pagination-mini"}, 
+
+                React.DOM.li( {className:this.props.live ? "active" : ""}, React.DOM.a( {onClick:this.toggleLive}, "Live")),
+                React.DOM.li(null, React.DOM.a( {onClick:this.handleFirst}, "First")),
+                React.DOM.li(null, React.DOM.a( {onClick:this.handlePrevious}, "Previous")),
+                paginationItems,
+                React.DOM.li(null, React.DOM.a( {onClick:this.handleNext}, "Next")),
+                React.DOM.li(null, React.DOM.a( {onClick:this.handleLast}, "Last"))
+            )
+        }
+    });
+
+    var tweetListComp = React.renderComponent(TweetList( {tweets:[]}), document.getElementById('tweet-frame'));
 
     /** TweetCount shows the number of tweets analyzed */
     var TweetCount = React.createClass({displayName: 'TweetCount',
@@ -599,14 +626,41 @@ var BirdWatch = BirdWatch || {};
 
     /** render BirdWatch components */
     var tweetCount = React.renderComponent(TweetCount( {count:0}), document.getElementById('tweet-count'));
+    var pagination = React.renderComponent(Pagination( {numPages:1} ), document.getElementById('pagination'));
 
     BirdWatch.setTweetCount = function (n) { tweetCount.setProps({count: n}); };
     BirdWatch.setTweetList = function (tweetList) { tweetListComp.setProps({tweets: tweetList}); };
+    BirdWatch.setPagination = function (props) { pagination.setProps(props); };
+    BirdWatch.setPaginationHandlers = function (handlers) { pagination.setProps(handlers); };
+
 })();
 ;(function () {
     'use strict';
 
     window.BirdWatch = window.BirdWatch || {};
+
+    var sortOrder = "latest";
+    var pageSize = $("#page-size");
+
+    var live = true;
+    var activePage = 1;
+    var setPage = function (p) {
+        if (p > 0 && p <= BirdWatch.crossfilter.numPages(pageSize.val())) {
+            activePage = p;
+            triggerReact();
+        }
+    };
+
+    BirdWatch.setPaginationHandlers({
+        toggleLive: function () {
+            if (live) { BirdWatch.crossfilter.freeze(); }
+            else {BirdWatch.crossfilter.unfreeze(); }
+            live = !live;
+        },
+        setPage: function (p) { setPage(p); },
+        setNext: function () { setPage(activePage +1); },
+        setPrev: function () { setPage(activePage -1); }
+    });
 
     var timeSeries1 = $("#timeseries1");
     var graph = new Rickshaw.Graph( {
@@ -634,7 +688,7 @@ var BirdWatch = BirdWatch || {};
 
     var wordCloudElem = $("#wordCloud");
     var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, function (){}, "#wordCloud");
-    BirdWatch.lastCloudUpdate = (new Date().getTime()) - 7000;
+    BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
 
     BirdWatch.setWordCount = function (wordCounts) {
         if (!barChartInit) {
@@ -643,8 +697,9 @@ var BirdWatch = BirdWatch || {};
         }
         barchart.redraw(wordCounts);
 
-        if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 10000) {
+        if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {
             wordCloud.redraw(wordCounts);
+            BirdWatch.lastCloudUpdate = (new Date().getTime());
         }
     };
 
@@ -654,33 +709,35 @@ var BirdWatch = BirdWatch || {};
         return false;
     });
 
-    var sortOrder = "latest";
-
-    var pageSize = $("#page-size");
-    BirdWatch.triggerReact = function () {
-        BirdWatch.setTweetCount(BirdWatch.crossfilter.noItems());
-
+    var throttledGraph = _.throttle(function() {
         graph.series[0].data = BirdWatch.crossfilter.timeseries().map(function(el) { return { x: el.key, y: el.value }; });
         graph.update();
+    }, 2500);
 
-        BirdWatch.setTweetList(BirdWatch.crossfilter.tweetPage(1, pageSize.val(), sortOrder));
-    };
+    function triggerReact () {
+        var n = BirdWatch.crossfilter.noItems();
+        BirdWatch.setTweetCount(n);
+        throttledGraph();
+        BirdWatch.setTweetList(BirdWatch.crossfilter.tweetPage(activePage, pageSize.val(), sortOrder));
+        BirdWatch.setPagination({live: live, numPages: BirdWatch.crossfilter.numPages(pageSize.val()), activePage: activePage});
+    }
 
-    BirdWatch.sortByLatest = function () { sortOrder = "latest"; BirdWatch.triggerReact(); };
-    BirdWatch.sortByFollowers = function () { sortOrder = "followers"; BirdWatch.triggerReact();};
-    BirdWatch.sortByRetweets = function () { sortOrder = "retweets"; BirdWatch.triggerReact(); };
-    BirdWatch.sortByFavorites = function () { sortOrder = "favorites"; BirdWatch.triggerReact(); };
+    BirdWatch.sortByLatest = function () { sortOrder = "latest"; triggerReact(); };
+    BirdWatch.sortByFollowers = function () { sortOrder = "followers"; triggerReact();};
+    BirdWatch.sortByRetweets = function () { sortOrder = "retweets"; triggerReact(); };
+    BirdWatch.sortByFavorites = function () { sortOrder = "favorites"; triggerReact(); };
 
     BirdWatch.tweets.registerCallback(function (t) {
         BirdWatch.wordcount.insert(t);
         BirdWatch.crossfilter.add(t);
         BirdWatch.setWordCount(BirdWatch.wordcount.getWords());
+        triggerReact();
     });
 
     BirdWatch.search = function () {
         var searchField = $("#searchField");
-
         BirdWatch.wordcount.reset();
+        activePage = 1;
         BirdWatch.crossfilter.clear();
         BirdWatch.tweets.search(searchField.val(), $("#prev-size").val());
         searchField.focus();

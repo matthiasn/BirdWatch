@@ -90,8 +90,6 @@ angular.module('charts.barchart', []).service('barchart', function () {
         me.redraw = function(dataSource) {
             me.update(dataSource);
 
-            console.log(dataSource)
-
             barsContainer.selectAll("rect").data(sortedData).enter().append("rect")
                 .attr('y', y)
                 .attr('height', yScale.rangeBand())

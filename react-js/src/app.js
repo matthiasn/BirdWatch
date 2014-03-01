@@ -3,6 +3,29 @@
 
     window.BirdWatch = window.BirdWatch || {};
 
+    var sortOrder = "latest";
+    var pageSize = $("#page-size");
+
+    var live = true;
+    var activePage = 1;
+    var setPage = function (p) {
+        if (p > 0 && p <= BirdWatch.crossfilter.numPages(pageSize.val())) {
+            activePage = p;
+            triggerReact();
+        }
+    };
+
+    BirdWatch.setPaginationHandlers({
+        toggleLive: function () {
+            if (live) { BirdWatch.crossfilter.freeze(); }
+            else {BirdWatch.crossfilter.unfreeze(); }
+            live = !live;
+        },
+        setPage: function (p) { setPage(p); },
+        setNext: function () { setPage(activePage +1); },
+        setPrev: function () { setPage(activePage -1); }
+    });
+
     var timeSeries1 = $("#timeseries1");
     var graph = new Rickshaw.Graph( {
         element: document.querySelector("#timeseries1"),
@@ -29,7 +52,7 @@
 
     var wordCloudElem = $("#wordCloud");
     var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, function (){}, "#wordCloud");
-    BirdWatch.lastCloudUpdate = (new Date().getTime()) - 7000;
+    BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
 
     BirdWatch.setWordCount = function (wordCounts) {
         if (!barChartInit) {
@@ -38,8 +61,9 @@
         }
         barchart.redraw(wordCounts);
 
-        if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 10000) {
+        if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {
             wordCloud.redraw(wordCounts);
+            BirdWatch.lastCloudUpdate = (new Date().getTime());
         }
     };
 
@@ -49,33 +73,35 @@
         return false;
     });
 
-    var sortOrder = "latest";
-
-    var pageSize = $("#page-size");
-    BirdWatch.triggerReact = function () {
-        BirdWatch.setTweetCount(BirdWatch.crossfilter.noItems());
-
+    var throttledGraph = _.throttle(function() {
         graph.series[0].data = BirdWatch.crossfilter.timeseries().map(function(el) { return { x: el.key, y: el.value }; });
         graph.update();
+    }, 2500);
 
-        BirdWatch.setTweetList(BirdWatch.crossfilter.tweetPage(1, pageSize.val(), sortOrder));
-    };
+    function triggerReact () {
+        var n = BirdWatch.crossfilter.noItems();
+        BirdWatch.setTweetCount(n);
+        throttledGraph();
+        BirdWatch.setTweetList(BirdWatch.crossfilter.tweetPage(activePage, pageSize.val(), sortOrder));
+        BirdWatch.setPagination({live: live, numPages: BirdWatch.crossfilter.numPages(pageSize.val()), activePage: activePage});
+    }
 
-    BirdWatch.sortByLatest = function () { sortOrder = "latest"; BirdWatch.triggerReact(); };
-    BirdWatch.sortByFollowers = function () { sortOrder = "followers"; BirdWatch.triggerReact();};
-    BirdWatch.sortByRetweets = function () { sortOrder = "retweets"; BirdWatch.triggerReact(); };
-    BirdWatch.sortByFavorites = function () { sortOrder = "favorites"; BirdWatch.triggerReact(); };
+    BirdWatch.sortByLatest = function () { sortOrder = "latest"; triggerReact(); };
+    BirdWatch.sortByFollowers = function () { sortOrder = "followers"; triggerReact();};
+    BirdWatch.sortByRetweets = function () { sortOrder = "retweets"; triggerReact(); };
+    BirdWatch.sortByFavorites = function () { sortOrder = "favorites"; triggerReact(); };
 
     BirdWatch.tweets.registerCallback(function (t) {
         BirdWatch.wordcount.insert(t);
         BirdWatch.crossfilter.add(t);
         BirdWatch.setWordCount(BirdWatch.wordcount.getWords());
+        triggerReact();
     });
 
     BirdWatch.search = function () {
         var searchField = $("#searchField");
-
         BirdWatch.wordcount.reset();
+        activePage = 1;
         BirdWatch.crossfilter.clear();
         BirdWatch.tweets.search(searchField.val(), $("#prev-size").val());
         searchField.focus();

@@ -28,7 +28,7 @@ angular.module('birdwatch.controllers', ['birdwatch.services', 'charts.barchart'
         };
 
         /** update UI every ten seconds to keep time ago for tweets accurate */
-        var onTimeout = function () { updateTimeout = $timeout(onTimeout, 10000); };
+        var onTimeout = function () { updateTimeout = $timeout(onTimeout, 5000); };
         var updateTimeout = onTimeout();
 
         /** actions to perform when new tweets are available through the streaming connection */

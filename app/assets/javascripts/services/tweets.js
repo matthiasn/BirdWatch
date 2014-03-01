@@ -33,13 +33,16 @@ angular.module('birdwatch.services').factory('tweets', function ($http, utils, $
         }
         else $location.path("");
 
+        var throttled = _.throttle(function() {        // throttle because insertion too expensive on high traffic searches
+            onNewTweets(tweetsCache);  // run callback with all items in cache
+            tweetsCache = [];          // then empty cache.
+            BirdWatch.triggerReact();
+        }, 2000);
+
         /** handle incoming tweets: add to tweetsCache array, run callback at most every second */
         var cachedCallback = function(msg) {
             tweetsCache = tweetsCache.concat(utils.formatTweet(JSON.parse(msg.data)));
-            _.throttle(function() {        // throttle because insertion too expensive on high traffic searches
-                onNewTweets(tweetsCache);  // run callback with all items in cache
-                tweetsCache = [];          // then empty cache.
-            }, 1000)();
+            throttled();
         };
 
         tweetFeed = new EventSource("/tweetFeed?q=" + searchString);

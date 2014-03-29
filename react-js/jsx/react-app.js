@@ -74,28 +74,52 @@ var BirdWatch = BirdWatch || {};
         }
     });
 
+    function regressionData(hist) { return hist.map(function(el, idx, arr) { return [idx, -el]; }); }
+
+    /** Arrow component for use in BarChart */
+    var Arrow = React.createClass({
+        render: function () {
+            var y = parseInt(this.props.y);
+            var arr = "-60,10 20,10 -20,50 10,50 60,0 10,-50 -20,-50 20,-10 -60,-10 ";
+            var arrColor = "#428bca";
+            if (this.props.dir === "UP") {
+                arrColor = "#45cc40";
+                arr = "10,60 10,-20 50,20 50,-10 0,-60 -50,-10 -50,20 -10,-20 -10,60";
+            }
+            if (this.props.dir === "DOWN") {
+                arrColor = "#dc322f";
+                arr = "10,-60 10,20 50,-20 50,10 0,60 -50,10 -50,-20 -10,20 -10,-60";
+            }
+            var arrowTrans = "translate(124, "+ (y + 7) + ") scale(0.1) ";
+
+            return ( <polygon transform={arrowTrans} stroke="none" fill={arrColor} points={arr}/> ); }
+    });
+
+
     /** single Bar component for assembling BarChart */
     var Bar = React.createClass({
-        getInitialState: function() {
-            return {count: 1};
-        },
-        componentWillReceiveProps: function() {
-            this.setState({count: this.state.count+1});
+        getInitialState: function() { return {hist: []} },
+        componentWillReceiveProps: function(props) {
+            this.setState({hist: _.last(this.state.hist.concat(props.idx+1), 25)});
         },
         render: function () {
             var y = parseInt(this.props.y);
             var t = this.props.t;
             var w = parseInt(this.props.w);
             var val = this.props.val;
-            var num = this.state.count;
-            return (
-                <g>
-                    <text y={y +12} x="117" stroke="none" fill="black" dy=".35em" textAnchor="end">{t}</text>
-                    <rect y={y} x="120" height="15" width={w} stroke="white" fill="#ee0000"></rect>
-                    <text y={y +12} x={w+122} stroke="none" fill="black" dy=".35em" textAnchor="start">{val}</text>
-                    <text y={y +12} x={135} stroke="none" fill="black" dy=".35em" textAnchor="start">{num}</text>
-                </g>
-            ); }
+
+            var slope = regression('linear', regressionData(this.state.hist)).equation[0];
+            var arrDir = "RIGHT";
+            if (slope > 0) { arrDir = "UP";   }
+            if (slope < 0) { arrDir = "DOWN"; }
+
+            return  <g>
+                      <text y={y +12} x="117" stroke="none" fill="black" dy=".35em" textAnchor="end">{t}</text>
+                      <Arrow dir={arrDir} y={y}/>
+                      <rect y={y} x="130" height="15" width={w} stroke="white" fill="#428bca"></rect>
+                      <text y={y +12} x={w+132} stroke="none" fill="black" dy=".35em" textAnchor="start">{val}</text>
+                    </g>
+             }
     });
 
     /** BarChart component, renders all bar items */
@@ -104,9 +128,8 @@ var BirdWatch = BirdWatch || {};
             var bars = this.props.words.map(function (bar, i, arr) {
                 if (!bar) return "";
                 var y = i * 15;
-
-                var w = bar.value / arr[0].value * (barChartElem.width() - 190);
-                return <Bar t={bar.key} y={y} w={w} key={bar.key} val={bar.value} />;
+                var w = bar.value / arr[0].value * (barChartElem.width() - 200);
+                return <Bar t={bar.key} y={y} w={w} key={bar.key} idx={i} val={bar.value} />;
             }.bind(this));
             return <svg width="750" height="6000"><g>{bars}</g></svg>;
         }
@@ -116,9 +139,7 @@ var BirdWatch = BirdWatch || {};
     var PaginationItem = React.createClass({
         setActive: function () {this.props.setPage(this.props.page)},
         render: function() {
-            return <li className={this.props.active ? "active" : ""} onClick={this.setActive}>
-                      <a>{this.props.page}</a>
-                   </li>
+            return <li className={this.props.active ? "active" : ""} onClick={this.setActive}><a>{this.props.page}</a></li>
         }
     });
 
@@ -153,7 +174,7 @@ var BirdWatch = BirdWatch || {};
     var tweetCount = React.renderComponent(<TweetCount count={0}/>, document.getElementById('tweet-count'));
     var pagination = React.renderComponent(<Pagination numPages={1} />, document.getElementById('pagination'));
 
-    var barChartElem = $("#wordBars");
+    var barChartElem = $("#react-bar-chart");
     var barChart = React.renderComponent(<BarChart numPages={1} words={[]}/>, document.getElementById('react-bar-chart'));
 
     BirdWatch.setTweetCount = function (n) { tweetCount.setProps({count: n}); };

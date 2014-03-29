@@ -222,12 +222,18 @@
         });
     };
     var stopWords = /^(use|good|want|amp|just|now|like|til|new|get|one|i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|whose|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|will|would|should|can|could|ought|i'm|you're|he's|she's|it's|we're|they're|i've|you've|we've|they've|i'd|you'd|he'd|she'd|we'd|they'd|i'll|you'll|he'll|she'll|we'll|they'll|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|won't|wouldn't|shan't|shouldn't|can't|cannot|couldn't|mustn't|let's|that's|who's|what's|here's|there's|when's|where's|why's|how's|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|upon|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|say|says|said|shall|via)$/;
-    var punctuation = /[!"&()*+,-\.\/:;<=>?\[\\\]^`“”\{|\}~]+/g;
-    var wordSeparators = /[\s\u3031-\u3035\u0027\u309b\u309c\u30a0\u30fc\uff70]+/g;
+    var punctuation = /[!"&()*-+,-\.\/:;<=>?\[\\\]^`“”\{|\}~]+/g;
+    var wordSeparators = /[\s—\u3031-\u3035\u0027\u309b\u309c\u30a0\u30fc\uff70]+/g;
     var discard = /^(@|https?:)/;
     exports.insert = function(data) { return data.forEach(function(d) { return parseText(d.text); }); };
     exports.getWords = function() {
-        return d3.entries(tags).sort(function(a, b) { return b.value - a.value; }).slice(0, 500);
+        return d3.entries(tags).sort(function(a, b) {
+            if (b.value < a.value) return -1;
+            if (b.value > a.value) return 1;
+            if (b.key < a.key) return 1;
+            if (b.key > a.key) return -1;
+            return 0;
+        }).slice(0, 500);
     };
     exports.reset = function() { tags = {}; };
 
@@ -331,181 +337,6 @@
         return me;
     };
 }());
-;(function () {
-    'use strict';
-
-    window.BirdWatch = window.BirdWatch || {};
-
-    BirdWatch.BarChart = function (callback, maxBarWidth, element, noItems) {
-        var me = {};
-
-        me.maxBarWidth = maxBarWidth;
-        var sortedData, xScale, yScale, chart, rect, labelContainer, barsContainer;
-
-        var valueLabelWidth = 40; // space reserved for value labels (right)
-        var barHeight = 15;       // height of one bar
-        var barLabelWidth = 120;  // space reserved for bar labels
-        var barLabelPadding = 5;  // padding between bar and bar labels (left)
-        var gridLabelHeight = 18; // space reserved for grid line labels
-
-        // accessor functions
-        var barLabel = function (d) { return d.key; };
-        var barValue = function (d) { return parseFloat(d.value); };
-
-        var y = function (d, i) { return yScale(i); };
-        var yText = function (d, i) { return y(d, i) + yScale.rangeBand() / 2; };
-
-        function render() {
-            // svg container element
-            chart = d3.select(element).append("svg")
-                .attr('width', maxBarWidth + barLabelWidth + valueLabelWidth)
-                .attr('height', gridLabelHeight + noItems * barHeight);
-
-            // bar labels
-            labelContainer = chart.append('g')
-                .attr('transform', 'translate(' + (barLabelWidth - barLabelPadding) + ',' + (gridLabelHeight) + ')');
-            labelContainer.selectAll('text').data(sortedData).enter().append('text')
-                .attr('y', yText)
-                .attr('stroke', 'none')
-                .attr('fill', 'black')
-                .attr("dy", ".35em") // vertical-align: middle
-                .attr('text-anchor', 'end')
-                .text(barLabel);
-            // bars
-            barsContainer = chart.append('g')
-                .attr('transform', 'translate(' + barLabelWidth + ',' + gridLabelHeight + ')');
-            barsContainer.selectAll("rect").data(sortedData).enter().append("rect")
-                .attr('y', y)
-                .attr('height', yScale.rangeBand())
-                .attr('width', function (d) { return xScale(barValue(d)); })
-                .attr('stroke', 'white')
-                .attr('fill', '#428bca')
-                .on("click", function(d) {
-                    var tag = barLabel(d).replace('#','');
-                    //callback(tag);
-                });
-
-            // bar value labels
-            barsContainer.selectAll("text").data(sortedData).enter().append("text")
-                .attr("x", function (d) { return xScale(barValue(d)); })
-                .attr("y", yText)
-                .attr("dx", 3) // padding-left
-                .attr("dy", ".35em") // vertical-align: middle
-                .attr("text-anchor", "start") // text-align: right
-                .attr("fill", "black")
-                .attr("stroke", "none")
-                .text(function (d) { return d3.round(barValue(d), 2); });
-            // start line
-            barsContainer.append("line")
-                .attr("y1", 0)
-                .attr("y2", yScale.rangeExtent()[1])
-                .style("stroke", "#000");
-        }
-
-        me.update = function(dataSource) {
-            sortedData = dataSource.sort(function (a, b) {
-                if (barValue(b) < barValue(a)) return -1;
-                if (barValue(b) > barValue(a)) return 1;
-                if (barLabel(b) < barLabel(a)) return -1;
-                if (barLabel(b) > barLabel(a)) return 1;
-                return 0;
-            });
-            yScale = d3.scale.ordinal().domain(d3.range(0, sortedData.length)).rangeBands([0, sortedData.length * barHeight]);
-            xScale = d3.scale.linear().domain([0, d3.max(sortedData, barValue)]).range([0, maxBarWidth]);
-        };
-
-        me.init = function(initialData, maxBarWidth) {
-            me.update(initialData);
-            me.maxBarWidth = maxBarWidth;
-            render();
-        };
-
-        me.redraw = function(dataSource) {
-            me.update(dataSource);
-
-            barsContainer.selectAll("rect").data(sortedData).enter().append("rect")
-                .attr('y', y)
-                .attr('height', yScale.rangeBand())
-                .attr('width', function (d) { return xScale(barValue(d)); })
-                .attr('stroke', 'white')
-                .attr('fill', 'steelblue')
-                .on("click", function(d) {
-                    var tag = barLabel(d).replace('#','');
-                    //callback(tag);
-                });
-
-            barsContainer.selectAll("rect")
-                .data(sortedData)
-                .transition()
-                .attr('y', y)
-                .attr('height', yScale.rangeBand())
-                .attr('width', function (d) { return xScale(barValue(d)); });
-
-            barsContainer.selectAll("rect")
-                .data(sortedData)
-                .exit()
-                .transition()
-                .remove();
-
-            barsContainer.selectAll("text").data(sortedData).enter().append("text")
-                .attr("x", function (d) { return xScale(barValue(d)); })
-                .attr("y", yText)
-                .attr("dx", 3) // padding-left
-                .attr("dy", ".35em") // vertical-align: middle
-                .attr("text-anchor", "start") // text-align: right
-                .attr("fill", "black")
-                .attr("stroke", "black")
-                .text(function (d) { return d3.round(barValue(d), 2); });
-
-            barsContainer.selectAll("text").data(sortedData)
-                .transition()
-                .attr("x", function (d) { return xScale(barValue(d)); })
-                .attr("y", yText)
-                .attr("dx", 3) // padding-left
-                .attr("dy", ".35em") // vertical-align: middle
-                .attr("text-anchor", "start") // text-align: right
-                .attr("fill", "black")
-                .attr("stroke", "none")
-                .text(function (d) { return d3.round(barValue(d), 2); });
-
-            barsContainer.selectAll("text")
-                .data(sortedData)
-                .exit()
-                .transition()
-                .remove();
-
-            labelContainer.selectAll("text").data(sortedData).enter().append("text")
-                .attr('y', yText)
-                .attr('stroke', 'none')
-                .attr('fill', 'black')
-                .attr("dy", ".35em") // vertical-align: middle
-                .attr('text-anchor', 'end')
-                .text(barLabel);
-
-            labelContainer.selectAll('text').data(sortedData)
-                .transition()
-                .attr('y', yText)
-                .attr('stroke', 'none')
-                .attr('fill', 'black')
-                .attr("dy", ".35em") // vertical-align: middle
-                .attr('text-anchor', 'end')
-                .text(barLabel);
-
-            labelContainer.selectAll("text")
-                .data(sortedData)
-                .exit()
-                .transition()
-                .remove();
-
-            barsContainer.append("line")
-                .attr("y1", 0)
-                .attr("y2", yScale.rangeExtent()[1])
-                .style("stroke", "#000");
-        };
-
-        return me;
-    };
-}());
 ;/** @jsx React.DOM */
 
 var BirdWatch = BirdWatch || {};
@@ -582,28 +413,52 @@ var BirdWatch = BirdWatch || {};
         }
     });
 
+    function regressionData(hist) { return hist.map(function(el, idx, arr) { return [idx, -el]; }); }
+
+    /** Arrow component for use in BarChart */
+    var Arrow = React.createClass({displayName: 'Arrow',
+        render: function () {
+            var y = parseInt(this.props.y);
+            var arr = "-60,10 20,10 -20,50 10,50 60,0 10,-50 -20,-50 20,-10 -60,-10 ";
+            var arrColor = "#428bca";
+            if (this.props.dir === "UP") {
+                arrColor = "#45cc40";
+                arr = "10,60 10,-20 50,20 50,-10 0,-60 -50,-10 -50,20 -10,-20 -10,60";
+            }
+            if (this.props.dir === "DOWN") {
+                arrColor = "#dc322f";
+                arr = "10,-60 10,20 50,-20 50,10 0,60 -50,10 -50,-20 -10,20 -10,-60";
+            }
+            var arrowTrans = "translate(124, "+ (y + 7) + ") scale(0.1) ";
+
+            return ( React.DOM.polygon( {transform:arrowTrans, stroke:"none", fill:arrColor, points:arr}) ); }
+    });
+
+
     /** single Bar component for assembling BarChart */
     var Bar = React.createClass({displayName: 'Bar',
-        getInitialState: function() {
-            return {count: 1};
-        },
-        componentWillReceiveProps: function() {
-            this.setState({count: this.state.count+1});
+        getInitialState: function() { return {hist: []} },
+        componentWillReceiveProps: function(props) {
+            this.setState({hist: _.last(this.state.hist.concat(props.idx+1), 25)});
         },
         render: function () {
             var y = parseInt(this.props.y);
             var t = this.props.t;
             var w = parseInt(this.props.w);
             var val = this.props.val;
-            var num = this.state.count;
-            return (
-                React.DOM.g(null, 
-                    React.DOM.text( {y:y +12, x:"117", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
-                    React.DOM.rect( {y:y, x:"120", height:"15", width:w, stroke:"white", fill:"#ee0000"}),
-                    React.DOM.text( {y:y +12, x:w+122, stroke:"none", fill:"black", dy:".35em", textAnchor:"start"}, val),
-                    React.DOM.text( {y:y +12, x:135, stroke:"none", fill:"black", dy:".35em", textAnchor:"start"}, num)
-                )
-            ); }
+
+            var slope = regression('linear', regressionData(this.state.hist)).equation[0];
+            var arrDir = "RIGHT";
+            if (slope > 0) { arrDir = "UP";   }
+            if (slope < 0) { arrDir = "DOWN"; }
+
+            return  React.DOM.g(null, 
+                      React.DOM.text( {y:y +12, x:"117", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
+                      Arrow( {dir:arrDir, y:y}),
+                      React.DOM.rect( {y:y, x:"130", height:"15", width:w, stroke:"white", fill:"#428bca"}),
+                      React.DOM.text( {y:y +12, x:w+132, stroke:"none", fill:"black", dy:".35em", textAnchor:"start"}, val)
+                    )
+             }
     });
 
     /** BarChart component, renders all bar items */
@@ -612,9 +467,8 @@ var BirdWatch = BirdWatch || {};
             var bars = this.props.words.map(function (bar, i, arr) {
                 if (!bar) return "";
                 var y = i * 15;
-
-                var w = bar.value / arr[0].value * (barChartElem.width() - 190);
-                return Bar( {t:bar.key, y:y, w:w, key:bar.key, val:bar.value} );
+                var w = bar.value / arr[0].value * (barChartElem.width() - 200);
+                return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value} );
             }.bind(this));
             return React.DOM.svg( {width:"750", height:"6000"}, React.DOM.g(null, bars));
         }
@@ -624,9 +478,7 @@ var BirdWatch = BirdWatch || {};
     var PaginationItem = React.createClass({displayName: 'PaginationItem',
         setActive: function () {this.props.setPage(this.props.page)},
         render: function() {
-            return React.DOM.li( {className:this.props.active ? "active" : "", onClick:this.setActive}, 
-                      React.DOM.a(null, this.props.page)
-                   )
+            return React.DOM.li( {className:this.props.active ? "active" : "", onClick:this.setActive}, React.DOM.a(null, this.props.page))
         }
     });
 
@@ -661,7 +513,7 @@ var BirdWatch = BirdWatch || {};
     var tweetCount = React.renderComponent(TweetCount( {count:0}), document.getElementById('tweet-count'));
     var pagination = React.renderComponent(Pagination( {numPages:1} ), document.getElementById('pagination'));
 
-    var barChartElem = $("#wordBars");
+    var barChartElem = $("#react-bar-chart");
     var barChart = React.renderComponent(BarChart( {numPages:1, words:[]}), document.getElementById('react-bar-chart'));
 
     BirdWatch.setTweetCount = function (n) { tweetCount.setProps({count: n}); };
@@ -718,21 +570,11 @@ var BirdWatch = BirdWatch || {};
         yFormatter: function(y) { return y === null ? y : y.toFixed(0); }
     });
 
-    var barChartElem = $("#wordBars");
-    var barchart = BirdWatch.BarChart(function(){}, barChartElem.width() - 180, "#wordBars", 25);
-    var barChartInit = false;
-
     var wordCloudElem = $("#wordCloud");
     var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, function (){}, "#wordCloud");
     BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
 
     BirdWatch.setWordCount = function (wordCounts) {
-        if (!barChartInit) {
-            barchart.init(wordCounts, 500);
-            barChartInit = true;
-        }
-        barchart.redraw(wordCounts);
-
         BirdWatch.setWords(wordCounts);
 
         if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {

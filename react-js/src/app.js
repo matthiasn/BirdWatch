@@ -46,21 +46,11 @@
         yFormatter: function(y) { return y === null ? y : y.toFixed(0); }
     });
 
-    var barChartElem = $("#wordBars");
-    var barchart = BirdWatch.BarChart(function(){}, barChartElem.width() - 180, "#wordBars", 25);
-    var barChartInit = false;
-
     var wordCloudElem = $("#wordCloud");
     var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, function (){}, "#wordCloud");
     BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
 
     BirdWatch.setWordCount = function (wordCounts) {
-        if (!barChartInit) {
-            barchart.init(wordCounts, 500);
-            barChartInit = true;
-        }
-        barchart.redraw(wordCounts);
-
         BirdWatch.setWords(wordCounts);
 
         if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {

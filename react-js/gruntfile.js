@@ -20,7 +20,7 @@ module.exports = function (grunt) {
             },
             all: {
                 src: ['src/crossfilter.js', 'src/tweets.js', 'src/utils.js', 'src/wordcount.js', 'src/wordcloud.js',
-                      'src/barchart.js', 'build/react-app.js', 'src/app.js'],
+                      'build/react-app.js', 'src/app.js'],
                 dest: 'dist/birdwatch.js'
             }
         },
@@ -29,7 +29,8 @@ module.exports = function (grunt) {
                 files: [
                     { expand: true, cwd: 'dist/', src: ['birdwatch.js'], dest: '../public/react-js/' },
                     { expand: true, cwd: 'src/bower_components/react/', src: ['react.min.js'], dest: '../public/react-js/vendor/' },
-                    { expand: true, cwd: 'src/bower_components/react/', src: ['react.js'], dest: '../public/react-js/vendor/' }
+                    { expand: true, cwd: 'src/bower_components/react/', src: ['react.js'], dest: '../public/react-js/vendor/' },
+                    { expand: true, cwd: 'src/bower_components/regression-js/src', src: ['regression.js'], dest: '../public/react-js/vendor/' }
                 ]
             }
         },

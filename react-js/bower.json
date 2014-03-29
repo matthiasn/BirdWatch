@@ -1,0 +1,23 @@
+{
+  "name": "birdwatch",
+  "version": "0.2.0",
+  "homepage": "https://github.com/matthiasn/BirdWatch",
+  "authors": [
+    "Matthias Nehlsen <matthias.nehlsen@gmail.com>"
+  ],
+  "description": "tweet analysis in the browser",
+  "license": "Apache 2.0",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "regression-js": "*",
+    "react": "~0.10.0"
+  }
+}

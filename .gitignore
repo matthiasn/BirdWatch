@@ -1,8 +1,11 @@
 # Extracted from https://github.com/ulrich/macaron-factory/blob/master/.gitignore
 # Ignore all dotfiles...
 .*
-# except for .gitignore
+# except for .gitignore and .bowerrc
 !.gitignore
+!.bowerrc
+
+react-js/src/bower_components
 
 # Ignore Play! working directory #
 db

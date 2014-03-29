@@ -5,8 +5,6 @@
 !.gitignore
 !.bowerrc
 
-react-js/src/bower_components
-
 # Ignore Play! working directory #
 db
 eclipse
@@ -35,3 +33,5 @@ react-js/build/
 react-js/dist/
 react-js/reports/
 react-js/node_modules/
+react-js/src/bower_components
+

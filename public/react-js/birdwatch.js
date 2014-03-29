@@ -582,6 +582,44 @@ var BirdWatch = BirdWatch || {};
         }
     });
 
+    /** single Bar component for assembling BarChart */
+    var Bar = React.createClass({displayName: 'Bar',
+        getInitialState: function() {
+            return {count: 1};
+        },
+        componentWillReceiveProps: function() {
+            this.setState({count: this.state.count+1});
+        },
+        render: function () {
+            var y = parseInt(this.props.y);
+            var t = this.props.t;
+            var w = parseInt(this.props.w);
+            var val = this.props.val;
+            var num = this.state.count;
+            return (
+                React.DOM.g(null, 
+                    React.DOM.text( {y:y +12, x:"117", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
+                    React.DOM.rect( {y:y, x:"120", height:"15", width:w, stroke:"white", fill:"#ee0000"}),
+                    React.DOM.text( {y:y +12, x:w+122, stroke:"none", fill:"black", dy:".35em", textAnchor:"start"}, val),
+                    React.DOM.text( {y:y +12, x:135, stroke:"none", fill:"black", dy:".35em", textAnchor:"start"}, num)
+                )
+            ); }
+    });
+
+    /** BarChart component, renders all bar items */
+    var BarChart = React.createClass({displayName: 'BarChart',
+        render: function() {
+            var bars = this.props.words.map(function (bar, i, arr) {
+                if (!bar) return "";
+                var y = i * 15;
+
+                var w = bar.value / arr[0].value * (barChartElem.width() - 190);
+                return Bar( {t:bar.key, y:y, w:w, key:bar.key, val:bar.value} );
+            }.bind(this));
+            return React.DOM.svg( {width:"750", height:"6000"}, React.DOM.g(null, bars));
+        }
+    });
+
     /** Pagination component, allows selecting the current page in the Tweet list */
     var PaginationItem = React.createClass({displayName: 'PaginationItem',
         setActive: function () {this.props.setPage(this.props.page)},
@@ -604,9 +642,7 @@ var BirdWatch = BirdWatch || {};
             var paginationItems = _.range(1, numPages+1).map(function (p) {
                 return PaginationItem( {page:p, active:p==this.props.activePage, setPage:this.props.setPage, key:p} );
             }.bind(this));
-
             return React.DOM.ul( {className:"pagination-mini"}, 
-
                 React.DOM.li( {className:this.props.live ? "active" : ""}, React.DOM.a( {onClick:this.toggleLive}, "Live")),
                 React.DOM.li(null, React.DOM.a( {onClick:this.handleFirst}, "First")),
                 React.DOM.li(null, React.DOM.a( {onClick:this.handlePrevious}, "Previous")),
@@ -617,22 +653,22 @@ var BirdWatch = BirdWatch || {};
         }
     });
 
-    var tweetListComp = React.renderComponent(TweetList( {tweets:[]}), document.getElementById('tweet-frame'));
-
     /** TweetCount shows the number of tweets analyzed */
-    var TweetCount = React.createClass({displayName: 'TweetCount',
-        render: function () { return React.DOM.span(null, this.props.count);}
-    });
+    var TweetCount = React.createClass({displayName: 'TweetCount', render: function () { return React.DOM.span(null, this.props.count);} });
 
     /** render BirdWatch components */
+    var tweetListComp = React.renderComponent(TweetList( {tweets:[]}), document.getElementById('tweet-frame'));
     var tweetCount = React.renderComponent(TweetCount( {count:0}), document.getElementById('tweet-count'));
     var pagination = React.renderComponent(Pagination( {numPages:1} ), document.getElementById('pagination'));
+
+    var barChartElem = $("#wordBars");
+    var barChart = React.renderComponent(BarChart( {numPages:1, words:[]}), document.getElementById('react-bar-chart'));
 
     BirdWatch.setTweetCount = function (n) { tweetCount.setProps({count: n}); };
     BirdWatch.setTweetList = function (tweetList) { tweetListComp.setProps({tweets: tweetList}); };
     BirdWatch.setPagination = function (props) { pagination.setProps(props); };
     BirdWatch.setPaginationHandlers = function (handlers) { pagination.setProps(handlers); };
-
+    BirdWatch.setWords = function (words) { barChart.setProps({words: _.take(words, 25)}); };
 })();
 ;(function () {
     'use strict';
@@ -696,6 +732,8 @@ var BirdWatch = BirdWatch || {};
             barChartInit = true;
         }
         barchart.redraw(wordCounts);
+
+        BirdWatch.setWords(wordCounts);
 
         if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {
             wordCloud.redraw(wordCounts);

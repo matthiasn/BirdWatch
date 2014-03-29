@@ -8,3 +8,6 @@ The JSX to plain JavaScript conversion is currently not done by the build task. 
 
     jsx --watch jsx/ build/
 
+For this to work, you need to have the react-tools available:
+
+    npm install -g react-tools

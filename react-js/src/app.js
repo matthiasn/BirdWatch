@@ -61,6 +61,8 @@
         }
         barchart.redraw(wordCounts);
 
+        BirdWatch.setWords(wordCounts);
+
         if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {
             wordCloud.redraw(wordCounts);
             BirdWatch.lastCloudUpdate = (new Date().getTime());

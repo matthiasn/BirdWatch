@@ -10,7 +10,7 @@ module.exports = function (grunt) {
         plato: {
             bo: {
                 files: {
-                    'reports/': ['src/**/*.js']
+                    'reports/': ['src/*.js']
                 }
             }
         },

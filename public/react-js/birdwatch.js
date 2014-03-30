@@ -539,7 +539,12 @@ var BirdWatch = BirdWatch || {};
                 var w = bar.value / arr[0].value * (barChartElem.width() - 216);
                 return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value, count:this.props.count} );
             }.bind(this));
-            return React.DOM.svg( {width:"750", height:"6000"}, React.DOM.g(null, bars));
+            return React.DOM.svg( {width:"750", height:"6000"}, 
+                     React.DOM.g(null, 
+                       bars,
+                       React.DOM.line( {transform:"translate(148, 0)", y:"0", y2:"375", stroke:"#000000"})
+                     )
+                   )
         }
     });
 

@@ -42,6 +42,7 @@ var BirdWatch = BirdWatch || {};
             this.setState({percHist: _.last(this.state.percHist.concat(props.val / props.count), 50)});
             this.setState({posHist: _.last(this.state.posHist.concat(props.idx+1), 2)});
         },
+        clickHandler: function(e) { BirdWatch.addSearchTerm(this.props.key); },
         render: function () {
             var y = parseInt(this.props.y);
             var t = this.props.t;
@@ -57,10 +58,10 @@ var BirdWatch = BirdWatch || {};
             var percArrDir = "RIGHT-UP";
             if (percSlope < 0) { percArrDir = "RIGHT-DOWN"; }
             var textX = w+135;
-            var style = {fontWeight: 500, fill: "#EEE", textAnchor: "end"};
-            if (w < 70) { style.fill="#999"; textX+=20; style.textAnchor="start"}
+            var style = {fontWeight: 500, fill: "#DDD", textAnchor: "end"};
+            if (w < 50) { style.fill="#999"; textX+=16; style.textAnchor="start"; style.fontWeight=400}
 
-            return  <g>
+            return  <g onClick={this.clickHandler}>
                       <text y={y+12} x="117" stroke="none" fill="black" dy=".35em" textAnchor="end">{t}</text>
                       <Arrow dir={posArrDir} y={y} x={126} />
                       <Arrow dir={percArrDir} y={y} x={140} />
@@ -79,7 +80,7 @@ var BirdWatch = BirdWatch || {};
                 var w = bar.value / arr[0].value * (barChartElem.width() - 170);
                 return <Bar t={bar.key} y={y} w={w} key={bar.key} idx={i} val={bar.value} count={this.props.count} />;
             }.bind(this));
-            return <svg width="750" height="6000">
+            return <svg width="750" height="400">
                      <g>
                        {bars}
                        <line transform="translate(148, 0)" y="0" y2="375" stroke="#000000"></line>
@@ -91,5 +92,5 @@ var BirdWatch = BirdWatch || {};
     var barChartElem = $("#react-bar-chart");
     var barChart = React.renderComponent(<BarChart numPages={1} words={[]}/>, document.getElementById('react-bar-chart'));
 
-    BirdWatch.setWords = function (words, count) { barChart.setProps({words: _.take(words, 25), count: count }); };
+    BirdWatch.updateBarchart = function (words, count) { barChart.setProps({words: _.take(words, 25), count: count }); };
 })();

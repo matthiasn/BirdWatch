@@ -222,7 +222,7 @@
             if (word.length >= minLength) { tags[word] = (tags[word] || 0) + 1; exports.count += 1; }
         });
     };
-    var stopWords = /^(use|good|want|amp|just|now|like|til|new|get|one|i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|whose|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|will|would|should|can|could|ought|i'm|you're|he's|she's|it's|we're|they're|i've|you've|we've|they've|i'd|you'd|he'd|she'd|we'd|they'd|i'll|you'll|he'll|she'll|we'll|they'll|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|won't|wouldn't|shan't|shouldn't|can't|cannot|couldn't|mustn't|let's|that's|who's|what's|here's|there's|when's|where's|why's|how's|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|upon|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|say|says|said|shall|via)$/;
+    var stopWords = /^(use|good|want|amp|just|now|like|til|new|get|one|i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|whose|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|will|would|should|can|could|ought|i'm|you're|he's|she's|it's|we're|they're|i've|you've|we've|they've|i'd|you'd|he'd|she'd|we'd|they'd|i'll|you'll|he'll|she'll|we'll|they'll|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|won't|wouldn't|shan't|shouldn't|can't|cannot|couldn't|mustn't|let's|that's|who's|what's|here's|there's|when's|where's|why's|how's|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|upon|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|say|says|said|shall|via|htt…)$/;
     var punctuation = /[!"&()*-+,-\.\/:;<=>?\[\\\]^`“”\{|\}~]+/g;
     var wordSeparators = /[\s—\u3031-\u3035\u0027\u309b\u309c\u30a0\u30fc\uff70]+/g;
     var discard = /^(@|https?:)/;
@@ -505,6 +505,7 @@ var BirdWatch = BirdWatch || {};
             this.setState({percHist: _.last(this.state.percHist.concat(props.val / props.count), 50)});
             this.setState({posHist: _.last(this.state.posHist.concat(props.idx+1), 2)});
         },
+        clickHandler: function(e) { BirdWatch.addSearchTerm(this.props.key); },
         render: function () {
             var y = parseInt(this.props.y);
             var t = this.props.t;
@@ -520,10 +521,10 @@ var BirdWatch = BirdWatch || {};
             var percArrDir = "RIGHT-UP";
             if (percSlope < 0) { percArrDir = "RIGHT-DOWN"; }
             var textX = w+135;
-            var style = {fontWeight: 500, fill: "#EEE", textAnchor: "end"};
-            if (w < 70) { style.fill="#999"; textX+=20; style.textAnchor="start"}
+            var style = {fontWeight: 500, fill: "#DDD", textAnchor: "end"};
+            if (w < 50) { style.fill="#999"; textX+=16; style.textAnchor="start"; style.fontWeight=400}
 
-            return  React.DOM.g(null, 
+            return  React.DOM.g( {onClick:this.clickHandler}, 
                       React.DOM.text( {y:y+12, x:"117", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
                       Arrow( {dir:posArrDir, y:y, x:126} ),
                       Arrow( {dir:percArrDir, y:y, x:140} ),
@@ -542,7 +543,7 @@ var BirdWatch = BirdWatch || {};
                 var w = bar.value / arr[0].value * (barChartElem.width() - 170);
                 return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value, count:this.props.count} );
             }.bind(this));
-            return React.DOM.svg( {width:"750", height:"6000"}, 
+            return React.DOM.svg( {width:"750", height:"400"}, 
                      React.DOM.g(null, 
                        bars,
                        React.DOM.line( {transform:"translate(148, 0)", y:"0", y2:"375", stroke:"#000000"})
@@ -554,7 +555,7 @@ var BirdWatch = BirdWatch || {};
     var barChartElem = $("#react-bar-chart");
     var barChart = React.renderComponent(BarChart( {numPages:1, words:[]}), document.getElementById('react-bar-chart'));
 
-    BirdWatch.setWords = function (words, count) { barChart.setProps({words: _.take(words, 25), count: count }); };
+    BirdWatch.updateBarchart = function (words, count) { barChart.setProps({words: _.take(words, 25), count: count }); };
 })();
 ;(function () {
     'use strict';
@@ -605,14 +606,11 @@ var BirdWatch = BirdWatch || {};
     });
 
     var wordCloudElem = $("#wordCloud");
-    var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, function (){}, "#wordCloud");
-    BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
+    var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, addSearchTerm, "#wordCloud");
 
-    BirdWatch.setWordCount = function (wordCounts) {
-        BirdWatch.setWords(wordCounts, BirdWatch.wordcount.count);
-
+    BirdWatch.feedWordCloud = function () {
         if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {
-            wordCloud.redraw(wordCounts);
+            wordCloud.redraw(BirdWatch.wordcount.getWords());
             BirdWatch.lastCloudUpdate = (new Date().getTime());
         }
     };
@@ -634,25 +632,40 @@ var BirdWatch = BirdWatch || {};
         throttledGraph();
         BirdWatch.setTweetList(BirdWatch.crossfilter.tweetPage(activePage, pageSize.val(), sortOrder));
         BirdWatch.setPagination({live: live, numPages: BirdWatch.crossfilter.numPages(pageSize.val()), activePage: activePage});
+        BirdWatch.updateBarchart(BirdWatch.wordcount.getWords(), BirdWatch.wordcount.count);
     }
 
     BirdWatch.sortBy = function (order) { sortOrder = order; triggerReact(); };
 
+    /** function to call when data model changes should be reflected in the reactjs components */
     BirdWatch.tweets.registerCallback(function (t) {
         BirdWatch.wordcount.insert(t);
         BirdWatch.crossfilter.add(t);
-        BirdWatch.setWordCount(BirdWatch.wordcount.getWords());
+        BirdWatch.feedWordCloud();
         triggerReact();
     });
 
+    /** function triggering a new search, also setting URL */
+    var searchField = $("#searchField");
     BirdWatch.search = function () {
-        var searchField = $("#searchField");
         BirdWatch.wordcount.reset();
         activePage = 1;
         BirdWatch.crossfilter.clear();
         BirdWatch.tweets.search(searchField.val(), $("#prev-size").val());
         searchField.focus();
+        window.location.hash = "/" + encodeURIComponent(searchField.val());
+        BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
+        window.setTimeout(BirdWatch.feedWordCloud, 5000);  // schedule drawing wordcloud once (for low-frequency searches)
     };
 
+    function addSearchTerm (term) {
+        var prev = searchField.val();
+        var newSearch = ((prev.length > 0) ? prev + " " : "") + term;
+        searchField.val(newSearch);
+        searchField.focus();
+    }
+    BirdWatch.addSearchTerm = addSearchTerm;
+
+    searchField.val(decodeURIComponent(window.location.hash.substr(2)));
     BirdWatch.search();
 }());

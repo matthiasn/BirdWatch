@@ -47,14 +47,11 @@
     });
 
     var wordCloudElem = $("#wordCloud");
-    var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, function (){}, "#wordCloud");
-    BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
+    var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, addSearchTerm, "#wordCloud");
 
-    BirdWatch.setWordCount = function (wordCounts) {
-        BirdWatch.setWords(wordCounts, BirdWatch.wordcount.count);
-
+    BirdWatch.feedWordCloud = function () {
         if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {
-            wordCloud.redraw(wordCounts);
+            wordCloud.redraw(BirdWatch.wordcount.getWords());
             BirdWatch.lastCloudUpdate = (new Date().getTime());
         }
     };
@@ -76,25 +73,40 @@
         throttledGraph();
         BirdWatch.setTweetList(BirdWatch.crossfilter.tweetPage(activePage, pageSize.val(), sortOrder));
         BirdWatch.setPagination({live: live, numPages: BirdWatch.crossfilter.numPages(pageSize.val()), activePage: activePage});
+        BirdWatch.updateBarchart(BirdWatch.wordcount.getWords(), BirdWatch.wordcount.count);
     }
 
     BirdWatch.sortBy = function (order) { sortOrder = order; triggerReact(); };
 
+    /** function to call when data model changes should be reflected in the reactjs components */
     BirdWatch.tweets.registerCallback(function (t) {
         BirdWatch.wordcount.insert(t);
         BirdWatch.crossfilter.add(t);
-        BirdWatch.setWordCount(BirdWatch.wordcount.getWords());
+        BirdWatch.feedWordCloud();
         triggerReact();
     });
 
+    /** function triggering a new search, also setting URL */
+    var searchField = $("#searchField");
     BirdWatch.search = function () {
-        var searchField = $("#searchField");
         BirdWatch.wordcount.reset();
         activePage = 1;
         BirdWatch.crossfilter.clear();
         BirdWatch.tweets.search(searchField.val(), $("#prev-size").val());
         searchField.focus();
+        window.location.hash = "/" + encodeURIComponent(searchField.val());
+        BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
+        window.setTimeout(BirdWatch.feedWordCloud, 5000);  // schedule drawing wordcloud once (for low-frequency searches)
     };
 
+    function addSearchTerm (term) {
+        var prev = searchField.val();
+        var newSearch = ((prev.length > 0) ? prev + " " : "") + term;
+        searchField.val(newSearch);
+        searchField.focus();
+    }
+    BirdWatch.addSearchTerm = addSearchTerm;
+
+    searchField.val(decodeURIComponent(window.location.hash.substr(2)));
     BirdWatch.search();
 }());

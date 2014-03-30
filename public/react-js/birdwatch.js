@@ -497,13 +497,26 @@ var BirdWatch = BirdWatch || {};
             return ( React.DOM.polygon( {transform:arrowTrans, stroke:"none", fill:arrColor, points:arr}) ); }
     });
 
+    function now () { return new Date().getTime(); }
 
     /** single Bar component for assembling BarChart */
     var Bar = React.createClass({displayName: 'Bar',
-        getInitialState: function() { return {percHist: [], posHist: []} },
+        getInitialState: function() {
+            return {ratioHist: [], posHist: [], lastUpdate: now(), posArrDir: "RIGHT", ratioArrDir: "RIGHT-UP"}
+        },
         componentWillReceiveProps: function(props) {
-            this.setState({percHist: _.last(this.state.percHist.concat(props.val / props.count), 50)});
+            this.setState({ratioHist: _.last(this.state.ratioHist.concat(props.val / props.count), 50)});
             this.setState({posHist: _.last(this.state.posHist.concat(props.idx+1), 2)});
+
+            // slope of the fitted position change function
+            var posSlope = regression('linear', regressionData(this.state.posHist)).equation[0];
+            if (posSlope === 0 && now() - this.state.lastUpdate > 60000) { this.setState({posArrDir: "RIGHT"}); }
+            if (posSlope > 0) { this.setState({posArrDir: "UP", lastUpdate: now()}); }
+            if (posSlope < 0) { this.setState({posArrDir: "DOWN", lastUpdate: now()}); }
+
+            // slope of the ratio (value / total value) change
+            var ratioSlope = regression('linear', regressionData(this.state.ratioHist)).equation[0];
+            this.setState({ratioArrDir: (ratioSlope > 0) ? "RIGHT-UP" : "RIGHT-DOWN"});
         },
         clickHandler: function(e) { BirdWatch.addSearchTerm(this.props.key); },
         render: function () {
@@ -512,23 +525,15 @@ var BirdWatch = BirdWatch || {};
             var w = parseInt(this.props.w);
             var val = this.props.val;
 
-            var posSlope = regression('linear', regressionData(this.state.posHist)).equation[0];
-            var posArrDir = "RIGHT";
-            if (posSlope > 0) { posArrDir = "UP";   }
-            if (posSlope < 0) { posArrDir = "DOWN"; }
-
-            var percSlope = regression('linear', regressionData(this.state.percHist)).equation[0];
-            var percArrDir = "RIGHT-UP";
-            if (percSlope < 0) { percArrDir = "RIGHT-DOWN"; }
-            var textX = w+135;
+            var textX = w+145;
             var style = {fontWeight: 500, fill: "#DDD", textAnchor: "end"};
             if (w < 50) { style.fill="#999"; textX+=16; style.textAnchor="start"; style.fontWeight=400}
 
             return  React.DOM.g( {onClick:this.clickHandler}, 
-                      React.DOM.text( {y:y+12, x:"117", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
-                      Arrow( {dir:posArrDir, y:y, x:126} ),
-                      Arrow( {dir:percArrDir, y:y, x:140} ),
-                      React.DOM.rect( {y:y, x:"148", height:"15", width:w, stroke:"white", fill:"#428bca"}),
+                      React.DOM.text( {y:y+12, x:"137", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
+                      Arrow( {dir:this.state.posArrDir, y:y, x:146} ),
+                      Arrow( {dir:this.state.ratioArrDir, y:y, x:160} ),
+                      React.DOM.rect( {y:y, x:"168", height:"15", width:w, stroke:"white", fill:"#428bca"}),
                       React.DOM.text( {y:y+12, x:textX, stroke:"none", style:style, dy:".35em"} , val)
                     )
              }
@@ -540,13 +545,13 @@ var BirdWatch = BirdWatch || {};
             var bars = this.props.words.map(function (bar, i, arr) {
                 if (!bar) return "";
                 var y = i * 15;
-                var w = bar.value / arr[0].value * (barChartElem.width() - 170);
+                var w = bar.value / arr[0].value * (barChartElem.width() - 190);
                 return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value, count:this.props.count} );
             }.bind(this));
             return React.DOM.svg( {width:"750", height:"400"}, 
                      React.DOM.g(null, 
                        bars,
-                       React.DOM.line( {transform:"translate(148, 0)", y:"0", y2:"375", stroke:"#000000"})
+                       React.DOM.line( {transform:"translate(168, 0)", y:"0", y2:"375", stroke:"#000000"})
                      )
                    )
         }

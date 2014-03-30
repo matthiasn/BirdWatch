@@ -505,12 +505,12 @@ var BirdWatch = BirdWatch || {};
             return {ratioHist: [], posHist: [], lastUpdate: now(), posArrDir: "RIGHT", ratioArrDir: "RIGHT-UP"}
         },
         componentWillReceiveProps: function(props) {
-            this.setState({ratioHist: _.last(this.state.ratioHist.concat(props.val / props.count), 100)});
+            this.setState({ratioHist: _.last(this.state.ratioHist.concat(props.val / props.count), this.props.ratioChangeTweets)});
             this.setState({posHist: _.last(this.state.posHist.concat(props.idx+1), 2)});
 
             // slope of the fitted position change function
             var posSlope = regression('linear', regressionData(this.state.posHist)).equation[0];
-            if (posSlope === 0 && now() - this.state.lastUpdate > 60000) { this.setState({posArrDir: "RIGHT"}); }
+            if (posSlope === 0 && now() - this.state.lastUpdate > this.props.posChangeDur) { this.setState({posArrDir: "RIGHT"}); }
             if (posSlope > 0) { this.setState({posArrDir: "UP", lastUpdate: now()}); }
             if (posSlope < 0) { this.setState({posArrDir: "DOWN", lastUpdate: now()}); }
 
@@ -539,14 +539,17 @@ var BirdWatch = BirdWatch || {};
              }
     });
 
-    /** BarChart component, renders all bar items */
+    /** BarChart component, renders all bar items.
+     *  Also renders interactive legend where the trend indicator durations can be configured */
     var BarChart = React.createClass({displayName: 'BarChart',
         render: function() {
             var bars = this.props.words.map(function (bar, i, arr) {
                 if (!bar) return "";
                 var y = i * 15;
                 var w = bar.value / arr[0].value * (barChartElem.width() - 190);
-                return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value, count:this.props.count} );
+                return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value, count:this.props.count,
+                            posChangeDur:this.refs.posChangeDur.getDOMNode().value,
+                            ratioChangeTweets:this.refs.ratioChangeTweets.getDOMNode().value} );
             }.bind(this));
             return React.DOM.div(null, 
                      React.DOM.svg( {width:"750", height:"380"}, 
@@ -555,8 +558,24 @@ var BirdWatch = BirdWatch || {};
                          React.DOM.line( {transform:"translate(168, 0)", y:"0", y2:"375", stroke:"#000000"})
                        )
                      ),
-                    React.DOM.p( {className:"legend"}, React.DOM.strong(null, "1st trend indicator:"), " position changes in last minute"),
-                    React.DOM.p( {className:"legend"}, React.DOM.strong(null, "2nd trend indicator:"), " ratio change termCount / totalTermsCounted over last 100 tweets")
+                    React.DOM.p( {className:"legend"}, React.DOM.strong(null, "1st trend indicator:"), " position changes in last  ",
+                        React.DOM.select( {defaultValue:"60000", ref:"posChangeDur"}, 
+                            React.DOM.option( {value:"10000"}, "10 seconds"),
+                            React.DOM.option( {value:"30000"}, "30 seconds"),
+                            React.DOM.option( {value:"60000"}, "minute"),
+                            React.DOM.option( {value:"300000"}, "5 minutes"),
+                            React.DOM.option( {value:"600000"}, "10 minutes")
+                        )
+                    ),
+                    React.DOM.p( {className:"legend"}, React.DOM.strong(null, "2nd trend indicator:"),
+                    "ratio change termCount / totalTermsCounted over last  ",
+                        React.DOM.select( {defaultValue:"100", ref:"ratioChangeTweets"}, 
+                            React.DOM.option( {value:"10"}, "10 tweets"),
+                            React.DOM.option( {value:"100"}, "100 tweets"),
+                            React.DOM.option( {value:"500"}, "500 tweets"),
+                            React.DOM.option( {value:"1000"}, "1000 tweets")
+                        )
+                    )
                   )
         }
     });

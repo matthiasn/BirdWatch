@@ -42,12 +42,12 @@ var BirdWatch = BirdWatch || {};
             return {ratioHist: [], posHist: [], lastUpdate: now(), posArrDir: "RIGHT", ratioArrDir: "RIGHT-UP"}
         },
         componentWillReceiveProps: function(props) {
-            this.setState({ratioHist: _.last(this.state.ratioHist.concat(props.val / props.count), 100)});
+            this.setState({ratioHist: _.last(this.state.ratioHist.concat(props.val / props.count), this.props.ratioChangeTweets)});
             this.setState({posHist: _.last(this.state.posHist.concat(props.idx+1), 2)});
 
             // slope of the fitted position change function
             var posSlope = regression('linear', regressionData(this.state.posHist)).equation[0];
-            if (posSlope === 0 && now() - this.state.lastUpdate > 60000) { this.setState({posArrDir: "RIGHT"}); }
+            if (posSlope === 0 && now() - this.state.lastUpdate > this.props.posChangeDur) { this.setState({posArrDir: "RIGHT"}); }
             if (posSlope > 0) { this.setState({posArrDir: "UP", lastUpdate: now()}); }
             if (posSlope < 0) { this.setState({posArrDir: "DOWN", lastUpdate: now()}); }
 
@@ -76,14 +76,17 @@ var BirdWatch = BirdWatch || {};
              }
     });
 
-    /** BarChart component, renders all bar items */
+    /** BarChart component, renders all bar items.
+     *  Also renders interactive legend where the trend indicator durations can be configured */
     var BarChart = React.createClass({
         render: function() {
             var bars = this.props.words.map(function (bar, i, arr) {
                 if (!bar) return "";
                 var y = i * 15;
                 var w = bar.value / arr[0].value * (barChartElem.width() - 190);
-                return <Bar t={bar.key} y={y} w={w} key={bar.key} idx={i} val={bar.value} count={this.props.count} />;
+                return <Bar t={bar.key} y={y} w={w} key={bar.key} idx={i} val={bar.value} count={this.props.count}
+                            posChangeDur={this.refs.posChangeDur.getDOMNode().value}
+                            ratioChangeTweets={this.refs.ratioChangeTweets.getDOMNode().value} />;
             }.bind(this));
             return <div>
                      <svg width="750" height="380">
@@ -92,8 +95,24 @@ var BirdWatch = BirdWatch || {};
                          <line transform="translate(168, 0)" y="0" y2="375" stroke="#000000"></line>
                        </g>
                      </svg>
-                    <p className="legend"><strong>1st trend indicator:</strong> position changes in last minute</p>
-                    <p className="legend"><strong>2nd trend indicator:</strong> ratio change termCount / totalTermsCounted over last 100 tweets</p>
+                    <p className="legend"><strong>1st trend indicator:</strong> position changes in last &nbsp;
+                        <select defaultValue="60000" ref="posChangeDur">
+                            <option value="10000">10 seconds</option>
+                            <option value="30000">30 seconds</option>
+                            <option value="60000">minute</option>
+                            <option value="300000">5 minutes</option>
+                            <option value="600000">10 minutes</option>
+                        </select>
+                    </p>
+                    <p className="legend"><strong>2nd trend indicator:</strong>
+                    ratio change termCount / totalTermsCounted over last &nbsp;
+                        <select defaultValue="100" ref="ratioChangeTweets">
+                            <option value="10">10 tweets</option>
+                            <option value="100">100 tweets</option>
+                            <option value="500">500 tweets</option>
+                            <option value="1000">1000 tweets</option>
+                        </select>
+                    </p>
                   </div>
         }
     });

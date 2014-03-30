@@ -2,8 +2,6 @@
 
 GET         /angular/             controllers.BirdWatch.index
 GET         /                     controllers.BirdWatch.indexReactJs
-GET         /react-scalajs        controllers.BirdWatch.indexReactScalaJS
-GET         /react-scalajs-opt    controllers.BirdWatch.indexReactScalaJsOpt
 GET         /tweetFeed            controllers.BirdWatch.tweetFeed(q: String ?= "*")
 POST        /tweets/search        controllers.BirdWatch.search
 

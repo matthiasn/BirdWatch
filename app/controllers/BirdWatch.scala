@@ -32,10 +32,6 @@ object BirdWatch extends Controller {
   /** Controller action serving ReactJS page */
   def indexReactJs = Action { Ok(views.html.react_js()) }
 
-  /** Controller action serving React ScalaJS page */
-  def indexReactScalaJS = Action { Ok(views.html.react_scalajs()) }
-  def indexReactScalaJsOpt = Action { Ok(views.html.react_scalajs_opt()) }
-
   /** Controller Action serving Tweets as JSON going backwards in time. Query passed in as JSON */
   def search =  Action.async(parse.json) {
     req => WS.url(elasticTweetURL + "_search").post(req.body).map { res => Ok(res.body) }

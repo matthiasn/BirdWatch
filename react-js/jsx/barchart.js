@@ -42,7 +42,7 @@ var BirdWatch = BirdWatch || {};
             return {ratioHist: [], posHist: [], lastUpdate: now(), posArrDir: "RIGHT", ratioArrDir: "RIGHT-UP"}
         },
         componentWillReceiveProps: function(props) {
-            this.setState({ratioHist: _.last(this.state.ratioHist.concat(props.val / props.count), 50)});
+            this.setState({ratioHist: _.last(this.state.ratioHist.concat(props.val / props.count), 100)});
             this.setState({posHist: _.last(this.state.posHist.concat(props.idx+1), 2)});
 
             // slope of the fitted position change function
@@ -85,12 +85,16 @@ var BirdWatch = BirdWatch || {};
                 var w = bar.value / arr[0].value * (barChartElem.width() - 190);
                 return <Bar t={bar.key} y={y} w={w} key={bar.key} idx={i} val={bar.value} count={this.props.count} />;
             }.bind(this));
-            return <svg width="750" height="400">
-                     <g>
-                       {bars}
-                       <line transform="translate(168, 0)" y="0" y2="375" stroke="#000000"></line>
-                     </g>
-                   </svg>
+            return <div>
+                     <svg width="750" height="380">
+                       <g>
+                         {bars}
+                         <line transform="translate(168, 0)" y="0" y2="375" stroke="#000000"></line>
+                       </g>
+                     </svg>
+                    <p className="legend"><strong>1st trend indicator:</strong> position changes in last minute</p>
+                    <p className="legend"><strong>2nd trend indicator:</strong> ratio change termCount / totalTermsCounted over last 100 tweets</p>
+                  </div>
         }
     });
 

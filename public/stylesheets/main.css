@@ -1,4 +1,5 @@
 body {
+    padding-bottom: 25px;
 }
 
 a {
@@ -119,4 +120,9 @@ a {
 
 #tweet-count {
     font-weight: bold;
+}
+
+.legend {
+    font-size: 0.8em;
+    margin-bottom: 0;
 }

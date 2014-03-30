@@ -51,7 +51,7 @@
     BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
 
     BirdWatch.setWordCount = function (wordCounts) {
-        BirdWatch.setWords(wordCounts);
+        BirdWatch.setWords(wordCounts, BirdWatch.wordcount.count);
 
         if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {
             wordCloud.redraw(wordCounts);
@@ -78,10 +78,7 @@
         BirdWatch.setPagination({live: live, numPages: BirdWatch.crossfilter.numPages(pageSize.val()), activePage: activePage});
     }
 
-    BirdWatch.sortByLatest = function () { sortOrder = "latest"; triggerReact(); };
-    BirdWatch.sortByFollowers = function () { sortOrder = "followers"; triggerReact();};
-    BirdWatch.sortByRetweets = function () { sortOrder = "retweets"; triggerReact(); };
-    BirdWatch.sortByFavorites = function () { sortOrder = "favorites"; triggerReact(); };
+    BirdWatch.sortBy = function (order) { sortOrder = order; triggerReact(); };
 
     BirdWatch.tweets.registerCallback(function (t) {
         BirdWatch.wordcount.insert(t);

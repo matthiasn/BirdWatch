@@ -206,6 +206,7 @@
 
     // single export object for attaching all service functions, later exported as BirdWatch.wordcount
     var exports = {};
+    exports.count = 0;
     var tags = {};
     var maxLength = 25;
     var minLength = 3;
@@ -218,7 +219,7 @@
             word = word.substr(0, maxLength);
             cases[word.toLowerCase()] = word;
             word = word.toLowerCase();
-            if (word.length >= minLength) { tags[word] = (tags[word] || 0) + 1; }
+            if (word.length >= minLength) { tags[word] = (tags[word] || 0) + 1; exports.count += 1; }
         });
     };
     var stopWords = /^(use|good|want|amp|just|now|like|til|new|get|one|i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|whose|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|will|would|should|can|could|ought|i'm|you're|he's|she's|it's|we're|they're|i've|you've|we've|they've|i'd|you'd|he'd|she'd|we'd|they'd|i'll|you'll|he'll|she'll|we'll|they'll|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|won't|wouldn't|shan't|shouldn't|can't|cannot|couldn't|mustn't|let's|that's|who's|what's|here's|there's|when's|where's|why's|how's|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|upon|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|say|says|said|shall|via)$/;
@@ -362,8 +363,7 @@ var BirdWatch = BirdWatch || {};
     var RetweetCount = React.createClass({displayName: 'RetweetCount',
         render: function() {
             if(this.props.count > 0) {
-                return (React.DOM.div( {className:"pull-right timeInterval"}, 
-                           numberFormat(this.props.count), " RT") );
+                return React.DOM.div( {className:"pull-right timeInterval"}, numberFormat(this.props.count), " RT")
             }
             else return React.DOM.div(null);
         }
@@ -371,8 +371,7 @@ var BirdWatch = BirdWatch || {};
     var FavoriteCount = React.createClass({displayName: 'FavoriteCount',
         render: function() {
             if(this.props.count > 0) {
-                return (React.DOM.div( {className:"pull-right timeInterval"}, 
-                           numberFormat(this.props.count), " fav ") );
+                return React.DOM.div( {className:"pull-right timeInterval"}, numberFormat(this.props.count), " fav ")
             }
             else return React.DOM.div(null);
         }
@@ -413,67 +412,21 @@ var BirdWatch = BirdWatch || {};
         }
     });
 
-    function regressionData(hist) { return hist.map(function(el, idx, arr) { return [idx, -el]; }); }
+    /** TweetCount shows the number of tweets analyzed */
+    var TweetCount = React.createClass({displayName: 'TweetCount', render: function () { return React.DOM.span(null, this.props.count);} });
 
-    /** Arrow component for use in BarChart */
-    var Arrow = React.createClass({displayName: 'Arrow',
-        render: function () {
-            var y = parseInt(this.props.y);
-            var arr = "-60,10 20,10 -20,50 10,50 60,0 10,-50 -20,-50 20,-10 -60,-10 ";
-            var arrColor = "#428bca";
-            if (this.props.dir === "UP") {
-                arrColor = "#45cc40";
-                arr = "10,60 10,-20 50,20 50,-10 0,-60 -50,-10 -50,20 -10,-20 -10,60";
-            }
-            if (this.props.dir === "DOWN") {
-                arrColor = "#dc322f";
-                arr = "10,-60 10,20 50,-20 50,10 0,60 -50,10 -50,-20 -10,20 -10,-60";
-            }
-            var arrowTrans = "translate(124, "+ (y + 7) + ") scale(0.1) ";
+    /** render BirdWatch components */
+    var tweetListComp = React.renderComponent(TweetList( {tweets:[]}), document.getElementById('tweet-frame'));
+    var tweetCount = React.renderComponent(TweetCount( {count:0}), document.getElementById('tweet-count'));
 
-            return ( React.DOM.polygon( {transform:arrowTrans, stroke:"none", fill:arrColor, points:arr}) ); }
-    });
+    BirdWatch.setTweetCount = function (n) { tweetCount.setProps({count: n}); };
+    BirdWatch.setTweetList = function (tweetList) { tweetListComp.setProps({tweets: tweetList}); };
+})();
+;/** @jsx React.DOM */
 
+var BirdWatch = BirdWatch || {};
 
-    /** single Bar component for assembling BarChart */
-    var Bar = React.createClass({displayName: 'Bar',
-        getInitialState: function() { return {hist: []} },
-        componentWillReceiveProps: function(props) {
-            this.setState({hist: _.last(this.state.hist.concat(props.idx+1), 25)});
-        },
-        render: function () {
-            var y = parseInt(this.props.y);
-            var t = this.props.t;
-            var w = parseInt(this.props.w);
-            var val = this.props.val;
-
-            var slope = regression('linear', regressionData(this.state.hist)).equation[0];
-            var arrDir = "RIGHT";
-            if (slope > 0) { arrDir = "UP";   }
-            if (slope < 0) { arrDir = "DOWN"; }
-
-            return  React.DOM.g(null, 
-                      React.DOM.text( {y:y +12, x:"117", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
-                      Arrow( {dir:arrDir, y:y}),
-                      React.DOM.rect( {y:y, x:"130", height:"15", width:w, stroke:"white", fill:"#428bca"}),
-                      React.DOM.text( {y:y +12, x:w+132, stroke:"none", fill:"black", dy:".35em", textAnchor:"start"}, val)
-                    )
-             }
-    });
-
-    /** BarChart component, renders all bar items */
-    var BarChart = React.createClass({displayName: 'BarChart',
-        render: function() {
-            var bars = this.props.words.map(function (bar, i, arr) {
-                if (!bar) return "";
-                var y = i * 15;
-                var w = bar.value / arr[0].value * (barChartElem.width() - 200);
-                return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value} );
-            }.bind(this));
-            return React.DOM.svg( {width:"750", height:"6000"}, React.DOM.g(null, bars));
-        }
-    });
-
+(function () {
     /** Pagination component, allows selecting the current page in the Tweet list */
     var PaginationItem = React.createClass({displayName: 'PaginationItem',
         setActive: function () {this.props.setPage(this.props.page)},
@@ -504,23 +457,96 @@ var BirdWatch = BirdWatch || {};
             )
         }
     });
-
-    /** TweetCount shows the number of tweets analyzed */
-    var TweetCount = React.createClass({displayName: 'TweetCount', render: function () { return React.DOM.span(null, this.props.count);} });
-
-    /** render BirdWatch components */
-    var tweetListComp = React.renderComponent(TweetList( {tweets:[]}), document.getElementById('tweet-frame'));
-    var tweetCount = React.renderComponent(TweetCount( {count:0}), document.getElementById('tweet-count'));
     var pagination = React.renderComponent(Pagination( {numPages:1} ), document.getElementById('pagination'));
+    BirdWatch.setPagination = function (props) { pagination.setProps(props); };
+    BirdWatch.setPaginationHandlers = function (handlers) { pagination.setProps(handlers); };
+})();
+;/** @jsx React.DOM */
+
+var BirdWatch = BirdWatch || {};
+
+(function () {
+
+    /** function preparing data for use by regression.js */
+    function regressionData(hist) { return hist.map(function(el, idx, arr) { return [idx, -el]; }); }
+
+    /** Arrow component for use in BarChart */
+    var Arrow = React.createClass({displayName: 'Arrow',
+        render: function () {
+            var y = parseInt(this.props.y);
+            var arr = "-600,100 200,100 -200,500 100,500 600,0 100,-500 -200,-500 200,-100 -600,-100 ";
+            var arrColor = "#428bca";
+            if (this.props.dir === "UP") {
+                arrColor = "#45cc40";
+                arr = "100,600 100,-200 500,200 500,-100 0,-600 -500,-100 -500,200 -100,-200 -100,600";
+            }
+            if (this.props.dir === "RIGHT-UP") {
+                arrColor = "#45cc40";
+                arr ="400,-400 -200,-400 -350,-250 125,-250 -400,275 -275,400 250,-125 250,350 400,200";
+            }
+            if (this.props.dir === "DOWN") {
+                arrColor = "#dc322f";
+                arr = "100,-600 100,200 500,-200 500,100 0,600 -500,100 -500,-200 -100,200 -100,-600";
+            }
+            if (this.props.dir === "RIGHT-DOWN") {
+                arrColor = "#dc322f";
+                arr = "400,400 -200,400 -350,250 125,250 -400,-275 -275,-400 250,125 250,-350 400,-200";
+            }
+            var arrowTrans = "translate(" + this.props.x + ", "+ (y + 7) + ") scale(0.01) ";
+
+            return ( React.DOM.polygon( {transform:arrowTrans, stroke:"none", fill:arrColor, points:arr}) ); }
+    });
+
+
+    /** single Bar component for assembling BarChart */
+    var Bar = React.createClass({displayName: 'Bar',
+        getInitialState: function() { return {percHist: [], posHist: []} },
+        componentWillReceiveProps: function(props) {
+            this.setState({percHist: _.last(this.state.percHist.concat(props.val / props.count), 50)});
+            this.setState({posHist: _.last(this.state.posHist.concat(props.idx+1), 2)});
+        },
+        render: function () {
+            var y = parseInt(this.props.y);
+            var t = this.props.t;
+            var w = parseInt(this.props.w);
+            var val = this.props.val;
+
+            var posSlope = regression('linear', regressionData(this.state.posHist)).equation[0];
+            var posArrDir = "RIGHT";
+            if (posSlope > 0) { posArrDir = "UP";   }
+            if (posSlope < 0) { posArrDir = "DOWN"; }
+
+            var percSlope = regression('linear', regressionData(this.state.percHist)).equation[0];
+            var percArrDir = "RIGHT-UP";
+            if (percSlope < 0) { percArrDir = "RIGHT-DOWN"; }
+
+            return  React.DOM.g(null, 
+                      React.DOM.text( {y:y +12, x:"117", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
+                      Arrow( {dir:posArrDir, y:y, x:126} ),
+                      Arrow( {dir:percArrDir, y:y, x:140} ),
+                      React.DOM.rect( {y:y, x:"148", height:"15", width:w, stroke:"white", fill:"#428bca"}),
+                      React.DOM.text( {y:y +12, x:w+154, stroke:"none", fill:"black", dy:".35em", textAnchor:"start"}, val)
+                    )
+             }
+    });
+
+    /** BarChart component, renders all bar items */
+    var BarChart = React.createClass({displayName: 'BarChart',
+        render: function() {
+            var bars = this.props.words.map(function (bar, i, arr) {
+                if (!bar) return "";
+                var y = i * 15;
+                var w = bar.value / arr[0].value * (barChartElem.width() - 216);
+                return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value, count:this.props.count} );
+            }.bind(this));
+            return React.DOM.svg( {width:"750", height:"6000"}, React.DOM.g(null, bars));
+        }
+    });
 
     var barChartElem = $("#react-bar-chart");
     var barChart = React.renderComponent(BarChart( {numPages:1, words:[]}), document.getElementById('react-bar-chart'));
 
-    BirdWatch.setTweetCount = function (n) { tweetCount.setProps({count: n}); };
-    BirdWatch.setTweetList = function (tweetList) { tweetListComp.setProps({tweets: tweetList}); };
-    BirdWatch.setPagination = function (props) { pagination.setProps(props); };
-    BirdWatch.setPaginationHandlers = function (handlers) { pagination.setProps(handlers); };
-    BirdWatch.setWords = function (words) { barChart.setProps({words: _.take(words, 25)}); };
+    BirdWatch.setWords = function (words, count) { barChart.setProps({words: _.take(words, 25), count: count }); };
 })();
 ;(function () {
     'use strict';
@@ -575,7 +601,7 @@ var BirdWatch = BirdWatch || {};
     BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
 
     BirdWatch.setWordCount = function (wordCounts) {
-        BirdWatch.setWords(wordCounts);
+        BirdWatch.setWords(wordCounts, BirdWatch.wordcount.count);
 
         if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {
             wordCloud.redraw(wordCounts);
@@ -602,10 +628,7 @@ var BirdWatch = BirdWatch || {};
         BirdWatch.setPagination({live: live, numPages: BirdWatch.crossfilter.numPages(pageSize.val()), activePage: activePage});
     }
 
-    BirdWatch.sortByLatest = function () { sortOrder = "latest"; triggerReact(); };
-    BirdWatch.sortByFollowers = function () { sortOrder = "followers"; triggerReact();};
-    BirdWatch.sortByRetweets = function () { sortOrder = "retweets"; triggerReact(); };
-    BirdWatch.sortByFavorites = function () { sortOrder = "favorites"; triggerReact(); };
+    BirdWatch.sortBy = function (order) { sortOrder = order; triggerReact(); };
 
     BirdWatch.tweets.registerCallback(function (t) {
         BirdWatch.wordcount.insert(t);

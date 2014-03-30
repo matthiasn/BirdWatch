@@ -20,7 +20,7 @@ module.exports = function (grunt) {
             },
             all: {
                 src: ['src/crossfilter.js', 'src/tweets.js', 'src/utils.js', 'src/wordcount.js', 'src/wordcloud.js',
-                      'build/react-app.js', 'src/app.js'],
+                      'build/tweetlist.js', 'build/pagination.js', 'build/barchart.js', 'src/app.js'],
                 dest: 'dist/birdwatch.js'
             }
         },

@@ -519,13 +519,16 @@ var BirdWatch = BirdWatch || {};
             var percSlope = regression('linear', regressionData(this.state.percHist)).equation[0];
             var percArrDir = "RIGHT-UP";
             if (percSlope < 0) { percArrDir = "RIGHT-DOWN"; }
+            var textX = w+135;
+            var style = {fontWeight: 500, fill: "#EEE", textAnchor: "end"};
+            if (w < 70) { style.fill="#999"; textX+=20; style.textAnchor="start"}
 
             return  React.DOM.g(null, 
-                      React.DOM.text( {y:y +12, x:"117", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
+                      React.DOM.text( {y:y+12, x:"117", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
                       Arrow( {dir:posArrDir, y:y, x:126} ),
                       Arrow( {dir:percArrDir, y:y, x:140} ),
                       React.DOM.rect( {y:y, x:"148", height:"15", width:w, stroke:"white", fill:"#428bca"}),
-                      React.DOM.text( {y:y +12, x:w+154, stroke:"none", fill:"black", dy:".35em", textAnchor:"start"}, val)
+                      React.DOM.text( {y:y+12, x:textX, stroke:"none", style:style, dy:".35em"} , val)
                     )
              }
     });
@@ -536,7 +539,7 @@ var BirdWatch = BirdWatch || {};
             var bars = this.props.words.map(function (bar, i, arr) {
                 if (!bar) return "";
                 var y = i * 15;
-                var w = bar.value / arr[0].value * (barChartElem.width() - 216);
+                var w = bar.value / arr[0].value * (barChartElem.width() - 170);
                 return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value, count:this.props.count} );
             }.bind(this));
             return React.DOM.svg( {width:"750", height:"6000"}, 

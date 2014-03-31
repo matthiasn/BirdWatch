@@ -104,8 +104,7 @@ var BirdWatch = BirdWatch || {};
                             <option value="600000">10 minutes</option>
                         </select>
                     </p>
-                    <p className="legend"><strong>2nd trend indicator:</strong>
-                    ratio change termCount / totalTermsCounted over last &nbsp;
+                    <p className="legend"><strong>2nd trend indicator:</strong> ratio change termCount / totalTermsCounted over last &nbsp;
                         <select defaultValue="100" ref="ratioChangeTweets">
                             <option value="10">10 tweets</option>
                             <option value="100">100 tweets</option>

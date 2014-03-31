@@ -568,8 +568,7 @@ var BirdWatch = BirdWatch || {};
                             React.DOM.option( {value:"600000"}, "10 minutes")
                         )
                     ),
-                    React.DOM.p( {className:"legend"}, React.DOM.strong(null, "2nd trend indicator:"),
-                    "ratio change termCount / totalTermsCounted over last  ",
+                    React.DOM.p( {className:"legend"}, React.DOM.strong(null, "2nd trend indicator:"), " ratio change termCount / totalTermsCounted over last  ",
                         React.DOM.select( {defaultValue:"100", ref:"ratioChangeTweets"}, 
                             React.DOM.option( {value:"10"}, "10 tweets"),
                             React.DOM.option( {value:"100"}, "100 tweets"),

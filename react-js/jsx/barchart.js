@@ -64,7 +64,7 @@ var BirdWatch = BirdWatch || {};
 
             var textX = w+145;
             var style = {fontWeight: 500, fill: "#DDD", textAnchor: "end"};
-            if (w < 50) { style.fill="#999"; textX+=16; style.textAnchor="start"; style.fontWeight=400}
+            if (w < 50) { style.fill="#999"; textX+=26; style.textAnchor="start"; style.fontWeight=400}
 
             return  <g onClick={this.clickHandler}>
                       <text y={y+12} x="137" stroke="none" fill="black" dy=".35em" textAnchor="end">{t}</text>

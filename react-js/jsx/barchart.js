@@ -41,6 +41,7 @@ var BirdWatch = BirdWatch || {};
         getInitialState: function() {
             return {ratioHist: [], posHist: [], lastUpdate: now(), posArrDir: "RIGHT", ratioArrDir: "RIGHT-UP"}
         },
+        /** this function  gets called right before rendering. component state can be modified here, not in render */
         componentWillReceiveProps: function(props) {
             this.setState({ratioHist: _.last(this.state.ratioHist.concat(props.val / props.count), this.props.ratioChangeTweets)});
             this.setState({posHist: _.last(this.state.posHist.concat(props.idx+1), 2)});
@@ -55,6 +56,7 @@ var BirdWatch = BirdWatch || {};
             var ratioSlope = regression('linear', regressionData(this.state.ratioHist)).equation[0];
             this.setState({ratioArrDir: (ratioSlope > 0) ? "RIGHT-UP" : "RIGHT-DOWN"});
         },
+        /** adding terms to the search bar when clicking on any of the bars */
         clickHandler: function(e) { BirdWatch.addSearchTerm(this.props.key); },
         render: function () {
             var y = parseInt(this.props.y);
@@ -80,6 +82,7 @@ var BirdWatch = BirdWatch || {};
      *  Also renders interactive legend where the trend indicator durations can be configured */
     var BarChart = React.createClass({
         render: function() {
+            var h = this.props.words.length * 15;
             var bars = this.props.words.map(function (bar, i, arr) {
                 if (!bar) return "";
                 var y = i * 15;
@@ -89,14 +92,14 @@ var BirdWatch = BirdWatch || {};
                             ratioChangeTweets={this.refs.ratioChangeTweets.getDOMNode().value} />;
             }.bind(this));
             return <div>
-                     <svg width="750" height="380">
+                     <svg width="750" height={h}>
                        <g>
                          {bars}
-                         <line transform="translate(168, 0)" y="0" y2="375" stroke="#000000"></line>
+                         <line transform="translate(168, 0)" y="0" y2={h} stroke="#000000"></line>
                        </g>
                      </svg>
                     <p className="legend"><strong>1st trend indicator:</strong> position changes in last &nbsp;
-                        <select defaultValue="60000" ref="posChangeDur">
+                        <select defaultValue="300000" ref="posChangeDur">
                             <option value="10000">10 seconds</option>
                             <option value="30000">30 seconds</option>
                             <option value="60000">minute</option>

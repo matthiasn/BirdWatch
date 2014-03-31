@@ -66,9 +66,8 @@ var BirdWatch = BirdWatch || {};
     /** Tweet list component, renders all Tweet items (above) */
     var TweetList = React.createClass({
         render: function() {
-            var tweetNodes = this.props.tweets.map(function (tweet) {
-                if (!tweet) return "";
-                return <Tweet t={tweet} key={tweet.id} />;
+            var tweetNodes = this.props.tweets.map(function (tweet, idx, arr) {
+                return <Tweet t={tweet} key={idx} />;
             }.bind(this));
             return <div id="tweet-list">{tweetNodes}</div>;
         }

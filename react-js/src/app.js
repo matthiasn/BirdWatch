@@ -63,7 +63,11 @@
     });
 
     var throttledGraph = _.throttle(function() {
-        graph.series[0].data = BirdWatch.crossfilter.timeseries().map(function(el) { return { x: el.key, y: el.value }; });
+        if (BirdWatch.crossfilter.noItems() > 0) {
+            graph.series[0].data = BirdWatch.crossfilter.timeseries().map(function(el) {
+                return { x: el.key, y: el.value };
+            });
+        }
         graph.update();
     }, 2500);
 
@@ -97,6 +101,7 @@
         window.location.hash = "/" + encodeURIComponent(searchField.val());
         BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
         window.setTimeout(BirdWatch.feedWordCloud, 5000);  // schedule drawing wordcloud once (for low-frequency searches)
+        graph.series[0].data = [{ x: 0, y: 0 }];
     };
 
     function addSearchTerm (term) {

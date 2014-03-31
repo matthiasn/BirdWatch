@@ -406,9 +406,8 @@ var BirdWatch = BirdWatch || {};
     /** Tweet list component, renders all Tweet items (above) */
     var TweetList = React.createClass({displayName: 'TweetList',
         render: function() {
-            var tweetNodes = this.props.tweets.map(function (tweet) {
-                if (!tweet) return "";
-                return Tweet( {t:tweet, key:tweet.id} );
+            var tweetNodes = this.props.tweets.map(function (tweet, idx, arr) {
+                return Tweet( {t:tweet, key:idx} );
             }.bind(this));
             return React.DOM.div( {id:"tweet-list"}, tweetNodes);
         }
@@ -652,7 +651,11 @@ var BirdWatch = BirdWatch || {};
     });
 
     var throttledGraph = _.throttle(function() {
-        graph.series[0].data = BirdWatch.crossfilter.timeseries().map(function(el) { return { x: el.key, y: el.value }; });
+        if (BirdWatch.crossfilter.noItems() > 0) {
+            graph.series[0].data = BirdWatch.crossfilter.timeseries().map(function(el) {
+                return { x: el.key, y: el.value };
+            });
+        }
         graph.update();
     }, 2500);
 
@@ -686,6 +689,7 @@ var BirdWatch = BirdWatch || {};
         window.location.hash = "/" + encodeURIComponent(searchField.val());
         BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
         window.setTimeout(BirdWatch.feedWordCloud, 5000);  // schedule drawing wordcloud once (for low-frequency searches)
+        graph.series[0].data = [{ x: 0, y: 0 }];
     };
 
     function addSearchTerm (term) {

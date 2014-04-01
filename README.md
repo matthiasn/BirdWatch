@@ -2,6 +2,8 @@
 
 BirdWatch is a reactive web application for visualizing a stream of live Tweets making use of **[AngularJS](http://angularjs.org)**, **[BootStrap](http://getbootstrap.com)**, **[Crossfilter](http://square.github.io/crossfilter/)**, **[D3.js](http://d3js.org)**, **[ElasticSearch](http://www.elasticsearch.org)** and **[Play Framework](http://www.playframework.com)** (in alphabetical order).
 
+**EDIT 04/2014:** For comparing frameworks, there is now also a **[ReactJS](http://facebook.github.io/react/)** version in addition to the AngularJS version. A detailed blog post will follow shortly. In this version there is a trend-aware bar chart built entirely with React, without relying on D3.js. That chart will be the topic of yet another article soon.
+
 ![Screenshot](./docs/screenshot.png)
 
 Here is an overview of the information flow in the system:
@@ -57,7 +59,10 @@ And inside the application folder:
 
 Twitter API consumer key and access token are required to consume the **[Twitter Streaming API](https://dev.twitter.com/docs/streaming-apis)**. You need to **[create a Twitter application](https://dev.twitter.com/apps)** and store keys and secrets in a twitter.conf file, using the commented out section in the **[application.conf](https://github.com/matthiasn/BirdWatch/blob/master/conf/application.conf)** as a template. 
 
-That should be all there is to it before you can run your own instance listening on **[localhost:9000](http://localhost:9000)**. 
+That should be all there is to it before you can run your own instance listening on **[localhost:9000](http://localhost:9000)**. This will open the ReactJS version. For the AngularJS version open **[localhost:9000/angular/](http://localhost:9000/angular/)**
+
+##Configuration
+Inside `conf/application.conf` you can change terms that the application subscribes to from the Twitter Streaming API. The application will then receive all tweets that contain one or more of the set of terms if the total number of tweets that match are no more than 1% of all tweets that Twitter is receiving at any time. Otherwise, the delivery will be capped at 1%. Since February 2014 you can now also subscribe to tweets from a list of twitter IDs, either in addition to the terms or exclusively (in that case: `application.topics=""`).
 
 You may want to remove Google Analytics script in main.scala.html or adapt the Analytics setting in the application.conf according to your own needs.
 

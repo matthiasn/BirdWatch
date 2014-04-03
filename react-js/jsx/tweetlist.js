@@ -61,8 +61,6 @@ var BirdWatch = BirdWatch || {};
         ); }
     });
 
-    function now () { return new Date().getTime(); }
-
     /** Tweet list component, renders all Tweet items (above) */
     var TweetList = React.createClass({
         render: function() {

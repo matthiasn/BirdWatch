@@ -46,21 +46,52 @@ object TwitterClient {
   val topics: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
   val users: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
 
+  var chunkStringCache = ""
+  var chunks = 0
+
+  /** naive check if tweet string contains valid json: curly braces plus ends with LF */
+  def isCompleteTweet(ts: String): Boolean = {
+    ts.charAt(0) == '{' && ts.charAt(ts.length-3) == '}' && ts.charAt(ts.length-1).toInt == 10
+  }
+
+  /** parse and persist tweet, push onto channel, catch potential exception */
+  def processTweetString(ts: String): Unit = {
+    try {
+      val json = Json.parse(ts)
+      (json \ "id_str").asOpt[String].map { id => WS.url(elasticTweetURL + id).put(json) }
+      matchAndPush(json)
+      chunkStringCache = ""
+      chunks = 0
+      supervisor ! TweetReceived
+    }
+    catch {
+      case e: Exception => {
+        println(e)
+        println(chunkStringCache)
+        if (chunks > 3 || chunkStringCache.charAt(0) != '{') {
+          chunkStringCache = ""
+          chunks = 0
+        }
+      }
+    }
+
+  }
+
   /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
     * as Tweet instances and publishes them to eventStream. */
   val tweetIteratee = Iteratee.foreach[Array[Byte]] {
     chunk => {
       val chunkString = new String(chunk, "UTF-8")
-      supervisor ! TweetReceived
-
       if (chunkString.contains("Easy there, Turbo. Too many requests recently. Enhance your calm.")) {
         supervisor ! BackOff
         println("\n" + chunkString + "\n")
+      } else {
+        chunkStringCache = chunkStringCache + chunkString // concatenate chunk cache and current chunk
+        chunks = chunks + 1
+        if (isCompleteTweet(chunkStringCache)) {
+          processTweetString(chunkStringCache)
+        }
       }
-          
-      val json = Json.parse(chunkString)
-      (json \ "id_str").asOpt[String].map { id => WS.url(elasticTweetURL + id).put(json) }
-      matchAndPush(json)
     }
   }
   

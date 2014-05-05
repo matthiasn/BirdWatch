@@ -4,10 +4,11 @@ import akka.actor._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.iteratee.{Concurrent, Iteratee}
 import play.api.libs.ws.WS
-import play.api.libs.json.{JsObject, JsArray, JsValue, Json}
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.oauth.OAuthCalculator
 
 import org.joda.time.DateTime
+import java.net.URLEncoder
 
 import scala.concurrent.duration._
 import scala.language.postfixOps
@@ -101,8 +102,8 @@ object TwitterClient {
     println("Starting client for topics " + topics)
     println("Starting client for users " + users)
 
-    val topicString = topics.mkString("%2C").replace(" ", "%20")
-    val userString = users.mkString("%2C").replace(" ", "%20")
+    val topicString = URLEncoder.encode(topics.mkString("%2C"), "UTF-8")
+    val userString = URLEncoder.encode(users.mkString("%2C"), "UTF-8")
     val url = twitterURL + "track=" + topicString + "&follow=" + userString
     WS.url(url).withRequestTimeout(-1).sign(OAuthCalculator(Conf.consumerKey, Conf.accessToken)).get(_ => tweetIteratee)
   }

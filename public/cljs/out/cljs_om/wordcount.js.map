@@ -1,0 +1,10 @@
+{"version":3,
+ "file":
+ "/Users/mn/github/BirdWatch/cljs-om/../public/cljs/out/cljs_om/wordcount.js",
+ "sources":["wordcount.cljs"],
+ "lineCount":8,
+ "mappings":
+ ";AAAA;;AAEA,AAAKA,0BAAM,yBAAA,zBAACC;AAEZ,gCAAA,6BAAA,AAAA,7DAAMC,sDAAaC",
+ "names":
+ ["cljs-om.wordcount/words", "cljs.core/atom",
+  "cljs-om.wordcount/split-tweet", "tweet"]}

@@ -46,13 +46,13 @@ object TwitterClient {
   val topics: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
   val users: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
 
+  /** ugly fix for problem with Twitter Streaming API where chunks cannot be relied on to include one whole tweet */
   var chunkStringCache = ""
   var chunks = 0
 
   /** naive check if tweet string contains valid json: curly braces plus ends with LF */
-  def isCompleteTweet(ts: String): Boolean = {
+  def isCompleteTweet(ts: String): Boolean =
     ts.charAt(0) == '{' && ts.charAt(ts.length-3) == '}' && ts.charAt(ts.length-1).toInt == 10
-  }
 
   /** parse and persist tweet, push onto channel, catch potential exception */
   def processTweetString(ts: String): Unit = {
@@ -86,8 +86,15 @@ object TwitterClient {
         supervisor ! BackOff
         println("\n" + chunkString + "\n")
       } else {
-        chunkStringCache = chunkStringCache + chunkString // concatenate chunk cache and current chunk
-        chunks = chunks + 1
+        if (chunkStringCache.isEmpty) {
+          if (chunkString.charAt(0) == '{') {
+            chunkStringCache =  chunkString // concatenate chunk cache and current chunk
+            chunks = chunks + 1
+          }
+        } else {
+          chunkStringCache = chunkStringCache + chunkString // concatenate chunk cache and current chunk
+          chunks = chunks + 1
+        }
         if (isCompleteTweet(chunkStringCache)) {
           processTweetString(chunkStringCache)
         }
@@ -100,6 +107,9 @@ object TwitterClient {
   def start() {
     println("Starting client for topics " + topics)
     println("Starting client for users " + users)
+
+    chunkStringCache = ""
+    chunks = 0
 
     val topicString = topics.mkString("%2C").replace(" ", "%20")
     val userString = users.mkString("%2C").replace(" ", "%20")

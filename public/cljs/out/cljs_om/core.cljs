@@ -13,28 +13,48 @@
     (< number 1000000) (str (.round js/Math (/ number 1000)) "K")
     :default (str (/ (.round js/Math (/ number 100000)) 10) "M")))
 
+(defn url-replacer [acc entity]
+  (print entity)
+  (s/replace acc (:url entity)
+             (str "<a href='" (:url entity) "' target='_blank'>" (:display_url entity) "</a>")))
 
-(defn replace-screenname [acc entity]
+(defn hashtags-replacer [acc entity]
+  (let [hashtag (:text entity)]
+    (s/replace acc (str "#" hashtag)
+                         (str "<a href='https://twitter.com/search?q=%23" hashtag "' target='_blank'>#" hashtag "</a>"))))
 
-  )
+(defn mentions-replacer [acc entity]
+   (let [screen-name (:screen_name entity)]
+     (s/replace acc (str "@" screen-name)
+                         (str "<a href='http://www.twitter.com/" screen-name "' target='_blank'>@" screen-name "</a>"))))
 
-(defn replace-entity [text coll]
-  (reduce (fn [acc mention]
-            (let [screen-name (:screen_name mention)]
-              (s/replace acc screen-name (str screen-name screen-name))))
-          text
-          coll))
+(defn replacer [text coll fun]
+  (reduce fun text coll))
 
 (defn format-tweet [tweet]
-  (->
-    (s/replace (:text tweet) "RT " "<strong>RT </strong>")
-    (replace-entity , (:user_mentions (:entities tweet)))
-    (s/replace , "@" "<strong>@</strong>") ))
+  (assoc tweet :html-text
+    (-> (:text tweet)
+        (replacer , (:urls (:entities tweet)) url-replacer)
+        (replacer , (:user_mentions (:entities tweet)) mentions-replacer)
+        (replacer , (:hashtags (:entities tweet)) hashtags-replacer)
+        (s/replace , "RT " "<strong>RT </strong>"))))
 
-(def app-state (atom {}))
+
+(def app-state (atom {:count 0}))
+
+(defn rt-count [tweet]
+  (let [count (:retweet_count (:retweeted_status tweet))]
+    (if (> count 0)
+      (str (number-format count) " RT"))))
+
+(defn fav-count [tweet]
+  (let [count (:favorite_count (:retweeted_status tweet))]
+    (if (> count 0)
+      (str (number-format count) " fav "))))
 
 
 (defn tweet-view [tweet owner]
+  "rendering single tweet card"
   (reify
     om/IRender
     (render [this]
@@ -49,12 +69,14 @@
                         (dom/span #js {:className "username" :src (:profile_image_url user)} (:name user)))
                  (dom/span #js {:className "username_screen"} (str " @" screen-name))
                  (dom/div  #js {:className "tweettext"}
-                          (dom/div #js {:dangerouslySetInnerHTML #js {:__html (format-tweet tweet)}}
-                                   )
-                          (dom/div #js {:className "pull-left timeInterval"}
-                                   (str (number-format (:followers_count user)) " followers")) ))))))
+                           (dom/div #js {:dangerouslySetInnerHTML #js {:__html (:html-text tweet)}})
+                           (dom/div #js {:className "pull-left timeInterval"}
+                                   (str (number-format (:followers_count user)) " followers"))
+                           (dom/div #js {:className "pull-right timeInterval"}
+                                    (str (fav-count tweet) (rt-count tweet)))))))))
 
 (defn tweets-view [app owner]
+  "rendering tweet list"
   (reify
     om/IRender
     (render [this]
@@ -67,16 +89,33 @@
   app-state
   {:target (. js/document (getElementById "tweet-frame"))})
 
-(defn print-some [tweet]
+
+(defn count-view [app owner]
+  "rendering tweet counter"
+  (reify
+    om/IRender
+    (render [this]
+      (dom/span nil (:count app)))))
+
+(om/root
+  count-view
+  app-state
+  {:target (. js/document (getElementById "tweet-count"))})
+
+(defn add-tweet2 [tweet]
   (if
     (> (:followers_count (:user tweet)) 1000)
     (do
-      (swap! app-state assoc :tweet tweet)
-      (swap! app-state assoc :tweets (conj (:tweets @app-state) tweet)))))
+      (swap! app-state assoc :count (inc (:count @app-state)))
+      (swap! app-state assoc :tweets (conj (:tweets @app-state) (format-tweet tweet))))))
+
+(defn add-tweet [tweet]
+  (swap! app-state assoc :count (inc (:count @app-state)))
+  (swap! app-state assoc :tweets (conj (:tweets @app-state) (format-tweet tweet))))
 
 (defn receive-sse [e]
   (let [tweet (js->clj (JSON/parse (.-data e)) :keywordize-keys true)]
-    (print-some tweet)))
+    (add-tweet tweet)))
 
 (def stream (js/EventSource. "/tweetFeed?q=*"))
 

@@ -70,12 +70,16 @@
                  (dom/a #js {:href href :target "_blank"}
                         (dom/span #js {:className "username" :src (:profile_image_url user)} (:name user)))
                  (dom/span #js {:className "username_screen"} (str " @" screen-name))
+                 (dom/div #js {:className "pull-right timeInterval"}
+                          (util/from-now (:created_at tweet)))
                  (dom/div  #js {:className "tweettext"}
                            (dom/div #js {:dangerouslySetInnerHTML #js {:__html (:html-text tweet)}})
                            (dom/div #js {:className "pull-left timeInterval"}
                                    (str (util/number-format (:followers_count user)) " followers"))
                            (dom/div #js {:className "pull-right timeInterval"}
-                                    (str (util/fav-count tweet) (util/rt-count tweet)))))))))
+                                    (str (util/rt-count-since-startup tweet)
+                                         (util/rt-count tweet)
+                                         (util/fav-count tweet)))))))))
 
 (defn tweets-view [app owner]
   "rendering tweet list"

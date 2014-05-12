@@ -126,3 +126,8 @@ a {
     font-size: 0.8em;
     margin-bottom: 0;
 }
+
+.green {
+    color: green;
+    font-weight: bold;
+}

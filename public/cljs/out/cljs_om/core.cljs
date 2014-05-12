@@ -45,6 +45,7 @@
   (swap! app-state assoc app-key (fun (app-key @app-state) {set-key val :id (:id_str rt)})))
 
 (defn add-rt-status [tweet]
+  "handles original, retweeted tweet"
   (if (contains? tweet :retweeted_status)
     (let [rt (:retweeted_status tweet)
           prev ((keyword (:id_str rt)) (:tweets-map @app-state))
@@ -75,6 +76,7 @@
   (swap! app-state assoc :by-id (conj (:by-id @app-state) (:id_str tweet))) )
 
 (defn receive-sse [e]
+  "callback, called for each item (tweet) received by SSE stream"
   (let [tweet (js->clj (JSON/parse (.-data e)) :keywordize-keys true)]
     (add-tweet tweet)))
 

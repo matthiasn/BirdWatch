@@ -14,8 +14,8 @@
   :cljsbuild {
     :builds [{:id "cljs-om"
               :source-paths ["src"]
-              :compiler {
-                :output-to "../public/cljs/cljs_om.js"
-                :output-dir "../public/cljs/out"
-                :optimizations :none
-                :source-map true}}]})
+              :compiler {:output-to "../public/cljs/cljs_om.js"
+                         :output-dir "../public/cljs/out"
+                         :optimizations :none
+                         :externs ["externs.js"]
+                         :source-map true}}]})

@@ -41,6 +41,9 @@
 (defn add-to-tweets-map [tweet]
     (swap! app-state assoc-in [:tweets-map (keyword (:id_str tweet))] (util/format-tweet tweet)))
 
+(defn mod-sort-set [app-key fun set-key val rt]
+  (swap! app-state assoc app-key (fun (app-key @app-state) {set-key val :id (:id_str rt)})))
+
 (defn add-rt-status [tweet]
   (if (contains? tweet :retweeted_status)
     (let [rt (:retweeted_status tweet)
@@ -48,32 +51,18 @@
           prev-rt-count ((keyword (:id_str rt)) (:rt-since-startup @app-state))]
       (if (not (nil? prev))
         (do
-          (swap! app-state assoc :by-retweets (disj (:by-retweets @app-state)
-                                                    {:retweet_count (:retweet_count prev)
-                                                     :id (:id_str rt)}))
-          (swap! app-state assoc :by-favorites (disj (:by-favorites @app-state)
-                                                    {:favorite_count (:favorite_count prev)
-                                                     :id (:id_str rt)}))))
+          (mod-sort-set :by-retweets disj :retweet_count (:retweet_count prev) rt)
+          (mod-sort-set :by-favorites disj :favorite_count (:favorite_count prev) rt)))
       (if (not (nil? rt))
         (do
           (if (not (nil? prev-rt-count))
-            (swap! app-state assoc :by-rt-since-startup (disj (:by-rt-since-startup @app-state)
-                                                              {:count prev-rt-count
-                                                               :id (:id_str rt)})))
-
+            (mod-sort-set :by-rt-since-startup disj :count prev-rt-count rt))
           (swap! app-state assoc-in [:rt-since-startup (keyword (:id_str rt))]
                  (inc ((keyword (:id_str rt)) (:rt-since-startup @app-state))))
-
-          (swap! app-state assoc :by-rt-since-startup (conj (:by-rt-since-startup @app-state)
-                                             {:count ((keyword (:id_str rt)) (:rt-since-startup @app-state))
-                                              :id (:id_str rt)}))))
+          (mod-sort-set :by-rt-since-startup conj :count ((keyword (:id_str rt)) (:rt-since-startup @app-state)) rt)))
       (add-to-tweets-map rt)
-      (swap! app-state assoc :by-retweets (conj (:by-retweets @app-state)
-                                             {:retweet_count (:retweet_count rt)
-                                              :id (:id_str rt)}))
-      (swap! app-state assoc :by-favorites (conj (:by-favorites @app-state)
-                                             {:favorite_count (:favorite_count rt)
-                                              :id (:id_str rt)})))))
+      (mod-sort-set :by-retweets conj :retweet_count (:retweet_count rt) rt)
+      (mod-sort-set :by-favorites conj :favorite_count (:favorite_count rt) rt))))
 
 (defn add-tweet [tweet]
   "increment counter, add tweet to tweets map and to sorted sets by id and by followers"
@@ -94,4 +83,3 @@
                    "message"
                    (fn [e] (receive-sse e))
                    false)
-

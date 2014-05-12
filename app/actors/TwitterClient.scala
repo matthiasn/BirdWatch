@@ -41,7 +41,7 @@ object TwitterClient {
 
   /** system-wide channels / enumerators for attaching SSE streams to clients*/
   val (jsonTweetsOut, jsonTweetsChannel) = Concurrent.broadcast[Matches]
-  
+
   /** Subscription topics stored in this MUTABLE collection */
   val topics: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
   val users: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
@@ -77,7 +77,7 @@ object TwitterClient {
 
   }
 
-  /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
+  /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks
     * as Tweet instances and publishes them to eventStream. */
   val tweetIteratee = Iteratee.foreach[Array[Byte]] {
     chunk => {
@@ -101,7 +101,7 @@ object TwitterClient {
       }
     }
   }
-  
+
   /** Starts new WS connection to Twitter Streaming API. Twitter disconnects the previous one automatically.
     * Can this be ended explicitly from here though, without resetting the whole underlying client? */
   def start() {
@@ -119,7 +119,7 @@ object TwitterClient {
 
   /** Actor taking care of monitoring the WS connection */
   class Supervisor(eventStream: akka.event.EventStream) extends Actor {
-    var lastTweetReceived = 0L 
+    var lastTweetReceived = 0L
     var lastBackOff = 0L
 
     /** Receives control messages for starting / restarting supervised client and adding or removing topics */
@@ -129,8 +129,8 @@ object TwitterClient {
       case RemoveTopic(topic) => topics.remove(topic)
       case Start => start()
       case CheckStatus => if (now - lastTweetReceived > retryInterval && now - lastBackOff > backOffInterval) start()
-      case BackOff => lastBackOff = now  
-      case TweetReceived => lastTweetReceived = now   
+      case BackOff => lastBackOff = now
+      case TweetReceived => lastTweetReceived = now
     }
   }
 

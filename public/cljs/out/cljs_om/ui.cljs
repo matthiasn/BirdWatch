@@ -18,7 +18,11 @@
 
 (defn tweets-by-retweets [app n]
   "find top n tweets by retweets in descending order"
-  (vec (map (fn [m] ((keyword (:id m))(:tweets-map app))) (take n (:by-retweets app)))))
+  (vec (map (fn [m] ((keyword (:id m)) (:tweets-map app))) (take n (:by-retweets app)))))
+
+(defn tweets-by-rt-since-startup [app n]
+  "find top n tweets by retweets in descending order"
+  (vec (map (fn [m] ((keyword (:id m)) (:tweets-map app))) (take n (:by-rt-since-startup app)))))
 
 (defn tweets-by-favorites [app n]
   "find top n tweets by retweets in descending order"
@@ -31,7 +35,8 @@
 (def find-tweets {:by-id tweets-by-id
                   :by-followers tweets-by-followers
                   :by-retweets tweets-by-retweets
-                  :by-favorites tweets-by-favorites})
+                  :by-favorites tweets-by-favorites
+                  :by-rt-since-startup tweets-by-rt-since-startup})
 
 (defn sort-button [app key]
   #js {:onClick (fn [e] (om/update! app [:sorted] key))
@@ -47,6 +52,7 @@
                      (dom/button (sort-button app :by-id) "latest")
                      (dom/button (sort-button app :by-followers) "followers")
                      (dom/button (sort-button app :by-retweets) "retweets")
+                     (dom/button (sort-button app :by-rt-since-startup) "retweets2")
                      (dom/button (sort-button app :by-favorites) "favorites")))))
 
 (defn tweet-view [tweet owner]

@@ -12,8 +12,8 @@
                       :by-retweets (sorted-set-by (fn [x y] (> (:retweet_count x) (:retweet_count y))))
                       :by-favorites (sorted-set-by (fn [x y] (> (:favorite_count x) (:favorite_count y))))
                       :by-id (sorted-set-by >)
-                      :n 5
-                      :sorted :by-favorites }))
+                      :n 10
+                      :sorted :by-followers}))
 
 (om/root
   ui/tweets-view
@@ -25,12 +25,25 @@
   app-state
   {:target (. js/document (getElementById "tweet-count"))})
 
+(om/root
+  ui/sort-buttons-view
+  app-state
+  {:target (. js/document (getElementById "sort-buttons"))})
+
 (defn add-to-tweets-map [tweet]
     (swap! app-state assoc-in [:tweets-map (keyword (:id_str tweet))] (util/format-tweet tweet)))
 
 (defn add-rt-status [tweet]
   (if (contains? tweet :retweeted_status)
-    (let [rt (:retweeted_status tweet)]
+    (let [rt (:retweeted_status tweet) prev ((keyword (:id_str rt)) (:tweets-map @app-state))]
+      (if (not (nil? prev))
+        (do
+          (swap! app-state assoc :by-retweets (disj (:by-retweets @app-state)
+                                                    {:retweet_count (:retweet_count prev)
+                                                     :id (:id_str rt)})))
+          (swap! app-state assoc :by-favorites (disj (:by-favorites @app-state)
+                                                    {:favorite_count (:favorite_count prev)
+                                                     :id (:id_str rt)})))
       (add-to-tweets-map rt)
       (swap! app-state assoc :by-retweets (conj (:by-retweets @app-state)
                                              {:retweet_count (:retweet_count rt)

@@ -33,6 +33,22 @@
                   :by-retweets tweets-by-retweets
                   :by-favorites tweets-by-favorites})
 
+(defn sort-button [app key]
+  #js {:onClick (fn [e] (om/update! app [:sorted] key))
+       :className (str "btn " (if (= key (:sorted app)) "btn-primary"))})
+
+(defn sort-buttons-view [app owner]
+  "rendering sort buttons"
+  (reify
+    om/IRender
+    (render [this]
+            (dom/div #js {:className "btn-group"}
+                     (dom/button #js {:className "btn"} "Sort by")
+                     (dom/button (sort-button app :by-id) "latest")
+                     (dom/button (sort-button app :by-followers) "followers")
+                     (dom/button (sort-button app :by-retweets) "retweets")
+                     (dom/button (sort-button app :by-favorites) "favorites")))))
+
 (defn tweet-view [tweet owner]
   "rendering single tweet card"
   (reify

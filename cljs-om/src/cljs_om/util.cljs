@@ -12,9 +12,7 @@
 (defn from-now [date]
   "format date using the external moment.js library"
   (let [time-string (. (js/moment. date) (fromNow true))]
-    (if (= time-string "a few seconds")
-      "just now"
-      time-string)))
+    (if (= time-string "a few seconds") "just now" time-string)))
 
 (defn url-replacer [acc entity]
   "replace URL occurences in tweet texts with HTML (including links)"
@@ -48,9 +46,7 @@
 
 (defn entity-count [tweet sym s]
   "gets count of specified entity from either tweet, or, when exists, original (retweeted) tweet"
-  (-> (if (contains? tweet :retweeted_status)
-        (sym (:retweeted_status tweet))
-        (sym tweet))
+  (-> (if (contains? tweet :retweeted_status) (sym (:retweeted_status tweet)) (sym tweet))
       (number-format ,)
       (str , s)))
 
@@ -59,10 +55,6 @@
 
 (defn rt-count-since-startup [tweet]
   "gets RT count since startup for tweet, if exists returns formatted string"
-  (let [t (if (contains? tweet :retweeted_status)
-            (:retweeted_status tweet)
-            tweet)
+  (let [t (if (contains? tweet :retweeted_status) (:retweeted_status tweet) tweet)
         count ((keyword (:id_str t)) (:rt-since-startup @cljs-om.core/app-state))]
-    (if (> count 0)
-      (str (number-format count) " RT since startup | ")
-      "")))
+    (if (> count 0) (str (number-format count) " RT since startup | ") "")))

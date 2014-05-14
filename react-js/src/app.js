@@ -49,13 +49,6 @@
     var wordCloudElem = $("#wordCloud");
     var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, addSearchTerm, "#wordCloud");
 
-    BirdWatch.feedWordCloud = function () {
-        if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {
-            wordCloud.redraw(BirdWatch.wordcount.getWords());
-            BirdWatch.lastCloudUpdate = (new Date().getTime());
-        }
-    };
-
     $('#searchForm').submit(function (e) {
         BirdWatch.search();
         e.preventDefault();
@@ -77,7 +70,7 @@
         throttledGraph();
         BirdWatch.setTweetList(BirdWatch.crossfilter.tweetPage(activePage, pageSize.val(), sortOrder));
         BirdWatch.setPagination({live: live, numPages: BirdWatch.crossfilter.numPages(pageSize.val()), activePage: activePage});
-        BirdWatch.updateBarchart(BirdWatch.wordcount.getWords(), BirdWatch.wordcount.count);
+        BirdWatch.updateBarchart(BirdWatch.wordcount.getWords());
     }
 
     BirdWatch.sortBy = function (order) { sortOrder = order; triggerReact(); };
@@ -86,7 +79,7 @@
     BirdWatch.tweets.registerCallback(function (t) {
         BirdWatch.wordcount.insert(t);
         BirdWatch.crossfilter.add(t);
-        BirdWatch.feedWordCloud();
+        wordCloud.redraw(BirdWatch.wordcount.getWords());
         triggerReact();
     });
 

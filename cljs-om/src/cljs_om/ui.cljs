@@ -12,33 +12,22 @@
     (render [this]
       (dom/span nil (:count app)))))
 
-(defn tweets-by-followers [app n]
-  "find top n tweets by followers of the author in descending order"
-  (vec (map (fn [m] ((keyword (:id m))(:tweets-map app))) (take n (:by-followers app)))))
-
-(defn tweets-by-retweets [app n]
-  "find top n tweets by retweets in descending order"
-  (vec (map (fn [m] ((keyword (:id m)) (:tweets-map app))) (take n (:by-retweets app)))))
-
-(defn tweets-by-rt-since-startup [app n]
-  "find top n tweets by retweets in descending order"
-  (vec (map (fn [m] ((keyword (:id m)) (:tweets-map app))) (take n (:by-rt-since-startup app)))))
-
-(defn tweets-by-favorites [app n]
-  "find top n tweets by retweets in descending order"
-  (vec (map (fn [m] ((keyword (:id m))(:tweets-map app))) (take n (:by-favorites app)))))
+(defn tweets-by-order [order]
+  "find top n tweets by specified order"
+  (fn [app n]
+      (vec (map (fn [m] ((keyword (:id m))(:tweets-map app))) (take n (order app))))))
 
 (defn tweets-by-id [app n]
   "find top n tweets sorted by ID in descending order"
   (vec (map (fn [m] ((keyword m)(:tweets-map app))) (take n (:by-id app)))))
 
 (def find-tweets {:by-id tweets-by-id
-                  :by-followers tweets-by-followers
-                  :by-retweets tweets-by-retweets
-                  :by-favorites tweets-by-favorites
-                  :by-rt-since-startup tweets-by-rt-since-startup})
+                  :by-followers (tweets-by-order :by-followers)
+                  :by-retweets (tweets-by-order :by-retweets)
+                  :by-favorites (tweets-by-order :by-favorites)
+                  :by-rt-since-startup (tweets-by-order :by-rt-since-startup)})
 
-(defn sort-button [app key]
+(defn sort-button-js [app key]
   #js {:onClick (fn [e] (om/update! app [:sorted] key))
        :className (str "btn " (if (= key (:sorted app)) "btn-primary"))})
 
@@ -49,11 +38,11 @@
     (render [this]
             (dom/div #js {:className "btn-group"}
                      (dom/button #js {:className "btn"} "Sort by")
-                     (dom/button (sort-button app :by-id) "latest")
-                     (dom/button (sort-button app :by-followers) "followers")
-                     (dom/button (sort-button app :by-retweets) "retweets")
-                     (dom/button (sort-button app :by-rt-since-startup) "retweets2")
-                     (dom/button (sort-button app :by-favorites) "favorites")))))
+                     (dom/button (sort-button-js app :by-id) "latest")
+                     (dom/button (sort-button-js app :by-followers) "followers")
+                     (dom/button (sort-button-js app :by-retweets) "retweets")
+                     (dom/button (sort-button-js app :by-rt-since-startup) "retweets2")
+                     (dom/button (sort-button-js app :by-favorites) "favorites")))))
 
 (defn handle-change [e owner {:keys [text]}]
   (om/set-state! owner :text (.. e -target -value)))

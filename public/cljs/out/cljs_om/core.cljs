@@ -2,29 +2,29 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs-om.util :as util]
-            [cljs-om.ui :as ui]))
+            [cljs-om.ui :as ui]
+            [cljs-om.wordcount :as wc]))
 
 (enable-console-print!)
 
-(defn sort-by [key]
+(defn sort-by [key-a key-b]
   "sorting function, initially comparing specified key and, if equal, favors higher ID"
   (fn [x y]
-    (if (not (= (key x) (key y)))
-      (> (key x) (key y))
-      (> (:id x) (:id y)))))
+    (if (not (= (key-a x) (key-a y)))
+      (> (key-a x) (key-a y))
+      (> (key-b x) (key-b y)))))
 
-(def initial-state {:count 0
-                    :tweets-map {}
-                    :rt-since-startup {}
-                    :by-followers (sorted-set-by (sort-by :followers_count))
-                    :by-retweets (sorted-set-by (sort-by :retweet_count))
-                    :by-rt-since-startup (sorted-set-by (sort-by :count))
-                    :by-favorites (sorted-set-by (sort-by :favorite_count))
-                    :by-id (sorted-set-by >)
-                    :n 10
+(def initial-state {:count 0        :n 10
+                    :tweets-map {}  :rt-since-startup {}
+                    :search "*"     :stream nil
                     :sorted :by-followers
-                    :search "*"
-                    :stream nil})
+                    :by-followers (sorted-set-by (sort-by :followers_count :id))
+                    :by-retweets (sorted-set-by (sort-by :retweet_count :id))
+                    :by-rt-since-startup (sorted-set-by (sort-by :count :id))
+                    :by-favorites (sorted-set-by (sort-by :favorite_count :id))
+                    :by-id (sorted-set-by >)
+                    :words {}
+                    :words-sorted-by-count (sorted-set-by (sort-by :value :key))})
 
 (def app-state (atom initial-state))
 
@@ -61,15 +61,22 @@
       (mod-sort-set :by-retweets conj :retweet_count (:retweet_count rt) rt)
       (mod-sort-set :by-favorites conj :favorite_count (:favorite_count rt) rt))))
 
+(def cloud-elem (. js/document (getElementById "wordCloud")))
+(def cloud-h (aget cloud-elem "offsetWidth"))
+(def word-cloud (.WordCloud js/BirdWatch cloud-h (* cloud-h 0.7) 250 (fn [e]) "#wordCloud"))
+
 (defn add-tweet [tweet]
   "increment counter, add tweet to tweets map and to sorted sets by id and by followers"
   (swap! app-state assoc :count (inc (:count @app-state)))
   (add-to-tweets-map tweet)
   (add-rt-status tweet)
+  (wc/process-tweet app-state (:text tweet))
   (swap! app-state assoc :by-followers (conj (:by-followers @app-state)
                                              {:followers_count (:followers_count (:user tweet))
                                               :id (:id_str tweet)}))
-  (swap! app-state assoc :by-id (conj (:by-id @app-state) (:id_str tweet))) )
+  (swap! app-state assoc :by-id (conj (:by-id @app-state) (:id_str tweet)))
+  (. word-cloud (redraw (clj->js (take 250 (:words-sorted-by-count @app-state)))))
+  (.updateBarchart js/BirdWatch (clj->js (take 25 (:words-sorted-by-count @app-state)))))
 
 (defn receive-sse [e]
   "callback, called for each item (tweet) received by SSE stream"

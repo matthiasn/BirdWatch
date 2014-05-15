@@ -52,9 +52,45 @@ return cljs_om.core.mod_sort_set.call(null,new cljs.core.Keyword(null,"by-favori
 }
 });
 cljs_om.core.cloud_elem = document.getElementById("wordCloud");
-cljs_om.core.cloud_h = (cljs_om.core.cloud_elem["offsetWidth"]);
-cljs_om.core.word_cloud = BirdWatch.WordCloud(cljs_om.core.cloud_h,(cljs_om.core.cloud_h * 0.7),250,(function (e){return null;
+cljs_om.core.cloud_w = (cljs_om.core.cloud_elem["offsetWidth"]);
+cljs_om.core.word_cloud = BirdWatch.WordCloud(cljs_om.core.cloud_w,(cljs_om.core.cloud_w * 0.7),250,(function (e){return null;
 }),"#wordCloud");
+cljs_om.core.ts_elem = document.getElementById("timeseries1");
+cljs_om.core.ts_w = (cljs_om.core.ts_elem["offsetWidth"]);
+cljs_om.core.random_data = (function random_data(){var series_data = [[]];var random = (new Rickshaw.Fixtures.RandomData(150));var n__4291__auto___5993 = 100;var i_5994 = 0;while(true){
+if((i_5994 < n__4291__auto___5993))
+{random.addData(series_data);
+{
+var G__5995 = (i_5994 + 1);
+i_5994 = G__5995;
+continue;
+}
+} else
+{}
+break;
+}
+return series_data;
+});
+cljs_om.core.graph_with_legend = (function (){var series_data = [[]];var random = (new Rickshaw.Fixtures.RandomData(150));var n__4291__auto___5997 = 10;var i_5998 = 0;while(true){
+if((i_5998 < n__4291__auto___5997))
+{random.addData(series_data);
+{
+var G__5999 = (i_5998 + 1);
+i_5998 = G__5999;
+continue;
+}
+} else
+{}
+break;
+}
+var G__5996 = (new Rickshaw.Graph(cljs.core.clj__GT_js.call(null,new cljs.core.PersistentArrayMap(null, 5, [new cljs.core.Keyword(null,"element","element",3646034542),cljs_om.core.ts_elem,new cljs.core.Keyword(null,"renderer","renderer",519058485),"bar",new cljs.core.Keyword(null,"width","width",1127031096),cljs_om.core.ts_w,new cljs.core.Keyword(null,"height","height",4087841945),100,new cljs.core.Keyword(null,"series","series",4403032553),new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"color","color",1108746965),"steelblue",new cljs.core.Keyword(null,"data","data",1016980252),cljs.core.nth.call(null,series_data,0),new cljs.core.Keyword(null,"name","name",1017277949),"Tweets"], null)], null)], null))));G__5996.render();
+return G__5996;
+})();
+cljs_om.core.update = (function update(chart){(cljs_om.core.graph_with_legend["series"]["0"]["data"] = cljs.core.nth.call(null,cljs_om.core.random_data.call(null),0));
+return chart.update();
+});
+setInterval((function (){return cljs_om.core.update.call(null,cljs_om.core.graph_with_legend);
+}),5000);
 cljs_om.core.add_tweet = (function add_tweet(tweet){cljs.core.swap_BANG_.call(null,cljs_om.core.app_state,cljs.core.assoc,new cljs.core.Keyword(null,"count","count",1108755585),(new cljs.core.Keyword(null,"count","count",1108755585).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,cljs_om.core.app_state)) + 1));
 cljs_om.core.add_to_tweets_map.call(null,tweet);
 cljs_om.core.add_rt_status.call(null,tweet);

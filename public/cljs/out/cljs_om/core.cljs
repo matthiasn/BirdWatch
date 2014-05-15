@@ -62,8 +62,50 @@
       (mod-sort-set :by-favorites conj :favorite_count (:favorite_count rt) rt))))
 
 (def cloud-elem (. js/document (getElementById "wordCloud")))
-(def cloud-h (aget cloud-elem "offsetWidth"))
-(def word-cloud (.WordCloud js/BirdWatch cloud-h (* cloud-h 0.7) 250 (fn [e]) "#wordCloud"))
+(def cloud-w (aget cloud-elem "offsetWidth"))
+(def word-cloud (.WordCloud js/BirdWatch cloud-w (* cloud-w 0.7) 250 (fn [e]) "#wordCloud"))
+
+(def ts-elem (. js/document (getElementById "timeseries1")))
+(def ts-w (aget ts-elem "offsetWidth"))
+
+#_(def ts-chart (js/Rickshaw.Graph.
+                      (clj->js {:element ts-elem
+                                :renderer "bar"
+                                :width ts-w
+                                :height 100
+                                :series [{:color "steelblue"
+                                          :name "Tweets"
+                                          :data [{:x 100 :y 10} {:x 100 :y 110}]}]})))
+
+#_(Rickshaw.Graph.Axis.Time. (clj->js {:graph ts-chart}))
+#_(.render ts-chart)
+#_(def hover-detail (Rickshaw.Graph.HoverDetail. (clj->js {:graph ts-chart})))
+
+(defn random-data [] (let [series-data (array (array))
+      random (Rickshaw.Fixtures.RandomData. 150)]
+         (dotimes [i 100] (.addData random series-data))
+         series-data))
+
+;; https://gist.github.com/msgodf/8495781
+(def graph-with-legend
+  (let [series-data (array (array))
+        random (Rickshaw.Fixtures.RandomData. 150)]
+    (dotimes [i 10] (.addData random series-data))
+    (doto
+      (Rickshaw.Graph. (clj->js {:element ts-elem
+                                     :renderer "bar"
+                                     :width ts-w
+                                     :height 100
+                                     :series [{:color "steelblue"
+                                               :data (nth series-data 0)
+                                               :name "Tweets"}]}))
+      (.render))))
+
+(defn update [chart]
+  (aset graph-with-legend "series" "0" "data" (nth (random-data) 0))
+  (.update chart))
+
+(js/setInterval #(update graph-with-legend) 5000)
 
 (defn add-tweet [tweet]
   "increment counter, add tweet to tweets map and to sorted sets by id and by followers"

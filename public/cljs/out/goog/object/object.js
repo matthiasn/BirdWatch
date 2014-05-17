@@ -74,7 +74,7 @@ goog.object.filter = function(obj, f, opt_obj) {
  *     and should return something. The result will be inserted
  *     into a new object.
  * @param {T=} opt_obj This is used as the 'this' object within f.
- * @return {!Object.<T,R>} a new object with the results from f.
+ * @return {!Object.<K,R>} a new object with the results from f.
  * @template T,K,V,R
  */
 goog.object.map = function(obj, f, opt_obj) {
@@ -411,7 +411,7 @@ goog.object.get = function(obj, key, opt_val) {
  *
  * @param {Object.<K,V>} obj The object to which to add the key-value pair.
  * @param {string} key The key to add.
- * @param {K} value The value to add.
+ * @param {V} value The value to add.
  * @template K,V
  */
 goog.object.set = function(obj, key, value) {
@@ -525,10 +525,12 @@ goog.object.PROTOTYPE_FIELDS_ = [
  * var o = {};
  * goog.object.extend(o, {a: 0, b: 1});
  * o; // {a: 0, b: 1}
- * goog.object.extend(o, {c: 2});
- * o; // {a: 0, b: 1, c: 2}
+ * goog.object.extend(o, {b: 2, c: 3});
+ * o; // {a: 0, b: 2, c: 3}
  *
- * @param {Object} target  The object to modify.
+ * @param {Object} target The object to modify. Existing properties will be
+ *     overwritten if they are also present in one of the objects in
+ *     {@code var_args}.
  * @param {...Object} var_args The objects from which values will be copied.
  */
 goog.object.extend = function(target, var_args) {

@@ -1,9 +1,13 @@
 (ns cljs-om.core
+  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [cljs-om.util :as util]
             [cljs-om.ui :as ui]
-            [cljs-om.wordcount :as wc]))
+            [cljs-om.wordcount :as wc]
+            [ajax.core :refer [GET POST]]
+            [cljs.core.async :as async
+             :refer [<! >! chan close! sliding-buffer put! alts! timeout]]))
 
 (enable-console-print!)
 
@@ -120,10 +124,17 @@
   (. word-cloud (redraw (clj->js (take 250 (:words-sorted-by-count @app-state)))))
   (.updateBarchart js/BirdWatch (clj->js (take 25 (:words-sorted-by-count @app-state)))))
 
+(def tweet-chan (chan))
+(go-loop []
+         (add-tweet (<! tweet-chan))
+         (<! (timeout 0))
+         (recur))
+
+
 (defn receive-sse [e]
   "callback, called for each item (tweet) received by SSE stream"
   (let [tweet (js->clj (JSON/parse (.-data e)) :keywordize-keys true)]
-    (add-tweet tweet)))
+    (put! tweet-chan tweet)))
 
 (defn start-search [search]
   "initiate new search by starting SSE stream"
@@ -136,3 +147,36 @@
     (.addEventListener (:stream @app-state) "message" (fn [e] (receive-sse e)) false)))
 
 (start-search (subs (js/decodeURIComponent (aget js/window "location" "hash")) 2))
+
+(defn error-handler [err]
+  (print err))
+
+(defn handler [payload]
+#_(async/onto-chan tweet-chan (map #(:_source %) (:hits (:hits payload))))
+  (doseq [t (:hits (:hits payload))]
+    (put! tweet-chan (:_source t))))
+
+(defn query [query-string size from]
+  {:size size :from from
+   :query {:query_string {:default_field "text" :default_operator "AND"
+                          :query (str "(" query-string ") AND lang:en")}}
+   :sort {:id "desc"}})
+(defn prev-search [query-string size from]
+  (POST "/tweets/search"
+      {:params (query query-string size from)
+       :handler handler
+       :error-handler error-handler
+       :format :json
+       :response-format :json
+       :keywords? true}))
+
+#_(POST "/tweets/search"
+      {:params (query "*" 1000 0)
+       :handler handler
+       :error-handler error-handler
+       :format :json
+       :response-format :json
+       :keywords? true})
+
+(prev-search "*" 500 0)
+(prev-search "*" 500 500)

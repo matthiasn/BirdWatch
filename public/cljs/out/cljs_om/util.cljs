@@ -1,6 +1,9 @@
 (ns cljs-om.util
   (:require [clojure.string :as s]))
 
+(defn search-hash []
+  (subs (js/decodeURIComponent (aget js/window "location" "hash")) 2))
+
 (defn number-format [number]
   "formats a number for display, e.g. 1.7K, 122K or 1.5M followers"
   (cond
@@ -46,9 +49,9 @@
 
 (defn entity-count [tweet sym s]
   "gets count of specified entity from either tweet, or, when exists, original (retweeted) tweet"
-  (-> (if (contains? tweet :retweeted_status) (sym (:retweeted_status tweet)) (sym tweet))
-      (number-format ,)
-      (str , s)))
+  (let [rt-id (if (contains? tweet :retweeted_status) (:id_str (:retweeted_status tweet)) (:id_str tweet))
+        count (sym ((keyword rt-id) (:retweets @cljs-om.core/app-state)))]
+    (if (not (nil? count)) (str (number-format count) s) "")))
 
 (defn rt-count [tweet] (entity-count tweet :retweet_count " RT | "))
 (defn fav-count [tweet] (entity-count tweet :favorite_count " fav"))
@@ -58,3 +61,23 @@
   (let [t (if (contains? tweet :retweeted_status) (:retweeted_status tweet) tweet)
         count ((keyword (:id_str t)) (:rt-since-startup @cljs-om.core/app-state))]
     (if (> count 0) (str (number-format count) " RT since startup | ") "")))
+
+
+(defn sort-by [key-a key-b]
+  "sorting function, initially comparing specified key and, if equal, favors higher ID"
+  (fn [x y]
+    (if (not (= (key-a x) (key-a y)))
+      (> (key-a x) (key-a y))
+      (> (key-b x) (key-b y)))))
+
+(defn initial-state [] {:count 0        :n 10   :retweets {}
+                        :tweets-map {}  :rt-since-startup {}
+                        :search "*"     :stream nil
+                        :sorted :by-followers
+                        :by-followers (sorted-set-by (sort-by :followers_count :id))
+                        :by-retweets (sorted-set-by (sort-by :retweet_count :id))
+                        :by-rt-since-startup (sorted-set-by (sort-by :count :id))
+                        :by-favorites (sorted-set-by (sort-by :favorite_count :id))
+                        :by-id (sorted-set-by >)
+                        :words {}
+                        :words-sorted-by-count (sorted-set-by (sort-by :value :key))})

@@ -6,8 +6,6 @@ goog.addDependency("../cljs/core/async/impl/protocols.js", ['cljs.core.async.imp
 goog.addDependency("../cljs/core/async/impl/ioc_helpers.js", ['cljs.core.async.impl.ioc_helpers'], ['cljs.core', 'cljs.core.async.impl.protocols']);
 goog.addDependency("../cljs/core/async/impl/buffers.js", ['cljs.core.async.impl.buffers'], ['cljs.core', 'cljs.core.async.impl.protocols']);
 goog.addDependency("../om/dom.js", ['om.dom'], ['cljs.core']);
-goog.addDependency("../cljs/reader.js", ['cljs.reader'], ['goog.string', 'cljs.core']);
-goog.addDependency("../ajax/core.js", ['ajax.core'], ['goog.net.XhrManager', 'goog.net.XhrIo', 'goog.Uri.QueryData', 'goog.Uri', 'cljs.core', 'goog.net.EventType', 'goog.structs', 'goog.json.Serializer', 'clojure.string', 'cljs.reader', 'goog.events']);
 goog.addDependency("../cljs/core/async/impl/dispatch.js", ['cljs.core.async.impl.dispatch'], ['cljs.core', 'cljs.core.async.impl.buffers']);
 goog.addDependency("../cljs/core/async/impl/channels.js", ['cljs.core.async.impl.channels'], ['cljs.core.async.impl.dispatch', 'cljs.core', 'cljs.core.async.impl.buffers', 'cljs.core.async.impl.protocols']);
 goog.addDependency("../om/core.js", ['om.core'], ['cljs.core', 'om.dom', 'goog.ui.IdGenerator']);
@@ -15,4 +13,6 @@ goog.addDependency("../cljs_om/util.js", ['cljs_om.util'], ['cljs.core', 'clojur
 goog.addDependency("../cljs_om/ui.js", ['cljs_om.ui'], ['cljs.core', 'om.dom', 'om.core', 'cljs_om.util']);
 goog.addDependency("../cljs/core/async/impl/timers.js", ['cljs.core.async.impl.timers'], ['cljs.core.async.impl.channels', 'cljs.core.async.impl.dispatch', 'cljs.core', 'cljs.core.async.impl.protocols']);
 goog.addDependency("../cljs/core/async.js", ['cljs.core.async'], ['cljs.core.async.impl.channels', 'cljs.core.async.impl.dispatch', 'cljs.core', 'cljs.core.async.impl.buffers', 'cljs.core.async.impl.protocols', 'cljs.core.async.impl.ioc_helpers', 'cljs.core.async.impl.timers']);
-goog.addDependency("../cljs_om/core.js", ['cljs_om.core'], ['ajax.core', 'cljs.core', 'om.dom', 'cljs.core.async', 'cljs_om.ui', 'cljs_om.wordcount', 'om.core', 'cljs_om.util']);
+goog.addDependency("../cljs_om/ajax.js", ['cljs_om.ajax'], ['goog.net.XhrIo', 'cljs.core', 'cljs.core.async', 'goog.events.EventType', 'goog.events']);
+goog.addDependency("../cljs_om/timeseries.js", ['cljs_om.timeseries'], ['goog.net.XhrIo', 'cljs.core', 'om.dom', 'cljs_om.ajax', 'cljs.core.async', 'goog.events.EventType', 'cljs_om.ui', 'cljs_om.wordcount', 'om.core', 'goog.events', 'cljs_om.util']);
+goog.addDependency("../cljs_om/core.js", ['cljs_om.core'], ['goog.net.XhrIo', 'cljs.core', 'om.dom', 'cljs_om.ajax', 'cljs.core.async', 'cljs_om.timeseries', 'goog.events.EventType', 'cljs_om.ui', 'cljs_om.wordcount', 'om.core', 'goog.events', 'cljs_om.util']);

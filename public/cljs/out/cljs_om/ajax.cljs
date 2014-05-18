@@ -1,12 +1,9 @@
 (ns cljs-om.ajax
-  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
   (:require [goog.events :as events]
-            [cljs.core.async :as async
-             :refer [<! >! chan close! sliding-buffer put! alts! timeout]])
+            [cljs.core.async :as async :refer [put!]])
   (:import [goog.net XhrIo]
            goog.net.EventType
            [goog.events EventType]))
-
 
 (defn error-handler [err] (print err))
 (defn handler [payload]

@@ -12,10 +12,18 @@
   :source-paths ["src"]
 
   :cljsbuild {
-    :builds [{:id "cljs-om"
-              :source-paths ["src"]
-              :compiler {:output-to "../public/cljs/cljs_om.js"
-                         :output-dir "../public/cljs/out"
-                         :optimizations :none
-                         :externs ["externs.js"]
-                         :source-map true}}]})
+              :builds [{:id "dev"
+                        :source-paths ["src"]
+                        :compiler {
+                                   :output-to "../public/cljs/cljs_om.js"
+                                   :output-dir "../public/cljs/out"
+                                   :optimizations :none
+                                   :source-map true
+                                   :externs ["om/externs/react.js" "externs.js"]}}
+                       {:id "release"
+                        :source-paths ["src"]
+                        :compiler {:output-to "../public/cljs-opt/cljs_om.js"
+                                   :optimizations :advanced
+                                   :pretty-print true
+                                   ;:preamble ["react/react.min.js"]
+                                   :externs ["react/externs/react.js" "externs.js"]}}]})

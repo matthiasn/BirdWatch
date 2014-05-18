@@ -33,6 +33,7 @@ object BirdWatch extends Controller {
   def indexReactJs = Action { Ok(views.html.react_js()) }
 
   def indexCljs = Action { Ok(views.html.cljs_om()) }
+  def indexCljsOpt = Action { Ok(views.html.cljs_om_opt()) }
 
   /** Controller Action serving Tweets as JSON going backwards in time. Query passed in as JSON */
   def search =  Action.async(parse.json) {

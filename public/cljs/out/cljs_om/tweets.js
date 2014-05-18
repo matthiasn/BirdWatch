@@ -61,7 +61,7 @@ cljs.core.swap_BANG_.call(null,app,cljs.core.assoc,new cljs.core.Keyword(null,"s
 (window["location"]["hash"] = encodeURIComponent(s));
 cljs.core.swap_BANG_.call(null,app,cljs.core.assoc,new cljs.core.Keyword(null,"stream","stream",4416881394),(new EventSource([cljs.core.str("/tweetFeed?q="),cljs.core.str(s)].join(''))));
 new cljs.core.Keyword(null,"stream","stream",4416881394).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,app)).addEventListener("message",((function (s){
-return (function (p1__33802_SHARP_){return cljs_om.tweets.receive_sse.call(null,tweets_chan,p1__33802_SHARP_);
+return (function (p1__9569_SHARP_){return cljs_om.tweets.receive_sse.call(null,tweets_chan,p1__9569_SHARP_);
 });})(s))
 ,false);
 cljs_om.ajax.prev_search.call(null,"*",500,0,ajax_results_chan);

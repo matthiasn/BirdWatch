@@ -44,7 +44,7 @@
                      (dom/button (sort-button-js app :by-rt-since-startup) "retweets2")
                      (dom/button (sort-button-js app :by-favorites) "favorites")))))
 
-(defn handle-change [e owner {:keys [text]}]
+(defn handle-change [e owner]
   (om/set-state! owner :text (.. e -target -value)))
 
 (defn trigger-search [owner]

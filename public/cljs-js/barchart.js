@@ -88,8 +88,8 @@ var BirdWatch = BirdWatch || {};
                 var y = i * 15;
                 var w = bar.value / arr[0].value * (barChartElem.width() - 190);
                 return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value,
-                            posChangeDur:this.refs.posChangeDur.getDOMNode().value,
-                            ratioChangeTweets:this.refs.ratioChangeTweets.getDOMNode().value} );
+                            posChangeDur:300000,
+                            ratioChangeTweets:100} );
             }.bind(this));
             return React.DOM.div(null, 
                      React.DOM.svg( {width:"750", height:h}, 

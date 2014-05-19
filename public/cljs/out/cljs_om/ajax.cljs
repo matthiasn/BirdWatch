@@ -1,13 +1,20 @@
 (ns cljs-om.ajax
+  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [goog.events :as events]
-            [cljs.core.async :as async :refer [put!]])
+            [cljs.core.async :as async :refer [put! timeout chan]])
   (:import [goog.net XhrIo]
            goog.net.EventType
            [goog.events EventType]))
 
 (defn error-handler [err] (print err))
-(defn handler [payload]
-  (put! ajax-results-chan payload))
+
+(def ajax-results-chan (chan))
+(go-loop []
+         (let [parsed (js->clj (JSON/parse (<! ajax-results-chan)) :keywordize-keys true)]
+           (doseq [t (:hits (:hits parsed))]
+             (put! cljs-om.core/prev-tweets-chan (:_source t)))
+           (<! (timeout 1000))
+           (recur)))
 
 (defn query [query-string size from]
   {:size size :from from
@@ -25,9 +32,9 @@
       (send url (meths method) (when data (JSON/stringify (clj->js data)))
         #js {"Content-Type" "application/json"}))))
 
-(defn prev-search [query-string size from chan]
+(defn prev-search [query-string size from]
   (json-xhr
     {:method :post
      :url "/tweets/search"
      :data (query "*" size from)
-     :on-complete #(put! chan %)}))
+     :on-complete #(put! ajax-results-chan %)}))

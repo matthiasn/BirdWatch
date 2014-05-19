@@ -91,7 +91,7 @@
   "cljs.core/next", "om.core/roots", "om.core/valid?", "m",
   "cljs.core/every?", "cljs.core/keys", "om.core/id", "om.core/build*",
   "build*", "cljs.core/pr-str", "cljs.core/apply", "cljs.core/str",
-  "cljs.core/interpose", "shared", "ctor", "pure__8545__auto__",
+  "cljs.core/interpose", "shared", "ctor", "pure__8655__auto__",
   "goog/getUid", "*read-enabled*13543", "map__13544", "cljs.core/seq?",
   "cljs.core/hash-map", "init-state", "dataf", "cursor'",
   "temp__4124__auto__", "rkey", "*read-enabled*13545",

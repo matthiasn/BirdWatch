@@ -212,6 +212,8 @@ return statearr_9565;
 })();return cljs.core.async.impl.ioc_helpers.run_state_machine_wrapped.call(null,state__5640__auto__);
 });})(c__5638__auto___9566))
 );
-cljs_om.tweets.start_search.call(null,cljs_om.core.app_state,cljs_om.util.search_hash.call(null),cljs_om.core.tweets_chan);
+cljs_om.core.start_search = (function start_search(search){return cljs_om.tweets.start_search.call(null,cljs_om.core.app_state,search,cljs_om.core.tweets_chan);
+});
+cljs_om.core.start_search.call(null,cljs_om.util.search_hash.call(null));
 
 //# sourceMappingURL=core.js.map

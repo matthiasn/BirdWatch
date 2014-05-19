@@ -52,4 +52,5 @@
 (go-loop [] (tweets/add-tweet (<! combined-tweets-chan) app-state word-cloud) (recur))
 
 ;;; The app starts with the search string encoded in the URI location hash.
-(tweets/start-search app-state (util/search-hash) tweets-chan)
+(defn start-search [search] (tweets/start-search app-state search tweets-chan))
+(start-search (util/search-hash))

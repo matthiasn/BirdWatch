@@ -21,9 +21,11 @@
     var punctuation = /[!\"&()*-+,-\.\/:;<=>?\[\\\]^`“”\{|\}~]+")
 
 (defn add-word [app word]
-  (let [prev-count (get (:words @app) word)]
-    (swap! app assoc :words-sorted-by-count (disj (:words-sorted-by-count @app) {:key word :value prev-count}))
-    (swap! app assoc-in [:words word] (inc (get (:words @app) word)))
+  "add word to the words map and the sorted set with the counts (while discarding old entry)"
+  (let [prev-app @app
+        prev-count (get (:words prev-app) word)]
+    (swap! app assoc :words-sorted-by-count (disj (:words-sorted-by-count prev-app) {:key word :value prev-count}))
+    (swap! app assoc-in [:words word] (inc prev-count))
     (swap! app assoc :words-sorted-by-count (conj (:words-sorted-by-count @app) {:key word :value (+ prev-count 1)})))
   word)
 
@@ -36,7 +38,7 @@
         (filter #(< (count %) 25) ,)
         (map s/lower-case ,)
         (map #(s/replace % #"[;:,/‘’…~\-!?#<>()\"@.]+" "" ) ,)
-;        (filter #(not (re-find regex-stop-words %)) ,)
-        (filter (fn [item] (not (contains? stop-words item))) ,)
+        (filter #(not (re-find regex-stop-words %)) ,)
+;        (filter (fn [item] (not (contains? stop-words item))) ,)
         (map #(add-word app %) ,))))
 

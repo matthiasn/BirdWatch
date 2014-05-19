@@ -132,15 +132,15 @@ function Ba(a) {
   }
   return b;
 }
-var Da = "constructor hasOwnProperty isPrototypeOf propertyIsEnumerable toLocaleString toString valueOf".split(" ");
+var Ca = "constructor hasOwnProperty isPrototypeOf propertyIsEnumerable toLocaleString toString valueOf".split(" ");
 function Ea(a, b) {
   for (var c, d, e = 1;e < arguments.length;e++) {
     d = arguments[e];
     for (c in d) {
       a[c] = d[c];
     }
-    for (var g = 0;g < Da.length;g++) {
-      c = Da[g], Object.prototype.hasOwnProperty.call(d, c) && (a[c] = d[c]);
+    for (var g = 0;g < Ca.length;g++) {
+      c = Ca[g], Object.prototype.hasOwnProperty.call(d, c) && (a[c] = d[c]);
     }
   }
 }
@@ -395,7 +395,7 @@ function ob(a) {
   }
   return b.call(null, a);
 }
-var pb = {}, qb = {}, z = function() {
+var pb = {}, rb = {}, z = function() {
   function a(a, b, c) {
     if (a ? a.w : a) {
       return a.w(a, b, c);
@@ -1408,10 +1408,10 @@ var wc = function() {
   return c;
 }(), R = function() {
   function a(a, b, c) {
-    return null != a ? a && (a.l & 256 || a.Dc) ? a.w(null, b, c) : a instanceof Array ? b < a.length ? a[b] : c : "string" === typeof a ? b < a.length ? a[b] : c : r(qb, a) ? z.e(a, b, c) : u ? c : null : c;
+    return null != a ? a && (a.l & 256 || a.Dc) ? a.w(null, b, c) : a instanceof Array ? b < a.length ? a[b] : c : "string" === typeof a ? b < a.length ? a[b] : c : r(rb, a) ? z.e(a, b, c) : u ? c : null : c;
   }
   function b(a, b) {
-    return null == a ? null : a && (a.l & 256 || a.Dc) ? a.v(null, b) : a instanceof Array ? b < a.length ? a[b] : null : "string" === typeof a ? b < a.length ? a[b] : null : r(qb, a) ? z.c(a, b) : null;
+    return null == a ? null : a && (a.l & 256 || a.Dc) ? a.v(null, b) : a instanceof Array ? b < a.length ? a[b] : null : "string" === typeof a ? b < a.length ? a[b] : null : r(rb, a) ? z.c(a, b) : null;
   }
   var c = null, c = function(c, e, g) {
     switch(arguments.length) {
@@ -1536,8 +1536,8 @@ var Dc = function Bc(b, c) {
       this.Vd = h;
       this.r = 0;
       this.l = 393217;
-    }, Qa.ya = !0, Qa.xa = "cljs.core/t9792", Qa.Ba = function(b, c) {
-      return B(c, "cljs.core/t9792");
+    }, Qa.ya = !0, Qa.xa = "cljs.core/t9812", Qa.Ba = function(b, c) {
+      return B(c, "cljs.core/t9812");
     }, Qa.prototype.call = function() {
       function b(d, h) {
         d = this;
@@ -2743,31 +2743,31 @@ function Bd(a, b, c) {
   if (14 === b) {
     return a.dc ? a.dc(c, d, e, g, h, k, l, n, s, t, C, D, E, M) : a.dc ? a.dc(c, d, e, g, h, k, l, n, s, t, C, D, E, M) : a.call(null, c, d, e, g, h, k, l, n, s, t, C, D, E, M);
   }
-  var ja = nb(ta), Ca = ob(ta);
+  var ja = nb(ta), Da = ob(ta);
   if (15 === b) {
     return a.ec ? a.ec(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja) : a.ec ? a.ec(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja) : a.call(null, c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja);
   }
-  var ta = nb(Ca), Pa = ob(Ca);
+  var ta = nb(Da), Pa = ob(Da);
   if (16 === b) {
     return a.fc ? a.fc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta) : a.fc ? a.fc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta) : a.call(null, c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta);
   }
-  var Ca = nb(Pa), rb = ob(Pa);
+  var Da = nb(Pa), qb = ob(Pa);
   if (17 === b) {
-    return a.gc ? a.gc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca) : a.gc ? a.gc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca) : a.call(null, c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca);
+    return a.gc ? a.gc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da) : a.gc ? a.gc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da) : a.call(null, c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da);
   }
-  var Pa = nb(rb), Hb = ob(rb);
+  var Pa = nb(qb), Hb = ob(qb);
   if (18 === b) {
-    return a.hc ? a.hc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca, Pa) : a.hc ? a.hc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca, Pa) : a.call(null, c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca, Pa);
+    return a.hc ? a.hc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da, Pa) : a.hc ? a.hc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da, Pa) : a.call(null, c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da, Pa);
   }
-  rb = nb(Hb);
+  qb = nb(Hb);
   Hb = ob(Hb);
   if (19 === b) {
-    return a.ic ? a.ic(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca, Pa, rb) : a.ic ? a.ic(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca, Pa, rb) : a.call(null, c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca, Pa, rb);
+    return a.ic ? a.ic(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da, Pa, qb) : a.ic ? a.ic(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da, Pa, qb) : a.call(null, c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da, Pa, qb);
   }
-  var Af = nb(Hb);
+  var zf = nb(Hb);
   ob(Hb);
   if (20 === b) {
-    return a.jc ? a.jc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca, Pa, rb, Af) : a.jc ? a.jc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca, Pa, rb, Af) : a.call(null, c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Ca, Pa, rb, Af);
+    return a.jc ? a.jc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da, Pa, qb, zf) : a.jc ? a.jc(c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da, Pa, qb, zf) : a.call(null, c, d, e, g, h, k, l, n, s, t, C, D, E, M, ja, ta, Da, Pa, qb, zf);
   }
   throw Error("Only up to 20 arguments supported on functions");
 }
@@ -3140,7 +3140,7 @@ var Qd = function() {
     for (b = I(b);;) {
       if (b) {
         var k = a;
-        if (k ? k.l & 256 || k.Dc || (k.l ? 0 : r(qb, k)) : r(qb, k)) {
+        if (k ? k.l & 256 || k.Dc || (k.l ? 0 : r(rb, k)) : r(rb, k)) {
           a = R.e(a, J(b), h);
           if (h === a) {
             return c;
@@ -5729,7 +5729,7 @@ function ld(a) {
   }
   throw Error([w("Doesn't support name: "), w(a)].join(""));
 }
-function zf(a, b, c, d, e) {
+function Af(a, b, c, d, e) {
   this.k = a;
   this.start = b;
   this.end = c;
@@ -5738,7 +5738,7 @@ function zf(a, b, c, d, e) {
   this.l = 32375006;
   this.r = 8192;
 }
-f = zf.prototype;
+f = Af.prototype;
 f.toString = function() {
   return fc(this);
 };
@@ -5758,10 +5758,10 @@ f.A = function() {
   return this.k;
 };
 f.ca = function() {
-  return new zf(this.k, this.start, this.end, this.step, this.o);
+  return new Af(this.k, this.start, this.end, this.step, this.o);
 };
 f.ja = function() {
-  return 0 < this.step ? this.start + this.step < this.end ? new zf(this.k, this.start + this.step, this.end, this.step, null) : null : this.start + this.step > this.end ? new zf(this.k, this.start + this.step, this.end, this.step, null) : null;
+  return 0 < this.step ? this.start + this.step < this.end ? new Af(this.k, this.start + this.step, this.end, this.step, null) : null : this.start + this.step > this.end ? new Af(this.k, this.start + this.step, this.end, this.step, null) : null;
 };
 f.M = function() {
   return Ya(Pb(this)) ? 0 : Math.ceil((this.end - this.start) / this.step);
@@ -5786,20 +5786,20 @@ f.X = function() {
   return null == Pb(this) ? null : this.start;
 };
 f.ea = function() {
-  return null != Pb(this) ? new zf(this.k, this.start + this.step, this.end, this.step, null) : L;
+  return null != Pb(this) ? new Af(this.k, this.start + this.step, this.end, this.step, null) : L;
 };
 f.I = function() {
   return 0 < this.step ? this.start < this.end ? this : null : this.start > this.end ? this : null;
 };
 f.B = function(a, b) {
-  return new zf(b, this.start, this.end, this.step, this.o);
+  return new Af(b, this.start, this.end, this.step, this.o);
 };
 f.L = function(a, b) {
   return P(b, this);
 };
 var Bf = function() {
   function a(a, b, c) {
-    return new zf(null, a, b, c, null);
+    return new Af(null, a, b, c, null);
   }
   function b(a, b) {
     return e.e(a, b, 1);
@@ -6127,8 +6127,8 @@ p.prototype.S = !0;
 p.prototype.D = function(a, b, c) {
   return Kf(this, Y, b, c);
 };
-zf.prototype.S = !0;
-zf.prototype.D = function(a, b, c) {
+Af.prototype.S = !0;
+Af.prototype.D = function(a, b, c) {
   return Ff(b, Y, "(", " ", ")", c, this);
 };
 qf.prototype.S = !0;
@@ -6656,21 +6656,16 @@ var Wh = function() {
   c.e = a;
   return c;
 }();
-var Xh = new tf(null, new p(null, 202, ["itself", null, "us", null, "more", null, "didn't", null, "hers", null, "ours", null, "what's", null, "when's", null, "further", null, "we'll", null, "they'd", null, "his", null, "him", null, "hasn't", null, "how's", null, "are", null, "don't", null, "very", null, "you'd", null, "under", null, "who", null, "where's", null, "which", null, "we'd", null, "of", null, "this", null, "after", null, "once", null, "up", null, "off", null, "she", null, "shan't", null, 
-"nor", null, "does", null, "here's", null, "theirs", null, "via", null, "yours", null, "not", null, "mustn't", null, "it", null, "over", null, "he'd", null, "by", null, "there's", null, "she's", null, "it's", null, "is", null, "few", null, "like", null, "gonna", null, "shouldn't", null, "why", null, "doing", null, "good", null, "http", null, "about", null, "they", null, "you", null, "new", null, "its", null, "than", null, "those", null, "where", null, "we're", null, "just", null, "for", null, "should", 
-null, "they'll", null, "cannot", null, "my", null, "again", null, "themselves", null, "ourselves", null, "whom", null, "yourselves", null, "he'll", null, "they're", null, "because", null, "can't", null, "any", null, "most", null, "rt", null, "you've", null, "you're", null, "can", null, "were", null, "did", null, "was", null, "that", null, "if", null, "let", null, "same", null, "both", null, "says", null, "i'll", null, "i've", null, "doesn't", null, "don", null, "had", null, "til", null, "what", null, 
-"an", null, "or", null, "she'll", null, "have", null, "couldn't", null, "am", null, "won't", null, "their", null, "a", null, "so", null, "them", null, "that's", null, "weren't", null, "upon", null, "on", null, "own", null, "above", null, "but", null, "amp", null, "when", null, "until", null, "be", null, "having", null, "out", null, "aren't", null, "say", null, "herself", null, "and", null, "i'm", null, "do", null, "myself", null, "i", null, "down", null, "here", null, "too", null, "one", null, "between", 
-null, "such", null, "against", null, "she'd", null, "each", null, "how", null, "other", null, "from", null, "would", null, "want", null, "these", null, "while", null, "no", null, "with", null, "now", null, "some", null, "will", null, "himself", null, "all", null, "you'll", null, "wouldn't", null, "then", null, "isn't", null, "could", null, "through", null, "yourself", null, "has", null, "haven't", null, "\x26amp", null, "being", null, "our", null, "during", null, "who's", null, "shall", null, "before", 
-null, "he's", null, "only", null, "your", null, "to", null, "into", null, "use", null, "i'd", null, "get", null, "htt\u2026", null, "why's", null, "we", null, "whose", null, "as", null, "we've", null, "said", null, "ought", null, "wasn't", null, "he", null, "me", null, "at", null, "below", null, "the", null, "let's", null, "they've", null, "her", null, "been", null, "there", null, "in", null, "hadn't", null], null), null);
+var Xh = /(use|good|want|amp|just|now|like|til|new|get|one|i|me|my|myself|we|us|our|ours|ourselves|you|your|yours|yourself|yourselves|he|him|his|himself|she|her|hers|herself|it|its|itself|they|them|their|theirs|themselves|what|which|who|whom|whose|this|that|these|those|am|is|are|was|were|be|been|being|have|has|had|having|do|does|did|doing|will|would|should|can|could|ought|i'm|you're|he's|she's|it's|we're|they're|i've|you've|we've|they've|i'd|you'd|he'd|she'd|we'd|they'd|i'll|you'll|he'll|she'll|we'll|they'll|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|won't|wouldn't|shan't|shouldn't|can't|cannot|couldn't|mustn't|let's|that's|who's|what's|here's|there's|when's|where's|why's|how's|a|an|the|and|but|if|or|because|as|until|while|of|at|by|for|with|about|against|between|into|through|during|before|after|above|below|to|from|up|upon|down|in|out|on|off|over|under|again|further|then|once|here|there|when|where|why|how|all|any|both|each|few|more|most|other|some|such|no|nor|not|only|own|same|so|than|too|very|say|says|said|shall|via|htt\u2026|don|let|gonna)$\/;/;
 function Yh(a, b) {
   Df.d(Gd.c(function(b) {
-    var d = R.c(Bg.d(A(a)), b);
-    Tf.n(a, S, Eg, Fc.c(Eg.d(A(a)), new p(null, 2, [ug, b, Dg, d], null)));
-    Tf.n(a, Sd, new U(null, 2, 5, V, [Bg, b], null), R.c(Bg.d(A(a)), b) + 1);
-    Tf.n(a, S, Eg, uc.c(Eg.d(A(a)), new p(null, 2, [ug, b, Dg, d + 1], null)));
+    var d = A(a), e = R.c(Bg.d(d), b);
+    Tf.n(a, S, Eg, Fc.c(Eg.d(d), new p(null, 2, [ug, b, Dg, e], null)));
+    Tf.n(a, Sd, new U(null, 2, 5, V, [Bg, b], null), e + 1);
+    Tf.n(a, S, Eg, uc.c(Eg.d(A(a)), new p(null, 2, [ug, b, Dg, e + 1], null)));
     return b;
   }, Od(function(a) {
-    return!Uc(Xh, a);
+    return Ya(Ef(Xh, a));
   }, Gd.c(function(a) {
     return Th(a, /[;:,\/\u2018\u2019\u2026~\-!?#<>()\"@.]+/, "");
   }, Gd.c(Uh, Od(function(a) {
@@ -6722,8 +6717,8 @@ function bi(a) {
     this.Od = e;
     this.r = 0;
     this.l = 393216;
-  }, ci.ya = !0, ci.xa = "cljs.core.async.impl.ioc-helpers/t13334", ci.Ba = function(b, d) {
-    return B(d, "cljs.core.async.impl.ioc-helpers/t13334");
+  }, ci.ya = !0, ci.xa = "cljs.core.async.impl.ioc-helpers/t13354", ci.Ba = function(b, d) {
+    return B(d, "cljs.core.async.impl.ioc-helpers/t13354");
   }, ci.prototype.Kc = function() {
     return!0;
   }, ci.prototype.A = function() {
@@ -6970,8 +6965,8 @@ function zi(a) {
     this.Pd = e;
     this.r = 0;
     this.l = 425984;
-  }, Ai.ya = !0, Ai.xa = "cljs.core.async.impl.channels/t13405", Ai.Ba = function(b, d) {
-    return B(d, "cljs.core.async.impl.channels/t13405");
+  }, Ai.ya = !0, Ai.xa = "cljs.core.async.impl.channels/t13425", Ai.Ba = function(b, d) {
+    return B(d, "cljs.core.async.impl.channels/t13425");
   }, Ai.prototype.Xa = function() {
     return this.m;
   }, Ai.prototype.A = function() {
@@ -8604,8 +8599,8 @@ var Ck = function Bk(b, c) {
     this.Td = h;
     this.r = 0;
     this.l = 393216;
-  }, uk.ya = !0, uk.xa = "cljs-om.ui/t9593", uk.Ba = function(b, c) {
-    return B(c, "cljs-om.ui/t9593");
+  }, uk.ya = !0, uk.xa = "cljs-om.ui/t9611", uk.Ba = function(b, c) {
+    return B(c, "cljs-om.ui/t9611");
   }, uk.prototype.wb = !0, uk.prototype.eb = function() {
     var b = Gh.d(this.Ea), c = Hg.d(b), g = [w("http://www.twitter.com/"), w(c)].join("");
     return React.DOM.div({className:"tweet"}, React.DOM.span(null, React.DOM.a({target:"_blank", href:g}, React.DOM.img({src:ng.d(b), className:"thumbnail"}))), React.DOM.a({target:"_blank", href:g}, React.DOM.span({src:ng.d(b), className:"username"}, zg.d(b))), React.DOM.span({className:"username_screen"}, [w(" @"), w(c)].join("")), React.DOM.div({className:"pull-right timeInterval"}, fk(Nh.d(this.Ea))), React.DOM.div({className:"tweettext"}, React.DOM.div({dangerouslySetInnerHTML:{__html:Qh.d(this.Ea)}}), 
@@ -9747,8 +9742,8 @@ function Dm(a) {
     this.Nd = e;
     this.r = 0;
     this.l = 393216;
-  }, Zh.ya = !0, Zh.xa = "cljs.core.async/t10658", Zh.Ba = function(b, d) {
-    return B(d, "cljs.core.async/t10658");
+  }, Zh.ya = !0, Zh.xa = "cljs.core.async/t10678", Zh.Ba = function(b, d) {
+    return B(d, "cljs.core.async/t10678");
   }, Zh.prototype.Kc = function() {
     return!0;
   }, Zh.prototype.A = function() {
@@ -9935,8 +9930,8 @@ Zj(function Xm(b, c) {
     this.Ud = h;
     this.r = 0;
     this.l = 393216;
-  }, vk.ya = !0, vk.xa = "cljs-om.ui/t9599", vk.Ba = function(b, c) {
-    return B(c, "cljs-om.ui/t9599");
+  }, vk.ya = !0, vk.xa = "cljs-om.ui/t9617", vk.Ba = function(b, c) {
+    return B(c, "cljs-om.ui/t9617");
   }, vk.prototype.wb = !0, vk.prototype.eb = function() {
     return React.DOM.div(null, Cc.e(qi, null, Xj.c(Ck, bh.d(this.Z).call(null, xk).call(null, this.Z, Ag.d(this.Z)))));
   }, vk.prototype.A = function() {
@@ -9954,8 +9949,8 @@ Zj(function Ym(b, c) {
     this.Qd = h;
     this.r = 0;
     this.l = 393216;
-  }, rk.ya = !0, rk.xa = "cljs-om.ui/t9573", rk.Ba = function(b, c) {
-    return B(c, "cljs-om.ui/t9573");
+  }, rk.ya = !0, rk.xa = "cljs-om.ui/t9591", rk.Ba = function(b, c) {
+    return B(c, "cljs-om.ui/t9591");
   }, rk.prototype.wb = !0, rk.prototype.eb = function() {
     return React.DOM.span(null, jh.d(this.Z));
   }, rk.prototype.A = function() {
@@ -9973,8 +9968,8 @@ Zj(function Zm(b, c) {
     this.Sd = h;
     this.r = 0;
     this.l = 393216;
-  }, tk.ya = !0, tk.xa = "cljs-om.ui/t9587", tk.Ba = function(b, c) {
-    return B(c, "cljs-om.ui/t9587");
+  }, tk.ya = !0, tk.xa = "cljs-om.ui/t9605", tk.Ba = function(b, c) {
+    return B(c, "cljs-om.ui/t9605");
   }, tk.prototype.wb = !0, tk.prototype.eb = function() {
     var b = this;
     return React.DOM.div({className:"input-group"}, si.d ? si.d({onChange:function() {
@@ -10015,8 +10010,8 @@ Zj(function $m(b, c) {
     this.Rd = h;
     this.r = 0;
     this.l = 393216;
-  }, sk.ya = !0, sk.xa = "cljs-om.ui/t9579", sk.Ba = function(b, c) {
-    return B(c, "cljs-om.ui/t9579");
+  }, sk.ya = !0, sk.xa = "cljs-om.ui/t9597", sk.Ba = function(b, c) {
+    return B(c, "cljs-om.ui/t9597");
   }, sk.prototype.wb = !0, sk.prototype.eb = function() {
     return React.DOM.div({className:"btn-group"}, React.DOM.button({className:"btn"}, "Sort by"), React.DOM.button(yk(this.Z, kg), "latest"), React.DOM.button(yk(this.Z, Cg), "followers"), React.DOM.button(yk(this.Z, Og), "retweets"), React.DOM.button(yk(this.Z, $g), "retweets2"), React.DOM.button(yk(this.Z, pg), "favorites"));
   }, sk.prototype.A = function() {

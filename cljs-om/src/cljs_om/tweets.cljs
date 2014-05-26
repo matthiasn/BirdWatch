@@ -61,5 +61,4 @@
     (aset js/window "location" "hash" (js/encodeURIComponent s))
     (swap! app assoc :stream (js/EventSource. (str "/tweetFeed?q=" s)))
     (.addEventListener (:stream @app) "message" #(receive-sse tweets-chan %) false)
-    (doall (for [x (range 10)] (ajax/prev-search search 100 (* 100 x))))))
-;
+    (doall (for [x (range 10)] (ajax/prev-search search 200 (* 200 x))))))

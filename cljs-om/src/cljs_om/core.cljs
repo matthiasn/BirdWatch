@@ -1,5 +1,5 @@
 (ns cljs-om.core
-  (:require-macros [cljs.core.async.macros :refer [go-loop]])
+  (:require-macros [cljs.core.async.macros :refer [go-loop alt!]])
   (:require [om.core :as om :include-macros true]
             [cljs-om.util :as util]
             [cljs-om.timeseries :as ts]
@@ -33,7 +33,20 @@
 ;;; Channels for handling information flow in the application.
 (def tweets-chan (chan 10000))
 (def prev-tweets-chan (chan 100000))
-(def combined-tweets-chan (chan 1))
+(def combined-tweets-chan (chan 100000))
+
+(go-loop []
+ (let [[t chan] (alts! [tweets-chan prev-tweets-chan] :priority)]
+   ;(tweets/add-tweet t app-state word-cloud)
+   (put! combined-tweets-chan t)
+    (<! (timeout 0))
+  #_ (if (= chan prev-tweets-chan)
+        (<! (timeout 100))
+;     (put! combined-tweets-chan (<! (timeout 100)))
+
+     )
+
+   (recur)))
 
 (defn fwd [from to ms]
   "helper for forwarding message from one channel to another with the specified timeout"
@@ -45,8 +58,8 @@
 ;;; tweets-chan and prev-tweets-chan forward all messages to combined-tweets-chan, with
 ;;; messages from prev-tweets-chan having a delay so that messages from tweets-chan are
 ;;; always prioritized (tried alt! with :priority but couldn't make it work)
-(fwd tweets-chan combined-tweets-chan 0)
-(fwd prev-tweets-chan combined-tweets-chan 10)
+;(fwd tweets-chan combined-tweets-chan 0)
+;(fwd prev-tweets-chan combined-tweets-chan 0)
 
 ;;; loop taking messages off of combined-tweets-chan and adding each into app state.
 (go-loop [] (tweets/add-tweet (<! combined-tweets-chan) app-state word-cloud) (recur))

@@ -4,11 +4,13 @@ import play.api.mvc.{Request, AnyContent}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{JsValue, JsArray, Json}
 import play.api.libs.ws.WS
+import play.api.Logger
 
 import org.joda.time.{DateTimeZone, DateTime}
 import org.joda.time.format.{DateTimeFormat, ISODateTimeFormat}
+import java.net.URLEncoder
 
-object Logger {
+object LogstashLogger {
   val elasticLogURL = Conf.get("elastic.LogURL")
   val instanceID = Conf.getOrEmpty("application.instanceID")
 
@@ -23,6 +25,8 @@ object Logger {
     **/
   def log(sourcePath: String, msg: String, eventType: String, fields: Option[JsValue]) {
     val now = new DateTime(DateTimeZone.UTC)
+    Logger.info(s"$sourcePath - $msg")
+    Logger.debug(s"$sourcePath - $msg - $fields")
     val logItem = Json.obj(
       "@source" -> instanceID,
       "@tags" -> JsArray(),
@@ -56,9 +60,13 @@ object Logger {
       "duration_ms" -> duration
     )
 
-    /** freegeoip needs IPv4 addresses, ignore local requests with IPv6 addresses for logging */
+    /** freegeoip needs IPv4 addresses, ignore local requests with IPv6 addresses for logging and only use first address
+      * if multiple exist in comma separated string */
     if (!req.remoteAddress.contains(":")) {
-      val geoRequest = WS.url("http://freegeoip.net/json/" + req.remoteAddress).withRequestTimeout(2000).get()
+      val geoRequest =
+        WS.url("http://freegeoip.net/json/" + URLEncoder.encode(req.remoteAddress.split(",")(0), "UTF-8"))
+          .withRequestTimeout(2000)
+          .get()
 
       /** log with geo data if service accessible */
       geoRequest.onSuccess {

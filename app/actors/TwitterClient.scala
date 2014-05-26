@@ -6,6 +6,7 @@ import play.api.libs.iteratee.{Concurrent, Iteratee}
 import play.api.libs.ws.WS
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.oauth.OAuthCalculator
+import play.api.Logger
 
 import org.joda.time.DateTime
 import java.net.URLEncoder
@@ -42,7 +43,7 @@ object TwitterClient {
 
   /** system-wide channels / enumerators for attaching SSE streams to clients*/
   val (jsonTweetsOut, jsonTweetsChannel) = Concurrent.broadcast[Matches]
-  
+
   /** Subscription topics stored in this MUTABLE collection */
   val topics: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
   val users: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
@@ -61,15 +62,16 @@ object TwitterClient {
       val json = Json.parse(ts)
       (json \ "id_str").asOpt[String].map { id => WS.url(elasticTweetURL + id).put(json) }
       matchAndPush(json)
+      Logger.debug(s"Added tweet with ${ts.length} characters overall.")
       chunkStringCache = ""
       chunks = 0
       supervisor ! TweetReceived
     }
     catch {
-      case e: Exception => {
-        println(e)
-        println(chunkStringCache)
-        if (chunks > 3 || chunkStringCache.charAt(0) != '{') {
+      case t: Throwable => {
+        Logger.debug(s"Error parsing JSON, chunkStringCache size: ${chunkStringCache.length} \n $t")
+
+        if (chunks > 4 || chunkStringCache.charAt(0) != '{') {
           chunkStringCache = ""
           chunks = 0
         }
@@ -78,39 +80,48 @@ object TwitterClient {
 
   }
 
-  /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks 
+  /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks
     * as Tweet instances and publishes them to eventStream. */
-  val tweetIteratee = Iteratee.foreach[Array[Byte]] {
+  def tweetIteratee(started: DateTime) = Iteratee.foreach[Array[Byte]] {
     chunk => {
       val chunkString = new String(chunk, "UTF-8")
-      if (chunkString.contains("Easy there, Turbo. Too many requests recently. Enhance your calm.")) {
+
+      Logger.debug(s"Received: ${chunkString.size} characters")
+
+      if (chunkString.contains("Easy there, Turbo. Too many requests recently. Enhance your calm.")
+        || chunkString.contains("Exceeded connection limit for user")) {
         supervisor ! BackOff
-        println("\n" + chunkString + "\n")
+        Logger.info(s"$chunkString. \n Connection alive since $started")
       } else {
         chunkStringCache = chunkStringCache + chunkString // concatenate chunk cache and current chunk
         chunks = chunks + 1
+
         if (isCompleteTweet(chunkStringCache)) {
+          Logger.debug(s"Received ${chunkStringCache.length} Bytes. Connection alive since $started")
           processTweetString(chunkStringCache)
         }
       }
     }
   }
-  
+
   /** Starts new WS connection to Twitter Streaming API. Twitter disconnects the previous one automatically.
     * Can this be ended explicitly from here though, without resetting the whole underlying client? */
   def start() {
-    println("Starting client for topics " + topics)
-    println("Starting client for users " + users)
+    Logger.info(s"Starting new client")
 
     val topicString = URLEncoder.encode(topics.mkString("%2C"), "UTF-8")
     val userString = URLEncoder.encode(users.mkString("%2C"), "UTF-8")
     val url = twitterURL + "track=" + topicString + "&follow=" + userString
-    WS.url(url).withRequestTimeout(-1).sign(OAuthCalculator(Conf.consumerKey, Conf.accessToken)).get(_ => tweetIteratee)
+
+    WS.url(url)
+      .withRequestTimeout(-1)
+      .sign(OAuthCalculator(Conf.consumerKey, Conf.accessToken))
+      .get(_ => tweetIteratee(DateTime.now))
   }
 
   /** Actor taking care of monitoring the WS connection */
   class Supervisor(eventStream: akka.event.EventStream) extends Actor {
-    var lastTweetReceived = 0L 
+    var lastTweetReceived = 0L
     var lastBackOff = 0L
 
     /** Receives control messages for starting / restarting supervised client and adding or removing topics */
@@ -120,13 +131,13 @@ object TwitterClient {
       case RemoveTopic(topic) => topics.remove(topic)
       case Start => start()
       case CheckStatus => if (now - lastTweetReceived > retryInterval && now - lastBackOff > backOffInterval) start()
-      case BackOff => lastBackOff = now  
-      case TweetReceived => lastTweetReceived = now   
+      case BackOff => lastBackOff = now
+      case TweetReceived => lastTweetReceived = now
     }
   }
 
   /** Takes JSON and matches it with percolation queries in ElasticSearch
-    * @param json JsValue to match against 
+    * @param json JsValue to match against
     */
   def matchAndPush(json: JsValue): Unit = {
     WS.url(elasticPercolatorURL).post(Json.obj("doc" -> json)).map {

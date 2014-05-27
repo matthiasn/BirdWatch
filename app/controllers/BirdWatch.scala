@@ -10,7 +10,7 @@ import play.api.libs.ws.WS
 import scala.language.reflectiveCalls
 
 import actors.TwitterClient
-import utilities.{Conf, Logger}
+import utilities.{LogstashLogger, Conf}
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTimeZone, DateTime}
 import java.security.MessageDigest
@@ -32,33 +32,43 @@ object BirdWatch extends Controller {
   /** Controller action serving ReactJS page */
   def indexReactJs = Action { Ok(views.html.react_js()) }
 
-  def indexCljs = Action { Ok(views.html.cljs_om()) }
+  /** Controller action serving Om pages */
+  def indexCljs    = Action { Ok(views.html.cljs_om()) }
   def indexCljsOpt = Action { Ok(views.html.cljs_om_opt()) }
 
   /** Controller Action serving Tweets as JSON going backwards in time. Query passed in as JSON */
-  def search =  Action.async(parse.json) {
-    req => WS.url(elasticTweetURL + "_search").post(req.body).map { res => Ok(res.body) }
+  def search = Action.async(parse.json) {
+    req => WS.url(elasticTweetURL + "_search").post(req.body).map {
+      res => Ok(res.body)
+    }
   }
 
   /** calculates milliseconds between passed in DateTime and time of function call */
   def duration(since: DateTime) = DateTime.now.getMillis - since.getMillis
-  
+
   /** Enumeratee for detecting disconnect of SSE stream */
   def connDeathWatch(req: Request[AnyContent], since: DateTime): Enumeratee[JsValue, JsValue] =
-    Enumeratee.onIterateeDone { () => Logger.logRequest(req, "SSE disconnected", 200, duration(since))}
-  
+    Enumeratee.onIterateeDone {
+      () => LogstashLogger.logRequest(req, "SSE disconnected", 200, duration(since))
+    }
+
   /** Filtering Enumeratee applying containsAll function */
-  def matchesFilter(qID: String) = Enumeratee.filter[Matches] { pm => pm.matches.contains(qID) }
+  def matchesFilter(qID: String) = Enumeratee.filter[Matches] {
+    pm => pm.matches.contains(qID)
+  }
 
   /** Enumeratee: TweetMatches to Tweet adapter */
-  val matchesToJson: Enumeratee[Matches, JsValue] = Enumeratee.map[Matches] { pm => pm.json }
+  val matchesToJson: Enumeratee[Matches, JsValue] = Enumeratee.map[Matches] {
+    pm => pm.json
+  }
 
   /** Serves Tweets as Server Sent Events over HTTP connection TODO: change to POST */
-  def tweetFeed(q: String) = Action.async { req => {
-      Logger.logRequest(req, "/tweetFeed?q=" + q, 200, 0)
+  def tweetFeed(q: String) = Action.async {
+    req =>
+      LogstashLogger.logRequest(req, "/tweetFeed?q=" + q, 200, 0)
 
       val query = Json.obj("query" -> Json.obj("query_string" -> Json.obj("default_field" -> "text",
-          "default_operator" -> "AND", "query" -> ("(" + q + ") AND lang:en"))), 
+        "default_operator" -> "AND", "query" -> ("(" + q + ") AND lang:en"))),
         "timestamp" -> dtFormat.print(new DateTime(DateTimeZone.UTC)))
 
       /** identify queries by hash, only store unique queries once */
@@ -66,14 +76,13 @@ object BirdWatch extends Controller {
       val queryID = md.digest(q.getBytes).map("%02x".format(_)).mkString
 
       WS.url(PercolationQueryURL + queryID).put(query).map {
-        res => Ok.feed(TwitterClient.jsonTweetsOut     
-          &> matchesFilter(queryID)  
+        res => Ok.feed(TwitterClient.jsonTweetsOut
+          &> matchesFilter(queryID)
           &> Concurrent.buffer(1000)
           &> matchesToJson
-          &> connDeathWatch(req, new DateTime(DateTimeZone.UTC)  )
-          &> EventSource()).as("text/event-stream")       
+          &> connDeathWatch(req, new DateTime(DateTimeZone.UTC))
+          &> EventSource()).as("text/event-stream")
       }
-    }
-  }  
-  
+  }
+
 }

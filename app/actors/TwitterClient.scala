@@ -51,9 +51,9 @@ object TwitterClient {
   var chunkStringCache = ""
   var chunks = 0
 
-  /** naive check if tweet string contains valid json: curly braces plus ends with LF */
-  def isCompleteTweet(ts: String): Boolean = {
-    ts.charAt(0) == '{' && ts.charAt(ts.length-3) == '}' && ts.charAt(ts.length-1).toInt == 10
+  def resetCache(): Unit = {
+    chunkStringCache = ""
+    chunks = 0
   }
 
   /** parse and persist tweet, push onto channel, catch potential exception */
@@ -63,30 +63,28 @@ object TwitterClient {
       (json \ "id_str").asOpt[String].map { id => WS.url(elasticTweetURL + id).put(json) }
       matchAndPush(json)
       Logger.debug(s"Added tweet with ${ts.length} characters overall.")
-      chunkStringCache = ""
-      chunks = 0
       supervisor ! TweetReceived
+      resetCache()
     }
     catch {
       case t: Throwable => {
         Logger.debug(s"Error parsing JSON, chunkStringCache size: ${chunkStringCache.length} \n $t")
 
-        if (chunks > 4 || chunkStringCache.charAt(0) != '{') {
-          chunkStringCache = ""
-          chunks = 0
-        }
+        if (chunks > 4 || chunkStringCache.charAt(0) != '{') resetCache()
       }
     }
 
   }
 
   /** Iteratee for processing each chunk from Twitter stream of Tweets. Parses Json chunks
-    * as Tweet instances and publishes them to eventStream. */
+    * as Tweet instances and publishes them to eventStream. As of Q2 / 2014, the streaming API occasionally
+    * sends incomplete JSON per chunk so that an entire tweet can stretch out over multiple chunks.
+    * In order to make the parsing work, there is now a cache that holds multiple chunks until JSON
+    * can be parsed successfully or the cache has more than 4 chunks, in which case something has likely
+    * gone wrong. */
   def tweetIteratee(started: DateTime) = Iteratee.foreach[Array[Byte]] {
     chunk => {
       val chunkString = new String(chunk, "UTF-8")
-
-      Logger.debug(s"Received: ${chunkString.size} characters")
 
       if (chunkString.contains("Easy there, Turbo. Too many requests recently. Enhance your calm.")
         || chunkString.contains("Exceeded connection limit for user")) {
@@ -96,10 +94,11 @@ object TwitterClient {
         chunkStringCache = chunkStringCache + chunkString // concatenate chunk cache and current chunk
         chunks = chunks + 1
 
-        if (isCompleteTweet(chunkStringCache)) {
-          Logger.debug(s"Received ${chunkStringCache.length} Bytes. Connection alive since $started")
-          processTweetString(chunkStringCache)
-        }
+        Logger.debug(s"Received ${chunkString.length} characters. Connection alive since $started")
+        Logger.debug(s"chunkStringCache size: ${chunkStringCache.length}")
+
+        if (chunkStringCache.charAt(0) == '{') processTweetString(chunkStringCache)
+        else resetCache()
       }
     }
   }

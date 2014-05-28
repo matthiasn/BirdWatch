@@ -5,7 +5,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2202"]
                  [org.clojure/core.async "0.1.303.0-886421-alpha"]
-                 [om "0.6.2"]]
+                 [om "0.6.4"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]]
 
@@ -19,11 +19,10 @@
                                    :output-dir "../public/cljs/out"
                                    :optimizations :none
                                    :source-map true
-                                   :externs ["om/externs/react.js" "externs.js"]}}
+                                   :externs ["react/externs/react.js" "externs.js"]}}
                        {:id "release"
                         :source-paths ["src"]
                         :compiler {:output-to "../public/cljs-opt/cljs_om.js"
                                    :optimizations :advanced
-                                   :pretty-print true
                                    ;:preamble ["react/react.min.js"]
-                                   :externs ["react/externs/react.js" "externs.js"]}}]})
+                                   :externs ["react/externs/react.min.js" "externs.js"]}}]})

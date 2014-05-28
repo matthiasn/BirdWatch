@@ -10,6 +10,6 @@
   "js/document", "cljs-om.timeseries/ts-w",
   "cljs-om.timeseries/random-data", "series-data", "random",
   "Rickshaw/Fixtures.RandomData", "n__4329__auto__", "i",
-  "cljs-om.timeseries/graph-with-legend", "G__9574", "Rickshaw/Graph",
+  "cljs-om.timeseries/graph-with-legend", "G__9573", "Rickshaw/Graph",
   "cljs.core/clj->js", "cljs.core/nth", "cljs-om.timeseries/update",
   "chart"]}

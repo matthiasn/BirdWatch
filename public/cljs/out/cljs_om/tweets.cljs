@@ -18,12 +18,14 @@
   "handles original, retweeted tweet"
   (if (contains? tweet :retweeted_status)
     (let [state @app
-          rt (:retweeted_status tweet)   rt-id (keyword (:id_str rt))
-          prev (rt-id (:retweets state)) prev-rt-count (rt-id (:rt-since-startup state))]
+          rt (:retweeted_status tweet)
+          rt-id (keyword (:id_str rt))
+          prev (rt-id (:retweets state))
+          prev-rt-count (rt-id (:rt-since-startup state))]
       (when (not (nil? prev))
           (mod-sort-set app :by-retweets disj :retweet_count (:retweet_count prev) rt)
           (mod-sort-set app :by-favorites disj :favorite_count (:favorite_count prev) rt))
-      (if (not (nil? prev-rt-count))
+      (when (not (nil? prev-rt-count))
         (mod-sort-set app :by-rt-since-startup disj :count prev-rt-count rt))
       (swap! app assoc-in [:rt-since-startup rt-id]
              (inc prev-rt-count))
@@ -61,4 +63,4 @@
     (aset js/window "location" "hash" (js/encodeURIComponent s))
     (swap! app assoc :stream (js/EventSource. (str "/tweetFeed?q=" s)))
     (.addEventListener (:stream @app) "message" #(receive-sse tweets-chan %) false)
-    (doall (for [x (range 10)] (ajax/prev-search search 200 (* 200 x))))))
+    (doall (for [x (range 25)] (ajax/prev-search search 200 (* 200 x))))))

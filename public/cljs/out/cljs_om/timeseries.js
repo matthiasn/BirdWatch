@@ -23,12 +23,12 @@ goog.require('cljs_om.util');
 cljs.core.enable_console_print_BANG_.call(null);
 cljs_om.timeseries.ts_elem = document.getElementById("timeseries1");
 cljs_om.timeseries.ts_w = (cljs_om.timeseries.ts_elem["offsetWidth"]);
-cljs_om.timeseries.random_data = (function random_data(){var series_data = [[]];var random = (new Rickshaw.Fixtures.RandomData(150));var n__4329__auto___9571 = 100;var i_9572 = 0;while(true){
-if((i_9572 < n__4329__auto___9571))
+cljs_om.timeseries.random_data = (function random_data(){var series_data = [[]];var random = (new Rickshaw.Fixtures.RandomData(150));var n__4329__auto___9570 = 100;var i_9571 = 0;while(true){
+if((i_9571 < n__4329__auto___9570))
 {random.addData(series_data);
 {
-var G__9573 = (i_9572 + 1);
-i_9572 = G__9573;
+var G__9572 = (i_9571 + 1);
+i_9571 = G__9572;
 continue;
 }
 } else
@@ -37,20 +37,20 @@ break;
 }
 return series_data;
 });
-cljs_om.timeseries.graph_with_legend = (function (){var series_data = [[]];var random = (new Rickshaw.Fixtures.RandomData(150));var n__4329__auto___9575 = 10;var i_9576 = 0;while(true){
-if((i_9576 < n__4329__auto___9575))
+cljs_om.timeseries.graph_with_legend = (function (){var series_data = [[]];var random = (new Rickshaw.Fixtures.RandomData(150));var n__4329__auto___9574 = 10;var i_9575 = 0;while(true){
+if((i_9575 < n__4329__auto___9574))
 {random.addData(series_data);
 {
-var G__9577 = (i_9576 + 1);
-i_9576 = G__9577;
+var G__9576 = (i_9575 + 1);
+i_9575 = G__9576;
 continue;
 }
 } else
 {}
 break;
 }
-var G__9574 = (new Rickshaw.Graph(cljs.core.clj__GT_js.call(null,new cljs.core.PersistentArrayMap(null, 5, [new cljs.core.Keyword(null,"element","element",3646034542),cljs_om.timeseries.ts_elem,new cljs.core.Keyword(null,"renderer","renderer",519058485),"bar",new cljs.core.Keyword(null,"width","width",1127031096),cljs_om.timeseries.ts_w,new cljs.core.Keyword(null,"height","height",4087841945),100,new cljs.core.Keyword(null,"series","series",4403032553),new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"color","color",1108746965),"steelblue",new cljs.core.Keyword(null,"data","data",1016980252),cljs.core.nth.call(null,series_data,0),new cljs.core.Keyword(null,"name","name",1017277949),"Tweets"], null)], null)], null))));G__9574.render();
-return G__9574;
+var G__9573 = (new Rickshaw.Graph(cljs.core.clj__GT_js.call(null,new cljs.core.PersistentArrayMap(null, 5, [new cljs.core.Keyword(null,"element","element",3646034542),cljs_om.timeseries.ts_elem,new cljs.core.Keyword(null,"renderer","renderer",519058485),"bar",new cljs.core.Keyword(null,"width","width",1127031096),cljs_om.timeseries.ts_w,new cljs.core.Keyword(null,"height","height",4087841945),100,new cljs.core.Keyword(null,"series","series",4403032553),new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"color","color",1108746965),"steelblue",new cljs.core.Keyword(null,"data","data",1016980252),cljs.core.nth.call(null,series_data,0),new cljs.core.Keyword(null,"name","name",1017277949),"Tweets"], null)], null)], null))));G__9573.render();
+return G__9573;
 })();
 cljs_om.timeseries.update = (function update(chart){(cljs_om.timeseries.graph_with_legend["series"]["0"]["data"] = cljs.core.nth.call(null,cljs_om.timeseries.random_data.call(null),0));
 return chart.update();

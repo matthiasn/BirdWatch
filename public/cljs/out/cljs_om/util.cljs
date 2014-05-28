@@ -63,7 +63,7 @@
     (if (> count 0) (str (number-format count) " RT since startup | ") "")))
 
 
-(defn sort-by [key-a key-b]
+(defn sorted-by [key-a key-b]
   "sorting function, initially comparing specified key and, if equal, favors higher ID"
   (fn [x y]
     (if (not (= (key-a x) (key-a y)))
@@ -74,10 +74,10 @@
                         :tweets-map {}  :rt-since-startup {}
                         :search "*"     :stream nil
                         :sorted :by-id
-                        :by-followers (sorted-set-by (sort-by :followers_count :id))
-                        :by-retweets (sorted-set-by (sort-by :retweet_count :id))
-                        :by-rt-since-startup (sorted-set-by (sort-by :count :id))
-                        :by-favorites (sorted-set-by (sort-by :favorite_count :id))
+                        :by-followers (sorted-set-by (sorted-by :followers_count :id))
+                        :by-retweets (sorted-set-by (sorted-by :retweet_count :id))
+                        :by-rt-since-startup (sorted-set-by (sorted-by :count :id))
+                        :by-favorites (sorted-set-by (sorted-by :favorite_count :id))
                         :by-id (sorted-set-by >)
                         :words {}
-                        :words-sorted-by-count (sorted-set-by (sort-by :value :key))})
+                        :words-sorted-by-count (sorted-set-by (sorted-by :value :key))})

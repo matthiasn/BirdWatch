@@ -11,8 +11,8 @@
   "prev-app", "prev-count", "cljs.core/get", "cljs.core/swap!",
   "cljs.core/assoc", "cljs.core/disj", "cljs.core/assoc-in",
   "cljs.core/conj", "cljs-om.wordcount/process-tweet", "text",
-  "cljs.core/doall", "clojure.string/split", "p1__9622#",
+  "cljs.core/doall", "clojure.string/split", "p1__9621#",
   "cljs.core/filter", "cljs.core/not", "cljs.core/re-find",
-  "p1__9623#", "cljs.core/count", "p1__9624#", "cljs.core/map",
-  "clojure.string/lower-case", "p1__9625#", "clojure.string/replace",
-  "p1__9626#", "p1__9627#"]}
+  "p1__9622#", "cljs.core/count", "p1__9623#", "cljs.core/map",
+  "clojure.string/lower-case", "p1__9624#", "clojure.string/replace",
+  "p1__9625#", "p1__9626#"]}

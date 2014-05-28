@@ -73,7 +73,7 @@
 (defn initial-state [] {:count 0        :n 10   :retweets {}
                         :tweets-map {}  :rt-since-startup {}
                         :search "*"     :stream nil
-                        :sorted :by-followers
+                        :sorted :by-id
                         :by-followers (sorted-set-by (sort-by :followers_count :id))
                         :by-retweets (sorted-set-by (sort-by :retweet_count :id))
                         :by-rt-since-startup (sorted-set-by (sort-by :count :id))

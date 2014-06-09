@@ -18,11 +18,10 @@
                                    :output-to "../public/cljs/cljs_om.js"
                                    :output-dir "../public/cljs/out"
                                    :optimizations :none
-                                   :source-map true
-                                   :externs ["react/externs/react.js" "externs.js"]}}
+                                   :source-map true}}
                        {:id "release"
                         :source-paths ["src"]
                         :compiler {:output-to "../public/cljs-opt/cljs_om.js"
                                    :optimizations :advanced
                                    ;:preamble ["react/react.min.js"]
-                                   :externs ["react/externs/react.min.js" "externs.js"]}}]})
+                                   :externs ["externs/react.js" "externs/misc.js"]}}]})

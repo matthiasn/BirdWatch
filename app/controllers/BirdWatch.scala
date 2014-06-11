@@ -2,7 +2,7 @@ package controllers
 
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.iteratee.{Concurrent, Enumeratee}
+import play.api.libs.iteratee.{Enumerator, Concurrent, Enumeratee}
 import play.api.mvc.{AnyContent, Request, Action, Controller}
 import play.api.libs.EventSource
 import play.api.libs.ws.WS
@@ -15,6 +15,7 @@ import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTimeZone, DateTime}
 import java.security.MessageDigest
 import models.Matches
+import play.api.templates.Html
 
 /** Controller for serving main BirdWatch page including the SSE connection */
 object BirdWatch extends Controller {
@@ -60,6 +61,8 @@ object BirdWatch extends Controller {
     pm => pm.json
   }
 
+  val padding = Enumerator(Array.fill[Char](2*1024)(' ').mkString)
+
   /** Serves Tweets as Server Sent Events over HTTP connection TODO: change to POST */
   def tweetFeed(q: String) = Action.async {
     req =>
@@ -74,12 +77,15 @@ object BirdWatch extends Controller {
       val queryID = md.digest(q.getBytes).map("%02x".format(_)).mkString
 
       WS.url(PercolationQueryURL + queryID).put(query).map {
-        res => Ok.feed(TwitterClient.jsonTweetsOut
-          &> matchesFilter(queryID)
-          &> Concurrent.buffer(1000)
-          &> matchesToJson
-          &> connDeathWatch(req, new DateTime(DateTimeZone.UTC))
-          &> EventSource()).as("text/event-stream")
+        res => Ok.feed(
+          padding andThen
+            TwitterClient.jsonTweetsOut
+              &> matchesFilter(queryID)
+              &> Concurrent.buffer(1000)
+              &> matchesToJson
+              &> connDeathWatch(req, new DateTime(DateTimeZone.UTC))
+              &> EventSource()
+        ).as("text/event-stream")
       }
   }
 

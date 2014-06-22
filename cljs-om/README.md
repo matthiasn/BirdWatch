@@ -2,6 +2,7 @@
 
 Compile with:
 
-    lein cljsbuild auto
+    lein cljsbuild auto dev
+    lein cljsbuild auto release
 
 

@@ -1,8 +1,9 @@
 (ns cljs-om.util
-  (:require [clojure.string :as s]))
+  (:require [clojure.string :as s]
+            [tailrecursion.priority-map :refer [priority-map-by]]))
 
 (defn search-hash []
-  (subs (js/decodeURIComponent (aget js/window "location" "hash")) 2))
+  (subs (js/decodeURIComponent (aget js/window "location" "hash")) 1))
 
 (defn number-format [number]
   "formats a number for display, e.g. 1.7K, 122K or 1.5M followers"
@@ -59,27 +60,20 @@
 (defn rt-count-since-startup [tweet]
   "gets RT count since startup for tweet, if exists returns formatted string"
   (let [t (if (contains? tweet :retweeted_status) (:retweeted_status tweet) tweet)
-        count ((keyword (:id_str t)) (:rt-since-startup @cljs-om.core/app-state))]
+        count ((keyword (:id_str t)) (:by-rt-since-startup @cljs-om.core/app-state))]
     (if (> count 0) (str (number-format count) " RT since startup | ") "")))
 
-
-(defn sorted-by [key-a key-b]
-  "sorting function, initially comparing specified key and, if equal, favors higher ID"
-  (fn [x y]
-    (if (not (= (key-a x) (key-a y)))
-      (> (key-a x) (key-a y))
-      (> (key-b x) (key-b y)))))
+(defn swap-pmap [app priority-map id n]
+  "swaps item in priority-map"
+  (swap! app assoc priority-map (assoc (priority-map @app) id n)))
 
 (defn initial-state [] {:count 0        :n 10   :retweets {}
-                        :tweets-map {}  :rt-since-startup {}
+                        :tweets-map {}
                         :search "*"     :stream nil
                         :sorted :by-id
-                        :by-followers (sorted-set-by (sorted-by :followers_count :id))
-                        :by-retweets (sorted-set-by (sorted-by :retweet_count :id))
-                        :by-rt-since-startup (sorted-set-by (sorted-by :count :id))
-                        :by-favorites (sorted-set-by (sorted-by :favorite_count :id))
-                        :by-id (sorted-set-by >)
-                        :words {}
-                        :words-sorted-by-count (sorted-set-by (sorted-by :value :key))})
-
-()
+                        :by-followers (priority-map-by >)
+                        :by-retweets (priority-map-by >)
+                        :by-favorites (priority-map-by >)
+                        :by-rt-since-startup (priority-map-by >)
+                        :by-id (priority-map-by >)
+                        :words-sorted-by-count (priority-map-by >)})

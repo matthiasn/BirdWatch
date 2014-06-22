@@ -4,6 +4,7 @@
             [cljs-om.util :as util]
             [cljs-om.timeseries :as ts]
             [cljs-om.tweets :as tweets]
+            [cljs-om.wordcount :as wc]
             [cljs-om.ui :as ui]
             [cljs.core.async :as async :refer [<! chan put! alts! timeout]]))
 
@@ -20,7 +21,6 @@
 (om/root ui/search-view       app-state {:target (. js/document (getElementById "search"))})
 (om/root ui/sort-buttons-view app-state {:target (. js/document (getElementById "sort-buttons"))})
 
-
 ;;; WordCloud element (implemented externally in JavaScript)
 (def cloud-elem (. js/document (getElementById "wordCloud")))
 (def cloud-w (aget cloud-elem "offsetWidth"))
@@ -28,7 +28,8 @@
 
 ;;; refresh BarChart and time series chart occasionally (could potentially be more elegant)
 (js/setInterval #(ts/update ts/graph-with-legend) 5000)
-(js/setInterval #(.updateBarchart js/BirdWatch (clj->js (take 25 (:words-sorted-by-count @app-state)))) 1000)
+;(js/setInterval #(.updateBarchart js/BirdWatch (clj->js (take 25 (:words-sorted-by-count @app-state)))) 1000)
+(js/setInterval #(.updateBarchart js/BirdWatch (clj->js (wc/get-words app-state 25))) 1000)
 
 ;;; Channels for handling information flow in the application.
 (def tweets-chan (chan 10000))
@@ -38,7 +39,6 @@
  (let [[t chan] (alts! [tweets-chan prev-tweets-chan] {:priority true})]
    (tweets/add-tweet t app-state word-cloud)
    (recur)))
-
 
 ;;; The app starts with the search string encoded in the URI location hash.
 (defn start-search [search] (tweets/start-search app-state search tweets-chan))

@@ -15,13 +15,9 @@
 (defn tweets-by-order [tweets-map order]
   "find top n tweets by specified order"
   (fn [app n]
-      (vec (map (fn [m] ((keyword (:id m))(tweets-map app))) (take n (order app))))))
+      (vec (map (fn [m] ((keyword (first m))(tweets-map app))) (take n (order app))))))
 
-(defn tweets-by-id [app n]
-  "find top n tweets sorted by ID in descending order"
-  (vec (map (fn [m] ((keyword m)(:tweets-map app))) (take n (:by-id app)))))
-
-(def find-tweets {:by-id tweets-by-id
+(def find-tweets {:by-id (tweets-by-order :tweets-map :by-id)
                   :by-followers (tweets-by-order :tweets-map :by-followers)
                   :by-retweets (tweets-by-order :retweets :by-retweets)
                   :by-favorites (tweets-by-order :retweets :by-favorites)

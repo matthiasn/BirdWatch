@@ -5,6 +5,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2202"]
                  [org.clojure/core.async "0.1.303.0-886421-alpha"]
+                 [tailrecursion/cljs-priority-map "1.1.0"]
                  [om "0.6.4"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]]

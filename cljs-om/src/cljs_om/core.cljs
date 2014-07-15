@@ -27,7 +27,7 @@
 (def word-cloud (.WordCloud js/BirdWatch cloud-w (* cloud-w 0.7) 250 (fn [e]) "#wordCloud"))
 
 ;;; refresh BarChart and time series chart occasionally (could potentially be more elegant)
-(js/setInterval #(ts/update ts/graph-with-legend) 5000)
+(js/setInterval #(ts/update ts/graph-with-legend app-state) 5000)
 ;(js/setInterval #(.updateBarchart js/BirdWatch (clj->js (take 25 (:words-sorted-by-count @app-state)))) 1000)
 (js/setInterval #(.updateBarchart js/BirdWatch (clj->js (wc/get-words app-state 25))) 1000)
 
@@ -36,7 +36,7 @@
 (def prev-tweets-chan (chan 10000))
 
 (go-loop []
- (let [[t chan] (alts! [tweets-chan prev-tweets-chan] {:priority true})]
+ (let [[t chan] (alts! [tweets-chan prev-tweets-chan] :priority)]
    (tweets/add-tweet t app-state word-cloud)
    (recur)))
 

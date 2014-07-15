@@ -18,81 +18,65 @@
 (def ts-elem (. js/document (getElementById "timeseries1")))
 (def ts-w (aget ts-elem "offsetWidth"))
 
-#_(def ts-chart (js/Rickshaw.Graph.
-                      (clj->js {:element ts-elem
-                                :renderer "bar"
-                                :width ts-w
-                                :height 100
-                                :series [{:color "steelblue"
-                                          :name "Tweets"
-                                          :data [{:x 100 :y 10} {:x 100 :y 110}]}]})))
-
-#_(Rickshaw.Graph.Axis.Time. (clj->js {:graph ts-chart}))
-#_(.render ts-chart)
-#_(def hover-detail (Rickshaw.Graph.HoverDetail. (clj->js {:graph ts-chart})))
-
-(defn random-data []
-  (let [series-data (array (array))
-        random (Rickshaw.Fixtures.RandomData. 150)]
-    (dotimes [i 100] (.addData random series-data))
-    series-data))
-
-;; https://gist.github.com/msgodf/8495781
 (def graph-with-legend
   (doto
-    (Rickshaw.Graph. (clj->js {:element ts-elem
-                               :renderer "bar"
-                               :width ts-w
-                               :height 100
-                               :series [{:color "steelblue"
-                                         :data (nth (random-data) 0)
-                                         :name "Tweets"}]}))
+    (Rickshaw.Graph. (clj->js {:element ts-elem :renderer "bar"
+                               :width ts-w      :height 100
+                               :series [{:color "steelblue" :data [{:x 1 :y 0}] :name "Tweets"}]}))
     (.render)))
 
-(defn floor [x] (Math/floor x))
+(Rickshaw.Graph.Axis.Time. (clj->js {:graph graph-with-legend}))
+(def hover-detail (Rickshaw.Graph.HoverDetail. (clj->js {:graph graph-with-legend :yFormatter #(Math/round %)})))
 
 (defn date-round [s]
   "return function that rounds the provided seconds since epoch down to the nearest time interval s
    e.g. (date-round 60) creates a function that takes seconds t and rounds them to the nearest minute"
-  (fn [t] (* s (floor (/ t s)))))
+  (fn [t] (* s (Math/floor (/ t s)))))
 
 (def m 60)
+(def qhr (* 15 m))
 (def hr (* 60 m))
+(def qday (* 6 hr))
 (def day (* 24 hr))
 
-(defn grouper [newest oldest]
+(defn grouping-interval [newest oldest]
   (cond
-   (> (- newest oldest) (* 20 day)) (date-round (* 24 60 60)) ;round by nearest day
-   (> (- newest oldest) (* 5 day))  (date-round (* 6 60 60))  ;round by nearest quarter day
-   (> (- newest oldest) (* 10 hr))  (date-round (* 60 60))    ;round by nearest hour
-   (> (- newest oldest) (* 2 hr))   (date-round (* 15 60))    ;round by nearest quarter hour
-   :else                            (date-round 60)))         ;round by nearest minute
+   (> (- newest oldest) (* 20 day)) day  ;round by nearest day
+   (> (- newest oldest) (* 5 day))  qday ;round by nearest quarter day
+   (> (- newest oldest) (* 20 hr))  hr   ;round by nearest hour
+   (> (- newest oldest) (* 4 hr))   qhr  ;round by nearest quarter hour
+   :else                            m))  ;round by nearest minute
+
+(defn empty-ts-map [newest oldest interval]
+  "generates map with all rounded intervals between oldest and newest, initialized to a count of 0"
+  (let [rounder (date-round interval)
+        values (range (rounder oldest) (rounder newest) interval)]
+    (apply sorted-map-by < (flatten [(interpose 0 values) 0]))))
+
+(defn count-into-map [ts-map k]
+  "increment count for time interval"
+  (update-in ts-map [k] inc))
+
+(defn tweet-ts [t]
+  "retrieve seconds since epoch from tweet using moment.js"
+  (.unix (js/moment. (:created_at t))))
 
 (defn ts-data [app]
-  (let [state @app
-        by-id (util/tweets-by-order :tweets-map :by-id)
-        tweets-by-id (by-id state 10000)
-        oldest (js/moment. (:created_at (last tweets-by-id)))
-        newest (js/moment. (:created_at (first tweets-by-id)))
-        rounder (grouper (.unix newest) (.unix oldest))
-        ]
-    (print "oldest" (.toLocaleString oldest))
-    (print "oldest             unix" (.unix oldest))
-    (print "oldest min rounded unix" (round-min (.unix oldest)))
-    (print "oldest min rounded parsed" (.toLocaleString (.unix js/moment (round-min (.unix oldest)))))
-    (print "oldest hr  rounded unix" (round-hr (.unix oldest)))
-    (print "oldest hr  rounded parsed" (.toLocaleString (.unix js/moment (round-hr (.unix oldest)))))
-    (print "oldest day rounded unix" (round-day (.unix oldest)))
-    (print "oldest day rounded parsed" (.toLocaleString (.unix js/moment (round-day (.unix oldest)))))
-    (print "oldest     rounded unix" (rounder (.unix oldest)))
-    (print "oldest     rounded parsed" (.toLocaleString (.unix js/moment (rounder (.unix oldest)))))
-    (print "---")
-    (print "newest" (.toLocaleString newest))
-    (print "newest" (.unix newest))
-    (print "---")
-    ))
+  "perform time series analysis by counting tweets in even intervals"
+  (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) @app 10000)
+        oldest (tweet-ts (last tweets-by-id))
+        newest (tweet-ts (first tweets-by-id))
+        interval (grouping-interval newest oldest)
+        rounder (date-round interval)]
+    (reduce count-into-map
+            (empty-ts-map newest oldest interval)
+            (map #(rounder (tweet-ts %)) tweets-by-id))))
+
+(defn ts-map-vec [ts-map]
+  "creates a vector of maps required by Rickshaw chart"
+  (map #(zipmap [:x :y] %)(vec ts-map)))
 
 (defn update [chart app]
-  (ts-data app)
-  (aset graph-with-legend "series" "0" "data" (nth (random-data) 0))
+  "update time series chart"
+  (aset graph-with-legend "series" "0" "data" (clj->js (ts-map-vec (ts-data app))))
   (.update chart))

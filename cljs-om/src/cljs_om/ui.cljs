@@ -35,29 +35,23 @@
                      (dom/button (sort-button-js app :by-rt-since-startup) "retweets2")
                      (dom/button (sort-button-js app :by-favorites) "favorites")))))
 
-(defn handle-change [e owner]
-  (om/set-state! owner :text (.. e -target -value)))
-
-(defn trigger-search [owner]
-  (cljs-om.core/start-search (om/get-state owner :text))
-  (om/set-state! owner :text ""))
+(defn handle-search-change [e app]
+  (swap! cljs-om.core/app-state assoc :search-text (.. e -target -value)))
 
 (defn search-view [app owner]
   "rendering search bar"
   (reify
-    om/IInitState
-    (init-state [_] {:text ""})
     om/IRender
     (render [this]
             (dom/div #js {:className "input-group"}
                      (dom/input #js {:className "form-control"
                                      :type "text" :ref "new-contact"
-                                     :value (om/get-state owner :text)
+                                     :value (:search-text (om/get-props owner))
                                      :placeholder "Example search: java (job OR jobs OR hiring)"
-                                     :onKeyPress #(when (== (.-keyCode %) 13) (trigger-search owner))
-                                     :onChange #(handle-change % owner)})
+                                     :onKeyPress #(when (== (.-keyCode %) 13) (cljs-om.core/start-search))
+                                     :onChange #(handle-search-change % app)})
                      (dom/span #js {:className "input-group-btn"}
-                               (dom/button #js {:className "btn btn-primary" :onClick #(trigger-search owner)}
+                               (dom/button #js {:className "btn btn-primary" :onClick #(cljs-om.core/start-search)}
                                            (dom/span #js {:className "glyphicon glyphicon-search"})))))))
 
 (defn tweet-view [tweet owner]

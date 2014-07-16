@@ -21,10 +21,13 @@
 (om/root ui/search-view       app-state {:target (. js/document (getElementById "search"))})
 (om/root ui/sort-buttons-view app-state {:target (. js/document (getElementById "sort-buttons"))})
 
+(defn append-search-text [s]
+  (swap! app-state assoc :search-text (str (:search-text @app-state) " " s)))
+
 ;;; WordCloud element (implemented externally in JavaScript)
 (def cloud-elem (. js/document (getElementById "wordCloud")))
 (def cloud-w (aget cloud-elem "offsetWidth"))
-(def word-cloud (.WordCloud js/BirdWatch cloud-w (* cloud-w 0.7) 250 (fn [e]) "#wordCloud"))
+(def word-cloud (.WordCloud js/BirdWatch cloud-w (* cloud-w 0.7) 250 append-search-text "#wordCloud"))
 
 ;;; refresh BarChart and time series chart occasionally (could potentially be more elegant)
 (js/setInterval #(ts/update ts/graph-with-legend app-state) 2500)
@@ -40,5 +43,7 @@
    (recur)))
 
 ;;; The app starts with the search string encoded in the URI location hash.
-(defn start-search [search] (tweets/start-search app-state search tweets-chan))
-(start-search (util/search-hash))
+(defn start-search [] (tweets/start-search app-state tweets-chan))
+
+(swap! app-state assoc :search-text (util/search-hash))
+(start-search)

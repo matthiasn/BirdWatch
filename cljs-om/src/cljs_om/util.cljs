@@ -68,9 +68,9 @@
   (swap! app assoc priority-map (assoc (priority-map @app) id n)))
 
 (defn initial-state [] {:count 0        :n 10   :retweets {}
-                        :tweets-map {}
+                        :tweets-map {}  :search-text ""
                         :search "*"     :stream nil
-                        :sorted :by-id
+                        :sorted :by-rt-since-startup
                         :by-followers (priority-map-by >)
                         :by-retweets (priority-map-by >)
                         :by-favorites (priority-map-by >)

@@ -44,9 +44,10 @@
   (let [tweet (js->clj (JSON/parse (.-data e)) :keywordize-keys true)]
     (put! tweets-chan tweet)))
 
-(defn start-search [app search tweets-chan]
+(defn start-search [app tweets-chan]
   "initiate new search by starting SSE stream"
-  (let [s (if (= search "") "*" search)]
+  (let [search (:search-text @app)
+        s (if (= search "") "*" search)]
     (if (not (nil? (:stream @app))) (.close (:stream @app)))
     (reset! app (util/initial-state))
     (swap! app assoc :search s)

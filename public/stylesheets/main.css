@@ -131,3 +131,7 @@ a {
     color: green;
     font-weight: bold;
 }
+
+.timeseries {
+    margin-top: 15px;
+}

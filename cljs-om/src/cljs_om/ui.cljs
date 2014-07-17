@@ -1,7 +1,9 @@
 (ns cljs-om.ui
+  (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [cljs-om.util :as util]))
+            [cljs-om.util :as util]
+            [cljs.core.async :as async :refer [<! chan put!]]))
 
 (enable-console-print!)
 
@@ -83,5 +85,29 @@
   (reify
     om/IRender
     (render [this]
-      (dom/div nil
-               (apply dom/div nil (om/build-all tweet-view (((:sorted app) find-tweets) app (:n app))))))))
+            (apply dom/div nil (om/build-all tweet-view (((:sorted app) find-tweets) app (:n app) (- (:page app) 1)))))))
+
+(defn pag-items [app page-change-chan]
+  "function creating pagination items"
+  (map #(dom/li #js {:className (if (= % (:page app)) "active" "") :onClick (fn [e] (put! page-change-chan %))}
+                (dom/a nil %))
+       (take 25 (range 1 (Math/floor (/ (:count app) (:n app)))))))
+
+(defn pagination-view [app owner]
+  "rendering pagination list"
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:page-change (chan)})
+    om/IWillMount
+    (will-mount [_]
+      (let [page-change (om/get-state owner :page-change)]
+        (go (loop []
+          (let [page (<! page-change)]
+            (om/update! app :page page)
+            (recur))))))
+    om/IRenderState
+    (render-state [this {:keys [page-change]}]
+                  (apply dom/ul #js {:className "pagination-mini"}
+                         (flatten [(dom/li nil (dom/a nil "Page"))
+                                   (pag-items app page-change)])))))

@@ -1,17 +1,5 @@
 (ns cljs-om.timeseries
-  (:require-macros [cljs.core.async.macros :refer [go go-loop]])
-  (:require [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [cljs-om.util :as util]
-            [cljs-om.ajax :as ajax]
-            [cljs-om.ui :as ui]
-            [goog.events :as events]
-            [cljs-om.wordcount :as wc]
-            [cljs.core.async :as async
-             :refer [<! >! chan close! sliding-buffer put! alts! timeout]])
-  (:import [goog.net XhrIo]
-           goog.net.EventType
-           [goog.events EventType]))
+  (:require [cljs-om.util :as util]))
 
 (enable-console-print!)
 
@@ -40,6 +28,7 @@
 (def day (* 24 hr))
 
 (defn grouping-interval [newest oldest]
+  "determine duration of individual intervals (bars) depending on duration of timespan between newest and oldest"
   (cond
    (> (- newest oldest) (* 20 day)) day  ;round by nearest day
    (> (- newest oldest) (* 5 day))  qday ;round by nearest quarter day

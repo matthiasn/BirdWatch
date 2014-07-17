@@ -20,6 +20,7 @@
 (om/root ui/count-view        app-state {:target (. js/document (getElementById "tweet-count"))})
 (om/root ui/search-view       app-state {:target (. js/document (getElementById "search"))})
 (om/root ui/sort-buttons-view app-state {:target (. js/document (getElementById "sort-buttons"))})
+(om/root ui/pagination-view   app-state {:target (. js/document (getElementById "pagination"))})
 
 (defn append-search-text [s]
   (swap! app-state assoc :search-text (str (:search-text @app-state) " " s)))

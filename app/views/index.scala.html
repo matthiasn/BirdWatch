@@ -26,7 +26,7 @@
                     <span class="navbar-brand">BirdWatch</span>
 
                     <!-- Search field in NavBar -->
-                    <div class="navbar-form pull-left col-lg-6 input-group">
+                    <div class="navbar-form pull-left col-lg-4 input-group">
                         <form ng-submit="search()" class="input-group">
                             <input type="text" class="form-control" ng-model="searchText"
                                 placeholder="Example search: java (job OR jobs OR hiring)" />
@@ -46,8 +46,7 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">About
                                     <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="http://matthiasnehlsen.com"
-                                        target="_blank">Project Introduction</a></li>
+                                    <li><a href="https://twitter.com/matthiasnehlsen" target="_blank">Author</a></li>
                                     <li><a href="http://matthiasnehlsen.com" target="_blank">Blog</a></li>
                                     <li><a href="https://github.com/matthiasn" target="_blank">Project on GitHub</a></li>
                                     <li><a href="#" ng-click="legalStuff()">Legal stuff</a></li>
@@ -83,6 +82,11 @@
                         <div class="navbar-text col-lg-2 pull-right">Tweet count: <a>
                             <span tooltip-placement="bottom" tooltip="Tweets currently loaded"
                                 ng-bind="cf.noItems()"></span></a>
+                        </div>
+
+                        <div class="nav navbar-text col-lg-2 pull-right">
+                            <iframe src="http://ghbtns.com/github-btn.html?user=matthiasn&repo=birdwatch&type=watch&count=true"
+                            allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>
                         </div>
                         
                     </div>

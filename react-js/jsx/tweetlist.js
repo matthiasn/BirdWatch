@@ -39,7 +39,17 @@ var BirdWatch = BirdWatch || {};
 
     /** single Tweet component */
     var Tweet = React.createClass({
-        render: function () { return (
+        render: function () {
+            var img = "";
+            if (this.props.t.entities.media && this.props.t.entities.media.length > 0) {
+                img = <div className="tweet-image">
+                          <a href={this.props.t.entities.media[0].url} target="_blank">
+                              <img src={this.props.t.entities.media[0].media_url + ":small"} />
+                          </a>
+                      </div>;
+            }
+
+            return (
             <div className="tweet">
                 <span>
                     <a href={"http://www.twitter.com/" + this.props.t.user.screen_name} target="_blank">
@@ -56,6 +66,18 @@ var BirdWatch = BirdWatch || {};
                     <div className="pull-left timeInterval">{numberFormat(this.props.t.user.followers_count)} followers</div>
                     <RetweetCount count={this.props.t.retweet_count} />
                     <FavoriteCount count={this.props.t.favorite_count} />
+                </div>
+                {img}
+                <div className="intent">
+                    <a href={"https://www.twitter.com/intent/tweet?in_reply_to=" + this.props.t.id_str}>
+                        <img src="/assets/images/reply.png"/>
+                    </a>
+                    <a href={"https://www.twitter.com/intent/retweet?tweet_id=" + this.props.t.id_str}>
+                        <img src="/assets/images/retweet.png"/>
+                    </a>
+                    <a href={"https://www.twitter.com/intent/favorite?tweet_id=" + this.props.t.id_str}>
+                        <img src="/assets/images/favorite.png"/>
+                    </a>
                 </div>
             </div>
         ); }

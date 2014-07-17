@@ -30,11 +30,18 @@ object BirdWatch extends Controller {
   }
 
   /** Controller action serving ReactJS page */
-  def indexReactJs = Action { Ok(views.html.react_js()) }
+  def indexReactJs = Action {
+    Ok(views.html.react_js(Conf.getOrEmpty("ga.hostname"), Conf.getOrEmpty("ga.domain"), Conf.getOrEmpty("ga.id")))
+  }
 
   /** Controller action serving Om pages */
-  def indexCljs    = Action { Ok(views.html.cljs_om()) }
-  def indexCljsOpt = Action { Ok(views.html.cljs_om_opt()) }
+  def indexCljs    = Action {
+    Ok(views.html.cljs_om(Conf.getOrEmpty("ga.hostname"), Conf.getOrEmpty("ga.domain"), Conf.getOrEmpty("ga.id")))
+  }
+
+  def indexCljsOpt = Action {
+    Ok(views.html.cljs_om_opt(Conf.getOrEmpty("ga.hostname"), Conf.getOrEmpty("ga.domain"), Conf.getOrEmpty("ga.id")))
+  }
 
   /** Controller Action serving Tweets as JSON going backwards in time. Query passed in as JSON */
   def search = Action.async(parse.json) {

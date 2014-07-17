@@ -35,3 +35,4 @@ react-js/reports/
 react-js/node_modules/
 react-js/src/bower_components
 
+public/cljs/out/

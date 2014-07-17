@@ -13,6 +13,11 @@ a {
     padding-bottom: 10px;
     font-size: 10px;
     overflow: auto;
+    min-height: 50px;
+}
+
+.tweet-image {
+    max-width: 100%;
 }
 
 .username {
@@ -125,4 +130,17 @@ a {
 .legend {
     font-size: 0.8em;
     margin-bottom: 0;
+}
+
+.green {
+    color: green;
+    font-weight: bold;
+}
+
+.timeseries {
+    margin-top: 15px;
+}
+
+.intent {
+    float: right;
 }

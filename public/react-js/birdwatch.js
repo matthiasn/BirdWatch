@@ -305,6 +305,8 @@
         }
 
         me.init = function() {
+            BirdWatch.lastCloudUpdate = (new Date().getTime()) - 12000;
+
             cloud = d3.layout.cloud()
                 .timeInterval(1)
                 .size([w, h])
@@ -330,7 +332,11 @@
 
         me.redraw = function(dataSource) {
             tags = dataSource;
-            generate();
+
+            if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {
+                generate();
+                BirdWatch.lastCloudUpdate = (new Date().getTime());
+            }
         };
 
         me.init();
@@ -549,7 +555,7 @@ var BirdWatch = BirdWatch || {};
                 if (!bar) return "";
                 var y = i * 15;
                 var w = bar.value / arr[0].value * (barChartElem.width() - 190);
-                return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value, count:this.props.count,
+                return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value,
                             posChangeDur:this.refs.posChangeDur.getDOMNode().value,
                             ratioChangeTweets:this.refs.ratioChangeTweets.getDOMNode().value} );
             }.bind(this));
@@ -584,7 +590,7 @@ var BirdWatch = BirdWatch || {};
     var barChartElem = $("#react-bar-chart");
     var barChart = React.renderComponent(BarChart( {numPages:1, words:[]}), document.getElementById('react-bar-chart'));
 
-    BirdWatch.updateBarchart = function (words, count) { barChart.setProps({words: _.take(words, 25), count: count }); };
+    BirdWatch.updateBarchart = function (words) { barChart.setProps({words: _.take(words, 25) }); };
 })();
 ;(function () {
     'use strict';
@@ -637,13 +643,6 @@ var BirdWatch = BirdWatch || {};
     var wordCloudElem = $("#wordCloud");
     var wordCloud = BirdWatch.WordCloud(wordCloudElem.width(), wordCloudElem.width() * 0.75, 250, addSearchTerm, "#wordCloud");
 
-    BirdWatch.feedWordCloud = function () {
-        if ((new Date().getTime() - BirdWatch.lastCloudUpdate) > 15000) {
-            wordCloud.redraw(BirdWatch.wordcount.getWords());
-            BirdWatch.lastCloudUpdate = (new Date().getTime());
-        }
-    };
-
     $('#searchForm').submit(function (e) {
         BirdWatch.search();
         e.preventDefault();
@@ -665,7 +664,7 @@ var BirdWatch = BirdWatch || {};
         throttledGraph();
         BirdWatch.setTweetList(BirdWatch.crossfilter.tweetPage(activePage, pageSize.val(), sortOrder));
         BirdWatch.setPagination({live: live, numPages: BirdWatch.crossfilter.numPages(pageSize.val()), activePage: activePage});
-        BirdWatch.updateBarchart(BirdWatch.wordcount.getWords(), BirdWatch.wordcount.count);
+        BirdWatch.updateBarchart(BirdWatch.wordcount.getWords());
     }
 
     BirdWatch.sortBy = function (order) { sortOrder = order; triggerReact(); };
@@ -674,7 +673,7 @@ var BirdWatch = BirdWatch || {};
     BirdWatch.tweets.registerCallback(function (t) {
         BirdWatch.wordcount.insert(t);
         BirdWatch.crossfilter.add(t);
-        BirdWatch.feedWordCloud();
+        wordCloud.redraw(BirdWatch.wordcount.getWords());
         triggerReact();
     });
 

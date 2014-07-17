@@ -48,6 +48,7 @@ object TwitterClient {
   val topics: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
   val users: scala.collection.mutable.HashSet[String] = new scala.collection.mutable.HashSet[String]()
 
+  /** ugly fix for problem with Twitter Streaming API where chunks cannot be relied on to include one whole tweet */
   var chunkStringCache = ""
   var chunks = 0
 
@@ -107,6 +108,7 @@ object TwitterClient {
     * Can this be ended explicitly from here though, without resetting the whole underlying client? */
   def start() {
     Logger.info(s"Starting new client")
+    resetCache()
 
     val topicString = URLEncoder.encode(topics.mkString("%2C"), "UTF-8")
     val userString = URLEncoder.encode(users.mkString("%2C"), "UTF-8")

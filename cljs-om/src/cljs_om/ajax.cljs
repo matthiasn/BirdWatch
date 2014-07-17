@@ -12,7 +12,7 @@
 (go-loop []
          (let [parsed (js->clj (JSON/parse (<! ajax-results-chan)) :keywordize-keys true)]
            (doseq [t (:hits (:hits parsed))]
-             (when (= 0 (mod (:_id t) 100)) (<! (timeout 0)))
+             (when (= 0 (mod (:_id t) 200)) (<! (timeout 10)))
              (put! cljs-om.core/prev-tweets-chan (:_source t)))
            (recur)))
 

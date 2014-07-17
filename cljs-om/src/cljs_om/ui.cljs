@@ -21,6 +21,7 @@
                   :by-rt-since-startup (util/tweets-by-order :retweets :by-rt-since-startup)})
 
 (defn sort-button-js [app key]
+  "generates JS for sort button for both updating sort order and showing active button"
   #js {:onClick (fn [e] (om/update! app [:sorted] key))
        :className (str "btn " (if (= key (:sorted app)) "btn-primary"))})
 
@@ -56,6 +57,11 @@
                                (dom/button #js {:className "btn btn-primary" :onClick #(cljs-om.core/start-search)}
                                            (dom/span #js {:className "glyphicon glyphicon-search"})))))))
 
+(defn twitter-intent [tweet intent icon]
+  "generate link with button customized for specific tweet and intent"
+  (dom/a #js {:href (str "https://twitter.com/intent/" intent (:id_str tweet))}
+         (dom/img #js {:src (str "/assets/images/" icon)})))
+
 (defn tweet-view [tweet owner]
   "rendering single tweet card"
   (reify
@@ -63,7 +69,8 @@
     (render [this]
       (let [user (:user tweet)
             screen-name (:screen_name user)
-            href (str "http://www.twitter.com/" screen-name)]
+            href (str "http://www.twitter.com/" screen-name)
+            media (:media (:entities tweet))]
         (dom/div #js {:className "tweet"}
                  (dom/span nil (dom/a #js {:href href :target "_blank"}
                                       (dom/img #js {:className "thumbnail" :src (:profile_image_url user)})))
@@ -71,21 +78,32 @@
                         (dom/span #js {:className "username" :src (:profile_image_url user)} (:name user)))
                  (dom/span #js {:className "username_screen"} (str " @" screen-name))
                  (dom/div #js {:className "pull-right timeInterval"} (util/from-now (:created_at tweet)))
-                 (dom/div  #js {:className "tweettext"}
+                 (dom/div #js {:className "tweettext"}
                            (dom/div #js {:dangerouslySetInnerHTML #js {:__html (:html-text tweet)}})
                            (dom/div #js {:className "pull-left timeInterval"}
                                    (str (util/number-format (:followers_count user)) " followers"))
                            (dom/div #js {:className "pull-right timeInterval"}
                                     (str (util/rt-count-since-startup tweet)
                                          (util/rt-count tweet)
-                                         (util/fav-count tweet)))))))))
+                                         (util/fav-count tweet))))
+                 (when (> (count media) 0)
+                   (dom/div #js {:className "tweet-image"}
+                          (dom/a #js {:href (:url (get media 0)) :target "_blank"}
+                            (dom/img #js {:src (str (:media_url (get media 0)) ":small")}))))
+                 (dom/div #js {:className "intent"}
+                          (twitter-intent tweet "tweet?in_reply_to=" "reply.png")
+                          (twitter-intent tweet "retweet?tweet_id=" "retweet.png")
+                          (twitter-intent tweet "favorite?tweet_id=" "favorite.png")))))))
 
 (defn tweets-view [app owner]
   "rendering tweet list"
   (reify
     om/IRender
     (render [this]
-            (apply dom/div nil (om/build-all tweet-view (((:sorted app) find-tweets) app (:n app) (- (:page app) 1)))))))
+            (apply dom/div nil (om/build-all
+                                tweet-view
+                                (((:sorted app) find-tweets) app (:n app) (- (:page app) 1)))))))
+
 
 (defn pag-items [app page-change-chan]
   "function creating pagination items"

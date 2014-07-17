@@ -41,9 +41,11 @@
 
 (defn format-tweet [tweet]
   "format tweet text for display"
+  (when ())
   (assoc tweet :html-text
     (-> (:text tweet)
         (reducer , (:urls (:entities tweet)) url-replacer)
+        (reducer , (:media (:entities tweet)) url-replacer)
         (reducer , (:user_mentions (:entities tweet)) mentions-replacer)
         (reducer , (:hashtags (:entities tweet)) hashtags-replacer)
         (s/replace , "RT " "<strong>RT </strong>"))))
@@ -61,7 +63,7 @@
   "gets RT count since startup for tweet, if exists returns formatted string"
   (let [t (if (contains? tweet :retweeted_status) (:retweeted_status tweet) tweet)
         count ((keyword (:id_str t)) (:by-rt-since-startup @cljs-om.core/app-state))]
-    (if (> count 0) (str (number-format count) " RT since startup | ") "")))
+    (if (> count 0) (str (number-format count) " RTs analyzed | ") "")))
 
 (defn swap-pmap [app priority-map id n]
   "swaps item in priority-map"

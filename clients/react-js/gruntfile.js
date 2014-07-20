@@ -27,12 +27,12 @@ module.exports = function (grunt) {
         copy: {
             all: {
                 files: [
-                    { expand: true, cwd: 'dist/', src: ['birdwatch.js'], dest: '../public/react-js/' },
-                    { expand: true, cwd: 'build/', src: ['barchart.js'], dest: '../public/cljs-js/' },
-                    { expand: true, cwd: 'src/', src: ['wordcloud.js'], dest: '../public/cljs-js/' },
-                    { expand: true, cwd: 'src/bower_components/react/', src: ['react.min.js'], dest: '../public/react-js/vendor/' },
-                    { expand: true, cwd: 'src/bower_components/react/', src: ['react.js'], dest: '../public/react-js/vendor/' },
-                    { expand: true, cwd: 'src/bower_components/regression-js/src', src: ['regression.js'], dest: '../public/react-js/vendor/' }
+                    { expand: true, cwd: 'dist/', src: ['birdwatch.js'], dest: '../../public/build/react-js/' },
+                    { expand: true, cwd: 'build/', src: ['barchart.js'], dest: '../../public/cljs-js/' },
+                    { expand: true, cwd: 'src/', src: ['wordcloud.js'], dest: '../../public/cljs-js/' },
+                    { expand: true, cwd: 'src/bower_components/react/', src: ['react.min.js'], dest: '../../public/react-js/vendor/' },
+                    { expand: true, cwd: 'src/bower_components/react/', src: ['react.js'], dest: '../../public/react-js/vendor/' },
+                    { expand: true, cwd: 'src/bower_components/regression-js/src', src: ['regression.js'], dest: '../../public/react-js/vendor/' }
                 ]
             }
         },

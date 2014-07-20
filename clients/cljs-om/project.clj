@@ -16,13 +16,13 @@
               :builds [{:id "dev"
                         :source-paths ["src"]
                         :compiler {
-                                   :output-to "../public/cljs/cljs_om.js"
-                                   :output-dir "../public/cljs/out"
+                                   :output-to "../../public/build/cljs/cljs_om.js"
+                                   :output-dir "../../public/build/cljs/out"
                                    :optimizations :none
                                    :source-map true}}
                        {:id "release"
                         :source-paths ["src"]
-                        :compiler {:output-to "../public/cljs-opt/cljs_om.js"
+                        :compiler {:output-to "../../public/build/cljs-opt/cljs_om.js"
                                    :optimizations :advanced
                                    ;:preamble ["react/react.min.js"]
                                    :externs ["externs/react.js" "externs/misc.js"]}}]})

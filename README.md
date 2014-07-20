@@ -2,7 +2,11 @@
 
 BirdWatch is a reactive web application for visualizing a stream of live Tweets making use of **[AngularJS](http://angularjs.org)**, **[BootStrap](http://getbootstrap.com)**, **[Crossfilter](http://square.github.io/crossfilter/)**, **[D3.js](http://d3js.org)**, **[ElasticSearch](http://www.elasticsearch.org)** and **[Play Framework](http://www.playframework.com)** (in alphabetical order).
 
-**EDIT 04/2014:** For comparing frameworks, there is now also a **[ReactJS](http://facebook.github.io/react/)** version in addition to the AngularJS version. A detailed blog post will follow shortly. In this version there is a trend-aware bar chart built entirely with React, without relying on D3.js. That chart will be the topic of yet another article soon.
+**EDIT 04/2014:** For comparing frameworks, there is now also a **[ReactJS](http://facebook.github.io/react/)** version in addition to the AngularJS version. A detailed blog post will follow shortly. In this version there is a trend-aware bar chart built entirely with React, without relying on D3.js.
+
+**EDIT 07/2014:** Now there is also a **[ClojureScript](https://github.com/clojure/clojurescript)** client available. Please see **[this blog article](http://matthiasnehlsen.com/blog/2014/07/17/BirdWatch-in-ClojureScript/)** and subsequent entries for more information on that client.
+
+The **different clients** are located in the **clients/** folder, each of them **needs to be built in order to work**. Client build artifacts are no longer checked into the git repository in order to avoid bloating the repository size.
 
 ![Screenshot](./docs/screenshot.png)
 

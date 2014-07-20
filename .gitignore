@@ -29,10 +29,10 @@ activator-sbt-idea-shim.sbt
 
 public/scala-js/
 
-react-js/build/
-react-js/dist/
-react-js/reports/
-react-js/node_modules/
-react-js/src/bower_components
+clients/react-js/build/
+clients/react-js/dist/
+clients/react-js/reports/
+clients/react-js/node_modules/
+clients/react-js/src/bower_components
 
-public/cljs/out/
+public/build/

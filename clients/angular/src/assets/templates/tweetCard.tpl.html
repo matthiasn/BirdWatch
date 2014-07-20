@@ -1,0 +1,22 @@
+<div class="tweet">
+    <span> 
+        <a href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+            <img class="thumbnail" ng-src="{{ tweet.user.profile_image_url }}" />
+        </a>
+    </span>
+
+    <a tooltip-placement="bottom" tooltip="click to visit Twitter profile"
+       href="http://www.twitter.com/{{ tweet.user.screen_name }}" target="_blank">
+        <span class="username" ng-bind="tweet.user.name"></span>
+    </a>
+    <span class="username_screen">&#64;{{tweet.user.screen_name}}</span>
+    <div class="pull-right timeInterval">{{tweet.created_at | fromNow}}</div>
+    <div class="tweettext">
+        <div ng-bind-html-unsafe="tweet.htmlText"></div>
+        <div class="pull-left timeInterval">{{tweet.user.followers_count | numberFormat}} followers</div>
+        <div ng-show="tweet.retweeted_status.retweet_count" class="pull-right timeInterval">
+            {{tweet.retweeted_status.retweet_count | numberFormat}} retweets</div>
+        <div ng-show="tweet.retweet_count" class="pull-right timeInterval">
+            {{tweet.retweet_count | numberFormat}} retweets</div>
+    </div>
+</div>

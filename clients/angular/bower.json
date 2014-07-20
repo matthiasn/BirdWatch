@@ -1,0 +1,36 @@
+{
+  "name": "Birdwatch",
+  "version": "0.2.0",
+  "homepage": "https://github.com/matthiasn/Birdwatch",
+  "authors": [
+    "matthias.nehlsen@gmail.com"
+  ],
+  "description": "Tweet stream analysis and visualization using AngularJS, Bootstrap, Crossfilter, D3.js, ElasticSearch and Play Framework.",
+  "main": "src/index.html",
+  "keywords": [
+    "BirdWatch",
+    "AngularJS"
+  ],
+  "license": "Apache 2.0",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.0.3",
+    "font-awesome": "~4.0.3",
+    "less": "~1.5.1",
+    "bootswatch": "~3.0.2",
+    "angular": "~1.2.3",
+    "d3": "~3.3.11",
+    "crossfilter": "~1.3.6",
+    "momentjs": "~2.4.0",
+    "underscore": "~1.5.2",
+    "rickshaw": "~1.4.5"
+  }
+}

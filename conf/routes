@@ -1,10 +1,13 @@
 # BirdWatch Routes
 
 GET         /angular/             controllers.BirdWatch.index
-GET         /cljs-dev/            controllers.BirdWatch.indexCljs
+
 GET         /cljs-dev             controllers.BirdWatch.indexCljs
-GET         /cljs/                controllers.BirdWatch.indexCljsOpt
+GET         /cljs-dev/            controllers.BirdWatch.indexCljs
+
 GET         /cljs                 controllers.BirdWatch.indexCljsOpt
+GET         /cljs/                controllers.BirdWatch.indexCljsOpt
+
 GET         /                     controllers.BirdWatch.indexReactJs
 GET         /tweetFeed            controllers.BirdWatch.tweetFeed(q: String ?= "*")
 POST        /tweets/search        controllers.BirdWatch.search

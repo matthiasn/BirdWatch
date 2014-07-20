@@ -1,0 +1,5 @@
+<ul class="pagination-mini">
+    <li ng-repeat="page in pages" ng-class="{active: page.active, disabled: page.disabled}">
+        <a ng-click="selectPage(page.number)" ng-bind="page.text"></a>
+    </li>
+</ul>

@@ -8,9 +8,10 @@
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [om "0.6.4"]]
 
-  :plugins [[lein-cljsbuild "1.0.3"]]
+  :plugins [[lein-cljsbuild "1.0.3"]
+            [com.cemerick/clojurescript.test "0.3.1"]]
 
-  :source-paths ["src"]
+  :hooks [leiningen.cljsbuild]
 
   :cljsbuild {
               :builds [{:id "dev"
@@ -25,4 +26,16 @@
                         :compiler {:output-to "../../public/build/cljs-opt/cljs_om.js"
                                    :optimizations :advanced
                                    ;:preamble ["react/react.min.js"]
-                                   :externs ["externs/react.js" "externs/misc.js"]}}]})
+                                   :externs ["externs/react.js" "externs/misc.js"]}}
+                       {:id "test"
+                        :source-paths ["src" "test"]
+                        :compiler {:output-to "test-out/cljs_om.js"
+                                   :output-dir "test-out/"
+                                   :optimizations :simple
+                                   :externs ["externs/react.js" "externs/misc.js"]}}]
+
+              :test-commands {"unit-tests" ["phantomjs" :runner
+                                            ;"js/react.min.js"
+                                            "js/moment.min.js"
+                                            "this.literal_js_was_evaluated=true"
+                                            "test-out/cljs_om.js"]}})

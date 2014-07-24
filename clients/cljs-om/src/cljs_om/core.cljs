@@ -39,7 +39,7 @@
 (def prev-tweets-chan (chan 10000))
 
 (go-loop []
- (let [[t chan] (alts! [tweets-chan prev-tweets-chan] :priority)]
+ (let [[t chan] (alts! [tweets-chan prev-tweets-chan] :priority true)]
    (tweets/add-tweet t app-state word-cloud)
    (recur)))
 

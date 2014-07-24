@@ -9,7 +9,7 @@
   "formats a number for display, e.g. 1.7K, 122K or 1.5M followers"
   (cond
     (< number 1000) (str number)
-    (< number 100000) (str (/ (.round js/Math (/ number 100))10) "K")
+    (< number 100000) (str (/ (.round js/Math (/ number 100)) 10) "K")
     (< number 1000000) (str (.round js/Math (/ number 1000)) "K")
     :default (str (/ (.round js/Math (/ number 100000)) 10) "M")))
 
@@ -69,16 +69,18 @@
   "swaps item in priority-map"
   (swap! app assoc priority-map (assoc (priority-map @app) id n)))
 
-(defn initial-state [] {:count 0        :n 10            :retweets {}
-                        :tweets-map {}  :search-text ""  :page 1
-                        :search "*"     :stream nil
-                        :sorted :by-rt-since-startup
-                        :by-followers (priority-map-by >)
-                        :by-retweets (priority-map-by >)
-                        :by-favorites (priority-map-by >)
-                        :by-rt-since-startup (priority-map-by >)
-                        :by-id (priority-map-by >)
-                        :words-sorted-by-count (priority-map-by >)})
+(defn initial-state []
+  "function returning fresh application state"
+  {:count 0        :n 10            :retweets {}
+   :tweets-map {}  :search-text ""  :page 1
+   :search "*"     :stream nil
+   :sorted :by-rt-since-startup
+   :by-followers (priority-map-by >)
+   :by-retweets (priority-map-by >)
+   :by-favorites (priority-map-by >)
+   :by-rt-since-startup (priority-map-by >)
+   :by-id (priority-map-by >)
+   :words-sorted-by-count (priority-map-by >)})
 
 (defn tweets-by-order [tweets-map order]
   "find top n tweets by specified order"

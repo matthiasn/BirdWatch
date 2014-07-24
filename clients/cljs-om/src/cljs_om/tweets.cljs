@@ -10,7 +10,9 @@
 
 (defn add-to-tweets-map [app tweets-map tweet]
   "adds tweet to tweets-map"
-  (swap! app assoc-in [tweets-map (keyword (:id_str tweet))] (util/format-tweet tweet)))
+  (swap! app
+         assoc-in [tweets-map (keyword (:id_str tweet))]
+         (util/format-tweet tweet)))
 
 (defn swap-when-larger [app priority-map rt-id n]
   "swaps item in priority-map when new value is larger than old value"

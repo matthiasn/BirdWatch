@@ -15,4 +15,3 @@
   "test that"
   (is (= (util/from-now (new js/Date)) "just now")))
 
-

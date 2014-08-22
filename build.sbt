@@ -1,6 +1,6 @@
 name := "BirdWatch"
 
-version := "0.2-SNAPSHOT"
+version := "0.3.0"
 
 libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.10" % "1.9.1" % "test",

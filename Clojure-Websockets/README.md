@@ -21,7 +21,7 @@ The you will need to create a file named twitterconf.edn. You can copy twitterco
       :es-address               "http://127.0.0.1:9200"
       :es-index                 "birdwatch"
 
-In the twitterconf.edn you can also specify the address under which your installation of **[ElasticSearch](http://www.elasticsearch.org)** is accessible, the index to use in ElasticSearch and which terms to track from Twitter. 
+In the twitterconf.edn you can also specify the address under which your installation of **[ElasticSearch](http://www.elasticsearch.org)** is accessible, the index to use in ElasticSearch and which terms to track from Twitter.
 
 ## Usage
 Once the steps described above are completed, usage is easy. You can start up the application like this:
@@ -32,6 +32,7 @@ Alternatively, you can use the REPL:
 
     lein repl
     birdwatch.core=> (start-http-server!)
+    birdwatch.core=> (start-twitter-conn!)
 
 ## License
-Copyright © 2014 Matthias Nehlsen. Distributed under the Apache License, Version 2.0. See separate LICENSE file. 
+Copyright © 2014 Matthias Nehlsen. Distributed under the Apache License, Version 2.0. See separate LICENSE file.

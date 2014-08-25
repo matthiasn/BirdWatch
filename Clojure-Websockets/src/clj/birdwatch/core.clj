@@ -37,7 +37,7 @@
                                    (:user-access-token twitter-conf) (:user-access-token-secret twitter-conf)))
 
 (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn connected-uids]}
-      (sente/make-channel-socket! {:user-id-fn (fn [req] (str (java.util.UUID/randomUUID)))})]
+      (sente/make-channel-socket! {:user-id-fn (fn [req] (let [uid (str (java.util.UUID/randomUUID))] (log/info "Connected:" (:remote-addr req) uid) uid))})]
   (def ring-ajax-post                ajax-post-fn)
   (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
   (def ch-chsk                       ch-recv) ; ChannelSocket's receive channel
@@ -173,12 +173,25 @@
 (def ^:dynamic *custom-streaming-callback*
   (AsyncStreamingCallback. #(>!! chunk-chan (str %2)) (comp println response-return-everything) exception-print))
 
-(def ^:dynamic *req* (statuses-filter :params {:track (:track twitter-conf)}
-                                      :oauth-creds creds
-                                      :callbacks *custom-streaming-callback* ))
 
-;((:cancel (meta *req*)))
+;; streaming connection with Twitter stored in an Atom, can be started and stopped using
+;; using the start-twitter-conn! and stop-twitter-conn! functions
+(def twitter-conn (atom {}))
+
+(defn stop-twitter-conn! []
+  "stop connection to Twitter Streaming API"
+  (let [m (meta @twitter-conn)]
+    (when m ((:cancel m)))))
+
+(defn start-twitter-conn! []
+  "start connection to Twitter Streaming API"
+  (stop-twitter-conn!)
+  (reset! twitter-conn (statuses-filter :params {:track (:track twitter-conf)}
+                                        :oauth-creds creds
+                                        :callbacks *custom-streaming-callback* )))
+
 
 (defn -main
   [& args]
-  (start-http-server!))
+  (start-http-server!)
+  (start-twitter-conn!))

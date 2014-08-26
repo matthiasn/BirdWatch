@@ -69,6 +69,7 @@ a {
     font-size: 11px;
     font-weight: normal;
     color: #999;
+    cursor: pointer;
 }
 
 .pagination-mini > li > a:hover,
@@ -83,7 +84,6 @@ a {
 .pagination-mini > .active > span {
     background: #428bca;
     color: #fff;
-    cursor: default;
 }
 
 #tweet-frame {
@@ -103,7 +103,6 @@ a {
 .toggleActive {
     background: #428bca;
     color: #fff;
-    cursor: default;
 }
 
 .container {

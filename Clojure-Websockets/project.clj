@@ -14,6 +14,7 @@
                  [compojure "1.1.8"]
                  [ring "1.3.0"]
                  [ring/ring-defaults "0.1.1"]
+                 [clj-time "0.8.0"]
 
                  [org.clojure/clojurescript "0.0-2268"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
@@ -22,7 +23,7 @@
 
   :source-paths ["src/clj/"]
 
-  :main ^:skip-aot birdwatch.core
+  :main ^:skip-aot birdwatch.main
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
 

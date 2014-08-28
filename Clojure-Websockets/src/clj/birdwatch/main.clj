@@ -1,4 +1,5 @@
-(ns birdwatch.core
+(ns birdwatch.main
+  (:gen-class)
   (:use
    [twitter.callbacks]
    [twitter.callbacks.handlers]
@@ -6,12 +7,15 @@
    [clojure.pprint])
   (:require
    [clojure.edn :as edn]
+   [clojure.string :as str]
    [clojure.data.json :as json]
    [clojure.core.match :as match :refer (match)]
 
    [http.async.client :as ac]
    [twitter.oauth :as oauth]
    [twitter-streaming-client.core :as client]
+
+   [clj-time.core :as t]
 
    [org.httpkit.server :as http-kit-server]
    [ring.middleware.defaults]
@@ -123,37 +127,47 @@
 
 ;; channels
 (def chunk-chan (chan 10000))
-(def buffer-chan (chan 1))
-(>!! buffer-chan "")
 (def tweets-chan (chan))
 (def msg-chan (chan))
 
-(def counter-chan (chan 1))
-(>!! counter-chan 0)
+(def counter (atom 0))
+
+;; atoms for keeping track of incomplete chunk and last received timestamp
+(def last-received (atom (t/epoch)))
+(def chunk-buff (atom ""))
 
 (defn parse [str]
   (try
-    (let [c (inc (<!! counter-chan))
+    (let [c @counter
           json (json/read-json str)]
-      (when (== (mod c 1000) 0) (log/info "processed" c "since startup, index " (:es-index twitter-conf)))
+      (when (== (mod c 1000) 0) (log/info "processed" c "since startup, index" (:es-index twitter-conf)))
       (if (:text json)
         (>!! tweets-chan json)
         (>!! msg-chan json))
-      (>!! counter-chan c))
+      (swap! counter inc))
     (catch Exception ex (log/error ex "JSON parsing"))))
 
-(go (while true
-      (let [chunk (<! chunk-chan)
-            buff (<! buffer-chan)
-            combined (str buff chunk)]
-        (if (and (.endsWith combined "\r\n") (.startsWith combined "{"))
-          (do
-            (parse combined)
-            (>! buffer-chan ""))
-            (>! buffer-chan combined)))))
+;; loop for processing chunks from Streaming API
+(go
+ (while true
+   (let [ch (<! chunk-chan)
+         buff @chunk-buff
+         combined (str buff ch)
+         tweet-strings (str/split-lines combined)
+         to-process (butlast tweet-strings)
+         last-chunk (last tweet-strings)]
+     (reset! last-received (t/now))
+     (if (> (count to-process) 0)
+       (do
+         (doseq [ts to-process]
+           (when (not (str/blank? ts))
+             (parse ts)))
+         (reset! chunk-buff last-chunk))
+       (reset! chunk-buff combined)))))
 
 (def conn (esr/connect (:es-address twitter-conf)))
 
+;; loop processing successfully parsed tweets, currently just fanning out to all connected clients
 (go
  (while true
    (let [t (<! tweets-chan)]
@@ -165,14 +179,16 @@
        (esd/put conn (:es-index twitter-conf) "tweet" (:id_str t) t)
        (catch Exception ex (log/error ex "esd/put error"))))))
 
+;; loop for logging messages from Streaming API other than tweets
 (go
  (while true
    (let [m (<! msg-chan)]
      (log/info "msg-chan" m))))
 
 (def ^:dynamic *custom-streaming-callback*
-  (AsyncStreamingCallback. #(>!! chunk-chan (str %2)) (comp println response-return-everything) exception-print))
-
+  (AsyncStreamingCallback. #(>!! chunk-chan (str %2))
+                           (comp println response-return-everything)
+                           exception-print))
 
 ;; streaming connection with Twitter stored in an Atom, can be started and stopped using
 ;; using the start-twitter-conn! and stop-twitter-conn! functions
@@ -181,17 +197,32 @@
 (defn stop-twitter-conn! []
   "stop connection to Twitter Streaming API"
   (let [m (meta @twitter-conn)]
-    (when m ((:cancel m)))))
+    (when m
+      (log/info "Stopping Twitter client.")
+      ((:cancel m))
+      (reset! chunk-buff ""))))
 
 (defn start-twitter-conn! []
   "start connection to Twitter Streaming API"
-  (stop-twitter-conn!)
+  (log/info "Starting Twitter client.")
   (reset! twitter-conn (statuses-filter :params {:track (:track twitter-conf)}
                                         :oauth-creds creds
                                         :callbacks *custom-streaming-callback* )))
 
+;; loop watching the twitter client and restarting it if necessary
+(go
+ (while true
+   (<! (timeout (* (:tw-check-interval-sec twitter-conf) 1000)))
+   (let [now (t/now)
+         since-last-sec (t/in-seconds (t/interval @last-received now))]
+     (when (> since-last-sec (:tw-check-interval-sec twitter-conf))
+       (do
+         (log/error since-last-sec "seconds since last tweet received")
+         (stop-twitter-conn!)
+         (<! (timeout (* (:tw-check-interval-sec twitter-conf) 1000)))
+         (start-twitter-conn!))))))
 
 (defn -main
   [& args]
-  (start-http-server!)
-  (start-twitter-conn!))
+  (start-twitter-conn!)
+  (start-http-server!))

@@ -16,6 +16,7 @@
    [twitter-streaming-client.core :as client]
 
    [clj-time.core :as t]
+   [pandect.core :refer [sha256]]
 
    [org.httpkit.server :as http-kit-server]
    [ring.middleware.defaults]
@@ -41,7 +42,10 @@
                                    (:user-access-token twitter-conf) (:user-access-token-secret twitter-conf)))
 
 (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn connected-uids]}
-      (sente/make-channel-socket! {:user-id-fn (fn [req] (let [uid (str (java.util.UUID/randomUUID))] (log/info "Connected:" (:remote-addr req) uid) uid))})]
+      (sente/make-channel-socket! {:user-id-fn (fn [req]
+                                                 (let [uid (str (java.util.UUID/randomUUID))]
+                                                   (log/info "Connected:" (:remote-addr req) uid)
+                                                   uid))})]
   (def ring-ajax-post                ajax-post-fn)
   (def ring-ajax-get-or-ws-handshake ajax-get-or-ws-handshake-fn)
   (def ch-chsk                       ch-recv) ; ChannelSocket's receive channel
@@ -51,11 +55,12 @@
 
 (defn query [params]
   (let [conn (esr/connect (:es-address twitter-conf))
+        q (:query params)
         res  (esd/search conn (:es-index twitter-conf)
                          "tweet"
                          :query {:query_string {:default_field "text"
                                                 :default_operator "AND"
-                                                :query (str "("(:query params)") AND lang:en")}}
+                                                :query q}}
                          :size (:n params)
                          :from (:from params)
                          :sort {:id "desc"}
@@ -63,6 +68,7 @@
         n    (esrsp/total-hits res)
         hits (esrsp/hits-from res)]
     (log/info "Total hits:" n "Retrieved:" (count hits))
+    (log/info "Query" q "with SHA256" (sha256 q))
     hits))
 
 (defn- event-msg-handler

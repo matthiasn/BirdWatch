@@ -12,14 +12,13 @@
                  [com.taoensso/sente "0.15.1" :exclusions [org.clojure/clojure]]
                  [http-kit "2.1.18"]
                  [compojure "1.1.8"]
-                 [ring "1.3.0"]
+                 [ring "1.3.1"]
                  [ring/ring-defaults "0.1.1"]
                  [clj-time "0.8.0"]
-
+                 [pandect "0.3.4"]
                  [org.clojure/clojurescript "0.0-2268"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
-                 [om "0.7.1"]
-                 ]
+                 [om "0.7.1"]]
 
   :source-paths ["src/clj/"]
 
@@ -47,7 +46,6 @@
 
                                    ;:preamble ["react/react.min.js"]
                                    :externs ["externs/react.js" "externs/misc.js"]
-
                                    }}
                        {:id "test"
                         :source-paths ["src/cljs" "test/cljs"]
@@ -60,5 +58,4 @@
               :test-commands {"unit-tests" ["phantomjs" :runner
                                             "js/react.min.js"
                                             "js/moment.min.js"
-                                            "test-out/cljs_om.js"]}}
-  )
+                                            "test-out/cljs_om.js"]}})

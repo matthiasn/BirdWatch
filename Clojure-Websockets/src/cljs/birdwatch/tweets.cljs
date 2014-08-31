@@ -73,9 +73,12 @@
 
 (def prev-chunks-loaded (atom 0))
 (def chunks-to-load 10)
+
 (defn load-prev []
   (when (< @prev-chunks-loaded chunks-to-load)
-    (chsk-send! [:cmd/query {:query (:search @state/app) :n 200 :uid (:uid @chsk-state) :from (* 200 @prev-chunks-loaded)}])
+    (chsk-send! [:cmd/query {:query (str "(" (:search @state/app) ") AND lang:en")
+                             :n 200 :uid (:uid @chsk-state)
+                             :from (* 200 @prev-chunks-loaded)}])
     (swap! prev-chunks-loaded inc)))
 
 (defn start-search []

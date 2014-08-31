@@ -16,7 +16,7 @@
    [twitter-streaming-client.core :as client]
 
    [clj-time.core :as t]
-   [pandect.core :refer [sha256]]
+   [pandect.core :refer [sha1]]
 
    [org.httpkit.server :as http-kit-server]
    [ring.middleware.defaults]
@@ -25,10 +25,11 @@
    [compojure.route    :as route]
    [taoensso.sente     :as sente]
 
-   [clojurewerkz.elastisch.rest          :as esr]
-   [clojurewerkz.elastisch.rest.document :as esd]
-   [clojurewerkz.elastisch.query         :as q]
-   [clojurewerkz.elastisch.rest.response :as esrsp]
+   [clojurewerkz.elastisch.rest             :as esr]
+   [clojurewerkz.elastisch.rest.document    :as esd]
+   [clojurewerkz.elastisch.rest.percolation :as perc]
+   [clojurewerkz.elastisch.query            :as q]
+   [clojurewerkz.elastisch.rest.response    :as esrsp]
 
    [clojure.pprint :as pp]
 
@@ -38,6 +39,8 @@
    (twitter.callbacks.protocols AsyncStreamingCallback)))
 
 (def twitter-conf (edn/read-string (slurp "twitterconf.edn")))
+(def conn (esr/connect (:es-address twitter-conf)))
+
 (def creds (oauth/make-oauth-creds (:consumer-key twitter-conf) (:consumer-secret twitter-conf)
                                    (:user-access-token twitter-conf) (:user-access-token-secret twitter-conf)))
 
@@ -53,22 +56,24 @@
   (def connected-uids                connected-uids)) ; Watchable, read-only atom
 
 
+(defn start-percolator [params]
+  (let [q (:query params)
+        sha (sha1 (str q))]
+    (perc/register-query conn "percolator" sha :query q) ; register percolation search with ID based on hash of the query
+    (log/info "Percolation registered for query" q "with SHA1" sha)))
+
 (defn query [params]
+  "run a query on previous matching tweets"
   (let [conn (esr/connect (:es-address twitter-conf))
         q (:query params)
-        res  (esd/search conn (:es-index twitter-conf)
-                         "tweet"
-                         :query {:query_string {:default_field "text"
-                                                :default_operator "AND"
-                                                :query q}}
+        res  (esd/search conn (:es-index twitter-conf) "tweet"
+                         :query q
                          :size (:n params)
                          :from (:from params)
-                         :sort {:id "desc"}
-                         )
+                         :sort {:id "desc"})
         n    (esrsp/total-hits res)
         hits (esrsp/hits-from res)]
     (log/info "Total hits:" n "Retrieved:" (count hits))
-    (log/info "Query" q "with SHA256" (sha256 q))
     hits))
 
 (defn- event-msg-handler
@@ -79,13 +84,15 @@
     (match [id data]
            ;; TODO: Match your events here, reply when appropriate <...>
 
+           [:cmd/percolate params]
+           (start-percolator params)
+
            [:cmd/query params]
            (do
              (log/info "Received query:" params)
              (let [res (query params)]
                 ;(doseq [t res]
                 ;   (chsk-send! (:uid params) [:some/tweet (:_source t)]))
-
                 (chsk-send! (:uid params) [:tweet/prev-chunk res])))
 
            :else
@@ -170,8 +177,6 @@
              (parse ts)))
          (reset! chunk-buff last-chunk))
        (reset! chunk-buff combined)))))
-
-(def conn (esr/connect (:es-address twitter-conf)))
 
 ;; loop processing successfully parsed tweets, currently just fanning out to all connected clients
 (go

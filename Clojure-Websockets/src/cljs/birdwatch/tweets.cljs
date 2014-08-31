@@ -74,10 +74,24 @@
 (def prev-chunks-loaded (atom 0))
 (def chunks-to-load 10)
 
+(defn query-string []
+  "format and modify query string"
+
+  {:query_string {:default_field "text"
+                  :default_operator "AND"
+                  :query (str "(" (:search @state/app) ") AND lang:en")}})
+
+(defn start-percolator []
+  "trigger starting of percolation matching of new tweets"
+  (chsk-send! [:cmd/percolate {:query (query-string)
+                               :uid (:uid @chsk-state)}]))
+
 (defn load-prev []
+  "load previous tweets matching the current search"
   (when (< @prev-chunks-loaded chunks-to-load)
-    (chsk-send! [:cmd/query {:query (str "(" (:search @state/app) ") AND lang:en")
-                             :n 200 :uid (:uid @chsk-state)
+    (chsk-send! [:cmd/query {:query (query-string)
+                             :n 200
+                             :uid (:uid @chsk-state)
                              :from (* 200 @prev-chunks-loaded)}])
     (swap! prev-chunks-loaded inc)))
 
@@ -89,6 +103,7 @@
     (reset! prev-chunks-loaded 0)
     (swap! state/app assoc :search s)
     (aset js/window "location" "hash" (js/encodeURIComponent s))
+    (start-percolator)
     (load-prev)))
 
 (defn- event-handler [[id data :as ev] _]

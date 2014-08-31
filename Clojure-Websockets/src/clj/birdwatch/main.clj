@@ -183,6 +183,10 @@
  (while true
    (let [t (<! tweets-chan)]
 
+     (let [response (perc/percolate conn "percolator" "tweet" :doc t)
+           matches (vec (map #(:_id %1) (esrsp/matches-from response)))]
+       (log/info "esrsp/matches-from" matches))
+
      (doseq [uid (:any @connected-uids)]
        (chsk-send! uid [:tweet/new t]))
 

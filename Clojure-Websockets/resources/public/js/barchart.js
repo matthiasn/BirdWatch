@@ -57,10 +57,11 @@ var BirdWatch = BirdWatch || {};
             this.setState({ratioArrDir: (ratioSlope > 0) ? "RIGHT-UP" : "RIGHT-DOWN"});
         },
         /** adding terms to the search bar when clicking on any of the bars */
-        clickHandler: function(e) { BirdWatch.addSearchTerm(this.props.key); },
+        clickHandler: function(e) { birdwatch.core.append_search_text(this.props.key); },
         render: function () {
             var y = parseInt(this.props.y);
             var t = this.props.t;
+            var termWeight = "normal";
             var w = parseInt(this.props.w);
             var val = this.props.val;
 
@@ -69,7 +70,7 @@ var BirdWatch = BirdWatch || {};
             if (w < 50) { style.fill="#999"; textX+=26; style.textAnchor="start"; style.fontWeight=400}
 
             return  React.DOM.g( {onClick:this.clickHandler},
-                      React.DOM.text( {y:y+8, x:"137", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
+                                React.DOM.text( {y:y+8, x:"137", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
                       Arrow( {dir:this.state.posArrDir, y:y, x:146} ),
                       Arrow( {dir:this.state.ratioArrDir, y:y, x:160} ),
                       React.DOM.rect( {y:y, x:"168", height:"15", width:w, stroke:"white", fill:"#428bca"}),

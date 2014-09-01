@@ -91,9 +91,8 @@
            (do
              (log/info "Received query:" params)
              (let [res (query params)]
-                ;(doseq [t res]
-                ;   (chsk-send! (:uid params) [:some/tweet (:_source t)]))
-                (chsk-send! (:uid params) [:tweet/prev-chunk res])))
+               ;(doseq [t res] (chsk-send! (:uid params) [:some/tweet (:_source t)]))
+               (chsk-send! (:uid params) [:tweet/prev-chunk res])))
 
            :else
            (do (log/info "Unmatched event:" ev)
@@ -182,9 +181,8 @@
 (go
  (while true
    (let [t (<! tweets-chan)]
-
      (let [response (perc/percolate conn "percolator" "tweet" :doc t)
-           matches (vec (map #(:_id %1) (esrsp/matches-from response)))]
+           matches (into #{} (map #(:_id %1) (esrsp/matches-from response)))]
        (log/info "esrsp/matches-from" matches))
 
      (doseq [uid (:any @connected-uids)]

@@ -55,11 +55,15 @@
   (def chsk-send!                    send-fn) ; ChannelSocket's send API fn
   (def connected-uids                connected-uids)) ; Watchable, read-only atom
 
+(def subscriptions (atom {}))
 
 (defn start-percolator [params]
+  "register percolation search with ID based on hash of the query"
   (let [q (:query params)
-        sha (sha1 (str q))]
-    (perc/register-query conn "percolator" sha :query q) ; register percolation search with ID based on hash of the query
+        sha (sha1 (str q))
+        uid (:uid params)]
+    (swap! subscriptions assoc uid sha)
+    (perc/register-query conn "percolator" sha :query q)
     (log/info "Percolation registered for query" q "with SHA1" sha)))
 
 (defn query [params]
@@ -183,11 +187,9 @@
    (let [t (<! tweets-chan)]
      (let [response (perc/percolate conn "percolator" "tweet" :doc t)
            matches (into #{} (map #(:_id %1) (esrsp/matches-from response)))]
-       (log/info "esrsp/matches-from" matches))
-
-     (doseq [uid (:any @connected-uids)]
-       (chsk-send! uid [:tweet/new t]))
-
+       (doseq [uid (:any @connected-uids)]
+         (when (contains? matches (get @subscriptions uid))
+           (chsk-send! uid [:tweet/new t]))))
      (try
        (esd/put conn (:es-index twitter-conf) "tweet" (:id_str t) t)
        (catch Exception ex (log/error ex "esd/put error"))))))

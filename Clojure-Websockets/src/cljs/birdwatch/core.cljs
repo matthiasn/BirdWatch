@@ -29,7 +29,7 @@
 (om/root ui/sort-buttons-view state/app {:target (. js/document (getElementById "sort-buttons"))})
 (om/root ui/pagination-view   state/app {:target (. js/document (getElementById "pagination"))})
 
-(defn append-search-text [s]
+(defn ^:export append-search-text [s]
   (swap! state/app assoc :search-text (str (:search-text @state/app) " " s)))
 
 ;;; WordCloud element (implemented externally in JavaScript)

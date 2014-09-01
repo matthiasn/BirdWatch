@@ -3,7 +3,8 @@
   (:use
    [twitter.callbacks]
    [twitter.callbacks.handlers]
-   [twitter.api.streaming])
+   [twitter.api.streaming]
+   [birdwatch.conf])
   (:require
    [birdwatch.channels :as c]
    [clojure.edn :as edn]
@@ -19,7 +20,6 @@
   (:import
    (twitter.callbacks.protocols AsyncStreamingCallback)))
 
-(def conf (edn/read-string (slurp "twitterconf.edn")))
 (def creds (oauth/make-oauth-creds (:consumer-key conf) (:consumer-secret conf)
                                    (:user-access-token conf) (:user-access-token-secret conf)))
 

@@ -14,4 +14,3 @@
 (def tweets-chan-mult (mult tweets-chan))
 (tap tweets-chan-mult percolation-chan)
 (tap tweets-chan-mult persistence-chan)
-

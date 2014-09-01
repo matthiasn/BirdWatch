@@ -1,5 +1,6 @@
 (ns birdwatch.main
   (:gen-class)
+  (:use [birdwatch.conf])
   (:require
    [birdwatch.twitterclient :as tc]
    [birdwatch.channels :as c]
@@ -19,8 +20,6 @@
    [compojure.route    :as route]
    [taoensso.sente     :as sente]
    [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go]]))
-
-(def conf (edn/read-string (slurp "twitterconf.edn")))
 
 (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn connected-uids]}
       (sente/make-channel-socket! {:user-id-fn (fn [req]

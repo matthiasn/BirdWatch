@@ -1,5 +1,6 @@
 (ns birdwatch.persistence
   (:gen-class)
+  (:use [birdwatch.conf])
   (:require
    [birdwatch.channels :as c]
    [birdwatch.atoms :as a]
@@ -13,7 +14,6 @@
    [clojurewerkz.elastisch.rest.response    :as esrsp]
    [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go]]))
 
-(def conf (edn/read-string (slurp "twitterconf.edn")))
 (def conn (esr/connect (:es-address conf)))
 
 ;; loop for persisting tweets
@@ -28,11 +28,7 @@
   "run a query on previous matching tweets"
   (let [conn (esr/connect (:es-address conf))
         q (:query params)
-        res  (esd/search conn (:es-index conf) "tweet"
-                         :query q
-                         :size (:n params)
-                         :from (:from params)
-                         :sort {:id "desc"})
+        res  (esd/search conn (:es-index conf) "tweet" :query q :size (:n params) :from (:from params) :sort {:id "desc"})
         n    (esrsp/total-hits res)
         hits (esrsp/hits-from res)]
     (log/info "Total hits:" n "Retrieved:" (count hits))

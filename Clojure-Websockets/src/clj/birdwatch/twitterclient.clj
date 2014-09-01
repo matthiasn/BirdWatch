@@ -19,9 +19,9 @@
   (:import
    (twitter.callbacks.protocols AsyncStreamingCallback)))
 
-(def twitter-conf (edn/read-string (slurp "twitterconf.edn")))
-(def creds (oauth/make-oauth-creds (:consumer-key twitter-conf) (:consumer-secret twitter-conf)
-                                   (:user-access-token twitter-conf) (:user-access-token-secret twitter-conf)))
+(def conf (edn/read-string (slurp "twitterconf.edn")))
+(def creds (oauth/make-oauth-creds (:consumer-key conf) (:consumer-secret conf)
+                                   (:user-access-token conf) (:user-access-token-secret conf)))
 
 ;; channels
 (def chunk-chan (chan 10000))
@@ -36,7 +36,7 @@
   (try
     (let [c @counter
           json (json/read-json str)]
-      (when (== (mod c 1000) 0) (log/info "processed" c "since startup, index" (:es-index twitter-conf)))
+      (when (== (mod c 1000) 0) (log/info "processed" c "since startup, index" (:es-index conf)))
       (if (:text json)
         (>!! c/tweets-chan json)
         (>!! msg-chan json))
@@ -87,19 +87,19 @@
 (defn start-twitter-conn! []
   "start connection to Twitter Streaming API"
   (log/info "Starting Twitter client.")
-  (reset! twitter-conn (statuses-filter :params {:track (:track twitter-conf)}
+  (reset! twitter-conn (statuses-filter :params {:track (:track conf)}
                                         :oauth-creds creds
                                         :callbacks *custom-streaming-callback* )))
 
 ;; loop watching the twitter client and restarting it if necessary
 (go
  (while true
-   (<! (timeout (* (:tw-check-interval-sec twitter-conf) 1000)))
+   (<! (timeout (* (:tw-check-interval-sec conf) 1000)))
    (let [now (t/now)
          since-last-sec (t/in-seconds (t/interval @last-received now))]
-     (when (> since-last-sec (:tw-check-interval-sec twitter-conf))
+     (when (> since-last-sec (:tw-check-interval-sec conf))
        (do
          (log/error since-last-sec "seconds since last tweet received")
          (stop-twitter-conn!)
-         (<! (timeout (* (:tw-check-interval-sec twitter-conf) 1000)))
+         (<! (timeout (* (:tw-check-interval-sec conf) 1000)))
          (start-twitter-conn!))))))

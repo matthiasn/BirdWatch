@@ -15,8 +15,8 @@
                   "until" "while" "of" "at" "by" "for" "with" "about" "against" "between" "into" "through" "during"
                   "before" "after" "above" "below" "to" "from" "up" "upon" "down" "in" "out" "on" "off" "over" "under"
                   "again" "further" "then" "once" "here" "there" "when" "where" "why" "how" "all" "any" "both" "each"
-                  "few" "more" "most" "other" "some" "such" "no" "nor" "not" "only" "own" "same" "so" "than" "too"
-                  "very" "say" "says" "said" "shall" "via" "htt…" "don" "let" "gonna" "rt" "&amp" "http"})
+                  "few" "more" "most" "other" "some" "such" "no" "nor" "not" "only" "own" "same" "so" "than" "too" "come"
+                  "very" "say" "says" "said" "shall" "via" "htt…" "don" "let" "gonna" "rt" "&amp" "http" "must" "see"})
 
 (defn get-words [app n]
   (vec (map (fn [w] (let [[k v] w] {:key k :value v})) (take n (:words-sorted-by-count @app)))))
@@ -33,7 +33,7 @@
         (filter #(> (count %) 3) ,)
         (filter #(< (count %) 25) ,)
         (map s/lower-case ,)
-        (map #(s/replace % #"[;:,/‘’…~\-!?#<>()\"@.]+" "" ) ,)
+        (map #(s/replace % #"[;:,/‘’…~\-!?\[\]\"<>()\"@.]+" "" ) ,)
         (filter (fn [item] (not (contains? stop-words item))) ,)
         (map #(add-word app %) ,))))
 

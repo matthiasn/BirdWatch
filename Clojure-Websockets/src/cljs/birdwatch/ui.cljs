@@ -20,7 +20,10 @@
   "rendering users counter"
   (reify
     om/IRender
-    (render [this] (dom/span nil (:users-count app)))))
+    (render [this]
+            (let [users (:users-count app)]
+              (dom/span nil "Connected: " (dom/strong nil users) (if (> users 1) " users" " user"))))))
+
 
 (def find-tweets {:by-id (util/tweets-by-order :tweets-map :by-id)
                   :by-followers (util/tweets-by-order :tweets-map :by-followers)

@@ -16,6 +16,12 @@
     om/IRender
     (render [this] (dom/span nil (:count app)))))
 
+(defn users-count-view [app owner]
+  "rendering users counter"
+  (reify
+    om/IRender
+    (render [this] (dom/span nil (:users-count app)))))
+
 (def find-tweets {:by-id (util/tweets-by-order :tweets-map :by-id)
                   :by-followers (util/tweets-by-order :tweets-map :by-followers)
                   :by-retweets (util/tweets-by-order :retweets :by-retweets)

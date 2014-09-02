@@ -99,6 +99,14 @@
        (when (contains? matches (get @a/subscriptions uid))
          (chsk-send! uid [:tweet/new t]))))))
 
+;; loop sending stats about server to all connected clients
+(go
+ (while true
+   (<! (timeout 2000))
+   (let [uids (:any @connected-uids)]
+     (doseq [uid uids]
+       (chsk-send! uid [:stats/users-count (count uids)])))))
+
 (defn -main
   [& args]
   (tc/start-twitter-conn!)

@@ -109,9 +109,6 @@
 (defn- event-handler [[id data :as ev] _]
   (match [id data]
 
-         [:some/tweetchunk chunk]
-         (put! prev-chunks-chan chunk)
-
          [:chsk/state {:first-open? true}]
          (do
            (print "Channel socket successfully established!")
@@ -130,7 +127,10 @@
                   [:tweet/prev-chunk chunk]
                   (do
                     (put! prev-chunks-chan chunk)
-                    (load-prev))))
+                    (load-prev))
+
+                  [:stats/users-count uc]
+                  (swap! state/app assoc :users-count uc) ))
 
          :else (print "Unmatched event: %s" ev)))
 

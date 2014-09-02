@@ -25,6 +25,7 @@
 ;;; Om components for the application are initialized here. Their implementation lives in the ui namespace.
 (om/root ui/tweets-view       state/app {:target (. js/document (getElementById "tweet-frame"))})
 (om/root ui/count-view        state/app {:target (. js/document (getElementById "tweet-count"))})
+(om/root ui/users-count-view  state/app {:target (. js/document (getElementById "users-count"))})
 (om/root ui/search-view       state/app {:target (. js/document (getElementById "search"))})
 (om/root ui/sort-buttons-view state/app {:target (. js/document (getElementById "sort-buttons"))})
 (om/root ui/pagination-view   state/app {:target (. js/document (getElementById "pagination"))})

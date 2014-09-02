@@ -71,9 +71,14 @@
 
 (defn initial-state []
   "function returning fresh application state"
-  {:count 0        :n 10            :retweets {}
-   :tweets-map {}  :search-text ""  :page 1
+  {:count 0
+   :n 10
+   :retweets {}
+   :tweets-map {}
+   :search-text ""
+   :page 1
    :search "*"
+   :users-count 0
    :sorted :by-rt-since-startup
    :by-followers (priority-map-by >)
    :by-retweets (priority-map-by >)

@@ -56,8 +56,8 @@
         count (sym ((keyword rt-id) (:retweets @state/app)))]
     (if (not (nil? count)) (str (number-format count) s) "")))
 
-(defn rt-count [tweet] (entity-count tweet :retweet_count " RT | "))
-(defn fav-count [tweet] (entity-count tweet :favorite_count " fav"))
+(defn rt-count [tweet] (entity-count tweet :retweet_count " RT | "))
+(defn fav-count [tweet] (entity-count tweet :favorite_count " fav"))
 
 (defn rt-count-since-startup [tweet]
   "gets RT count since startup for tweet, if exists returns formatted string"

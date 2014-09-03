@@ -15,7 +15,6 @@
     </head>
 
     <body>
-
         <!-- introModal adapted from this useful tutorial:
              http://www.tutorialrepublic.com/twitter-bootstrap-tutorial/bootstrap-modals.php-->
         <div id="introModal" class="modal fade">
@@ -37,6 +36,7 @@
                             Multiple versions of this application exist, each of which is written in different languages and technologies.
                             The main idea behind this application is to play around with different ways of programmatically reasoning about a stream of information.
                         </p>
+
                         <h3>Technology Stack</h3>
                         <p>
                             The incarnation of the application that you are looking at right now has been written in <strong><a href="http://clojure.org">Clojure</a></strong>
@@ -44,6 +44,7 @@
                             and <strong><a href="https://github.com/swannodette/om">Om</a></strong>, plus <strong><a href="http://d3js.org">D3</a></strong>,
                             plain <strong><a href="http://www.reactjs.com">ReactJS</a></strong> and <strong><a href="http://code.shutterstock.com/rickshaw/">Rickshaw</a></strong> for the graphs / charts.
                         </p>
+
                         <h3>Usage</h3>
                         <p>
                             When the application starts, it loads the last 2000 tweets matching a search, with <strong>*</strong> for matching all tweets
@@ -58,13 +59,17 @@
                             <li><strong>favorites</strong>: by total number of times a tweet has been favorited</li>
                         </ul>
                         <p>
+                            You can respond to, retweet and favorite a tweet directly from this application by using the little icons on the lower right
+                            of the tweet frames.
+                        </p>
+                        <p>
                             On the right side there are several charts. On top is a time series chart that displays how the search results were distributed over time.
                             Below is a <strong>word cloud</strong> with the size of a word signifying how often it appeared in the results. Below is a
                             <strong>bar chart</strong> showing the top 25 words and their individual trend over time. The words in both the word cloud
                             and the bar chart are clickable, with the word then appearing in the <strong>search bar</strong>.
-                            The search bar initiates a new, refined search.
+                            The search bar initiates a new, refined search. At the same time, the **URL** changes so that you can bookmark a specific search or
+                            share a link.
                         </p>
-
 
                         <h3>Feedback</h3>
                         <p>
@@ -72,6 +77,7 @@
                             If there is any feature that you find useful, please do not hesitate to contact the author.
                             You can find the contact details on the GitHub profile.
                         </p>
+
                         <h3>Source Code</h3>
                         <p>
                             You can download and use this application for yourself and monitor the topics you are interested in on Twitter. Here's the source code:
@@ -108,7 +114,6 @@
                             Follow <strong><a href="https://twitter.com/matthiasnehlsen">@matthiasnehlsen</a></strong> and subscribe to the mailing list
                             at <strong><a href="http://matthiasnehlsen.com">matthiasnehlsen.com</a></strong> to be notified of the articles.
                         </p>
-
 
                     </div>
                     <div class="modal-footer">

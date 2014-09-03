@@ -1,0 +1,11 @@
+;; template for twitter configuration file
+
+{ :consumer-key             "<YOUR API KEY HERE>"
+  :consumer-secret          "<YOUR API SECRET HERE>"
+  :user-access-token        "<YOUR ACCESS TOKEN HERE>"
+  :user-access-token-secret "<YOUR ACCESS TOKEN SECRET HERE>"
+  :es-address               "http://127.0.0.1:9200"
+  :es-index                 "birdwatch"
+  :track                    "clojure,love"
+  :tw-check-interval-sec    120
+  :port                     8888 }

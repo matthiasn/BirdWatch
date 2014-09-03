@@ -5,28 +5,3 @@
 !.gitignore
 !.bowerrc
 
-# Ignore Play! working directory #
-db
-eclipse
-lib
-log
-logs
-modules
-precompiled
-project/project
-project/target
-target
-tmp
-test-result
-server.pid
-*.iml
-*.eml
-conf/twitter.conf
-bin
-activator-sbt-atmos-play-shim.sbt
-activator-sbt-eclipse-shim.sbt
-activator-sbt-idea-shim.sbt
-
-public/scala-js/
-
-public/build/

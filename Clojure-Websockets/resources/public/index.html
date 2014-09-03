@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>BirdWatch</title>
+
+        <!-- Stylesheets -->
+        <link rel="stylesheet" media="screen" href="/css/main.css">
+        <link rel="stylesheet" media="screen" href="/css/bootstrap-glyphicons.css">
+        <link rel="stylesheet" media="screen" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" media="screen" href="/css/rickshaw.min.css">
+        <link rel="shortcut icon" type="image/png" href="/images/favicon.png">
+    </head>
+
+    <body>
+
+        <!-- introModal adapted from this useful tutorial:
+             http://www.tutorialrepublic.com/twitter-bootstrap-tutorial/bootstrap-modals.php-->
+        <div id="introModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">What is this page?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            You are looking at <strong>Birdwatch</strong>, an <strong>open source</strong> side project for <strong>tweet stream analysis</strong>.
+                            The application subscribes to all tweets that contain a certain <strong>term</strong>, e.g. <strong>Ferguson</strong>.
+                            All matching tweets are available for further search and analysis. Every search is updated in (near) <strong>real-time</strong>.
+                            Typically, when you tweet something containing the term, you should see your tweet appear in the
+                            <strong>latest</strong> section within a second or two.
+                        </p>
+                        <p>
+                            Multiple versions of this application exist, each of which is written in different languages and technologies.
+                            The main idea behind this application is to play around with different ways of programmatically reasoning about a stream of information.
+                        </p>
+                        <h3>Technology Stack</h3>
+                        <p>
+                            The incarnation of the application that you are looking at right now is written in <strong><a href="http://clojure.org">Clojure</a></strong>
+                            on the server side and <strong><a href="https://github.com/clojure/clojurescript">ClojureScript</a></strong>
+                            and <strong><a href="https://github.com/swannodette/om">Om</a></strong>, plus <strong><a href="http://d3js.org">D3</a></strong>,
+                            plain <strong><a href="http://www.reactjs.com">ReactJS</a></strong> and <strong><a href="http://code.shutterstock.com/rickshaw/">Rickshaw</a></strong> for the graphs / charts.
+                        </p>
+                        <h3>Usage</h3>
+                        <p>
+                            When the application starts, it loads the last 2000 tweets matching a search, with <strong>*</strong> for matching all tweets
+                            as the default search. Subsequently, the <strong>search result is updated in real-time</strong>. In the navigation bar, you can see the total count of
+                            tweets currently loaded. On the left side, tweets are displayed in different sort orders:
+                        </p>
+                        <ul>
+                            <li><strong>latest</strong>: by date in descending order (newest on top)</li>
+                            <li><strong>followers</strong>: by the number of followers of the tweet's author</li>
+                            <li><strong>retweets</strong>: by the total retweets of a tweet</li>
+                            <li><strong>retweets2</strong>: by the number of retweets within the loaded tweets</li>
+                            <li><strong>favorites</strong>: by total number of times a tweet has been favorited</li>
+                        </ul>
+                        <p>
+                            On the right side there are a few charts. On top is a time series chart that displays how the search results were distributed over time.
+                            Below is a <strong>word cloud</strong> with the size of a word signifying how often it appeared in the results. Below is a
+                            <strong>bar chart</strong> showing the top 25 words and how their individual trend has been over time. The words in both the word cloud
+                            and the bar chart are clickable, with the word then appearing in the <strong>search bar</strong>. The search bar initiates a new and refined search.
+                        </p>
+
+
+                        <h3>Feedback</h3>
+                        <p>
+                            Feedback is very welcome. Ideally, the author of this application would like to turn this into a useful application.
+                            If there is any feature that you would find useful, please do not hesitate contacting the author, the contact details are on the
+                            GitHub profile.
+                        </p>
+                        <h3>Source Code</h3>
+                        <p>
+                            You can download and deploy this application for yourself and monitor the topics you are interested in on Twitter. Here's the source code:
+                            <a href="https://github.com/matthiasn/BirdWatch"><strong>https://github.com/matthiasn/BirdWatch</strong></a>
+                        </p>
+                        <h3>More Information</h3>
+                        <p>
+                            There are multiple blog articles about explaining this application in detail:
+                        </p>
+
+                        <ul>
+                            <li>
+                                <a href="http://matthiasnehlsen.com/blog/2013/09/10/birdwatch-explained/">
+                                    <strong>BirdWatch explained</strong>:
+                                </a>
+                                Article on the initial application architecture using <strong><a href="http://angularjs.org">AngularJS</a></strong> and <strong><a href="http://www.playframework.com">Play Framework</a></strong>.
+                            </li>
+                            <li>
+                                <a href="http://matthiasnehlsen.com/blog/2014/03/31/birdwatch-with-reactjs/">
+                                    <strong>BirdWatch: AngularJS vs. ReactJS</strong>
+                                </a>:
+                                Article on an additional client that uses <strong><a href="http://www.reactjs.com">ReactJS</a></strong> instead of <strong>AngularJS</strong>.
+                            </li>
+                            <li>
+                                <a href="http://matthiasnehlsen.com/blog/2014/09/03/weekly-update/">
+                                    <strong>matthiasnehlsen.com - Weekly Update</strong>
+                                </a>:
+                                Article containing a section on the reasoning behind the new version of this application.
+                            </li>
+                        </ul>
+                        <p>
+                            Note that except for the last article, these cover previous versions of this application. A series of articles describing
+                            the <strong>Clojure</strong> version will be out soon.
+                            Follow <strong><a href="https://twitter.com/matthiasnehlsen">@matthiasnehlsen</a></strong> and subscribe to the mailing list
+                            on <strong><a href="http://matthiasnehlsen.com">matthiasnehlsen.com</a></strong> to get notified about these articles.
+                        </p>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Make this go away</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <!-- Navigation Bar -->
+            <div class="navbar">
+                <div class="container">
+
+                    <span class="navbar-brand">BirdWatch</span>
+
+                        <!-- Search field in NavBar -->
+                    <div class="navbar-form pull-left col-lg-4 input-group">
+                        <div id="search"></div>
+                    </div>
+
+                    <div class="nav-collapse">
+
+                            <!-- Tweets. Project info -->
+                        <ul class="nav navbar-nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About
+                                    <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="https://twitter.com/matthiasnehlsen" target="_blank">Author</a></li>
+                                    <li><a href="http://matthiasnehlsen.com/blog/2014/07/17/BirdWatch-in-ClojureScript/" target="_blank">Blog</a></li>
+                                    <li><a href="https://github.com/matthiasn/BirdWatch" target="_blank">Project on GitHub</a></li>
+                                    <li><a href="#" onclick="BirdWatch.legalStuff()">Legal stuff</a></li>
+                                    <li><a href="#" id="users-count"></a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                            <!-- Settings -->
+                        <ul class="nav navbar-nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings
+                                    <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Previous Tweets:</a></li>
+                                    <li>
+                                        <a>
+                                            <select class="form-control" id="prev-size">
+                                                <option value="5000">5000</option>
+                                                <option value="10000">10000</option>
+                                                <option value="20000">20000</option>
+                                                <option value="50000">50000</option>
+                                                <option value="100000">100000</option>
+                                            </select>
+                                        </a>
+                                    </li>
+                                    <li><hr></li>
+                                    <li><a href="#">Page Size:</a></li>
+                                    <li>
+                                        <a>
+                                            <select class="form-control" id="page-size">
+                                                <option value="5">5</option>
+                                                <option value="10" selected>10</option>
+                                                <option value="25">25</option>
+                                                <option value="50">50</option>
+                                                <option value="100">100</option>
+                                            </select>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a>
+                                            <select class="form-control" id="offset-size">
+                                                <option value="0" selected>0</option>
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3">3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                            </select>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <div class="nav navbar-text col-lg-2 pull-right">Tweets: <span id="tweet-count"></span></div>
+
+                        <div class="nav navbar-text col-lg-2 pull-right">
+                            <iframe src="http://ghbtns.com/github-btn.html?user=matthiasn&repo=birdwatch&type=watch&count=true"
+                                allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+                <!-- Tweets column with Pagination -->
+            <div class="container container-fluid">
+                <div class="row">
+                        <!-- Pagination -->
+                    <div id="pagination"></div>
+                </div>
+
+                <div id="sort-buttons"></div>
+
+                    <!-- Main page layout -->
+                <div class="row">
+                        <!-- Tweet Cards inside frame -->
+                    <div class="col-lg-4" id="tweet-frame"></div>
+
+                        <!-- Charts column -->
+                    <div class="col-lg-8">
+                        <div id="timeseries1" class="timeseries"></div>
+                        <hr />
+                        <div id="wordCloud" class="cloud" ></div>
+                        <hr />
+                        <h5>word frequency</h5>
+                        <div id="react-bar-chart" class="barchart" ></div>
+                        <hr />
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Scripts placed at the end of the document so the pages load faster -->
+
+        <script src="/js/vendor/jquery-1.10.2.min.js"></script>
+        <script src="/js/vendor/bootstrap.min.js"></script>
+        <script src="/js/vendor/d3.v3.min.js"></script>
+        <script src="/js/vendor/d3.layout.cloud.js"></script>
+        <script src="/js/vendor/crossfilter.v1.min.js"></script>
+        <script src="/js/vendor/rickshaw.min.js"></script>
+        <script src="/js/vendor/moment.min.js"></script>
+        <script src="/js/vendor/underscore.min.js"></script>
+        <script src="/js/vendor/react.js"></script>
+        <script src="/js/vendor/regression.js"></script>
+        <script src="/js/barchart.js"></script>
+        <script src="/js/wordcloud.js"></script>
+        <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+
+        <script type="text/javascript">
+        $(document).ready(function(){
+            $("#introModal").modal('show');
+        });
+        </script>
+
+        <script src="/js/build/birdwatch-opt.js"></script>
+
+                <!-- Analytics, Todo: replace or remove in your own project. -->
+        <script>
+            if (location.hostname === '@hostname'){
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+                ga('create', '@id', '@domain');
+                ga('send', 'pageview');
+            }
+        </script>
+
+    </body>
+</html>

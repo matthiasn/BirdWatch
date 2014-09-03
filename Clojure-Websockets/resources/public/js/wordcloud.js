@@ -38,7 +38,7 @@
                 .style("font-size", function(d) { return d.size + "px"; })
                 .on("click",function (d) {
                     var tag;
-                    tag = d.text.replace('#', '');
+                    tag = d.text;
                     addSearch(tag);
                 })
                 .style("opacity", 1e-6)

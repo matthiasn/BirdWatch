@@ -1,5 +1,5 @@
 # Birdwatch using Clojure, ClojureScript and Om
-This is an all-Clojure implementation of the **BirdWatch** application.
+This is an **all-Clojure** implementation of the **BirdWatch** application.
 
 ## Installation
 First of all, you need **[Leiningen](http://leiningen.org)** installed on your system. Then, you need to build the client-side application:
@@ -12,7 +12,7 @@ Alternatively, you can use the following during development for detecting file s
     lein cljsbuild once release
     lein cljsbuild once dev
 
-The you will need to create a file named twitterconf.edn. You can copy twitterconf-tpl.edn as a template. Edit it and fill out the credentials you have obtained from dev.twitter.com:
+The you will need to create a file named twitterconf.edn. You can copy **twitterconf-tpl.edn** as a template. Edit it and fill out the credentials you have obtained from dev.twitter.com:
 
     { :consumer-key             "<YOUR API KEY HERE>"
       :consumer-secret          "<YOUR API SECRET HERE>"
@@ -20,6 +20,9 @@ The you will need to create a file named twitterconf.edn. You can copy twitterco
       :user-access-token-secret "<YOUR ACCESS TOKEN SECRET HERE>"
       :es-address               "http://127.0.0.1:9200"
       :es-index                 "birdwatch"
+      :track                    "clojure,love"
+      :tw-check-interval-sec    120
+      :port                     8888 }
 
 In the twitterconf.edn you can also specify the address under which your installation of **[ElasticSearch](http://www.elasticsearch.org)** is accessible, the index to use in ElasticSearch and which terms to track from Twitter.
 

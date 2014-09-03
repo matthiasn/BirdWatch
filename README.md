@@ -1,5 +1,5 @@
 #BirdWatch  
-BirdWatch is a reactive web application for visualizing a stream of live tweets. It came about as a playground for trying out different ways of solving the same problem, which is subscribing to the Twitter Streaming API from a server side application and then allowing a client-side single-page application to perform a live search, meaning that a search on historic tweets until now will be performed and then updated as new tweets matching the same search are retrieved.
+BirdWatch is a reactive web application for visualizing a stream of live tweets. It started out as a playground for trying out different ways of solving the same problem. There is a server-side application which subscribes to the Twitter Streaming API and then allows a client-side single-page application to perform a live search, meaning that a search on historic tweets up until now will be performed and then updated as new tweets matching the same search are retrieved.
 
 ## Implementations
 On the server side, there are currently two different implementations:
@@ -10,11 +10,11 @@ On the server side, there are currently two different implementations:
 
 
 ## Installation
-Installation instructions are to be found with the respective implementations.
+Installation instructions can be found with the respective implementations.
 
 ## Further Reading
 
-There are a couple of blog posts covering this application. The best starting point for the **Play** application is the **[BirdWatch Explained](http://matthiasnehlsen.com/blog/2013/09/10/birdwatch-explained/)** article covering both the server side and the initial client using **AngularJS**. The **[BirdWatch: AngularJS vs. ReactJS](http://matthiasnehlsen.com/blog/2014/03/31/birdwatch-with-reactjs/)** article covers the **ReactJS** client. This article builds on the previous one. Then there is the **[BirdWatch with ClojureScript and Om explained](http://matthiasnehlsen.com/blog/2014/07/24/birdwatch-cljs-om/)**. This one might still be useful as it covers building a **ClojureScript** client using **Server-Sent Events**. 
+There are a couple of blog posts covering this application. The best starting point for the **Play** application is the **[BirdWatch Explained](http://matthiasnehlsen.com/blog/2013/09/10/birdwatch-explained/)** article covering both the server side and the initial client using **AngularJS**. The **[BirdWatch: AngularJS vs. ReactJS](http://matthiasnehlsen.com/blog/2014/03/31/birdwatch-with-reactjs/)** article covers the **ReactJS** client. This article builds on the previous one. Then there is the **[BirdWatch with ClojureScript and Om explained](http://matthiasnehlsen.com/blog/2014/07/24/birdwatch-cljs-om/)** article. This one may still be useful as it covers how to build a **ClojureScript** client using **Server-Sent Events**. 
 
 A series of articles about the all-Clojure version is currently in the works. Check out **[matthiasnehlsen.com](http://matthiasnehlsen.com)** and subscribe to the newsletter if you want to stay up to date.
 

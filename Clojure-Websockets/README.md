@@ -2,17 +2,17 @@
 This is an **all-Clojure** implementation of the **BirdWatch** application.
 
 ## Installation
-First of all, you need **[Leiningen](http://leiningen.org)** installed on your system. Then, you need to build the client-side application:
+First of all, **[Leiningen](http://leiningen.org)** must be installed on your system. Then, you need to build the client-side application:
 
     lein cljsbuild once release
     lein cljsbuild once dev
 
-Alternatively, you can use the following during development for detecting file system changes and MUCH FASTER recompilation:
+Alternatively, you can use the following during development to detect file system changes and recompile MUCH FASTER:
 
     lein cljsbuild once release
     lein cljsbuild once dev
 
-The you will need to create a file named twitterconf.edn. You can copy **twitterconf-tpl.edn** as a template. Edit it and fill out the credentials you have obtained from dev.twitter.com:
+Then you will need to create a file named twitterconf.edn. You can copy **twitterconf-tpl.edn** as a template. Edit it and fill out the credentials you have obtained from dev.twitter.com:
 
     { :consumer-key             "<YOUR API KEY HERE>"
       :consumer-secret          "<YOUR API SECRET HERE>"

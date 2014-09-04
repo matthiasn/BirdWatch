@@ -4,6 +4,7 @@
   (:require [om.core :as om :include-macros true]
             [birdwatch.util :as util]
             [birdwatch.timeseries :as ts]
+            [birdwatch.communicator :as comm]
             [birdwatch.tweets :as tweets]
             [birdwatch.wordcount :as wc]
             [birdwatch.ui :as ui]
@@ -17,9 +18,7 @@
 ;;; Application state in a single atom
 ;;; Will be initialized with the map returned by util/initial-state.
 ;;; Reset to a new clean slate when a new search is started.
-(reset! state/app (util/initial-state))
-
-;(def app-state state/app)
+(reset! state/app (state/initial-state))
 
 ;;; Om components for the application are initialized here. Their implementation lives in the ui namespace.
 (om/root ui/tweets-view       state/app {:target (. js/document (getElementById "tweet-frame"))})
@@ -43,8 +42,6 @@
 (js/setInterval #(.updateBarchart js/BirdWatch (clj->js (wc/get-words state/app 25))) 1000)
 
 ;;; The app starts with the search string encoded in the URI location hash.
-;(defn start-search [] (tweets/start-search state/app tweets-chan))
-
 (swap! state/app assoc :search-text (util/search-hash))
 
 

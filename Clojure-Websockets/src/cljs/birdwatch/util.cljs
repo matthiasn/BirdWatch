@@ -69,25 +69,6 @@
   "swaps item in priority-map"
   (swap! app assoc priority-map (assoc (priority-map @app) id n)))
 
-(defn initial-state []
-  "function returning fresh application state"
-  {:count 0
-   :n 10
-   :retweets {}
-   :tweets-map {}
-   :search-text ""
-   :page 1
-   :search "*"
-   :users-count 0
-   :total-tweet-count 0
-   :sorted :by-rt-since-startup
-   :by-followers (priority-map-by >)
-   :by-retweets (priority-map-by >)
-   :by-favorites (priority-map-by >)
-   :by-rt-since-startup (priority-map-by >)
-   :by-id (priority-map-by >)
-   :words-sorted-by-count (priority-map-by >)})
-
 (defn tweets-by-order [tweets-map order]
   "find top n tweets by specified order"
   (fn [app n skip]

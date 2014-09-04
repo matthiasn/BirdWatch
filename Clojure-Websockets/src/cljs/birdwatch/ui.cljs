@@ -3,7 +3,7 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [birdwatch.util :as util]
-            [birdwatch.tweets :as tweets]
+            [birdwatch.communicator :as comm]
             [birdwatch.state :as state]
             [cljs.core.async :as async :refer [<! chan put!]]))
 
@@ -67,10 +67,10 @@
                                      :type "text" :ref "new-contact"
                                      :value (:search-text (om/get-props owner))
                                      :placeholder "Example search: java (job OR jobs OR hiring)"
-                                     :onKeyPress #(when (== (.-keyCode %) 13) (tweets/start-search))
+                                     :onKeyPress #(when (== (.-keyCode %) 13) (comm/start-search))
                                      :onChange #(handle-search-change % app)})
                      (dom/span #js {:className "input-group-btn"}
-                               (dom/button #js {:className "btn btn-primary" :onClick #(tweets/start-search)}
+                               (dom/button #js {:className "btn btn-primary" :onClick #(comm/start-search)}
                                            (dom/span #js {:className "glyphicon glyphicon-search"})))))))
 
 (defn twitter-intent [tweet intent icon]

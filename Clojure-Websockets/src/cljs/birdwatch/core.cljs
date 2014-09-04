@@ -8,7 +8,6 @@
             [birdwatch.wordcount :as wc]
             [birdwatch.ui :as ui]
             [birdwatch.state :as state]
-
             [cljs.core.match]
             [taoensso.sente  :as sente  :refer (cb-success?)]
             [cljs.core.async :as async :refer [<! >! chan put! alts! timeout]]))
@@ -26,6 +25,7 @@
 (om/root ui/tweets-view       state/app {:target (. js/document (getElementById "tweet-frame"))})
 (om/root ui/count-view        state/app {:target (. js/document (getElementById "tweet-count"))})
 (om/root ui/users-count-view  state/app {:target (. js/document (getElementById "users-count"))})
+(om/root ui/total-count-view  state/app {:target (. js/document (getElementById "total-tweet-count"))})
 (om/root ui/search-view       state/app {:target (. js/document (getElementById "search"))})
 (om/root ui/sort-buttons-view state/app {:target (. js/document (getElementById "sort-buttons"))})
 (om/root ui/pagination-view   state/app {:target (. js/document (getElementById "pagination"))})

@@ -79,6 +79,7 @@
    :page 1
    :search "*"
    :users-count 0
+   :total-tweet-count 0
    :sorted :by-rt-since-startup
    :by-followers (priority-map-by >)
    :by-retweets (priority-map-by >)

@@ -5,7 +5,6 @@
             [birdwatch.timeseries :as ts]
             [birdwatch.wordcount :as wc]
             [birdwatch.state :as state]
-
             [cljs.core.match]
             [taoensso.sente  :as sente  :refer (cb-success?)]
             [cljs.core.async :as async :refer [<! >! chan put! alts! timeout]]))
@@ -45,7 +44,6 @@
     (add-rt-status app tweet)
     (wc/process-tweet app (:text tweet))
     (. word-cloud (redraw (clj->js (wc/get-words app 250))))))
-
 
 ;;; Channels for handling information flow in the application.
 (def tweets-chan (chan 1))
@@ -130,7 +128,10 @@
                     (load-prev))
 
                   [:stats/users-count uc]
-                  (swap! state/app assoc :users-count uc) ))
+                  (swap! state/app assoc :users-count uc)
+
+                  [:stats/total-tweet-count ttc]
+                  (swap! state/app assoc :total-tweet-count ttc) ))
 
          :else (print "Unmatched event: %s" ev)))
 

@@ -5,7 +5,6 @@
             [birdwatch.util :as util]
             [birdwatch.tweets :as tweets]
             [birdwatch.state :as state]
-
             [cljs.core.async :as async :refer [<! chan put!]]))
 
 (enable-console-print!)
@@ -24,6 +23,12 @@
             (let [users (:users-count app)]
               (dom/span nil "Connected: " (dom/strong nil users) (if (> users 1) " users" " user"))))))
 
+(defn total-count-view [app owner]
+  "rendering total tweets counter"
+  (reify
+    om/IRender
+    (render [this]
+            (dom/span nil "Indexed: " (dom/strong nil (:total-tweet-count app)) " tweets"))))
 
 (def find-tweets {:by-id (util/tweets-by-order :tweets-map :by-id)
                   :by-followers (util/tweets-by-order :tweets-map :by-followers)

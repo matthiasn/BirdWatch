@@ -16,6 +16,10 @@
 
 (def conn (esr/connect (:es-address conf)))
 
+(defn total-tweet-count []
+  "get total count of indexed tweets from ElasticSearch"
+  (esd/count conn (:es-index conf) "tweet"))
+
 ;; loop for persisting tweets
 (go
  (while true

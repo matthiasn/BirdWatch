@@ -119,4 +119,5 @@
 (defn -main
   [& args]
   (tc/start-twitter-conn!)
+  (tc/watch-twitter-conn!)
   (start-http-server!))

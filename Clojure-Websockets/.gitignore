@@ -8,6 +8,7 @@ pom.xml.asc
 /.lein-*
 /.nrepl-port
 *.log
+*.hprof
 
 twitterconf.edn
 resources/public/js/build/

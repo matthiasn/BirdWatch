@@ -32,7 +32,7 @@
   "run a query on previous matching tweets"
   (let [conn (esr/connect (:es-address conf))
         q (:query params)
-        res  (esd/search conn (:es-index conf) "tweet" :query q :size (:n params) :from (:from params) :sort {:id "desc"})
+        res  (esd/search conn (:es-index conf) "tweet" :query q :size (:n params) :from (:from params) :sort {:id :desc})
         n    (esrsp/total-hits res)
         hits (esrsp/hits-from res)]
     (log/info "Total hits:" n "Retrieved:" (count hits))

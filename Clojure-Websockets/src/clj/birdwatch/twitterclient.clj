@@ -92,14 +92,15 @@
                                         :callbacks *custom-streaming-callback* )))
 
 ;; loop watching the twitter client and restarting it if necessary
-(go
- (while true
-   (<! (timeout (* (:tw-check-interval-sec conf) 1000)))
-   (let [now (t/now)
-         since-last-sec (t/in-seconds (t/interval @last-received now))]
-     (when (> since-last-sec (:tw-check-interval-sec conf))
-       (do
-         (log/error since-last-sec "seconds since last tweet received")
-         (stop-twitter-conn!)
-         (<! (timeout (* (:tw-check-interval-sec conf) 1000)))
-         (start-twitter-conn!))))))
+(defn watch-twitter-conn! []
+  (go
+   (while true
+     (<! (timeout (* (:tw-check-interval-sec conf) 1000)))
+     (let [now (t/now)
+           since-last-sec (t/in-seconds (t/interval @last-received now))]
+       (when (> since-last-sec (:tw-check-interval-sec conf))
+         (do
+           (log/error since-last-sec "seconds since last tweet received")
+           (stop-twitter-conn!)
+           (<! (timeout (* (:tw-check-interval-sec conf) 1000)))
+           (start-twitter-conn!)))))))

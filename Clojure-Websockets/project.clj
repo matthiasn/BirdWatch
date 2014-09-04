@@ -18,6 +18,7 @@
                  [pandect "0.3.4"]
                  [org.clojure/clojurescript "0.0-2268"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
+                 [org.clojure/data.priority-map "0.0.5"]
                  [om "0.7.1"]]
 
   :source-paths ["src/clj/"]

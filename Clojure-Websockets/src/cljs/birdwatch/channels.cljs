@@ -7,4 +7,5 @@
 (def user-count-chan (chan))
 (def total-tweets-count-chan (chan))
 (def prev-chunks-chan (chan))
+(def missing-tweets-chan (chan))
 

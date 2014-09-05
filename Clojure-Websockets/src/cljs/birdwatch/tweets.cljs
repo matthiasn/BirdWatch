@@ -9,12 +9,20 @@
 
 (enable-console-print!)
 
+#_(defn add-to-tweets-map [app tweets-map tweet]
+  "adds tweet to tweets-map"
+  (swap! app
+         assoc-in [tweets-map (keyword (:id_str tweet))]
+         tweet))
+
 (defn add-to-tweets-map [app tweets-map tweet]
   "adds tweet to tweets-map"
   (swap! app
          assoc-in [tweets-map (keyword (:id_str tweet))]
-         ;(util/format-tweet tweet)
-         tweet))
+         (if (= 0 (mod (:id tweet) 10))
+           tweet
+           {:created_at (:created_at tweet)
+            :id_str (:id_str tweet)})))
 
 (defn swap-when-larger [app priority-map rt-id n]
   "swaps item in priority-map when new value is larger than old value"
@@ -38,7 +46,7 @@
     (swap! app assoc :count (inc (:count state)))
     (add-to-tweets-map app :tweets-map tweet)
     (util/swap-pmap app :by-followers (keyword (:id_str tweet)) (:followers_count (:user tweet)))
-    (util/swap-pmap app :by-id (keyword (:id_str tweet)) (:id tweet))
+    (util/swap-pmap app :by-id (keyword (:id_str tweet)) (:id_str tweet))
     (add-rt-status app tweet)
     (wc/process-tweet app (:text tweet))))
 

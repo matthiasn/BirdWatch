@@ -1,5 +1,6 @@
 (ns birdwatch.communicator
-  (:require-macros [cljs.core.match.macros :refer (match)])
+  (:require-macros [cljs.core.match.macros :refer (match)]
+                   [cljs.core.async.macros :refer [go-loop go]])
   (:require [birdwatch.channels :as c]
             [birdwatch.util :as util]
             [birdwatch.state :as state]
@@ -64,3 +65,9 @@
 
 (defonce chsk-router
   (sente/start-chsk-router-loop! event-handler ch-chsk))
+
+
+(go-loop []
+         (let [tid (<! c/missing-tweets-chan)]
+           (chsk-send! [:cmd/missing tid])
+           (recur)))

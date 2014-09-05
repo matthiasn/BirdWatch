@@ -7,7 +7,7 @@
                  [twitter-api "0.7.6"]
                  [org.clojure/core.async "0.1.319.0-6b1aca-alpha"]
                  [twitter-streaming-client "0.3.2"]
-                 [clojurewerkz/elastisch "2.1.0-beta4"]
+                 [clojurewerkz/elastisch "2.1.0-beta6"]
                  [org.clojure/tools.logging "0.3.0"]
                  [com.taoensso/sente "0.15.1" :exclusions [org.clojure/clojure]]
                  [http-kit "2.1.18"]

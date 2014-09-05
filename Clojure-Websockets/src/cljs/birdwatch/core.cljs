@@ -1,16 +1,12 @@
 (ns birdwatch.core
-  (:require-macros [cljs.core.async.macros :refer [go-loop go alt!]]
-                   [cljs.core.match.macros :refer (match)])
+  (:require-macros [cljs.core.async.macros :refer [go-loop go alt!]])
   (:require [om.core :as om :include-macros true]
             [birdwatch.util :as util]
             [birdwatch.timeseries :as ts]
             [birdwatch.communicator :as comm]
-            [birdwatch.tweets :as tweets]
             [birdwatch.wordcount :as wc]
             [birdwatch.ui :as ui]
             [birdwatch.state :as state]
-            [cljs.core.match]
-            [taoensso.sente  :as sente  :refer (cb-success?)]
             [cljs.core.async :as async :refer [<! >! chan put! alts! timeout]]))
 
 ;;;; Main file of the BirdWatch application written in ClojureScript
@@ -37,9 +33,16 @@
 (def cloud-w (aget cloud-elem "offsetWidth"))
 (def word-cloud (.WordCloud js/BirdWatch cloud-w (* cloud-w 0.7) 250 append-search-text "#wordCloud"))
 
-;;; refresh BarChart and time series chart occasionally (could potentially be more elegant)
-(js/setInterval #(ts/update ts/graph-with-legend state/app) 2500)
-(js/setInterval #(.updateBarchart js/BirdWatch (clj->js (wc/get-words state/app 25))) 1000)
+; update the cheap charts every second
+(go-loop [] (<! (timeout 1000))
+         (.updateBarchart js/BirdWatch (clj->js (wc/get-words state/app 25)))
+         (ts/update ts/graph-with-legend state/app)
+         (recur))
+
+; update the expensive word cloud periodically
+(go-loop [] (<! (timeout 5000))
+         (. word-cloud (redraw (clj->js (wc/get-words state/app 250))))
+         (recur))
 
 ;;; The app starts with the search string encoded in the URI location hash.
 (swap! state/app assoc :search-text (util/search-hash))

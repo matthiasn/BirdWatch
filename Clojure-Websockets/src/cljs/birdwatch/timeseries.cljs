@@ -52,14 +52,16 @@
 
 (defn ts-data [app]
   "perform time series analysis by counting tweets in even intervals"
-  (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) @app 10000)
-        oldest (tweet-ts (last tweets-by-id))
-        newest (tweet-ts (first tweets-by-id))
-        interval (grouping-interval newest oldest)
-        rounder (date-round interval)]
-    (reduce count-into-map
-            (empty-ts-map newest oldest interval)
-            (map #(rounder (tweet-ts %)) tweets-by-id))))
+  (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) @app 10000)]
+    (if (> (count tweets-by-id) 100)
+      (let [oldest (tweet-ts (last tweets-by-id))
+            newest (tweet-ts (first tweets-by-id))
+            interval (grouping-interval newest oldest)
+            rounder (date-round interval)]
+        (reduce count-into-map
+                (empty-ts-map newest oldest interval)
+                (map #(rounder (tweet-ts %)) tweets-by-id)))
+      (empty-ts-map 0 0 9))))
 
 (defn ts-map-vec [ts-map]
   "creates a vector of maps required by Rickshaw chart"

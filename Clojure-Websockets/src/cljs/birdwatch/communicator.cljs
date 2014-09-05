@@ -14,7 +14,6 @@
   (def chsk-state state))  ; Watchable, read-only atom
 
 (def prev-chunks-loaded (atom 0))
-(def chunks-to-load 10)
 
 (defn query-string []
   "format and modify query string"
@@ -29,12 +28,14 @@
 
 (defn load-prev []
   "load previous tweets matching the current search"
-  (when (< @prev-chunks-loaded chunks-to-load)
-    (chsk-send! [:cmd/query {:query (query-string)
-                             :n 200
-                             :uid (:uid @chsk-state)
-                             :from (* 200 @prev-chunks-loaded)}])
-    (swap! prev-chunks-loaded inc)))
+  (let [chunks-to-load 10
+        chunk-size 500]
+    (when (< @prev-chunks-loaded chunks-to-load)
+      (chsk-send! [:cmd/query {:query (query-string)
+                               :n chunk-size
+                               :uid (:uid @chsk-state)
+                               :from (* chunk-size @prev-chunks-loaded)}])
+      (swap! prev-chunks-loaded inc))))
 
 (defn start-search []
   "initiate new search by starting SSE stream"

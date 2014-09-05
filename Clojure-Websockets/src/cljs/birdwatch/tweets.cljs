@@ -32,7 +32,7 @@
       (util/swap-pmap app :by-rt-since-startup rt-id (inc (get (:by-rt-since-startup state) rt-id 0)))
       (when (> rt-count (:retweet_count (rt-id (:retweets state)))) (add-to-tweets-map app :retweets rt)))))
 
-(defn add-tweet [tweet app word-cloud]
+(defn add-tweet [tweet app]
   "increment counter, add tweet to tweets map and to sorted sets by id and by followers"
   (let [state @app]
     (swap! app assoc :count (inc (:count state)))
@@ -40,18 +40,17 @@
     (util/swap-pmap app :by-followers (keyword (:id_str tweet)) (:followers_count (:user tweet)))
     (util/swap-pmap app :by-id (keyword (:id_str tweet)) (:id tweet))
     (add-rt-status app tweet)
-    (wc/process-tweet app (:text tweet))
-    (. word-cloud (redraw (clj->js (wc/get-words app 250))))))
+    (wc/process-tweet app (:text tweet))))
 
 (go-loop []
  (let [[t chan] (alts! [c/tweets-chan c/prev-tweets-chan] {:priority true})]
-   (add-tweet t state/app birdwatch.core/word-cloud)
+   (add-tweet t state/app)
    (recur)))
 
 (go-loop []
          (let [chunk (<! c/prev-chunks-chan)]
            (doseq [t chunk]
-             (when (= 0 (mod (:_id t) 100)) (<! (timeout 0)))
-             (put! c/prev-tweets-chan (:_source t)))
-           (<! (timeout 1500))
+             ;(when (= 0 (mod (:id t) 500)) (<! (timeout 0)))
+             (put! c/prev-tweets-chan t))
+           (<! (timeout 50))
            (recur)))

@@ -8,6 +8,8 @@
             [taoensso.sente  :as sente  :refer (cb-success?)]
             [cljs.core.async :as async :refer [<! >! chan put! alts! timeout]]))
 
+(enable-console-print!)
+
 (let [{:keys [chsk ch-recv send-fn state]} (sente/make-channel-socket! "/chsk" {:type :auto})]
   (def chsk       chsk)
   (def ch-chsk    ch-recv) ; ChannelSocket's receive channel
@@ -58,6 +60,7 @@
          (let [[msg-type msg] payload]
            (match [msg-type msg]
                   [:tweet/new             tweet] (put! c/tweets-chan tweet)
+                  [:tweet/missing-tweet   tweet] (put! c/missing-tweet-found-chan tweet)
                   [:tweet/prev-chunk prev-chunk] (do (put! c/prev-chunks-chan prev-chunk) (load-prev))
                   [:stats/users-count        uc] (put! c/user-count-chan uc)
                   [:stats/total-tweet-count ttc] (put! c/total-tweets-count-chan ttc)))
@@ -68,6 +71,7 @@
 
 
 (go-loop []
-         (let [tid (<! c/missing-tweets-chan)]
-           (chsk-send! [:cmd/missing tid])
+         (let [tid (<! c/tweet-missing-chan)]
+           (chsk-send! [:cmd/missing {:id_str tid
+                                      :uid (:uid @chsk-state)}])
            (recur)))

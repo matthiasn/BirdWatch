@@ -37,6 +37,12 @@
                   :by-favorites (util/tweets-by-order :retweets :by-favorites)
                   :by-rt-since-startup (util/tweets-by-order :retweets :by-rt-since-startup)})
 
+(def find-tweets2 {:by-id (util/tweet-ids-by-order :tweets-map :by-id)
+                  :by-followers (util/tweet-ids-by-order :tweets-map :by-followers)
+                  :by-retweets (util/tweet-ids-by-order :retweets :by-retweets)
+                  :by-favorites (util/tweet-ids-by-order :retweets :by-favorites)
+                  :by-rt-since-startup (util/tweet-ids-by-order :retweets :by-rt-since-startup)})
+
 (defn sort-button-js [app key]
   "generates JS for sort button for both updating sort order and showing active button"
   #js {:onClick (fn [e] (om/update! app [:sorted] key))
@@ -79,9 +85,10 @@
   (dom/a #js {:href (str "https://twitter.com/intent/" intent (:id_str tweet))}
          (dom/img #js {:src (str "/images/" icon)})))
 
-
-(defn tweet-view [raw-tweet owner]
+#_(defn tweet-view [tid owner]
   "rendering single tweet card"
+  (print tid)
+  (let [raw-tweet ((first tid) (:tweets-map @state/app))]
   (reify
     om/IRender
     (render [this]
@@ -115,17 +122,70 @@
                                   (twitter-intent tweet "retweet?tweet_id=" "retweet.png")
                                   (twitter-intent tweet "favorite?tweet_id=" "favorite.png"))))
               (do
-                (put! c/missing-tweets-chan (:id_str raw-tweet))
-                (dom/div #js {:className "tweet"} "loading..."))))))
+                (print "hello")
+                ;(print ((keyword (:id_str raw-tweet)) (:tweets-map @state/app)))
+                ;(put! c/tweet-missing-chan tid)
+                ;(dom/div #js {:className "tweet"} "loading... " tid)
+
+                ))))))
+
+
+
+(defn tweet-view [raw-tweet-entry owner]
+  "rendering single tweet card"
+  (print "raw-tweet")
+  (print raw-tweet-entry)
+  (let [raw-tweet ((keyword (:id_str raw-tweet-entry)) (:tweets-map @state/app))]
+  (reify
+    om/IRender
+    (render [this]
+            (if (:user raw-tweet)
+              (let [tweet (util/format-tweet raw-tweet)
+                    user (:user tweet)
+                    screen-name (:screen_name user)
+                    href (str "http://www.twitter.com/" screen-name)
+                    media (:media (:entities tweet))]
+                (dom/div #js {:className "tweet"}
+                         (dom/span nil (dom/a #js {:href href :target "_blank"}
+                                              (dom/img #js {:className "thumbnail" :src (:profile_image_url user)})))
+                         (dom/a #js {:href href :target "_blank"}
+                                (dom/span #js {:className "username" :src (:profile_image_url user)} (:name user)))
+                         (dom/span #js {:className "username_screen"} (str " @" screen-name))
+                         (dom/div #js {:className "pull-right timeInterval"} (util/from-now (:created_at tweet)))
+                         (dom/div #js {:className "tweettext"}
+                                  (dom/div #js {:dangerouslySetInnerHTML #js {:__html (:html-text tweet)}})
+                                  (dom/div #js {:className "pull-left timeInterval"}
+                                           (str (util/number-format (:followers_count user)) " followers"))
+                                  (dom/div #js {:className "pull-right timeInterval"}
+                                           (str (util/rt-count-since-startup tweet)
+                                                (util/rt-count tweet)
+                                                (util/fav-count tweet))))
+                         (when (> (count media) 0)
+                           (dom/div #js {:className "tweet-image"}
+                                    (dom/a #js {:href (:url (get media 0)) :target "_blank"}
+                                           (dom/img #js {:src (str (:media_url (get media 0)) ":small")}))))
+                         (dom/div #js {:className "intent"}
+                                  (twitter-intent tweet "tweet?in_reply_to=" "reply.png")
+                                  (twitter-intent tweet "retweet?tweet_id=" "retweet.png")
+                                  (twitter-intent tweet "favorite?tweet_id=" "favorite.png"))))
+              (do
+                (print "hello")
+                ;(print ((keyword (:id_str raw-tweet)) (:tweets-map @state/app)))
+                (put! c/tweet-missing-chan (:id_str raw-tweet-entry))
+                (dom/div #js {:className "tweet"} "loading... " (:id_str raw-tweet-entry))))))))
 
 (defn tweets-view [app owner]
   "rendering tweet list"
   (reify
     om/IRender
     (render [this]
-            (apply dom/div nil (om/build-all
-                                tweet-view
-                                (((:sorted app) find-tweets) app (:n app) (- (:page app) 1)))))))
+            (let [tweets (((:sorted app) find-tweets) app (:n app) (- (:page app) 1))]
+              (print "load tweets")
+              (print (count tweets))
+              (print tweets)
+              (apply dom/div nil (om/build-all
+                                  tweet-view
+                                  tweets))))))
 
 (defn pag-items [app page-change-chan]
   "function creating pagination items"

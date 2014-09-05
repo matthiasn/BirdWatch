@@ -9,11 +9,13 @@
 
 (enable-console-print!)
 
-#_(defn add-to-tweets-map [app tweets-map tweet]
+(defn add-to-tweets-map2 [app tweets-map tweet]
   "adds tweet to tweets-map"
   (swap! app
          assoc-in [tweets-map (keyword (:id_str tweet))]
-         tweet))
+         tweet)
+  ;(print ((keyword (:id_str tweet)) (:tweets-map @app)))
+  )
 
 (defn add-to-tweets-map [app tweets-map tweet]
   "adds tweet to tweets-map"
@@ -56,9 +58,13 @@
    (recur)))
 
 (go-loop []
+ (let [mt (<! c/missing-tweet-found-chan)]
+   (add-to-tweets-map2 state/app :tweets-map mt)
+   (recur)))
+
+(go-loop []
          (let [chunk (<! c/prev-chunks-chan)]
            (doseq [t chunk]
-             ;(when (= 0 (mod (:id t) 500)) (<! (timeout 0)))
              (put! c/prev-tweets-chan t))
            (<! (timeout 50))
            (recur)))

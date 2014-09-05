@@ -73,3 +73,8 @@
   "find top n tweets by specified order"
   (fn [app n skip]
       (vec (map (fn [m] ((keyword (first m))(tweets-map app))) (take n (drop (* n skip) (order app)))))))
+
+(defn tweet-ids-by-order [tweets-map order]
+  "find top n tweets by specified order"
+  (fn [app n skip]
+      (take n (drop (* n skip) (order app)))))

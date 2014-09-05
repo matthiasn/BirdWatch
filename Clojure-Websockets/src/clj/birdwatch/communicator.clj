@@ -50,8 +50,8 @@
                ;(doseq [t res] (chsk-send! (:uid params) [:some/tweet (:_source t)]))
                (chsk-send! (:uid params) [:tweet/prev-chunk res])))
 
-           [:cmd/missing tid]
-           (log/info "Missing Tweet requested:" tid)
+           [:cmd/missing params]
+           (put! c/tweet-missing-chan params)
 
            [:chsk/ws-ping params]
            () ; currently just do nothing with ping (no logging either)
@@ -87,3 +87,10 @@
          total-tweet-count (format "%,15d" (:count (p/total-tweet-count)))]
      (doseq [uid uids]
        (chsk-send! uid [:stats/total-tweet-count total-tweet-count])))))
+
+
+;; loop for sending missing tweet back to client
+(go
+ (while true
+   (let [msg (<! c/missing-tweet-found-chan)]
+     (chsk-send! (:uid msg) [:tweet/missing-tweet (:tweet msg)]))))

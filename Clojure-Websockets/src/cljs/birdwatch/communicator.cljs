@@ -69,9 +69,8 @@
 (defonce chsk-router
   (sente/start-chsk-router-loop! event-handler ch-chsk))
 
-
+; loop for sending messages about missing tweet to server
 (go-loop []
          (let [tid (<! c/tweet-missing-chan)]
-           (chsk-send! [:cmd/missing {:id_str tid
-                                      :uid (:uid @chsk-state)}])
+           (chsk-send! [:cmd/missing {:id_str tid :uid (:uid @chsk-state)}])
            (recur)))

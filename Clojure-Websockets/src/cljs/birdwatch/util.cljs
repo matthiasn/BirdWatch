@@ -53,7 +53,7 @@
 (defn entity-count [tweet sym s]
   "gets count of specified entity from either tweet, or, when exists, original (retweeted) tweet"
   (let [rt-id (if (contains? tweet :retweeted_status) (:id_str (:retweeted_status tweet)) (:id_str tweet))
-        count (sym ((keyword rt-id) (:retweets @state/app)))]
+        count (sym ((keyword rt-id) (:tweets-map @state/app)))]
     (if (not (nil? count)) (str (number-format count) s) "")))
 
 (defn rt-count [tweet] (entity-count tweet :retweet_count " RT | "))
@@ -69,12 +69,18 @@
   "swaps item in priority-map"
   (swap! app assoc priority-map (assoc (priority-map @app) id n)))
 
+
 (defn tweets-by-order [tweets-map order]
   "find top n tweets by specified order"
   (fn [app n skip]
-      (vec (map (fn [m] ((keyword (first m))(tweets-map app))) (take n (drop (* n skip) (order app)))))))
+    (let [tw-map tweets-map ord order]
+      (vec (map (fn [m] ((keyword (first m))(tw-map app))) (take n (drop (* n skip) (ord app))))))))
 
-(defn tweet-ids-by-order [tweets-map order]
+(defn tweets-by-order2 [order app n skip]
   "find top n tweets by specified order"
-  (fn [app n skip]
-      (take n (drop (* n skip) (order app)))))
+  ;(print order)
+  (vec
+   (filter identity
+           (map
+            (fn [m] ((first m) (:tweets-map app)))
+            (take n (drop (* n skip) (order app)))))))

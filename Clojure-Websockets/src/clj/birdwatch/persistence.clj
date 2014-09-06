@@ -101,10 +101,10 @@
 ;; loop for persisting retweets
 (go
  (while true
-   (let [t (<! c/rt-persistence-chan)]
-     (when (:retweeted_status t)
+   (let [rt (:retweeted_status (<! c/rt-persistence-chan))]
+     (when rt
        (try
-         (esd/put conn (:es-index conf) "tweet" (:id_str t) t)
+         (esd/put conn (:es-index conf) "tweet" (:id_str rt) rt)
          (catch Exception ex (log/error ex "esd/put error")))))))
 
 ;; loop for finding percolation matches and delivering those on the appropriate socket

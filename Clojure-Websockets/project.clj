@@ -5,7 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [twitter-api "0.7.6"]
-                 [org.clojure/core.async "0.1.319.0-6b1aca-alpha"]
+                 [org.clojure/core.async "0.1.338.0-5c5012-alpha"]
                  [twitter-streaming-client "0.3.2"]
                  [clojurewerkz/elastisch "2.1.0-beta6"]
                  [org.clojure/tools.logging "0.3.0"]
@@ -16,7 +16,7 @@
                  [ring/ring-defaults "0.1.1"]
                  [clj-time "0.8.0"]
                  [pandect "0.3.4"]
-                 [org.clojure/clojurescript "0.0-2268"]
+                 [org.clojure/clojurescript "0.0-2322"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.5"]
                  [om "0.7.1"]]
@@ -31,12 +31,11 @@
             [com.cemerick/clojurescript.test "0.3.1"]]
 
   :cljsbuild {:builds [{:id "dev"
-
                         :source-paths ["src/cljs"]
                         :compiler {:output-to "resources/public/js/build/birdwatch.js"
                                    :output-dir "resources/public/js/build/out"
-                                   :optimizations :none
-                                   :source-map true}}
+                                   :optimizations :simple
+                                   :source-map "resources/public/js/build/birdwatch.js"}}
                        {:id "release"
                         :source-paths ["src/cljs"]
                         :compiler {:output-to "resources/public/js/build/birdwatch-opt.js"

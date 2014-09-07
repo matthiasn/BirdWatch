@@ -26,15 +26,8 @@
   "get total count of indexed tweets from ElasticSearch"
   (esd/count conn (:es-index conf) "tweet"))
 
-;; loop for persisting tweets
-(go
- (while true
-   (let [t (<! c/persistence-chan)]
-     (try
-       (esd/put conn (:es-index conf) "tweet" (:id_str t) t)
-       (catch Exception ex (log/error ex "esd/put error"))))))
-
 (defn strip-tweet [t]
+  "take only actually needed fields from tweet"
   (let [u (:user t)]
     {:id_str (:id_str t)
      :id (:id t)
@@ -56,6 +49,10 @@
     (if rt
       (assoc t :retweeted_status (strip-tweet rt))
       t)))
+
+(defn get-tweet [id]
+  "get Tweet for specified ID"
+  (esd/get conn (:es-index conf) "tweet" id))
 
 (defn get-source [coll]
   "get vector with :_source of each ElasticSearch result"
@@ -80,7 +77,7 @@
         n    (esrsp/total-hits res)
         hits (esrsp/hits-from res)
         res (get-source hits)]
-    (log/info "Total hits:" n "Retrieved:" (count hits))
+    ;(log/info "Total hits:" n "Retrieved:" (count hits))
     ;(log/info "top retweets in chunk" (pp/pprint (take 10 (into (priority-map-by >) (d/retweets res {})))))
     res))
 
@@ -93,6 +90,23 @@
     (perc/register-query conn "percolator" sha :query q)
     (log/info "Percolation registered for query" q "with SHA1" sha)))
 
+;; loop for persisting tweets
+(go
+ (while true
+   (let [t (<! c/persistence-chan)]
+     (try
+       (esd/put conn (:es-index conf) "tweet" (:id_str t) t)
+       (catch Exception ex (log/error ex "esd/put error"))))))
+
+;; loop for persisting retweets
+(go
+ (while true
+   (let [rt (:retweeted_status (<! c/rt-persistence-chan))]
+     (when rt
+       (try
+         (esd/put conn (:es-index conf) "tweet" (:id_str rt) rt)
+         (catch Exception ex (log/error ex "esd/put error")))))))
+
 ;; loop for finding percolation matches and delivering those on the appropriate socket
 (go
  (while true
@@ -100,3 +114,13 @@
          response (perc/percolate conn "percolator" "tweet" :doc t)
          matches (into #{} (map #(:_id %1) (esrsp/matches-from response)))]
      (put! c/percolation-matches-chan [t matches]))))
+
+;; loop for finding missing tweet
+(go
+ (while true
+   (let [req (<! c/tweet-missing-chan)
+         res (get-tweet (:id_str req))
+         uid (:uid req)]
+     (if res
+       (put! c/missing-tweet-found-chan {:tweet (strip-source res) :uid uid})
+       (log/info "birdwatch.persistence missing" (:id_str req) res)))))

@@ -3,6 +3,7 @@
   (:require [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [birdwatch.util :as util]
+            [birdwatch.channels :as c]
             [birdwatch.communicator :as comm]
             [birdwatch.state :as state]
             [cljs.core.async :as async :refer [<! chan put!]]))
@@ -29,12 +30,6 @@
     om/IRender
     (render [this]
             (dom/span nil "Indexed: " (dom/strong nil (:total-tweet-count app)) " tweets"))))
-
-(def find-tweets {:by-id (util/tweets-by-order :tweets-map :by-id)
-                  :by-followers (util/tweets-by-order :tweets-map :by-followers)
-                  :by-retweets (util/tweets-by-order :retweets :by-retweets)
-                  :by-favorites (util/tweets-by-order :retweets :by-favorites)
-                  :by-rt-since-startup (util/tweets-by-order :retweets :by-rt-since-startup)})
 
 (defn sort-button-js [app key]
   "generates JS for sort button for both updating sort order and showing active button"
@@ -72,54 +67,6 @@
                      (dom/span #js {:className "input-group-btn"}
                                (dom/button #js {:className "btn btn-primary" :onClick #(comm/start-search)}
                                            (dom/span #js {:className "glyphicon glyphicon-search"})))))))
-
-(defn twitter-intent [tweet intent icon]
-  "generate link with button customized for specific tweet and intent"
-  (dom/a #js {:href (str "https://twitter.com/intent/" intent (:id_str tweet))}
-         (dom/img #js {:src (str "/images/" icon)})))
-
-(defn tweet-view [raw-tweet owner]
-  "rendering single tweet card"
-  (reify
-    om/IRender
-    (render [this]
-      (let [tweet (util/format-tweet raw-tweet)
-            user (:user tweet)
-            screen-name (:screen_name user)
-            href (str "http://www.twitter.com/" screen-name)
-            media (:media (:entities tweet))]
-        (dom/div #js {:className "tweet"}
-                 (dom/span nil (dom/a #js {:href href :target "_blank"}
-                                      (dom/img #js {:className "thumbnail" :src (:profile_image_url user)})))
-                 (dom/a #js {:href href :target "_blank"}
-                        (dom/span #js {:className "username" :src (:profile_image_url user)} (:name user)))
-                 (dom/span #js {:className "username_screen"} (str " @" screen-name))
-                 (dom/div #js {:className "pull-right timeInterval"} (util/from-now (:created_at tweet)))
-                 (dom/div #js {:className "tweettext"}
-                           (dom/div #js {:dangerouslySetInnerHTML #js {:__html (:html-text tweet)}})
-                           (dom/div #js {:className "pull-left timeInterval"}
-                                   (str (util/number-format (:followers_count user)) " followers"))
-                           (dom/div #js {:className "pull-right timeInterval"}
-                                    (str (util/rt-count-since-startup tweet)
-                                         (util/rt-count tweet)
-                                         (util/fav-count tweet))))
-                 (when (> (count media) 0)
-                   (dom/div #js {:className "tweet-image"}
-                          (dom/a #js {:href (:url (get media 0)) :target "_blank"}
-                            (dom/img #js {:src (str (:media_url (get media 0)) ":small")}))))
-                 (dom/div #js {:className "intent"}
-                          (twitter-intent tweet "tweet?in_reply_to=" "reply.png")
-                          (twitter-intent tweet "retweet?tweet_id=" "retweet.png")
-                          (twitter-intent tweet "favorite?tweet_id=" "favorite.png")))))))
-
-(defn tweets-view [app owner]
-  "rendering tweet list"
-  (reify
-    om/IRender
-    (render [this]
-            (apply dom/div nil (om/build-all
-                                tweet-view
-                                (((:sorted app) find-tweets) app (:n app) (- (:page app) 1)))))))
 
 (defn pag-items [app page-change-chan]
   "function creating pagination items"

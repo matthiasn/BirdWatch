@@ -1,11 +1,14 @@
 (ns birdwatch.communicator
-  (:require-macros [cljs.core.match.macros :refer (match)])
+  (:require-macros [cljs.core.match.macros :refer (match)]
+                   [cljs.core.async.macros :refer [go-loop go]])
   (:require [birdwatch.channels :as c]
             [birdwatch.util :as util]
             [birdwatch.state :as state]
             [cljs.core.match]
             [taoensso.sente  :as sente  :refer (cb-success?)]
             [cljs.core.async :as async :refer [<! >! chan put! alts! timeout]]))
+
+(enable-console-print!)
 
 (let [{:keys [chsk ch-recv send-fn state]} (sente/make-channel-socket! "/chsk" {:type :auto})]
   (def chsk       chsk)
@@ -57,6 +60,7 @@
          (let [[msg-type msg] payload]
            (match [msg-type msg]
                   [:tweet/new             tweet] (put! c/tweets-chan tweet)
+                  [:tweet/missing-tweet   tweet] (put! c/missing-tweet-found-chan tweet)
                   [:tweet/prev-chunk prev-chunk] (do (put! c/prev-chunks-chan prev-chunk) (load-prev))
                   [:stats/users-count        uc] (put! c/user-count-chan uc)
                   [:stats/total-tweet-count ttc] (put! c/total-tweets-count-chan ttc)))
@@ -64,3 +68,9 @@
 
 (defonce chsk-router
   (sente/start-chsk-router-loop! event-handler ch-chsk))
+
+; loop for sending messages about missing tweet to server
+(go-loop []
+         (let [tid (<! c/tweet-missing-chan)]
+           (chsk-send! [:cmd/missing {:id_str tid :uid (:uid @chsk-state)}])
+           (recur)))

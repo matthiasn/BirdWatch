@@ -13,7 +13,6 @@
   "function returning fresh application state"
   {:count 0
    :n 10
-   :retweets {}
    :tweets-map {}
    :search-text ""
    :page 1

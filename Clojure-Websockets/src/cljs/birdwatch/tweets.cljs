@@ -13,8 +13,16 @@
   "adds tweet to tweets-map"
   (swap! app
          assoc-in [tweets-map (keyword (:id_str tweet))]
-         ;(util/format-tweet tweet)
          tweet))
+
+(defn add-to-tweets-map2 [app tweets-map tweet]
+  "adds tweet to tweets-map"
+  (swap! app
+         assoc-in [tweets-map (keyword (:id_str tweet))]
+         (if (= 0 (mod (:id tweet) 10))
+           tweet
+           {:created_at (:created_at tweet)
+            :id_str (:id_str tweet)})))
 
 (defn swap-when-larger [app priority-map rt-id n]
   "swaps item in priority-map when new value is larger than old value"
@@ -30,7 +38,7 @@
       (swap-when-larger app :by-retweets rt-id rt-count)
       (swap-when-larger app :by-favorites rt-id (:favorite_count rt))
       (util/swap-pmap app :by-rt-since-startup rt-id (inc (get (:by-rt-since-startup state) rt-id 0)))
-      (when (> rt-count (:retweet_count (rt-id (:retweets state)))) (add-to-tweets-map app :retweets rt)))))
+      (when (> rt-count (:retweet_count (rt-id (:tweets-map state)))) (add-to-tweets-map app :tweets-map rt)))))
 
 (defn add-tweet [tweet app]
   "increment counter, add tweet to tweets map and to sorted sets by id and by followers"
@@ -38,7 +46,7 @@
     (swap! app assoc :count (inc (:count state)))
     (add-to-tweets-map app :tweets-map tweet)
     (util/swap-pmap app :by-followers (keyword (:id_str tweet)) (:followers_count (:user tweet)))
-    (util/swap-pmap app :by-id (keyword (:id_str tweet)) (:id tweet))
+    (util/swap-pmap app :by-id (keyword (:id_str tweet)) (:id_str tweet))
     (add-rt-status app tweet)
     (wc/process-tweet app (:text tweet))))
 
@@ -48,9 +56,13 @@
    (recur)))
 
 (go-loop []
+ (let [mt (<! c/missing-tweet-found-chan)]
+   (add-to-tweets-map state/app :tweets-map mt)
+   (recur)))
+
+(go-loop []
          (let [chunk (<! c/prev-chunks-chan)]
            (doseq [t chunk]
-             ;(when (= 0 (mod (:id t) 500)) (<! (timeout 0)))
              (put! c/prev-tweets-chan t))
            (<! (timeout 50))
            (recur)))

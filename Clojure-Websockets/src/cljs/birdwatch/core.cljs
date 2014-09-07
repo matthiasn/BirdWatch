@@ -6,18 +6,18 @@
             [birdwatch.communicator :as comm]
             [birdwatch.wordcount :as wc]
             [birdwatch.ui :as ui]
+            [birdwatch.ui-tweets :as ui-t]
             [birdwatch.state :as state]
             [cljs.core.async :as async :refer [<! >! chan put! alts! timeout]]))
 
 ;;;; Main file of the BirdWatch application written in ClojureScript
 
-;;; Application state in a single atom
-;;; Will be initialized with the map returned by util/initial-state.
-;;; Reset to a new clean slate when a new search is started.
+;;; The application state lives in a single atom in birdwatch.state and
+;;; will be initialized with the map returned by state/initial-state.
 (reset! state/app (state/initial-state))
 
-;;; Om components for the application are initialized here. Their implementation lives in the ui namespace.
-(om/root ui/tweets-view       state/app {:target (. js/document (getElementById "tweet-frame"))})
+;;; Om components for the application are initialized here.
+(om/root ui-t/tweets-view     state/app {:target (. js/document (getElementById "tweet-frame"))})
 (om/root ui/count-view        state/app {:target (. js/document (getElementById "tweet-count"))})
 (om/root ui/users-count-view  state/app {:target (. js/document (getElementById "users-count"))})
 (om/root ui/total-count-view  state/app {:target (. js/document (getElementById "total-tweet-count"))})

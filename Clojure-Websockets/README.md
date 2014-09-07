@@ -26,6 +26,10 @@ Then you will need to create a file named twitterconf.edn. You can copy **twitte
 
 In the twitterconf.edn you can also specify the address under which your installation of **[ElasticSearch](http://www.elasticsearch.org)** is accessible, the index to use in ElasticSearch and which terms to track from Twitter.
 
+You also need **[Bower](http://bower.io)** for managing the client-side dependencies. Once you have it installed, all you need to do is run it once:
+
+    bower install
+
 ## Usage
 Once the steps described above are completed, usage is easy. You can start up the application like this:
 

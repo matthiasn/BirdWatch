@@ -69,11 +69,11 @@ var BirdWatch = BirdWatch || {};
             if (w < 50) { style.fill="#999"; textX+=26; style.textAnchor="start"; style.fontWeight=400}
 
             return  <g onClick={this.clickHandler}>
-                      <text y={y+12} x="137" stroke="none" fill="black" dy=".35em" textAnchor="end">{t}</text>
+                      <text y={y+8} x="137" stroke="none" fill="black" dy=".35em" textAnchor="end">{t}</text>
                       <Arrow dir={this.state.posArrDir} y={y} x={146} />
                       <Arrow dir={this.state.ratioArrDir} y={y} x={160} />
                       <rect y={y} x="168" height="15" width={w} stroke="white" fill="#428bca"></rect>
-                      <text y={y+12} x={textX} stroke="none" style={style} dy=".35em" >{val}</text>
+                      <text y={y+8} x={textX} stroke="none" style={style} dy=".35em" >{val}</text>
                     </g>
              }
     });

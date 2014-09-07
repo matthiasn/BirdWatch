@@ -69,11 +69,11 @@ var BirdWatch = BirdWatch || {};
             if (w < 50) { style.fill="#999"; textX+=26; style.textAnchor="start"; style.fontWeight=400}
 
             return  React.DOM.g( {onClick:this.clickHandler}, 
-                      React.DOM.text( {y:y+12, x:"137", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
+                      React.DOM.text( {y:y+8, x:"137", stroke:"none", fill:"black", dy:".35em", textAnchor:"end"}, t),
                       Arrow( {dir:this.state.posArrDir, y:y, x:146} ),
                       Arrow( {dir:this.state.ratioArrDir, y:y, x:160} ),
                       React.DOM.rect( {y:y, x:"168", height:"15", width:w, stroke:"white", fill:"#428bca"}),
-                      React.DOM.text( {y:y+12, x:textX, stroke:"none", style:style, dy:".35em"} , val)
+                      React.DOM.text( {y:y+8, x:textX, stroke:"none", style:style, dy:".35em"} , val)
                     )
              }
     });

@@ -12,3 +12,4 @@ pom.xml.asc
 
 twitterconf.edn
 resources/public/js/build/
+resources/public/bower_components/

@@ -117,7 +117,8 @@
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal">Make this go away</button>
+                        <input type="checkbox" name="dont-show-again" id="dont-show-again"><label for="dont-show-again">&nbsp;don't show this again&nbsp;</label>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="if ($('#dont-show-again').prop('checked')) {$.cookie('dont-show-again', true);}">Make this go away</button>
                     </div>
                 </div>
             </div>
@@ -243,6 +244,7 @@
         <!-- Scripts placed at the end of the document so the pages load faster -->
 
         <script src="/bower_components/jquery/jquery.min.js"></script>
+        <script src="/bower_components/jquery.cookie/jquery.cookie.js"></script>
         <script src="/bower_components/d3/d3.min.js"></script>
         <script src="/bower_components/rickshaw/rickshaw.min.js"></script>
         <script src="/bower_components/momentjs/min/moment.min.js"></script>
@@ -256,9 +258,11 @@
         <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 
         <script type="text/javascript">
-        $(document).ready(function(){
-            $("#introModal").modal('show');
-        });
+            $(document).ready(function(){
+                if (!$.cookie('dont-show-again')) {
+                    $("#introModal").modal('show');
+                }
+            });
         </script>
 
         <script src="/js/build/birdwatch-opt.js"></script>

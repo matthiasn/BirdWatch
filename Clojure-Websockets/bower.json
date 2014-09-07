@@ -25,6 +25,7 @@
     "momentjs": "~2.4.0",
     "underscore": "~1.5.2",
     "rickshaw": "~1.4.5",
-    "regression-js": "*"
+    "regression-js": "*",
+    "jquery.cookie": "~1.4.1"
   }
 }

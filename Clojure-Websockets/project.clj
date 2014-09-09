@@ -34,7 +34,7 @@
                         :source-paths ["src/cljs"]
                         :compiler {:output-to "resources/public/js/build/birdwatch.js"
                                    :output-dir "resources/public/js/build/out"
-                                   :optimizations :simple
+                                   :optimizations :none
                                    :source-map "resources/public/js/build/birdwatch.js"}}
                        {:id "release"
                         :source-paths ["src/cljs"]

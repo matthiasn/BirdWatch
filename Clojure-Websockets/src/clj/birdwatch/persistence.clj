@@ -58,37 +58,29 @@
   "get vector with :_source of each ElasticSearch result"
   (map strip-source coll))
 
-(defn native-query [params]
+(defn native-query [{:keys [query n from]}]
   "run a query on previous matching tweets"
-  (let [conn (esn/connect [["127.0.0.1" 9300]] {"cluster.name" "elasticsearch_mn"})
-        q (:query params)
-        res  (esnd/search conn (:es-index conf) "tweet" :query q :size (:n params) :from (:from params) :sort {:id :desc})
-        n    (esnrsp/total-hits res)
-        hits (esnrsp/hits-from res)
-        res (get-source hits)]
-    (log/info "Total hits:" n "Retrieved:" (count hits))
-    res))
+  (let [native-conn (esn/connect [["127.0.0.1" 9300]] {"cluster.name" "elasticsearch_mn"})
+        search  (esnd/search native-conn (:es-index conf) "tweet" :query query :size n :from from :sort {:id :desc})
+        hits (esnrsp/hits-from search)]
+    (log/info "Total hits:" (esnrsp/total-hits search) "Retrieved:" (count hits))
+    (get-source hits)))
 
-(defn query [params]
+(defn query [{:keys [query n from]}]
   "run a query on previous matching tweets"
-  (let [conn (esr/connect (:es-address conf))
-        q (:query params)
-        res  (esd/search conn (:es-index conf) "tweet" :query q :size (:n params) :from (:from params) :sort {:id :desc})
-        n    (esrsp/total-hits res)
-        hits (esrsp/hits-from res)
+  (let [search (esd/search conn (:es-index conf) "tweet" :query query :size n :from from :sort {:id :desc})
+        hits (esrsp/hits-from search)
         res (get-source hits)]
-    ;(log/info "Total hits:" n "Retrieved:" (count hits))
+    (log/info "Total hits:" (esrsp/total-hits search) "Retrieved:" (count hits))
     ;(log/info "top retweets in chunk" (pp/pprint (take 10 (into (priority-map-by >) (d/retweets res {})))))
     res))
 
-(defn start-percolator [params]
+(defn start-percolator [{:keys [query uid]}]
   "register percolation search with ID based on hash of the query"
-  (let [q (:query params)
-        sha (sha1 (str q))
-        uid (:uid params)]
+  (let [sha (sha1 (str query))]
     (swap! a/subscriptions assoc uid sha)
-    (perc/register-query conn "percolator" sha :query q)
-    (log/info "Percolation registered for query" q "with SHA1" sha)))
+    (perc/register-query conn "percolator" sha :query query)
+    (log/info "Percolation registered for query" query "with SHA1" sha)))
 
 ;; loop for persisting tweets
 (go

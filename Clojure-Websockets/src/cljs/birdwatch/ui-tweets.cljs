@@ -38,9 +38,10 @@
                                   (dom/div #js {:className "pull-left timeInterval"}
                                            (str (util/number-format (:followers_count user)) " followers"))
                                   (dom/div #js {:className "pull-right timeInterval"}
-                                           (str (util/rt-count-since-startup tweet)
-                                                (util/rt-count tweet)
-                                                (util/fav-count tweet))))
+                                           (str (util/rt-count tweet)
+                                                (util/fav-count tweet))
+                                           (dom/br nil)
+                                           (util/rt-count-since-startup tweet)))
                          (when (> (count media) 0)
                            (dom/div #js {:className "tweet-image"}
                                     (dom/a #js {:href (:url (get media 0)) :target "_blank"}

@@ -47,6 +47,7 @@
                      (dom/button (sort-button-js app :by-followers) "followers")
                      (dom/button (sort-button-js app :by-retweets) "retweets")
                      (dom/button (sort-button-js app :by-rt-since-startup) "retweets2")
+                     (dom/button (sort-button-js app :by-reach) "reach")
                      (dom/button (sort-button-js app :by-favorites) "favorites")))))
 
 (defn handle-search-change [e app]

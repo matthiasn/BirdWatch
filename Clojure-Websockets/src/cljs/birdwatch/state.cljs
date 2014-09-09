@@ -24,6 +24,7 @@
    :by-retweets (priority-map-by >)
    :by-favorites (priority-map-by >)
    :by-rt-since-startup (priority-map-by >)
+   :by-reach (priority-map-by >)
    :by-id (priority-map-by >)
    :words-sorted-by-count (priority-map-by >)})
 

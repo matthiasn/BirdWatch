@@ -38,15 +38,19 @@
       (swap-when-larger app :by-retweets rt-id rt-count)
       (swap-when-larger app :by-favorites rt-id (:favorite_count rt))
       (util/swap-pmap app :by-rt-since-startup rt-id (inc (get (:by-rt-since-startup state) rt-id 0)))
+      (util/swap-pmap app :by-reach rt-id (+ (get (:by-reach state) rt-id 0) (:followers_count (:user tweet))))
       (when (> rt-count (:retweet_count (rt-id (:tweets-map state)))) (add-to-tweets-map app :tweets-map rt)))))
 
 (defn add-tweet [tweet app]
   "increment counter, add tweet to tweets map and to sorted sets by id and by followers"
-  (let [state @app]
+  (let [state @app
+        id-str (:id_str tweet)
+        id-key (keyword id-str)]
     (swap! app assoc :count (inc (:count state)))
     (add-to-tweets-map app :tweets-map tweet)
-    (util/swap-pmap app :by-followers (keyword (:id_str tweet)) (:followers_count (:user tweet)))
-    (util/swap-pmap app :by-id (keyword (:id_str tweet)) (:id_str tweet))
+    (util/swap-pmap app :by-followers (keyword id-str) (:followers_count (:user tweet)))
+    (util/swap-pmap app :by-id (keyword id-str) id-str)
+    (util/swap-pmap app :by-reach id-key (+ (get (:by-reach state) id-key 0) (:followers_count (:user tweet))))
     (add-rt-status app tweet)
     (wc/process-tweet app (:text tweet))))
 

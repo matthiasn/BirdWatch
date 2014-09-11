@@ -19,24 +19,24 @@
   (let [time-string (. (js/moment. date) (fromNow true))]
     (if (= time-string "a few seconds") "just now" time-string)))
 
-(defn url-replacer [acc entity]
+(defn- url-replacer [acc entity]
   "replace URL occurences in tweet texts with HTML (including links)"
   (s/replace acc (:url entity)
              (str "<a href='" (:url entity) "' target='_blank'>" (:display_url entity) "</a>")))
 
-(defn hashtags-replacer [acc entity]
+(defn- hashtags-replacer [acc entity]
   "replace hashtags in tweet text with HTML (including links)"
   (let [hashtag (:text entity)]
     (s/replace acc (str "#" hashtag)
                          (str "<a href='https://twitter.com/search?q=%23" hashtag "' target='_blank'>#" hashtag "</a>"))))
 
-(defn mentions-replacer [acc entity]
+(defn- mentions-replacer [acc entity]
   "replace user mentions in tweet text with HTML (including links)"
   (let [screen-name (:screen_name entity)]
     (s/replace acc (str "@" screen-name)
                (str "<a href='http://www.twitter.com/" screen-name "' target='_blank'>@" screen-name "</a>"))))
 
-(defn reducer [text coll fun]
+(defn- reducer [text coll fun]
   "generic reducer, allowing to call specified function for each item in collection"
   (reduce fun text coll))
 

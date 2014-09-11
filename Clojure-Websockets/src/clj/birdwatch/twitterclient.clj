@@ -24,15 +24,15 @@
                                    (:user-access-token conf) (:user-access-token-secret conf)))
 
 ;; channels
-(def chunk-chan (chan 10000))
-(def msg-chan (chan))
+(def ^:private chunk-chan (chan 10000))
+(def ^:private msg-chan (chan))
 
 ;; atoms for keeping track of counts, incomplete chunk and last received timestamp
-(def last-received (atom (t/epoch)))
-(def chunk-buff (atom ""))
-(def counter (atom 0))
+(def ^:private last-received (atom (t/epoch)))
+(def ^:private chunk-buff (atom ""))
+(def ^:private counter (atom 0))
 
-(defn parse [str]
+(defn- parse [str]
   (try
     (let [c @counter
           json (json/read-json str)]
@@ -74,9 +74,9 @@
 
 ;; streaming connection with Twitter stored in an Atom, can be started and stopped using
 ;; using the start-twitter-conn! and stop-twitter-conn! functions
-(def twitter-conn (atom {}))
+(def ^:private twitter-conn (atom {}))
 
-(defn stop-twitter-conn! []
+(defn- stop-twitter-conn! []
   "stop connection to Twitter Streaming API"
   (let [m (meta @twitter-conn)]
     (when m

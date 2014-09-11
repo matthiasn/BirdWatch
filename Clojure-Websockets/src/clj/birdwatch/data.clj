@@ -2,7 +2,7 @@
   (:gen-class)
   (require [clojure.pprint :as pp]))
 
-(defn rt-status-reducer [sym]
+(defn- rt-status-reducer [sym]
   (fn [acc val]
     "get map with all items that contain a :retweeted_status. key :id_str value sym called on elem"
     (let [rt  (:retweeted_status val)
@@ -11,7 +11,7 @@
         (assoc acc (:id_str rt) (sym rt))
         acc))))
 
-(defn reduce-res [f acc coll]
+(defn- reduce-res [f acc coll]
   "reduce result vector with reducer function f, acc and elem into map"
   (reduce f acc coll))
 

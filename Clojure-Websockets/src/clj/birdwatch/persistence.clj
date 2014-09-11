@@ -26,7 +26,7 @@
   "get total count of indexed tweets from ElasticSearch"
   (esd/count conn (:es-index conf) "tweet"))
 
-(defn strip-tweet [t]
+(defn- strip-tweet [t]
   "take only actually needed fields from tweet"
   (let [u (:user t)]
     {:id_str (:id_str t)
@@ -41,7 +41,7 @@
             :profile_image_url (:profile_image_url u)
             :screen_name (:screen_name u)}}))
 
-(defn strip-source [val]
+(defn- strip-source [val]
   "get tweet stripped down to necessary fields"
   (let [s (:_source val)
         t (strip-tweet s)

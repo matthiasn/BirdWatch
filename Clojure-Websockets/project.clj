@@ -35,28 +35,23 @@
                         :source-paths ["src/cljs"]
                         :compiler {:output-to "resources/public/js/build/birdwatch.js"
                                    :output-dir "resources/public/js/build/out"
-                                   :optimizations :none
-                                   :source-map "resources/public/js/build/birdwatch.js"}}
+                                   :optimizations :simple
+                                   :source-map "resources/public/js/build/birdwatch.js.map"}}
                        {:id "release"
                         :source-paths ["src/cljs"]
                         :compiler {:output-to "resources/public/js/build/birdwatch-opt.js"
                                    :optimizations :advanced
-
-                                   ;:preamble ["react/react.min.js"]
-                                   ;:externs ["react/externs/react.js" "externs/misc.js"]
-
                                    ;:preamble ["react/react.min.js"]
                                    :externs ["externs/react.js" "externs/misc.js"]
                                    }}
                        {:id "test"
                         :source-paths ["src/cljs" "test/cljs"]
-                        :notify-command ["phantomjs" :cljs.test/runner "js/moment.min.js" "test-out/cljs_om.js"]
-                        :compiler {:output-to "test-out/cljs_om.js"
+                        :compiler {:output-to "test-out/birdwatch.js"
                                    :output-dir "test-out/"
                                    :optimizations :simple
                                    :externs ["externs/react.js" "externs/misc.js"]}}]
 
               :test-commands {"unit-tests" ["phantomjs" :runner
-                                            "js/react.min.js"
-                                            "js/moment.min.js"
-                                            "test-out/cljs_om.js"]}})
+                                            "resources/public/bower_components/react/react.js"
+                                            "resources/public/bower_components/momentjs/moment.js"
+                                            "test-out/birdwatch.js"]}})

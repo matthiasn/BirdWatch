@@ -2,7 +2,7 @@
   (:require-macros [cemerick.cljs.test :as m
                     :refer (is test-var deftest run-tests done with-test-ctx)])
   (:require [cemerick.cljs.test :as t]
-            [cljs-om.util :as util]))
+            [birdwatch.util :as util]))
 
 (deftest number-format
   (is (= (util/number-format 200) "200"))

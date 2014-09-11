@@ -7,8 +7,8 @@
     "get map with all items that contain a :retweeted_status. key :id_str value sym called on elem"
     (let [rt  (:retweeted_status val)
           cnt (sym rt)]
-      (if (and rt (> cnt (get acc (:id_str rt) 0)))
-        (assoc acc (:id_str rt) (sym rt))
+      (if (and rt (> cnt (get acc (keyword (:id_str rt)) 0)))
+        (assoc acc (keyword (:id_str rt)) (sym rt))
         acc))))
 
 (defn- reduce-res [f acc coll]

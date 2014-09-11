@@ -36,8 +36,8 @@
 
 (defn load-prev []
   "load previous tweets matching the current search"
-  (let [chunks-to-load 10
-        chunk-size 500]
+  (let [chunks-to-load 5
+        chunk-size 10]
     (when (< @prev-chunks-loaded chunks-to-load)
       (chsk-send! [:cmd/query {:query (query-string)
                                :n chunk-size
@@ -78,3 +78,18 @@
          (let [tid (<! c/tweet-missing-chan)]
            (chsk-send! [:cmd/missing {:id_str tid :uid (:uid @chsk-state)}])
            (recur)))
+
+(defn ^:export send-state []
+  "helper function to send state to server (where it can be pretty printed for debugging)"
+  (chsk-send! [:some/state {:by-followers (into {} (:by-followers @state/app))
+                            :by-retweets  (into {} (:by-followers @state/app))
+                            :by-favorites  (into {} (:by-favorites @state/app))
+                            :by-rt-since-startup  (into {} (:by-rt-since-startup @state/app))
+                            :by-reach  (into {} (:by-reach @state/app))
+                            :by-id  (into {} (:by-id @state/app))}]))
+
+
+
+
+
+

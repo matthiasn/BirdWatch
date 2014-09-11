@@ -9,6 +9,7 @@
    [clojure.edn :as edn]
    [clojure.data.json :as json]
    [clojure.core.match :as match :refer (match)]
+   [clojure.pprint :as pp]
    [http.async.client :as ac]
    [clj-time.core :as t]
    [clojure.pprint :as pp]
@@ -47,10 +48,8 @@
                                    (let [res (p/query params)] ; TODO: put request msg on channel for async handling
                                      (chsk-send! (:uid params) [:tweet/prev-chunk res])))
          [:cmd/missing params]   (put! c/tweet-missing-chan params)
-         [:chsk/ws-ping params]  () ; currently just do nothing with ping (no logging either)
-         :else                   (do (log/info "Unmatched event:" event)
-                                   (when-not (:dummy-reply-fn? (meta ?reply-fn))
-                                     (?reply-fn {:umatched-event-as-echoed-from-from-server event})))))
+         [:chsk/ws-ping]         () ; currently just do nothing with ping (no logging either)
+         :else                   (log/info "Unmatched event:" (pp/pprint event))))
 
 (defonce chsk-router (sente/start-chsk-router! ch-chsk event-msg-handler))
 

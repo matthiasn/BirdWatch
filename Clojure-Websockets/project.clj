@@ -31,7 +31,8 @@
   :profiles {:uberjar {:aot :all}}
 
   :plugins [[lein-cljsbuild "1.0.3"]
-            [com.cemerick/clojurescript.test "0.3.1"]]
+            [com.cemerick/clojurescript.test "0.3.1"]
+            [quickie "0.2.5"]]
 
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/cljs"]

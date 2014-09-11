@@ -11,8 +11,8 @@
                  [org.clojure/tools.logging "0.3.0"]
                  [com.taoensso/sente "1.1.0" :exclusions [org.clojure/clojure]]
                  [org.clojure/core.match "0.2.1"]
-                 [http-kit "2.1.18"]
-                 [compojure "1.1.8"]
+                 [http-kit "2.1.19"]
+                 [compojure "1.1.9"]
                  [ring "1.3.1"]
                  [ring/ring-defaults "0.1.1"]
                  [clj-time "0.8.0"]
@@ -20,7 +20,9 @@
                  [org.clojure/clojurescript "0.0-2322"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.5"]
-                 [om "0.7.1"]]
+                 [om "0.7.1"]
+                 [com.cognitect/transit-clj  "0.8.247"]
+                 [com.cognitect/transit-cljs "0.8.188"]]
 
   :source-paths ["src/clj/"]
 

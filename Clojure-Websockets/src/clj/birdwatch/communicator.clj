@@ -19,10 +19,16 @@
    [compojure.core     :as comp :refer (defroutes GET POST)]
    [compojure.route    :as route]
    [taoensso.sente     :as sente]
+   [taoensso.sente.packers.transit :as sente-transit]
    [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go]]))
 
+(def packer
+  "Defines our packing (serialization) format for client<->server comms."
+  (sente-transit/get-flexi-packer :json))
+
 (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn connected-uids]}
-      (sente/make-channel-socket! {:user-id-fn (fn [req]
+      (sente/make-channel-socket! {:packer packer
+                                   :user-id-fn (fn [req]
                                                  (let [uid (str (java.util.UUID/randomUUID))]
                                                    (log/info "Connected:" (:remote-addr req) uid)
                                                    uid))})]

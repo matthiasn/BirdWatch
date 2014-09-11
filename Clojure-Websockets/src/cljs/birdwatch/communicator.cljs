@@ -6,11 +6,16 @@
             [birdwatch.state :as state]
             [cljs.core.match]
             [taoensso.sente  :as sente  :refer (cb-success?)]
+            [taoensso.sente.packers.transit :as sente-transit]
             [cljs.core.async :as async :refer [<! >! chan put! alts! timeout]]))
 
 (enable-console-print!)
 
-(let [{:keys [chsk ch-recv send-fn state]} (sente/make-channel-socket! "/chsk" {:type :auto})]
+(def packer
+  "Defines our packing (serialization) format for client<->server comms."
+  (sente-transit/get-flexi-packer :json))
+
+(let [{:keys [chsk ch-recv send-fn state]} (sente/make-channel-socket! "/chsk" {:packer packer :type :auto})]
   (def chsk       chsk)
   (def ch-chsk    ch-recv) ; ChannelSocket's receive channel
   (def chsk-send! send-fn) ; ChannelSocket's send API fn

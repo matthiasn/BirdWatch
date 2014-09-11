@@ -82,4 +82,6 @@
    (filter identity
            (map
             (fn [m] ((first m) (:tweets-map app)))
-            (take n (drop (* n skip) (order app)))))))
+            (->> (order app)
+                 (drop (* n skip) ,)
+                 (take n ,))))))

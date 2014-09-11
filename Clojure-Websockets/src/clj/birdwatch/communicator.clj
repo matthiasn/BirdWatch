@@ -33,35 +33,20 @@
   (def connected-uids                connected-uids)) ; Watchable, read-only atom
 
 (defn- event-msg-handler
-  [{:as ev-msg :keys [ring-req event ?reply-fn]} _]
-  (let [session (:session ring-req)
-        [id data :as ev] event]
+  [{:as ev-msg :keys [event ?reply-fn]}]
+  (match event
+         [:cmd/percolate params] (p/start-percolator params)
+         [:cmd/query params]     (do
+                                   (log/info "Received query:" params)
+                                   (let [res (p/query params)] ; TODO: put request msg on channel for async handling
+                                     (chsk-send! (:uid params) [:tweet/prev-chunk res])))
+         [:cmd/missing params]   (put! c/tweet-missing-chan params)
+         [:chsk/ws-ping params]  () ; currently just do nothing with ping (no logging either)
+         :else                   (do (log/info "Unmatched event:" event)
+                                   (when-not (:dummy-reply-fn? (meta ?reply-fn))
+                                     (?reply-fn {:umatched-event-as-echoed-from-from-server event})))))
 
-    (match [id data]
-           ;; TODO: Match your events here, reply when appropriate <...>
-
-           [:cmd/percolate params]
-           (p/start-percolator params)
-
-           [:cmd/query params]
-           (do
-             (log/info "Received query:" params)
-             (let [res (p/query params)]
-               ;(doseq [t res] (chsk-send! (:uid params) [:some/tweet (:_source t)]))
-               (chsk-send! (:uid params) [:tweet/prev-chunk res])))
-
-           [:cmd/missing params]
-           (put! c/tweet-missing-chan params)
-
-           [:chsk/ws-ping params]
-           () ; currently just do nothing with ping (no logging either)
-
-           :else
-           (do (log/info "Unmatched event:" ev)
-             (when-not (:dummy-reply-fn? (meta ?reply-fn))
-               (?reply-fn {:umatched-event-as-echoed-from-from-server ev}))))))
-
-(defonce chsk-router (sente/start-chsk-router-loop! event-msg-handler ch-chsk))
+(defonce chsk-router (sente/start-chsk-router! ch-chsk event-msg-handler))
 
 ;; loop for matching connected clients with percolation matches and delivering those on the appropriate socket
 (go

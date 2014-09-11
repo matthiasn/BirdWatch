@@ -52,8 +52,8 @@
     (start-percolator)
     (load-prev)))
 
-(defn- event-handler [[id data :as ev] _]
-  (match [id data]
+(defn- event-handler [{:keys [event]}]
+  (match event
          [:chsk/state {:first-open? true}] (do (print "Socket established!") (start-search))
          [:chsk/state new-state]           (print "Chsk state change:" new-state)
          [:chsk/recv  payload]
@@ -64,10 +64,9 @@
                   [:tweet/prev-chunk prev-chunk] (do (put! c/prev-chunks-chan prev-chunk) (load-prev))
                   [:stats/users-count        uc] (put! c/user-count-chan uc)
                   [:stats/total-tweet-count ttc] (put! c/total-tweets-count-chan ttc)))
-         :else (print "Unmatched event: %s" ev)))
+         :else (print "Unmatched event: %s" event)))
 
-(defonce chsk-router
-  (sente/start-chsk-router-loop! event-handler ch-chsk))
+(defonce chsk-router (sente/start-chsk-router! ch-chsk event-handler))
 
 ; loop for sending messages about missing tweet to server
 (go-loop []

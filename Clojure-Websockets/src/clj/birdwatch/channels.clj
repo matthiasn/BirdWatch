@@ -12,6 +12,8 @@
 (def rt-persistence-chan (chan))
 (def percolation-chan (chan))
 (def percolation-matches-chan (chan))
+(def query-chan (chan))
+(def query-results-chan (chan))
 
 ;; fanning tweets out to separate channels per task
 (def tweets-chan-mult (mult tweets-chan))

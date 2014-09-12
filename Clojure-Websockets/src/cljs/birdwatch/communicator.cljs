@@ -21,8 +21,6 @@
   (def chsk-send! send-fn) ; ChannelSocket's send API fn
   (def chsk-state state))  ; Watchable, read-only atom
 
-(def prev-chunks-loaded (atom 0))
-
 (defn query-string []
   "format and modify query string"
   {:query_string {:default_field "text"
@@ -34,10 +32,11 @@
   (chsk-send! [:cmd/percolate {:query (query-string)
                                :uid (:uid @chsk-state)}]))
 
+(def prev-chunks-loaded (atom 0))
 (defn load-prev []
   "load previous tweets matching the current search"
-  (let [chunks-to-load 5
-        chunk-size 10]
+  (let [chunks-to-load 10
+        chunk-size 500]
     (when (< @prev-chunks-loaded chunks-to-load)
       (chsk-send! [:cmd/query {:query (query-string)
                                :n chunk-size
@@ -74,10 +73,9 @@
 (defonce chsk-router (sente/start-chsk-router! ch-chsk event-handler))
 
 ; loop for sending messages about missing tweet to server
-(go-loop []
-         (let [tid (<! c/tweet-missing-chan)]
-           (chsk-send! [:cmd/missing {:id_str tid :uid (:uid @chsk-state)}])
-           (recur)))
+(go-loop [] (let [tid (<! c/tweet-missing-chan)]
+              (chsk-send! [:cmd/missing {:id_str tid :uid (:uid @chsk-state)}])
+              (recur)))
 
 (defn ^:export send-state []
   "helper function to send state to server (where it can be pretty printed for debugging)"

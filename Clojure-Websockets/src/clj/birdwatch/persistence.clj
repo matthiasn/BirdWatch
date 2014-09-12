@@ -18,9 +18,10 @@
    [clojurewerkz.elastisch.rest.percolation :as perc]
    [clojurewerkz.elastisch.query            :as q]
    [clojurewerkz.elastisch.rest.response    :as esrsp]
-   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go]]))
+   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go go-loop]]))
 
 (def conn (esr/connect (:es-address conf)))
+(def native-conn (esn/connect [["127.0.0.1" 9300]] {"cluster.name" "elasticsearch_mn"}))
 
 (defn total-tweet-count []
   "get total count of indexed tweets from ElasticSearch"
@@ -60,8 +61,7 @@
 
 (defn native-query [{:keys [query n from]}]
   "run a query on previous matching tweets"
-  (let [native-conn (esn/connect [["127.0.0.1" 9300]] {"cluster.name" "elasticsearch_mn"})
-        search  (esnd/search native-conn (:es-index conf) "tweet" :query query :size n :from from :sort {:id :desc})
+  (let [search  (esnd/search native-conn (:es-index conf) "tweet" :query query :size n :from from :sort {:id :desc})
         hits (esnrsp/hits-from search)]
     (log/info "Total hits:" (esnrsp/total-hits search) "Retrieved:" (count hits))
     (get-source hits)))
@@ -116,3 +116,43 @@
      (if res
        (put! c/missing-tweet-found-chan {:tweet (strip-source res) :uid uid})
        (log/info "birdwatch.persistence missing" (:id_str req) res)))))
+
+(def prio-query-chan (chan))
+(def slow-query-chan (chan))
+
+;; loop for distributing queries so that the first one (:from 0) is out onto a prioritized channel
+(go-loop [] (let [q (<! c/query-chan)]
+              (if (= (:from q) 0)
+                (put! prio-query-chan q)
+                (put! slow-query-chan q)))
+         (recur))
+
+;; loop for finding query matches
+(go-loop [] (let [q (<! prio-query-chan)
+                  result (native-query q)]
+              (put! c/query-results-chan {:uid (:uid q) :result result}))
+         (recur))
+
+;; loop for finding query matches
+(go-loop [] (let [q (<! prio-query-chan)
+                  result (native-query q)]
+              (put! c/query-results-chan {:uid (:uid q) :result result}))
+         (recur))
+
+;; loop for finding query matches
+(go-loop [] (let [q (<! slow-query-chan)
+                  result (native-query q)]
+              (put! c/query-results-chan {:uid (:uid q) :result result}))
+         (recur))
+
+;; loop for finding query matches
+(go-loop [] (let [q (<! slow-query-chan)
+                  result (native-query q)]
+              (put! c/query-results-chan {:uid (:uid q) :result result}))
+         (recur))
+
+;; loop for finding query matches
+(go-loop [] (let [q (<! slow-query-chan)
+                  result (native-query q)]
+              (put! c/query-results-chan {:uid (:uid q) :result result}))
+         (recur))

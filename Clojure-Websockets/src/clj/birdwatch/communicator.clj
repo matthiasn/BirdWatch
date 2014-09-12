@@ -45,8 +45,7 @@
          [:cmd/percolate params] (p/start-percolator params)
          [:cmd/query params]     (do
                                    (log/info "Received query:" params)
-                                   (let [res (p/query params)] ; TODO: put request msg on channel for async handling
-                                     (chsk-send! (:uid params) [:tweet/prev-chunk res])))
+                                   (put! c/query-chan params))
          [:cmd/missing params]   (put! c/tweet-missing-chan params)
          [:chsk/ws-ping]         () ; currently just do nothing with ping (no logging either)
          :else                   (log/info "Unmatched event:" (pp/pprint event))))
@@ -78,9 +77,14 @@
      (doseq [uid uids]
        (chsk-send! uid [:stats/total-tweet-count total-tweet-count])))))
 
-
 ;; loop for sending missing tweet back to client
 (go
  (while true
    (let [msg (<! c/missing-tweet-found-chan)]
      (chsk-send! (:uid msg) [:tweet/missing-tweet (:tweet msg)]))))
+
+;; loop for sending query result chunks back to client
+(go
+ (while true
+   (let [res (<! c/query-results-chan)]
+     (chsk-send! (:uid res) [:tweet/prev-chunk (:result res)]))))

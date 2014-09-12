@@ -41,6 +41,11 @@
       (util/swap-pmap app :by-reach rt-id (+ (get (:by-reach state) rt-id 0) (:followers_count (:user tweet))))
       (when (> rt-count (:retweet_count (rt-id (:tweets-map state)))) (add-to-tweets-map! app :tweets-map rt)))))
 
+(defn ignore-tweet! [tweet app]
+  "only increment counter, otherwise ignore tweet"
+  (let [state @app]
+    (swap! app assoc :count (inc (:count state)))))
+
 (defn add-tweet! [tweet app]
   "increment counter, add tweet to tweets map and to sorted sets by id and by followers"
   (let [state @app
@@ -54,10 +59,14 @@
     (add-rt-status! app tweet)
     (wc/process-tweet app (:text tweet))))
 
-(go-loop []
- (let [[t chan] (alts! [c/tweets-chan c/prev-tweets-chan] {:priority true})]
-   (add-tweet! t state/app)
-   (recur)))
+(go-loop [] (let [t (<! c/tweets-chan)]
+              (add-tweet! t state/app)
+              (recur)))
+
+(go-loop [] (let [t (<! c/prev-tweets-chan)]
+              (add-tweet! t state/app)
+;              (ignore-tweet! t state/app)
+              (recur)))
 
 (go-loop []
  (let [mt (<! c/missing-tweet-found-chan)]

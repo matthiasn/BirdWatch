@@ -20,7 +20,8 @@
    [compojure.core     :as comp :refer (defroutes GET POST)]
    [compojure.route    :as route]
    [taoensso.sente     :as sente]
-   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go]]))
+   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go]]
+   [clj-pid.core :as pid]))
 
 (defroutes my-routes
   (GET  "/" [] (content-type
@@ -52,6 +53,11 @@
     (stop-http-server!)
     (log/info "Http-kit server is running at" uri)
     (reset! http-server_ s)))
+
+(def pid-file "birdwatch.pid")
+(pid/save pid-file)
+(pid/delete-on-shutdown! pid-file)
+(log/info "Application started, PID" (pid/current))
 
 (defn -main
   [& args]

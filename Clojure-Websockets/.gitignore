@@ -9,6 +9,7 @@ pom.xml.asc
 /.nrepl-port
 *.log
 *.hprof
+*.pid
 
 twitterconf.edn
 resources/public/js/build/

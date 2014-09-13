@@ -29,8 +29,8 @@
                 (resource-response "index.html" {:root "public"})
                 "text/html"))
   (GET  "/dev" [] (content-type
-                (resource-response "index-dev.html" {:root "public"})
-                "text/html"))
+                   (resource-response "index-dev.html" {:root "public"})
+                   "text/html"))
   (GET  "/chsk"  req (comm/ring-ajax-get-or-ws-handshake req))
   (POST "/chsk"  req (comm/ring-ajax-post                req))
   (route/resources "/") ; Static files, notably public/main.js (our cljs target)
@@ -39,8 +39,8 @@
 (def my-ring-handler
   (let [ring-defaults-config
         (assoc-in ring.middleware.defaults/site-defaults [:security :anti-forgery]
-          {:read-token (fn [req] (-> req :params :csrf-token))})]
-   (ring.middleware.defaults/wrap-defaults my-routes ring-defaults-config)))
+                  {:read-token (fn [req] (-> req :params :csrf-token))})]
+    (ring.middleware.defaults/wrap-defaults my-routes ring-defaults-config)))
 
 (defonce http-server_ (atom nil))
 
@@ -56,6 +56,15 @@
     (reset! http-server_ s)))
 
 (def pid-file "birdwatch.pid")
+
+
+(defn get-system [conf]
+  (component/system-map
+   :channels (c/new-channels)
+   :twitterclient (component/using (tc/new-twitterclient conf) {:channels :channels})
+   :persistence (component/using (p/new-persistence conf) {:channels :channels})))
+
+(def system (get-system conf))
 
 (defn -main
   [& args]

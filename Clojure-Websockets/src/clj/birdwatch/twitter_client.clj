@@ -6,7 +6,6 @@
    [twitter.api.streaming]
    [birdwatch.conf])
   (:require
-   [birdwatch.channels :as c]
    [clojure.edn :as edn]
    [clojure.string :as str]
    [clojure.data.json :as json]
@@ -16,7 +15,7 @@
    [http.async.client :as ac]
    [twitter.oauth :as oauth]
    [twitter-streaming-client.core :as client]
-   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go close!]]
+   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go go-loop close!]]
    [com.stuartsierra.component :as component])
   (:import
    (twitter.callbacks.protocols AsyncStreamingCallback)))
@@ -33,22 +32,22 @@
 (def ^:private chunk-buff (atom ""))
 (def ^:private counter (atom 0))
 
-(defn- parse [jstr]
+(defn- parse [jstr tweets-chan]
   (try
     (let [c @counter
           json (json/read-json jstr)]
       (when (== (mod c 1000) 0) (log/info "processed" c "since startup, index" (:es-index conf)))
       (if (:text json)
-        (>!! c/tweets-chan json)
+        (>!! tweets-chan json)
         (>!! msg-chan json))
       (swap! counter inc))
     (catch Exception ex (log/error ex "JSON parsing" jstr))))
 
 ;; loop for logging messages from Streaming API other than tweets
-(go
- (while true
-   (let [m (<! msg-chan)]
-     (log/info "msg-chan" m))))
+(go-loop []
+         (let [m (<! msg-chan)]
+           (log/error "msg-chan" m))
+         (recur))
 
 (defn- tweet-chunk-callback []
   (AsyncStreamingCallback. #(>!! chunk-chan (str %2))
@@ -56,24 +55,25 @@
                            exception-print))
 
 ;; loop for processing chunks from Streaming API
-(go
- (while true
-   (let [ch (<! chunk-chan)
-         buff @chunk-buff
-         combined (str buff ch)
-         tweet-strings (str/split-lines combined)
-         to-process (butlast tweet-strings)
-         last-chunk (last tweet-strings)]
-     (reset! last-received (t/now))
-     (if (> (count to-process) 0)
-       (do
-         (doseq [ts to-process]
-           (when (not (str/blank? ts))
-             (parse ts)))
-         (reset! chunk-buff last-chunk))
-       (reset! chunk-buff combined)))))
+(defn- processing-loop [tweets-chan]
+  (go-loop []
+           (let [ch (<! chunk-chan)
+                 buff @chunk-buff
+                 combined (str buff ch)
+                 tweet-strings (str/split-lines combined)
+                 to-process (butlast tweet-strings)
+                 last-chunk (last tweet-strings)]
+             (reset! last-received (t/now))
+             (if (> (count to-process) 0)
+               (do
+                 (doseq [ts to-process]
+                   (when (not (str/blank? ts))
+                     (parse ts tweets-chan)))
+                 (reset! chunk-buff last-chunk))
+               (reset! chunk-buff combined)))
+           (recur)))
 
-(defrecord Twitterclient [conf connection]
+(defrecord Twitterclient [conf channels connection]
   ;; Implement the Lifecycle protocol
   component/Lifecycle
 
@@ -83,10 +83,11 @@
          ;; and start it running. For example, connect to a
          ;; database, create thread pools, or initialize shared
          ;; state.
-         (let [chunk-chan (chan 10000)
-               conn (statuses-filter :params {:track (:track conf)}
+         (let [conn (statuses-filter :params {:track (:track conf)}
                                      :oauth-creds (creds conf)
                                      :callbacks (tweet-chunk-callback))]
+           (reset! chunk-buff "")
+           (processing-loop (:tweets channels))
            ;; Return an updated version of the component with
            ;; the run-time state assoc'd in.
            (assoc component :connection conn)))
@@ -112,6 +113,10 @@
 (defn start-twitter-conn! []
   "start twitter component"
   (alter-var-root #'twitter-client component/start))
+
+(defn stop-twitter-conn! []
+  "stop twitter component"
+  (alter-var-root #'twitter-client component/stop))
 
 ;; loop watching the twitter client and restarting it if necessary
 (defn watch-twitter-conn! []

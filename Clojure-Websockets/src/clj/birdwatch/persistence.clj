@@ -3,7 +3,6 @@
   (:use [birdwatch.conf]
         [clojure.data.priority-map])
   (:require
-   [birdwatch.channels :as c]
    [birdwatch.atoms :as a]
    [birdwatch.data :as d]
    [clojure.edn :as edn]
@@ -18,6 +17,7 @@
    [clojurewerkz.elastisch.rest.percolation :as perc]
    [clojurewerkz.elastisch.query            :as q]
    [clojurewerkz.elastisch.rest.response    :as esrsp]
+   [com.stuartsierra.component :as component]
    [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go go-loop]]))
 
 (def conn (esr/connect (:es-address conf)))
@@ -83,76 +83,82 @@
     (log/info "Percolation registered for query" query "with SHA1" sha)))
 
 ;; loop for persisting tweets
-(go
- (while true
-   (let [t (<! c/persistence-chan)]
-     (try
-       (esd/put conn (:es-index conf) "tweet" (:id_str t) t)
-       (catch Exception ex (log/error ex "esd/put error"))))))
+(defn- run-persistence-loop [persistence-chan]
+  (go-loop []
+           (let [t (<! persistence-chan)]
+             (try
+               (esd/put conn (:es-index conf) "tweet" (:id_str t) t)
+               (catch Exception ex (log/error ex "esd/put error"))))
+           (recur)))
 
 ;; loop for persisting retweets
-(go
- (while true
-   (let [rt (:retweeted_status (<! c/rt-persistence-chan))]
-     (when rt
-       (try
-         (esd/put conn (:es-index conf) "tweet" (:id_str rt) rt)
-         (catch Exception ex (log/error ex "esd/put error")))))))
+(defn- run-rt-persistence-loop [rt-persistence-chan]
+  (go-loop []
+           (let [rt (:retweeted_status (<! rt-persistence-chan))]
+             (when rt
+               (try
+                 (esd/put conn (:es-index conf) "tweet" (:id_str rt) rt)
+                 (catch Exception ex (log/error ex "esd/put error"))))
+             (recur))))
 
 ;; loop for finding percolation matches and delivering those on the appropriate socket
-(go
- (while true
-   (let [t (<! c/percolation-chan)
-         response (perc/percolate conn "percolator" "tweet" :doc t)
-         matches (into #{} (map #(:_id %1) (esrsp/matches-from response)))]
-     (put! c/percolation-matches-chan [t matches]))))
+(defn- run-percolation-loop [percolation-chan percolation-matches-chan]
+  (go-loop []
+           (let [t (<! percolation-chan)
+                 response (perc/percolate conn "percolator" "tweet" :doc t)
+                 matches (into #{} (map #(:_id %1) (esrsp/matches-from response)))
+                 ]
+             (put! percolation-matches-chan [t matches])
+             (recur))))
 
-;; loop for finding missing tweet
-(go
- (while true
-   (let [req (<! c/tweet-missing-chan)
-         res (get-tweet (:id_str req))
-         uid (:uid req)]
-     (if res
-       (put! c/missing-tweet-found-chan {:tweet (strip-source res) :uid uid})
-       (log/info "birdwatch.persistence missing" (:id_str req) res)))))
+(defn- run-find-missing-loop [tweet-missing-chan missing-tweet-found-chan]
+  "starts loop for finding missing tweets, puts result on missing-tweet-found-chan "
+  (go-loop []
+           (let [req (<! tweet-missing-chan)
+                 res (get-tweet (:id_str req))
+                 uid (:uid req)]
+             (if res
+               (put! missing-tweet-found-chan {:tweet (strip-source res) :uid uid})
+               (log/info "birdwatch.persistence missing" (:id_str req) res)))
+           (recur)))
 
-(def prio-query-chan (chan))
-(def slow-query-chan (chan))
+(defn- run-query-loop [query-chan query-results-chan]
+  (go-loop []
+           (let [q (<! query-chan)
+                 result (native-query q)]
+             (put! query-results-chan {:uid (:uid q) :result result}))
+           (recur)))
 
-;; loop for distributing queries so that the first one (:from 0) is out onto a prioritized channel
-(go-loop [] (let [q (<! c/query-chan)]
-              (if (= (:from q) 0)
-                (put! prio-query-chan q)
-                (put! slow-query-chan q)))
-         (recur))
+(defrecord Persistence [conf channels]
+  ;; Implement the Lifecycle protocol
+  component/Lifecycle
 
-;; loop for finding query matches
-(go-loop [] (let [q (<! prio-query-chan)
-                  result (native-query q)]
-              (put! c/query-results-chan {:uid (:uid q) :result result}))
-         (recur))
+  (start [component]
+         (log/info "Starting Persistence Component")
+         ;; In the 'start' method, initialize this component
+         ;; and start it running. For example, connect to a
+         ;; database, create thread pools, or initialize shared
+         ;; state.
+         (let []
+           (run-persistence-loop (:persistence channels))
+           (run-rt-persistence-loop (:rt-persistence channels))
+           (run-percolation-loop (:percolation channels) (:percolation-matches channels))
+           (run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels))
+           (run-query-loop (:query channels) (:query-results channels))
 
-;; loop for finding query matches
-(go-loop [] (let [q (<! prio-query-chan)
-                  result (native-query q)]
-              (put! c/query-results-chan {:uid (:uid q) :result result}))
-         (recur))
+           ;; Return an updated version of the component with
+           ;; the run-time state assoc'd in.
+           (assoc component :connection conn)))
 
-;; loop for finding query matches
-(go-loop [] (let [q (<! slow-query-chan)
-                  result (native-query q)]
-              (put! c/query-results-chan {:uid (:uid q) :result result}))
-         (recur))
+  (stop [component]
+        (log/info "Stopping Persistence Component")
+        ;; In the 'stop' method, shut down the running
+        ;; component and release any external resources it has
+        ;; acquired.
 
-;; loop for finding query matches
-(go-loop [] (let [q (<! slow-query-chan)
-                  result (native-query q)]
-              (put! c/query-results-chan {:uid (:uid q) :result result}))
-         (recur))
+        ;; Return the component, optionally modified. Remember that if you
+        ;; dissoc one of a record's base fields, you get a plain map.
+        (assoc component :connection nil)))
 
-;; loop for finding query matches
-(go-loop [] (let [q (<! slow-query-chan)
-                  result (native-query q)]
-              (put! c/query-results-chan {:uid (:uid q) :result result}))
-         (recur))
+(defn new-persistence [conf]
+  (map->Persistence {:conf conf}))

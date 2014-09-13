@@ -18,7 +18,7 @@
    [clojurewerkz.elastisch.query            :as q]
    [clojurewerkz.elastisch.rest.response    :as esrsp]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go go-loop]]))
+   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go go-loop close!]]))
 
 (def conn (esr/connect (:es-address conf)))
 (def native-conn (esn/connect [["127.0.0.1" 9300]] {"cluster.name" "elasticsearch_mn"}))
@@ -129,7 +129,7 @@
              (put! query-results-chan {:uid (:uid q) :result result}))
            (recur)))
 
-(defrecord Persistence [conf channels]
+(defrecord Persistence [conf channels loops]
   ;; Implement the Lifecycle protocol
   component/Lifecycle
 
@@ -139,16 +139,14 @@
          ;; and start it running. For example, connect to a
          ;; database, create thread pools, or initialize shared
          ;; state.
-         (let []
-           (run-persistence-loop (:persistence channels))
-           (run-rt-persistence-loop (:rt-persistence channels))
-           (run-percolation-loop (:percolation channels) (:percolation-matches channels))
-           (run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels))
-           (run-query-loop (:query channels) (:query-results channels))
-
+         (let [loops {:persistence (run-persistence-loop (:persistence channels))
+                      :rt-persistence (run-rt-persistence-loop (:rt-persistence channels))
+                      :percolation (run-percolation-loop (:percolation channels) (:percolation-matches channels))
+                      :find-missing (run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels))
+                      :query (run-query-loop (:query channels) (:query-results channels))}]
            ;; Return an updated version of the component with
            ;; the run-time state assoc'd in.
-           (assoc component :connection conn)))
+           (assoc component :loops loops)))
 
   (stop [component]
         (log/info "Stopping Persistence Component")
@@ -158,7 +156,10 @@
 
         ;; Return the component, optionally modified. Remember that if you
         ;; dissoc one of a record's base fields, you get a plain map.
-        (assoc component :connection nil)))
+        (doseq [p-loop (vals loops)]
+          (close! p-loop))
+
+        (assoc component :loops nil)))
 
 (defn new-persistence [conf]
   (map->Persistence {:conf conf}))

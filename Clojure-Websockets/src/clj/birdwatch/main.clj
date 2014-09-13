@@ -2,7 +2,7 @@
   (:gen-class)
   (:use [birdwatch.conf])
   (:require
-   [birdwatch.twitterclient :as tc]
+   [birdwatch.twitter-client :as tc]
    [birdwatch.channels :as c]
    [birdwatch.communicator :as comm]
    [birdwatch.atoms :as a]
@@ -21,7 +21,8 @@
    [compojure.route    :as route]
    [taoensso.sente     :as sente]
    [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go]]
-   [clj-pid.core :as pid]))
+   [clj-pid.core :as pid]
+   [com.stuartsierra.component :as component]))
 
 (defroutes my-routes
   (GET  "/" [] (content-type
@@ -55,12 +56,12 @@
     (reset! http-server_ s)))
 
 (def pid-file "birdwatch.pid")
-(pid/save pid-file)
-(pid/delete-on-shutdown! pid-file)
-(log/info "Application started, PID" (pid/current))
 
 (defn -main
   [& args]
+  (pid/save pid-file)
+  (pid/delete-on-shutdown! pid-file)
+  (log/info "Application started, PID" (pid/current))
   (tc/start-twitter-conn!)
   (tc/watch-twitter-conn!)
   (start-http-server!))

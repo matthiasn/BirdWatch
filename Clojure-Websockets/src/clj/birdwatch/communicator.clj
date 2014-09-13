@@ -2,7 +2,6 @@
   (:gen-class)
   (:use [birdwatch.conf])
   (:require
-   [birdwatch.twitterclient :as tc]
    [birdwatch.channels :as c]
    [birdwatch.atoms :as a]
    [birdwatch.persistence :as p]

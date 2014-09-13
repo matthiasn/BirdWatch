@@ -23,7 +23,8 @@
                  [om "0.7.3"]
                  [com.cognitect/transit-clj  "0.8.247"]
                  [com.cognitect/transit-cljs "0.8.188"]
-                 [clj-pid "0.1.1"]]
+                 [clj-pid "0.1.1"]
+                 [com.stuartsierra/component "0.2.2"]]
 
   :source-paths ["src/clj/"]
 

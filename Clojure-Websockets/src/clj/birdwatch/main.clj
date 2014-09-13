@@ -20,7 +20,7 @@
    [compojure.core     :as comp :refer (defroutes GET POST)]
    [compojure.route    :as route]
    [taoensso.sente     :as sente]
-   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go]]
+   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go go-loop close!]]
    [clj-pid.core :as pid]
    [com.stuartsierra.component :as component]))
 
@@ -57,10 +57,10 @@
 
 (def pid-file "birdwatch.pid")
 
-
 (defn get-system [conf]
   (component/system-map
    :channels (c/new-channels)
+;   :communicator (component/using (comm/new-communicator) {:channels :channels})
    :twitterclient (component/using (tc/new-twitterclient conf) {:channels :channels})
    :persistence (component/using (p/new-persistence conf) {:channels :channels})))
 
@@ -71,6 +71,7 @@
   (pid/save pid-file)
   (pid/delete-on-shutdown! pid-file)
   (log/info "Application started, PID" (pid/current))
-  (tc/start-twitter-conn!)
-  (tc/watch-twitter-conn!)
+;  (tc/start-twitter-conn!)
+;  (tc/watch-twitter-conn!)
+  (alter-var-root #'system component/start)
   (start-http-server!))

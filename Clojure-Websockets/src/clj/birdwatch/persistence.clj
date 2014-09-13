@@ -129,7 +129,7 @@
              (put! query-results-chan {:uid (:uid q) :result result}))
            (recur)))
 
-(defrecord Persistence [conf channels loops]
+(defrecord Persistence [conf channels conn native-conn]
   ;; Implement the Lifecycle protocol
   component/Lifecycle
 
@@ -139,27 +139,27 @@
          ;; and start it running. For example, connect to a
          ;; database, create thread pools, or initialize shared
          ;; state.
-         (let [loops {:persistence (run-persistence-loop (:persistence channels))
-                      :rt-persistence (run-rt-persistence-loop (:rt-persistence channels))
-                      :percolation (run-percolation-loop (:percolation channels) (:percolation-matches channels))
-                      :find-missing (run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels))
-                      :query (run-query-loop (:query channels) (:query-results channels))}]
-           ;; Return an updated version of the component with
-           ;; the run-time state assoc'd in.
-           (assoc component :loops loops)))
+         (run-persistence-loop (:persistence channels))
+         (run-rt-persistence-loop (:rt-persistence channels))
+         (run-percolation-loop (:percolation channels) (:percolation-matches channels))
+         (run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels))
+         (run-query-loop (:query channels) (:query-results channels))
+         ;; Return an updated version of the component with
+         ;; the run-time state assoc'd in.
+         ;(assoc component :c loops)
+         )
 
-  (stop [component]
-        (log/info "Stopping Persistence Component")
-        ;; In the 'stop' method, shut down the running
-        ;; component and release any external resources it has
-        ;; acquired.
+(stop [component]
+      (log/info "Stopping Persistence Component")
+      ;; In the 'stop' method, shut down the running
+      ;; component and release any external resources it has
+      ;; acquired.
 
-        ;; Return the component, optionally modified. Remember that if you
-        ;; dissoc one of a record's base fields, you get a plain map.
-        (doseq [p-loop (vals loops)]
-          (close! p-loop))
+      ;; Return the component, optionally modified. Remember that if you
+      ;; dissoc one of a record's base fields, you get a plain map.
 
-        (assoc component :loops nil)))
+      ;(assoc component :loops nil)
+      ))
 
 (defn new-persistence [conf]
   (map->Persistence {:conf conf}))

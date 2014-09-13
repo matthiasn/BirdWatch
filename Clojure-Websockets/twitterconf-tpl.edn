@@ -1,4 +1,8 @@
-;; template for twitter configuration file
+;; Template for Birdwatch configuration file
+
+;; You probably want to change the :track settings as the term "love" results
+;; in millions of matches per day. It works though on a fast machine.
+;; The limiting factor then really becomes ElasticSearch.
 
 { :consumer-key             "<YOUR API KEY HERE>"
   :consumer-secret          "<YOUR API SECRET HERE>"
@@ -8,4 +12,5 @@
   :es-index                 "birdwatch"
   :track                    "clojure,love"
   :tw-check-interval-sec    120
-  :port                     8888 }
+  :port                     8888
+  :pidfile-name             "birdwatch.pid"}

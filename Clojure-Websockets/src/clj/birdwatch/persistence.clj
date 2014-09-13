@@ -1,6 +1,6 @@
 (ns birdwatch.persistence
   (:gen-class)
-  (:use [birdwatch.conf]
+  (:use [birdwatch.conf] ;; TODO: remove conf dependency
         [clojure.data.priority-map])
   (:require
    [birdwatch.atoms :as a]
@@ -20,6 +20,7 @@
    [com.stuartsierra.component :as component]
    [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go go-loop close!]]))
 
+;; TODO: move connection objects into component
 (def conn (esr/connect (:es-address conf)))
 (def native-conn (esn/connect [["127.0.0.1" 9300]] {"cluster.name" "elasticsearch_mn"}))
 
@@ -135,28 +136,18 @@
 
   (start [component]
          (log/info "Starting Persistence Component")
-         ;; In the 'start' method, initialize this component
-         ;; and start it running. For example, connect to a
-         ;; database, create thread pools, or initialize shared
-         ;; state.
+
          (run-persistence-loop (:persistence channels))
          (run-rt-persistence-loop (:rt-persistence channels))
          (run-percolation-loop (:percolation channels) (:percolation-matches channels))
          (run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels))
          (run-query-loop (:query channels) (:query-results channels))
-         ;; Return an updated version of the component with
-         ;; the run-time state assoc'd in.
+
          ;(assoc component :c loops)
          )
 
-(stop [component]
+(stop [component] ;; TODO: proper teardown of resources
       (log/info "Stopping Persistence Component")
-      ;; In the 'stop' method, shut down the running
-      ;; component and release any external resources it has
-      ;; acquired.
-
-      ;; Return the component, optionally modified. Remember that if you
-      ;; dissoc one of a record's base fields, you get a plain map.
 
       ;(assoc component :loops nil)
       ))

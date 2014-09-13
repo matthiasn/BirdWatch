@@ -3,8 +3,7 @@
   (:use
    [twitter.callbacks]
    [twitter.callbacks.handlers]
-   [twitter.api.streaming]
-   [birdwatch.conf])
+   [twitter.api.streaming])
   (:require
    [clojure.edn :as edn]
    [clojure.string :as str]
@@ -36,7 +35,7 @@
   (try
     (let [c @counter
           json (json/read-json jstr)]
-      (when (== (mod c 1000) 0) (log/info "processed" c "since startup, index" (:es-index conf)))
+      (when (== (mod c 1000) 0) (log/info "processed" c "since startup"))
       (if (:text json)
         (>!! tweets-chan json)
         (>!! msg-chan json))
@@ -106,20 +105,11 @@
         (assoc component :connection nil)))
 
 (defn new-twitterclient [conf]
+  "create new twitter client component"
   (map->Twitterclient {:conf conf}))
 
-(def twitter-client (new-twitterclient conf))
-
-(defn start-twitter-conn! []
-  "start twitter component"
-  (alter-var-root #'twitter-client component/start))
-
-(defn stop-twitter-conn! []
-  "stop twitter component"
-  (alter-var-root #'twitter-client component/stop))
-
 ;; loop watching the twitter client and restarting it if necessary
-(defn watch-twitter-conn! []
+#_(defn watch-twitter-conn! []
   "monitor twitter component, restart when necessary"
   (go
    (while true

@@ -21,19 +21,17 @@
 
 ;; loop for finding percolation matches and delivering those on the appropriate socket
 (defn- run-percolation-register-loop [register-percolation-chan conn]
-  (go-loop []
-           (let [params (<! register-percolation-chan)]
-             (start-percolator params conn)
-             (recur))))
+  (go-loop [] (let [params (<! register-percolation-chan)]
+                (start-percolator params conn)
+                (recur))))
 
 ;; loop for finding percolation matches and delivering those on the appropriate socket
 (defn- run-percolation-loop [percolation-chan percolation-matches-chan conn]
-  (go-loop []
-           (let [t (<! percolation-chan)
-                 response (perc/percolate conn "percolator" "tweet" :doc t)
-                 matches (into #{} (map #(:_id %1) (esrsp/matches-from response)))]
-             (put! percolation-matches-chan [t matches])
-             (recur))))
+  (go-loop [] (let [t (<! percolation-chan)
+                    response (perc/percolate conn "percolator" "tweet" :doc t)
+                    matches (into #{} (map #(:_id %1) (esrsp/matches-from response)))]
+                (put! percolation-matches-chan [t matches])
+                (recur))))
 
 (defrecord Percolator [conf channels conn]
   component/Lifecycle
@@ -47,5 +45,4 @@
         (log/info "Stopping Percolator Component")
         (assoc component :conn nil)))
 
-(defn new-percolator [conf]
-  (map->Percolator {:conf conf}))
+(defn new-percolator [conf] (map->Percolator {:conf conf}))

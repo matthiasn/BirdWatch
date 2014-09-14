@@ -1,7 +1,6 @@
 (ns birdwatch.communicator
   (:gen-class)
   (:require
-   [birdwatch.atoms :as a]
    [clojure.core.match :as match :refer (match)]
    [clojure.pprint :as pp]
    [clojure.tools.logging :as log]
@@ -31,9 +30,9 @@
 (defn- run-percolation-matches-loop [percolation-matches-chan chsk-send! connected-uids]
   "runs loop for delivering percolation matches to interested clients"
   (go-loop []
-           (let [[t matches] (<! percolation-matches-chan)]
+           (let [[t matches subscriptions] (<! percolation-matches-chan)]
              (doseq [uid (:any @connected-uids)]
-               (when (contains? matches (get @a/subscriptions uid))
+               (when (contains? matches (get subscriptions uid))
                  (chsk-send! uid [:tweet/new t]))))
            (recur)))
 

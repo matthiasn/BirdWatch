@@ -54,7 +54,7 @@
 
 (defn- run-tweet-count-loop [tweet-count-chan conf conn]
   "run loop for sending stats about total number of indexed tweets"
-  (go-loop [] (<! (timeout 3000))
+  (go-loop [] (<! (timeout 10000))
            (put! tweet-count-chan (format "%,15d" (:count (esd/count conn (:es-index conf) "tweet") )))
            (recur)))
 

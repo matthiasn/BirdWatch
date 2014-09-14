@@ -3,18 +3,14 @@
   (:use [birdwatch.conf] ;; TODO: remove conf dependency
         [clojure.data.priority-map])
   (:require
-   [birdwatch.atoms :as a]
    [birdwatch.data :as d]
-   [clojure.edn :as edn]
    [clojure.tools.logging :as log]
-   [pandect.core :refer [sha1]]
    [clojure.pprint :as pp]
    [clojurewerkz.elastisch.native           :as esn]
    [clojurewerkz.elastisch.native.document  :as esnd]
    [clojurewerkz.elastisch.native.response  :as esnrsp]
    [clojurewerkz.elastisch.rest             :as esr]
    [clojurewerkz.elastisch.rest.document    :as esd]
-   [clojurewerkz.elastisch.rest.percolation :as perc]
    [clojurewerkz.elastisch.query            :as q]
    [clojurewerkz.elastisch.rest.response    :as esrsp]
    [com.stuartsierra.component :as component]
@@ -22,7 +18,7 @@
 
 ;; TODO: move connection objects into component
 (def conn (esr/connect (:es-address conf)))
-(def native-conn (esn/connect [["127.0.0.1" 9300]] {"cluster.name" "elasticsearch_mn"}))
+(def native-conn (esn/connect [(:es-native-address conf)] {"cluster.name" (:es-cluster-name conf)}))
 
 (defn total-tweet-count []
   "get total count of indexed tweets from ElasticSearch"
@@ -76,13 +72,6 @@
     ;(log/info "top retweets in chunk" (pp/pprint (take 10 (into (priority-map-by >) (d/retweets res {})))))
     res))
 
-(defn start-percolator [{:keys [query uid]}]
-  "register percolation search with ID based on hash of the query"
-  (let [sha (sha1 (str query))]
-    (swap! a/subscriptions assoc uid sha)
-    (perc/register-query conn "percolator" sha :query query)
-    (log/info "Percolation registered for query" query "with SHA1" sha)))
-
 ;; loop for persisting tweets
 (defn- run-persistence-loop [persistence-chan]
   (go-loop []
@@ -100,16 +89,6 @@
                (try
                  (esd/put conn (:es-index conf) "tweet" (:id_str rt) rt)
                  (catch Exception ex (log/error ex "esd/put error"))))
-             (recur))))
-
-;; loop for finding percolation matches and delivering those on the appropriate socket
-(defn- run-percolation-loop [percolation-chan percolation-matches-chan]
-  (go-loop []
-           (let [t (<! percolation-chan)
-                 response (perc/percolate conn "percolator" "tweet" :doc t)
-                 matches (into #{} (map #(:_id %1) (esrsp/matches-from response)))
-                 ]
-             (put! percolation-matches-chan [t matches])
              (recur))))
 
 (defn- run-find-missing-loop [tweet-missing-chan missing-tweet-found-chan]
@@ -139,7 +118,6 @@
 
          (run-persistence-loop (:persistence channels))
          (run-rt-persistence-loop (:rt-persistence channels))
-         (run-percolation-loop (:percolation channels) (:percolation-matches channels))
          (run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels))
          (run-query-loop (:query channels) (:query-results channels))
 

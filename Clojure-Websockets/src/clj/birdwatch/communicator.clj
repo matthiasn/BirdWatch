@@ -22,12 +22,12 @@
     (log/info "Connected:" (:remote-addr req) uid)
     uid))
 
-(defn- make-event-msg-handler [query-chan tweet-missing-chan]
+(defn- make-event-msg-handler [query-chan tweet-missing-chan register-percolation-chan]
   (fn [{:as ev-msg :keys [event ?reply-fn]}]
     (match event
-           [:cmd/percolate params] (p/start-percolator params)
+           [:cmd/percolate params] (put! register-percolation-chan params)
            [:cmd/query params]     (do (log/info "Received query:" params)
-                                       (put! query-chan params))
+                                     (put! query-chan params))
            [:cmd/missing params]   (put! tweet-missing-chan params)
            [:chsk/ws-ping]         () ; currently just do nothing with ping (no logging either)
            :else                   (log/info "Unmatched event:" (pp/pprint event)))))
@@ -73,25 +73,21 @@
            (recur)))
 
 (defrecord Communicator [channels]
-  ;; Implement the Lifecycle protocol
   component/Lifecycle
-
   (start [component]
          (log/info "Starting Communicator Component")
-
          (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn connected-uids]}
                (sente/make-channel-socket! {:packer packer :user-id-fn user-id-fn})
-               chsk-router (sente/start-chsk-router! ch-recv
-                                                     (make-event-msg-handler
-                                                      (:query channels) (:tweet-missing channels)))]
+               event-msg-handler (make-event-msg-handler (:query channels)
+                                                         (:tweet-missing channels)
+                                                         (:register-percolation channels))
+               chsk-router (sente/start-chsk-router! ch-recv event-msg-handler)]
            (run-percolation-matches-loop (:percolation-matches channels) send-fn connected-uids)
            (run-users-count-loop send-fn connected-uids)
            (run-tweet-stats-loop  send-fn connected-uids)
            (run-missing-tweet-loop (:missing-tweet-found channels) send-fn)
            (run-query-results-loop (:query-results channels) send-fn)
-
            (assoc component :ajax-post-fn ajax-post-fn :ajax-get-or-ws-handshake-fn ajax-get-or-ws-handshake-fn)))
-
   (stop [component]
         (log/info "Stopping Persistence Component"))) ;; TODO: teardown
 

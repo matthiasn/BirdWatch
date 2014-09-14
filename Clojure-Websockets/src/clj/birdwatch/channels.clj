@@ -19,6 +19,7 @@
                rt-persistence (chan)
                percolation (chan)
                percolation-matches (chan 10000)
+               register-percolation (chan)
                query (chan)
                query-results (chan)
                tweets-mult (mult tweets)]
@@ -36,6 +37,7 @@
              :rt-persistence rt-persistence
              :percolation percolation
              :percolation-matches percolation-matches
+             :register-percolation register-percolation
              :query query
              :query-results query-results
              :tweets-mult tweets-mult)))

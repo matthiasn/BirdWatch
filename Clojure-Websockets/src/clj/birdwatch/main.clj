@@ -5,6 +5,7 @@
    [birdwatch.channels :as c]
    [birdwatch.communicator :as comm]
    [birdwatch.persistence :as p]
+   [birdwatch.percolator :as perc]
    [birdwatch.http :as http]
    [clojure.edn :as edn]
    [clojure.tools.logging :as log]
@@ -16,10 +17,11 @@
 (defn get-system [conf]
   (component/system-map
    :channels (c/new-channels)
-   :communicator (component/using (comm/new-communicator) {:channels :channels})
+   :communicator  (component/using (comm/new-communicator)     {:channels :channels})
    :twitterclient (component/using (tc/new-twitterclient conf) {:channels :channels})
-   :persistence (component/using (p/new-persistence conf) {:channels :channels})
-   :http (component/using (http/new-http-server conf) {:communicator :communicator})))
+   :persistence   (component/using (p/new-persistence conf)    {:channels :channels})
+   :percolator    (component/using (perc/new-percolator conf)  {:channels :channels})
+   :http          (component/using (http/new-http-server conf) {:communicator :communicator})))
 
 (def system (get-system conf))
 

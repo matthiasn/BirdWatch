@@ -64,7 +64,7 @@
              (chsk-send! (:uid res) [:tweet/prev-chunk (:result res)]))
            (recur)))
 
-(defrecord Communicator [channels]
+(defrecord Communicator [channels chsk-router]
   component/Lifecycle
   (start [component]
          (log/info "Starting Communicator Component")
@@ -77,8 +77,12 @@
            (run-tweet-stats-loop send-fn connected-uids (:tweet-count channels))
            (run-missing-tweet-loop (:missing-tweet-found channels) send-fn)
            (run-query-results-loop (:query-results channels) send-fn)
-           (assoc component :ajax-post-fn ajax-post-fn :ajax-get-or-ws-handshake-fn ajax-get-or-ws-handshake-fn)))
+           (assoc component :ajax-post-fn ajax-post-fn
+                            :ajax-get-or-ws-handshake-fn ajax-get-or-ws-handshake-fn
+                            :chsk-router chsk-router)))
   (stop [component]
-        (log/info "Stopping Persistence Component"))) ;; TODO: teardown
+        (log/info "Stopping Communicator Component")
+        (chsk-router) ;; stops router loop
+        (assoc component :chsk-router nil)))
 
 (defn new-communicator [] (map->Communicator {}))

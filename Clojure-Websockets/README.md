@@ -1,6 +1,17 @@
 # Birdwatch using Clojure, ClojureScript and Om
 This is an **all-Clojure** implementation of the **BirdWatch** application.
 
+## Building blocks:
+A series of detailed articles will follow soon. Here is an overview of the building blocks:
+
+* The server side is organized as a few independent **components** that are wired together by **[@stuartsierra](https://twitter.com/stuartsierra)**'s **[component](https://github.com/stuartsierra/component)** library.
+* A twitter client on top of **Adam Wynne**'s **[twitter-api](https://github.com/adamwynne/twitter-api)** connects to the **[Twitter Streaming API](https://dev.twitter.com/streaming/overview)** and subscribes to a number of terms.
+* The *information grid* or pipes and tubes of the application is provided by **[core.async](https://github.com/clojure/core.async)**.
+* Tweets are persisted into **[ElasticSearch](http://www.elasticsearch.org)** using **[@ClojureWerkz](https://twitter.com/clojurewerkz)** **[Elastisch](https://github.com/clojurewerkz/elastisch)** client.
+* Clients connect over **[WebSockets](http://en.wikipedia.org/wiki/WebSocket)** provided by **[@ptaoussanis](https://twitter.com/ptaoussanis)** **[sente](https://github.com/ptaoussanis/sente)** library.
+* Clients can perform **live searches**, where matching new tweets with running searches is done via ElasticSearch's **[Percolator](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-percolate.html)** feature. The client UI is then updated in (near)-real time over the existing WebSockets connection.
+* The client UI is built using **[@swannodette](https://twitter.com/swannodette)**'s **[Om](https://github.com/swannodette/om)** library on top of Facebook's **[react](https://github.com/facebook/react)**.
+
 ## Installation
 First of all, **[Leiningen](http://leiningen.org)** must be installed on your system. Then, you need to build the client-side application:
 

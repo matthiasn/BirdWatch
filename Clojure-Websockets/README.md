@@ -49,8 +49,7 @@ Once the steps described above are completed, usage is easy. You can start up th
 Alternatively, you can use the REPL:
 
     lein repl
-    birdwatch.core=> (start-http-server!)
-    birdwatch.core=> (start-twitter-conn!)
+    birdwatch.main=> (alter-var-root #'system component/start)
 
 ## License
 Copyright © 2014 Matthias Nehlsen. Distributed under the Apache License, Version 2.0. See separate LICENSE file.

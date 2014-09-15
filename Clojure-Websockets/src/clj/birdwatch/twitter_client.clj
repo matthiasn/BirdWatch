@@ -13,7 +13,6 @@
    [clojure.tools.logging :as log]
    [http.async.client :as ac]
    [twitter.oauth :as oauth]
-   [twitter-streaming-client.core :as client]
    [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go go-loop close!]]
    [com.stuartsierra.component :as component])
   (:import

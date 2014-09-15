@@ -7,7 +7,7 @@
    [taoensso.sente     :as sente]
    [taoensso.sente.packers.transit :as sente-transit]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go go-loop]]))
+   [clojure.core.async :as async :refer [<! >! put! timeout go-loop]]))
 
 (def packer (sente-transit/get-flexi-packer :json)) ;; serialization format for client<->server comm
 

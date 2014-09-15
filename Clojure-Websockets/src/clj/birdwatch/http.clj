@@ -9,8 +9,7 @@
    [compojure.route    :as route]
    [com.stuartsierra.component :as component]))
 
-(def ring-defaults-config (assoc-in ring.middleware.defaults/site-defaults
-                                    [:security :anti-forgery]
+(def ring-defaults-config (assoc-in ring.middleware.defaults/site-defaults [:security :anti-forgery]
                                     {:read-token (fn [req] (-> req :params :csrf-token))}))
 
 (defrecord Httpserver [conf communicator server]

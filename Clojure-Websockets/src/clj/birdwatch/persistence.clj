@@ -13,7 +13,7 @@
    [clojurewerkz.elastisch.query            :as q]
    [clojurewerkz.elastisch.rest.response    :as esrsp]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go go-loop close!]]))
+   [clojure.core.async :as async :refer [<! chan put! timeout go-loop]]))
 
 (defn native-query [{:keys [query n from]} conf native-conn]
   "run a query on previous matching tweets"

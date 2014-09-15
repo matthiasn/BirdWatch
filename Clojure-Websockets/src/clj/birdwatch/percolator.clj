@@ -9,7 +9,7 @@
    [clojurewerkz.elastisch.rest.percolation :as perc]
    [clojurewerkz.elastisch.rest.response    :as esrsp]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [<! <!! >! >!! chan put! alts! timeout go go-loop close!]]))
+   [clojure.core.async :as async :refer [<! put! go-loop]]))
 
 (defn start-percolator [{:keys [query uid]} conn subscriptions]
   "register percolation search with ID based on hash of the query"

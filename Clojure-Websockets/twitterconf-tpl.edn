@@ -10,7 +10,7 @@
   :user-access-token-secret "<YOUR ACCESS TOKEN SECRET HERE>"
   :es-address               "http://127.0.0.1:9200"
   :es-native-address        ["127.0.0.1" 9300]
-  :es-cluster-name          "elasticsearch_mn"
+  :es-cluster-name          "<YOUR CLUSTER NAME HERE>"
   :es-index                 "birdwatch"
   :track                    "clojure,love"
   :tw-check-interval-sec    120

@@ -25,17 +25,22 @@ Alternatively, you can use the following during development to detect file syste
 
 Then you will need to create a file named twitterconf.edn. You can copy **twitterconf-tpl.edn** as a template. Edit it and fill out the credentials you have obtained from dev.twitter.com:
 
-    { :consumer-key             "<YOUR API KEY HERE>"
-      :consumer-secret          "<YOUR API SECRET HERE>"
-      :user-access-token        "<YOUR ACCESS TOKEN HERE>"
-      :user-access-token-secret "<YOUR ACCESS TOKEN SECRET HERE>"
-      :es-address               "http://127.0.0.1:9200"
-      :es-index                 "birdwatch"
-      :track                    "clojure,love"
-      :tw-check-interval-sec    120
-      :port                     8888 }
+      { :consumer-key             "<YOUR API KEY HERE>"
+        :consumer-secret          "<YOUR API SECRET HERE>"
+        :user-access-token        "<YOUR ACCESS TOKEN HERE>"
+        :user-access-token-secret "<YOUR ACCESS TOKEN SECRET HERE>"
+        :es-address               "http://127.0.0.1:9200"
+        :es-native-address        ["127.0.0.1" 9300]
+        :es-cluster-name          "<YOUR CLUSTER NAME HERE>"
+        :es-index                 "birdwatch"
+        :track                    "clojure,love"
+        :tw-check-interval-sec    120
+        :port                     8888
+        :pidfile-name             "birdwatch.pid"}
 
-In the twitterconf.edn you can also specify the address under which your installation of **[ElasticSearch](http://www.elasticsearch.org)** is accessible, the index to use in ElasticSearch and which terms to track from Twitter.
+In the twitterconf.edn you can also specify the address under which your installation of **[ElasticSearch](http://www.elasticsearch.org)** is accessible, the index to use in ElasticSearch and which terms to track from Twitter. Previous tweets are retrieved using a native ElasticSearch client (for performance reasons). In case you don't know your cluster name, for example because you are just running a local instance on your machine, here's how you can find it out:
+
+    curl -XGET 'http://localhost:9200/_cluster/health?pretty=true'
 
 You also need **[Bower](http://bower.io)** for managing the client-side dependencies. Once you have it installed, all you need to do is run it once:
 

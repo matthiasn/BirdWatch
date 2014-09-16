@@ -17,6 +17,7 @@
                                               (:user-access-token config) (:user-access-token-secret config)))
 
 (defn- parse [jstr tweets-chan msg-chan counter]
+  "parse JSON string"
   (try
     (let [c @counter  json (json/read-json jstr)]
       (when (== (mod c 1000) 0) (log/info "processed" c "since startup"))
@@ -85,8 +86,7 @@
 
 (defrecord Twitterclient [conf channels connection chunk-buff watch-active]
   component/Lifecycle
-  (start [component]
-         (log/info "Starting Twitterclient Component")
+  (start [component] (log/info "Starting Twitterclient Component")
          (let [chunk-chan (chan)
                msg-chan (chan)
                conn (atom {})
@@ -100,8 +100,7 @@
            (run-msg-loop msg-chan)
            (assoc component :connection conn :msg-chan msg-chan :chunk-chan chunk-chan :chunk-buff chunk-buff
              :watch-active watch-active)))
-  (stop [component]
-        (log/info "Stopping Twitterclient Component")
+  (stop [component] (log/info "Stopping Twitterclient Component")
         (reset! watch-active false)
         (stop-twitter-conn! connection chunk-buff)
         (assoc component :connection nil :msg-chan nil :chunk-chan nil :chunk-buff nil :watch-active nil)))

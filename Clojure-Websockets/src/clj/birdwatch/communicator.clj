@@ -66,8 +66,7 @@
 
 (defrecord Communicator [channels chsk-router]
   component/Lifecycle
-  (start [component]
-         (log/info "Starting Communicator Component")
+  (start [component] (log/info "Starting Communicator Component")
          (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn connected-uids]}
                (sente/make-channel-socket! {:packer packer :user-id-fn user-id-fn})
                event-handler (make-event-handler (:query channels) (:tweet-missing channels) (:register-percolation channels))
@@ -80,8 +79,7 @@
            (assoc component :ajax-post-fn ajax-post-fn
                             :ajax-get-or-ws-handshake-fn ajax-get-or-ws-handshake-fn
                             :chsk-router chsk-router)))
-  (stop [component]
-        (log/info "Stopping Communicator Component")
+  (stop [component] (log/info "Stopping Communicator Component")
         (chsk-router) ;; stops router loop
         (assoc component :chsk-router nil)))
 

@@ -18,14 +18,14 @@
     (perc/register-query conn "percolator" sha :query query)
     (log/info "Percolation registered for query" query "with SHA1" sha)))
 
-;; loop for finding percolation matches and delivering those on the appropriate socket
 (defn- run-percolation-register-loop [register-percolation-chan conn subscriptions]
+  "loop for finding percolation matches and delivering those on the appropriate socket"
   (go-loop [] (let [params (<! register-percolation-chan)]
                 (start-percolator params conn subscriptions)
                 (recur))))
 
-;; loop for finding percolation matches and delivering those on the appropriate socket
 (defn- run-percolation-loop [percolation-chan percolation-matches-chan conn subscriptions]
+  "loop for finding percolation matches and delivering those on the appropriate socket"
   (go-loop [] (let [t (<! percolation-chan)
                     response (perc/percolate conn "percolator" "tweet" :doc t)
                     matches (into #{} (map #(:_id %1) (esrsp/matches-from response)))] ;; set with SHAs
@@ -34,15 +34,13 @@
 
 (defrecord Percolator [conf channels conn subscriptions]
   component/Lifecycle
-  (start [component]
-         (log/info "Starting Percolator Component")
+  (start [component] (log/info "Starting Percolator Component")
          (let [conn (esr/connect (:es-address conf))
                subscriptions (atom {})]
            (run-percolation-register-loop (:register-percolation channels) conn subscriptions)
            (run-percolation-loop (:percolation channels) (:percolation-matches channels) conn subscriptions)
            (assoc component :conn conn :subscriptions subscriptions)))
-  (stop [component] ;; TODO: proper teardown of resources
-        (log/info "Stopping Percolator Component")
+  (stop [component] (log/info "Stopping Percolator Component") ;; TODO: proper teardown of resources
         (assoc component :conn nil :subscriptions nil)))
 
 (defn new-percolator [conf] (map->Percolator {:conf conf}))

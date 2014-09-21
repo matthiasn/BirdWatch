@@ -13,13 +13,13 @@
    [clojurewerkz.elastisch.query            :as q]
    [clojurewerkz.elastisch.rest.response    :as esrsp]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [<! chan put! timeout go-loop]]))
+   [clojure.core.async :as async :refer [<! chan put! timeout go-loop tap]]))
 
 (defn native-query [{:keys [query n from]} conf native-conn]
   "run a query on previous matching tweets"
   (let [search  (esnd/search native-conn (:es-index conf) "tweet" :query query :size n :from from :sort {:id :desc})
         hits (esnrsp/hits-from search)]
-    (log/info "Total hits:" (esnrsp/total-hits search) "Retrieved:" (count hits))
+    (log/debug "Total hits:" (esnrsp/total-hits search) "Retrieved:" (count hits))
     (pt/get-source hits)))
 
 (defn- run-persistence-loop [persistence-chan conf conn]
@@ -42,13 +42,13 @@
                     res (esd/get conn (:es-index conf) "tweet" (:id_str req))]
                 (if res
                   (put! missing-tweet-found-chan {:tweet (pt/strip-source res) :uid (:uid req)})
-                  (log/info "birdwatch.persistence missing" (:id_str req) res)))
+                  (log/debug "birdwatch.persistence missing" (:id_str req) res)))
            (recur)))
 
 (defn- run-query-loop [query-chan query-results-chan conf native-conn]
   "run loop for answering queries"
   (go-loop [] (let [q (<! query-chan) result (native-query q conf native-conn)]
-                (log/info "Received query:" q)
+                (log/debug "Received query:" q)
                 (put! query-results-chan {:uid (:uid q) :result result}))
            (recur)))
 
@@ -63,9 +63,13 @@
   (start [component]
          (log/info "Starting Persistence Component")
          (let [conn (esr/connect (:es-address conf))
-               native-conn (esn/connect [(:es-native-address conf)] {"cluster.name" (:es-cluster-name conf)})]
-           (run-persistence-loop (:persistence channels) conf conn)
-           (run-rt-persistence-loop (:rt-persistence channels) (:persistence channels))
+               native-conn (esn/connect [(:es-native-address conf)] {"cluster.name" (:es-cluster-name conf)})
+               persistence-chan (chan)
+               rt-persistence-chan (chan)]
+           (tap (:tweets-mult channels) persistence-chan)
+           (tap (:tweets-mult channels) rt-persistence-chan)
+           (run-persistence-loop persistence-chan conf conn)
+           (run-rt-persistence-loop rt-persistence-chan persistence-chan)
            (run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels) conf conn)
            (run-query-loop (:query channels) (:query-results channels) conf native-conn)
            (run-tweet-count-loop (:tweet-count channels) conf conn)

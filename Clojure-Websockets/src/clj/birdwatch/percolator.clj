@@ -9,7 +9,7 @@
    [clojurewerkz.elastisch.rest.percolation :as perc]
    [clojurewerkz.elastisch.rest.response    :as esrsp]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [<! put! go-loop]]))
+   [clojure.core.async :as async :refer [<! put! chan go-loop tap]]))
 
 (defn start-percolator [{:keys [query uid]} conn subscriptions]
   "register percolation search with ID based on hash of the query"
@@ -32,13 +32,15 @@
                 (put! percolation-matches-chan [t matches @subscriptions]) ;; send deref'd subscriptions as val
                 (recur))))
 
-(defrecord Percolator [conf channels conn subscriptions]
+(defrecord Percolator [conf channels lala conn subscriptions]
   component/Lifecycle
   (start [component] (log/info "Starting Percolator Component")
          (let [conn (esr/connect (:es-address conf))
-               subscriptions (atom {})]
+               subscriptions (atom {})
+               percolation-chan (chan)]
+           (tap (:tweets-mult channels) percolation-chan)
            (run-percolation-register-loop (:register-percolation channels) conn subscriptions)
-           (run-percolation-loop (:percolation channels) (:percolation-matches channels) conn subscriptions)
+           (run-percolation-loop percolation-chan (:percolation-matches channels) conn subscriptions)
            (assoc component :conn conn :subscriptions subscriptions)))
   (stop [component] (log/info "Stopping Percolator Component") ;; TODO: proper teardown of resources
         (assoc component :conn nil :subscriptions nil)))

@@ -16,7 +16,7 @@
   (let [sha (sha1 (str query))]
     (swap! subscriptions assoc uid sha)
     (perc/register-query conn "percolator" sha :query query)
-    (log/info "Percolation registered for query" query "with SHA1" sha)))
+    (log/debug "Percolation registered for query" query "with SHA1" sha)))
 
 (defn- run-percolation-register-loop [register-percolation-chan conn subscriptions]
   "loop for finding percolation matches and delivering those on the appropriate socket"
@@ -32,17 +32,24 @@
                 (put! percolation-matches-chan [t matches @subscriptions]) ;; send deref'd subscriptions as val
                 (recur))))
 
-(defrecord Percolator [conf channels lala conn subscriptions]
+(defrecord Percolator [conf channels conn subscriptions]
   component/Lifecycle
   (start [component] (log/info "Starting Percolator Component")
          (let [conn (esr/connect (:es-address conf))
-               subscriptions (atom {})
-               percolation-chan (chan)]
-           (tap (:tweets-mult channels) percolation-chan)
+               subscriptions (atom {})]
            (run-percolation-register-loop (:register-percolation channels) conn subscriptions)
-           (run-percolation-loop percolation-chan (:percolation-matches channels) conn subscriptions)
+           (run-percolation-loop (:percolation channels) (:percolation-matches channels) conn subscriptions)
            (assoc component :conn conn :subscriptions subscriptions)))
   (stop [component] (log/info "Stopping Percolator Component") ;; TODO: proper teardown of resources
         (assoc component :conn nil :subscriptions nil)))
 
 (defn new-percolator [conf] (map->Percolator {:conf conf}))
+
+(defrecord Percolation-Channels []
+  component/Lifecycle
+  (start [component] (log/info "Starting Percolation Channels Component")
+         (assoc component :percolation (chan) :register-percolation (chan) :percolation-matches (chan)))
+  (stop [component] (log/info "Stop Percolation Channels Component")
+        (assoc component :percolation nil :register-percolation nil :percolation-matches nil)))
+
+(defn new-percolation-channels [] (map->Percolation-Channels {}))

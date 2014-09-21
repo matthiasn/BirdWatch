@@ -7,7 +7,7 @@
    [taoensso.sente     :as sente]
    [taoensso.sente.packers.transit :as sente-transit]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [<! >! put! timeout go-loop]]))
+   [clojure.core.async :as async :refer [<! >! put! timeout go-loop chan]]))
 
 (def packer (sente-transit/get-flexi-packer :json)) ;; serialization format for client<->server comm
 
@@ -25,7 +25,7 @@
            [:cmd/query params]     (put! query-chan params)
            [:cmd/missing params]   (put! tweet-missing-chan params)
            [:chsk/ws-ping]         () ; currently just do nothing with ping (no logging either)
-           :else                   (log/info "Unmatched event:" (pp/pprint event)))))
+           :else                   (log/debug "Unmatched event:" (pp/pprint event)))))
 
 (defn- run-percolation-matches-loop [percolation-matches-chan chsk-send! connected-uids]
   "runs loop for delivering percolation matches to interested clients"
@@ -84,3 +84,22 @@
         (assoc component :chsk-router nil)))
 
 (defn new-communicator [] (map->Communicator {}))
+
+(defrecord Communicator-Channels []
+  component/Lifecycle
+  (start [component] (log/info "Starting Communicator Channels Component")
+         (assoc component
+           :query (chan)
+           :query-results (chan)
+           :tweet-missing (chan)
+           :missing-tweet-found (chan)
+           :persistence (chan)
+           :rt-persistence (chan)
+           :tweet-count (chan)
+           :register-percolation (chan)
+           :percolation-matches (chan)))
+  (stop [component] (log/info "Stop Communicator Channels Component")
+        (assoc component :query nil :query-results nil :tweet-missing nil :missing-tweet-found nil
+                         :persistence nil :rt-persistence nil :tweet-count nil)))
+
+(defn new-communicator-channels [] (map->Communicator-Channels {}))

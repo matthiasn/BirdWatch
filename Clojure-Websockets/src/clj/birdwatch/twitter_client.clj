@@ -106,3 +106,12 @@
         (assoc component :connection nil :msg-chan nil :chunk-chan nil :chunk-buff nil :watch-active nil)))
 
 (defn new-twitterclient [conf] (map->Twitterclient {:conf conf}))
+
+(defrecord Twitterclient-Channels []
+  component/Lifecycle
+  (start [component] (log/info "Starting Twitterclient Channels Component")
+         (assoc component :tweets (chan))) ; channel for new tweets received from streaming API
+  (stop [component] (log/info "Stop Twitterclient Channels Component")
+        (assoc component :tweets nil)))
+
+(defn new-twitterclient-channels [] (map->Twitterclient-Channels {}))

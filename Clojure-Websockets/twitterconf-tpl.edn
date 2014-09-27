@@ -13,6 +13,7 @@
   :es-cluster-name          "<YOUR CLUSTER NAME HERE>"
   :es-index                 "birdwatch"
   :track                    "clojure,love"
-  :tw-check-interval-sec    120
+  :tw-check-interval-sec    10
+  :tw-restart-wait          60
   :port                     8888
   :pidfile-name             "birdwatch.pid"}

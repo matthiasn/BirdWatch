@@ -1,7 +1,7 @@
 (ns birdwatch.main
   (:gen-class)
   (:require
-   [birdwatch.twitter-client :as tc]
+   [birdwatch.twitterclient.core :as tc]
    [birdwatch.communicator :as comm]
    [birdwatch.persistence :as p]
    [birdwatch.percolator :as perc]

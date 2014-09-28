@@ -41,7 +41,7 @@
     (when-not text (log/error "error-msg" data))
     text))
 
-(defn- parse-json [jstr]
+(defn- json->map [jstr]
   "parse JSON string"
   (try (json/read-str jstr :key-fn clojure.core/keyword)
     (catch Exception e {:exception e :jstr jstr})))
@@ -50,6 +50,6 @@
   (comp
    (streaming-buffer)
    (flattening)
-   (mapping parse-json)
+   (mapping json->map)
    (filtering tweet?)
    (log-count last-received)))

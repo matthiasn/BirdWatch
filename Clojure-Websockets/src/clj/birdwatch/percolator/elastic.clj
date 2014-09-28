@@ -25,6 +25,6 @@
   "loop for finding percolation matches and delivering those on the appropriate socket"
   (go-loop [] (let [t (<! percolation-chan)
                     response (perc/percolate conn "percolator" "tweet" :doc t)
-                    matches (into #{} (map #(:_id %1) (esrsp/matches-from response)))] ;; set with SHAs
+                    matches (set (map :_id (esrsp/matches-from response)))] ;; set with SHAs
                 (put! percolation-matches-chan [t matches @subscriptions]) ;; send deref'd subscriptions as val
                 (recur))))

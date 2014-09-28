@@ -22,7 +22,7 @@
   (fn [step]
     (let [cnt (volatile! 0)]
       (fn [r x]
-        (when (== (mod @cnt 1000) 0) (log/info "processed" @cnt "since startup"))
+        (when (zero? (mod @cnt 1000)) (log/info "processed" @cnt "since startup"))
         (vswap! cnt inc)
         (reset! last-received (t/now))
         (step r x)))))

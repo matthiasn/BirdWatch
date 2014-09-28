@@ -1,4 +1,4 @@
-(ns birdwatch.twitterclient.core
+(ns birdwatch.twitterclient.component
   (:gen-class)
   (:require
    [clojure.string :as str]

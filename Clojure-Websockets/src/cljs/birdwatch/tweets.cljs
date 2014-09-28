@@ -19,7 +19,7 @@
   "adds tweet to tweets-map"
   (swap! app
          assoc-in [tweets-map (keyword (:id_str tweet))]
-         (if (= 0 (mod (:id tweet) 10))
+         (if (zero? (mod (:id tweet)))
            tweet
            {:created_at (:created_at tweet)
             :id_str (:id_str tweet)})))

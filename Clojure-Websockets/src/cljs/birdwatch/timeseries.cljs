@@ -3,7 +3,7 @@
 
 (enable-console-print!)
 
-(def ts-elem (. js/document (getElementById "timeseries1")))
+(def ts-elem (.getElementById js/document "timeseries1"))
 (def ts-w (aget ts-elem "offsetWidth"))
 
 (def graph-with-legend

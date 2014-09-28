@@ -29,7 +29,7 @@
   (swap! state/app assoc :search-text (str (:search-text @state/app) " " s)))
 
 ;;; WordCloud element (implemented externally in JavaScript)
-(def cloud-elem (. js/document (getElementById "wordCloud")))
+(def cloud-elem (.getElementById js/document "wordCloud"))
 (def cloud-w (aget cloud-elem "offsetWidth"))
 (def word-cloud (.WordCloud js/BirdWatch cloud-w (* cloud-w 0.7) 250 append-search-text "#wordCloud"))
 
@@ -41,7 +41,7 @@
 
 ; update the expensive word cloud periodically
 (go-loop [] (<! (timeout 5000))
-         (. word-cloud (redraw (clj->js (wc/get-words state/app 250))))
+         (.redraw word-cloud (clj->js (wc/get-words state/app 250)))
          (recur))
 
 ;;; The app starts with the search string encoded in the URI location hash.

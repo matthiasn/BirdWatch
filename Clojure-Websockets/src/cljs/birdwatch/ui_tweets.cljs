@@ -42,7 +42,7 @@
                                                 (util/fav-count tweet))
                                            (dom/br nil)
                                            (util/rt-count-since-startup tweet)))
-                         (when (> (count media) 0)
+                         (when (pos? (count media))
                            (dom/div #js {:className "tweet-image"}
                                     (dom/a #js {:href (:url (get media 0)) :target "_blank"}
                                            (dom/img #js {:src (str (:media_url (get media 0)) ":small")}))))
@@ -60,5 +60,5 @@
   (reify
     om/IRender
     (render [this]
-            (let [tweets (util/tweets-by-order2 (:sorted app) app (:n app) (- (:page app) 1))]
+            (let [tweets (util/tweets-by-order2 (:sorted app) app (:n app) (dec (:page app)))]
               (apply dom/div nil (om/build-all tweet-view tweets))))))

@@ -16,13 +16,13 @@
   (start [component] (log/info "Starting Communicator Component")
          (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn connected-uids]}
                (sente/make-channel-socket! {:packer packer :user-id-fn ws/user-id-fn})
-               event-handler (ws/make-event-handler (:query channels) (:tweet-missing channels) (:register-percolation channels))
+               event-handler (ws/make-handler (:query channels) (:tweet-missing channels) (:register-perc channels))
                chsk-router (sente/start-chsk-router! ch-recv event-handler)]
-           (ws/run-percolation-matches-loop (:percolation-matches channels) send-fn connected-uids)
            (ws/run-users-count-loop send-fn connected-uids)
-           (ws/run-tweet-stats-loop send-fn connected-uids (:tweet-count channels))
-           (ws/run-missing-tweet-loop (:missing-tweet-found channels) send-fn)
-           (ws/run-query-results-loop (:query-results channels) send-fn)
+           (ws/send-loop (:perc-matches channels) (ws/perc-matches connected-uids send-fn))
+           (ws/send-loop (:tweet-count channels) (ws/tweet-stats connected-uids send-fn))
+           (ws/send-loop (:query-results channels) (ws/relay-msg :tweet/prev-chunk :result send-fn))
+           (ws/send-loop (:missing-tweet-found channels) (ws/relay-msg :tweet/missing-tweet :tweet send-fn))
            (assoc component :ajax-post-fn ajax-post-fn
                             :ajax-get-or-ws-handshake-fn ajax-get-or-ws-handshake-fn
                             :chsk-router chsk-router)))
@@ -43,8 +43,8 @@
            :persistence (chan)
            :rt-persistence (chan)
            :tweet-count (chan)
-           :register-percolation (chan)
-           :percolation-matches (chan)))
+           :register-perc (chan)
+           :perc-matches (chan)))
   (stop [component] (log/info "Stop Communicator Channels Component")
         (assoc component :query nil :query-results nil :tweet-missing nil :missing-tweet-found nil
                          :persistence nil :rt-persistence nil :tweet-count nil)))

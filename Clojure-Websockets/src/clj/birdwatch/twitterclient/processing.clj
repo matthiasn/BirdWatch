@@ -20,20 +20,20 @@
 
 (defn- log-count [last-received]
   (fn [step]
-    (let [cnt (volatile! 0)]
+    (let [cnt (atom 0)]
       (fn [r x]
         (when (zero? (mod @cnt 1000)) (log/info "processed" @cnt "since startup"))
-        (vswap! cnt inc)
+        (swap! cnt inc)
         (reset! last-received (t/now))
         (step r x)))))
 
 (defn- streaming-buffer []
   (fn [step]
-    (let [buff (volatile! "")]
+    (let [buff (atom "")]
       (fn [r x]
         (let [json-lines (str/split-lines (str/replace (str @buff x) #"\}\{" "}\r\n{"))
               to-process (butlast json-lines)]
-          (vreset! buff (last json-lines))
+          (reset! buff (last json-lines))
           (if to-process (step r to-process) r))))))
 
 (defn- tweet? [data]

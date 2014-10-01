@@ -15,7 +15,7 @@
   component/Lifecycle
   (start [component] (log/info "Starting Twitterclient Component")
          (let [last-received (atom (t/epoch))
-               chunk-chan (chan 1 (processing/process-chunk last-received))
+               chunk-chan (chan 1 (processing/process-chunk last-received) processing/ex-handler)
                conn (atom {})
                watch-active (atom false)]
            (http-client/start-twitter-conn! conf conn chunk-chan)

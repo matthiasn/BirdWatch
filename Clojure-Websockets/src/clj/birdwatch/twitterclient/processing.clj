@@ -23,11 +23,13 @@
 (defn- streaming-buffer []
   (fn [step]
     (let [buff (atom "")]
-      (fn [r x]
+      (fn
+        ([r] (step r))
+        ([r x]
         (let [json-lines (-> (str @buff x) (insert-newline) (str/split-lines))
               to-process (butlast json-lines)]
           (reset! buff (last json-lines))
-          (if to-process (reduce step r to-process) r))))))
+          (if to-process (reduce step r to-process) r)))))))
 
 (defn- tweet? [data]
   "Checks if data is a tweet. If so, pass on, otherwise log error."
@@ -50,3 +52,7 @@
 
 (defn ex-handler [ex]
   (log/error "Exception while processing chunk" ex))
+
+
+
+

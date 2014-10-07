@@ -10,11 +10,13 @@
   "Stateful transducer, counts processed items and updating last-received atom. Logs progress every 1000 items."
   (fn [step]
     (let [cnt (atom 0)]
-      (fn [r x]
-        (swap! cnt inc)
-        (when (zero? (mod @cnt 1000)) (log/info "processed" @cnt "since startup"))
-        (reset! last-received (t/now))
-        (step r x)))))
+      (fn
+        ([r] (step r))
+        ([r x]
+         (swap! cnt inc)
+         (when (zero? (mod @cnt 1000)) (log/info "processed" @cnt "since startup"))
+         (reset! last-received (t/now))
+         (step r x))))))
 
 (defn- insert-newline [s]
   "inserts missing line breaks after end of tweet"
@@ -26,10 +28,10 @@
       (fn
         ([r] (step r))
         ([r x]
-        (let [json-lines (-> (str @buff x) (insert-newline) (str/split-lines))
-              to-process (butlast json-lines)]
-          (reset! buff (last json-lines))
-          (if to-process (reduce step r to-process) r)))))))
+         (let [json-lines (-> (str @buff x) (insert-newline) (str/split-lines))
+               to-process (butlast json-lines)]
+           (reset! buff (last json-lines))
+           (if to-process (reduce step r to-process) r)))))))
 
 (defn- tweet? [data]
   "Checks if data is a tweet. If so, pass on, otherwise log error."
@@ -52,7 +54,3 @@
 
 (defn ex-handler [ex]
   (log/error "Exception while processing chunk" ex))
-
-
-
-

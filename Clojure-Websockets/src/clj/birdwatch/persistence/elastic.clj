@@ -17,9 +17,18 @@
 (defn native-query [{:keys [query n from]} conf native-conn]
   "run a query on previous matching tweets"
   (let [search  (esnd/search native-conn (:es-index conf) "tweet" :query query :size n :from from :sort {:id :desc})
-        hits (esnrsp/hits-from search)]
-    (log/debug "Total hits:" (esnrsp/total-hits search) "Retrieved:" (count hits))
-    (pt/get-source hits)))
+        hits (esnrsp/hits-from search)
+        res (vec (pt/get-source hits))]
+    (log/info "Total hits:" (esnrsp/total-hits search) "Retrieved:" (count hits) "Characters:"  (count (str res)))
+    res))
+
+(defn query [{:keys [query n from]} conf conn]
+  "run a query on previous matching tweets"
+  (let [search (esd/search conn (:es-index conf) "tweet" :query query :size n :from from :sort {:id :desc})
+        hits (esrsp/hits-from search)
+        res (vec (pt/get-source hits))]
+    (log/info "Total hits:" (esrsp/total-hits search) "Retrieved:" (count hits) "Characters:"  (count (str res)))
+    res))
 
 (defn run-persistence-loop [persistence-chan conf conn]
   "run loop for persisting tweets"
@@ -45,9 +54,19 @@
                   (log/debug "birdwatch.persistence missing" (:id_str req) res)))
            (recur)))
 
-(defn run-query-loop [query-chan query-results-chan conf native-conn]
+(defn run-native-query-loop [query-chan query-results-chan conf native-conn]
   "run loop for answering queries"
-  (go-loop [] (let [q (<! query-chan) result (native-query q conf native-conn)]
+  (go-loop [] (let [q (<! query-chan)
+                    result (native-query q conf native-conn)]
+                (log/debug "Received query:" q)
+                (put! query-results-chan {:uid (:uid q) :result result}))
+           (recur)))
+
+
+(defn run-query-loop [query-chan query-results-chan conf conn]
+  "run loop for answering queries"
+  (go-loop [] (let [q (<! query-chan)
+                    result (query q conf conn)]
                 (log/debug "Received query:" q)
                 (put! query-results-chan {:uid (:uid q) :result result}))
            (recur)))

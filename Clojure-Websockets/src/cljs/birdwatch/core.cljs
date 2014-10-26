@@ -48,4 +48,3 @@
 (swap! state/app assoc :search-text (util/search-hash))
 
 
-

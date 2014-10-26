@@ -33,6 +33,7 @@
                                :uid (:uid @chsk-state)}]))
 
 (def prev-chunks-loaded (atom 0))
+
 (defn load-prev []
   "load previous tweets matching the current search"
   (let [chunks-to-load 10
@@ -44,6 +45,14 @@
                                :from (* chunk-size @prev-chunks-loaded)}])
       (swap! prev-chunks-loaded inc))))
 
+(defn load-prev2 []
+  "load previous tweets matching the current search"
+  (dotimes [n 20]
+    (chsk-send! [:cmd/query {:query (query-string)
+                             :n 1000
+                             :uid (:uid @chsk-state)
+                             :from (* 1000 n)}])))
+
 (defn start-search []
   "initiate new search by starting SSE stream"
   (let [search (:search-text @state/app)
@@ -54,7 +63,9 @@
     (swap! state/app assoc :search s)
     (aset js/window "location" "hash" (js/encodeURIComponent s))
     (start-percolator)
-    (load-prev)))
+    (dotimes [n 4] (load-prev))
+    ;(load-prev2)
+    ))
 
 (defn- event-handler [{:keys [event]}]
   (match event
@@ -65,7 +76,7 @@
            (match [msg-type msg]
                   [:tweet/new             tweet] (put! c/tweets-chan tweet)
                   [:tweet/missing-tweet   tweet] (put! c/missing-tweet-found-chan tweet)
-                  [:tweet/prev-chunk prev-chunk] (do (put! c/prev-chunks-chan prev-chunk) (load-prev))
+                  [:tweet/prev-chunk prev-chunk] (do (put! c/prev-chunks-chan prev-chunk)(load-prev))
                   [:stats/users-count        uc] (put! c/user-count-chan uc)
                   [:stats/total-tweet-count ttc] (put! c/total-tweets-count-chan ttc)))
          :else (print "Unmatched event: %s" event)))

@@ -19,7 +19,7 @@
   "dependencies": {
     "jquery": "~2.0.3",
     "bootstrap": "~3.0.3",
-    "react": "~0.11.1",
+    "react": "~0.11.2",
     "font-awesome": "~4.0.3",
     "d3": "~3.3.11",
     "momentjs": "~2.4.0",

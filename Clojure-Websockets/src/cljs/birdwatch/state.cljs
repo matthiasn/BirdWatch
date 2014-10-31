@@ -9,8 +9,9 @@
 ;;; Reset to a new clean slate when a new search is started.
 (def app (atom {}))
 
-(defn initial-state []
+(defn initial-state
   "function returning fresh application state"
+  []
   {:count 0
    :n 10
    :tweets-map {}

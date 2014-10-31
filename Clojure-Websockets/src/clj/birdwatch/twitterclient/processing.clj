@@ -6,8 +6,9 @@
    [clj-time.core :as t]
    [clojure.tools.logging :as log]))
 
-(defn- log-count [last-received]
+(defn- log-count
   "Stateful transducer, counts processed items and updating last-received atom. Logs progress every 1000 items."
+  [last-received]
   (fn [step]
     (let [cnt (atom 0)]
       (fn
@@ -18,8 +19,9 @@
          (reset! last-received (t/now))
          (step r x))))))
 
-(defn- insert-newline [s]
+(defn- insert-newline
   "inserts missing line breaks after end of tweet"
+  [s]
   (str/replace s #"\}\{" "}\r\n{"))
 
 (defn- streaming-buffer []
@@ -33,14 +35,16 @@
            (reset! buff (last json-lines))
            (if to-process (reduce step r to-process) r)))))))
 
-(defn- tweet? [data]
+(defn- tweet?
   "Checks if data is a tweet. If so, pass on, otherwise log error."
+  [data]
   (let [text (:text data)]
     (when-not text (log/error "error-msg" data))
     text))
 
-(defn process-chunk [last-received]
+(defn process-chunk
   "Creates composite transducer for processing tweet chunks. Last-received atom passed in for updates."
+  [last-received]
   (comp
    (streaming-buffer)
    (map json/read-json)

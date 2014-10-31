@@ -30,8 +30,9 @@
     (when m (log/info "Stopping Twitter client.")
       ((:cancel m)))))
 
-(defn run-watch-loop [conf conn chunk-chan last-received watch-active]
+(defn run-watch-loop
   "run loop watching the twitter client and restarting it if necessary"
+  [conf conn chunk-chan last-received watch-active]
   (reset! watch-active true)
   (go-loop [] (<! (timeout (* (:tw-check-interval-sec conf) 1000)))
            (let [since-last-sec (t/in-seconds (t/interval @last-received (t/now)))

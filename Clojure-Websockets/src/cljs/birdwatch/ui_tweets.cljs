@@ -10,13 +10,15 @@
 
 (enable-console-print!)
 
-(defn twitter-intent [tweet intent icon]
+(defn twitter-intent
   "generate link with button customized for specific tweet and intent"
+  [tweet intent icon]
   (dom/a #js {:href (str "https://twitter.com/intent/" intent (:id_str tweet))}
          (dom/img #js {:src (str "/images/" icon)})))
 
-(defn tweet-view [raw-tweet owner]
+(defn tweet-view
   "rendering single tweet card"
+  [raw-tweet owner]
   (reify
     om/IRender
     (render [this]
@@ -55,8 +57,9 @@
                 (print "retrieving tweet" (:id_str raw-tweet))
                 (dom/div #js {:className "tweet"} "loading..." (:id_str raw-tweet)))))))
 
-(defn tweets-view [app owner]
+(defn tweets-view
   "rendering tweet list"
+  [app owner]
   (reify
     om/IRender
     (render [this]

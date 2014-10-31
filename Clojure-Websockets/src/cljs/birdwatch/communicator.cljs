@@ -21,21 +21,24 @@
   (def chsk-send! send-fn) ; ChannelSocket's send API fn
   (def chsk-state state))  ; Watchable, read-only atom
 
-(defn query-string []
+(defn query-string
   "format and modify query string"
+  []
   {:query_string {:default_field "text"
                   :default_operator "AND"
                   :query (str "(" (:search @state/app) ") AND lang:en")}})
 
-(defn start-percolator []
+(defn start-percolator
   "trigger starting of percolation matching of new tweets"
+  []
   (chsk-send! [:cmd/percolate {:query (query-string)
                                :uid (:uid @chsk-state)}]))
 
 (def prev-chunks-loaded (atom 0))
 
-(defn load-prev []
+(defn load-prev
   "load previous tweets matching the current search"
+  []
   (let [chunks-to-load 10
         chunk-size 500]
     (when (< @prev-chunks-loaded chunks-to-load)
@@ -45,16 +48,18 @@
                                :from (* chunk-size @prev-chunks-loaded)}])
       (swap! prev-chunks-loaded inc))))
 
-(defn load-prev2 []
+(defn load-prev2
   "load previous tweets matching the current search"
+  []
   (dotimes [n 20]
     (chsk-send! [:cmd/query {:query (query-string)
                              :n 1000
                              :uid (:uid @chsk-state)
                              :from (* 1000 n)}])))
 
-(defn start-search []
+(defn start-search
   "initiate new search by starting SSE stream"
+  []
   (let [search (:search-text @state/app)
         s (if (= search "") "*" search)]
     (reset! state/app (state/initial-state))
@@ -88,8 +93,9 @@
               (chsk-send! [:cmd/missing {:id_str tid :uid (:uid @chsk-state)}])
               (recur)))
 
-(defn ^:export send-state []
+(defn ^:export send-state
   "helper function to send state to server (where it can be pretty printed for debugging)"
+  []
   (chsk-send! [:some/state {:by-followers (into {} (:by-followers @state/app))
                             :by-retweets  (into {} (:by-followers @state/app))
                             :by-favorites  (into {} (:by-favorites @state/app))

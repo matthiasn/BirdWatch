@@ -14,9 +14,10 @@
 
 (def conf (edn/read-string (slurp "twitterconf.edn")))
 
-(defn get-system [conf]
+(defn get-system
   "Create system by wiring individual components so that component/start
-  will bring up the individual components in the correct order."
+   will bring up the individual components in the correct order."
+  [conf]
   (component/system-map
    :comm-channels          (comm/new-communicator-channels)
    :twitterclient-channels (tc/new-twitterclient-channels)

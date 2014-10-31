@@ -16,9 +16,10 @@
 (Rickshaw.Graph.Axis.Time. (clj->js {:graph graph-with-legend}))
 (def hover-detail (Rickshaw.Graph.HoverDetail. (clj->js {:graph graph-with-legend :yFormatter #(Math/round %)})))
 
-(defn date-round [s]
+(defn date-round
   "return function that rounds the provided seconds since epoch down to the nearest time interval s
    e.g. (date-round 60) creates a function that takes seconds t and rounds them to the nearest minute"
+  [s]
   (fn [t] (* s (Math/floor (/ t s)))))
 
 (def m 60)
@@ -27,8 +28,9 @@
 (def qday (* 6 hr))
 (def day (* 24 hr))
 
-(defn grouping-interval [newest oldest]
+(defn grouping-interval
   "determine duration of individual intervals (bars) depending on duration of timespan between newest and oldest"
+  [newest oldest]
   (cond
    (> (- newest oldest) (* 20 day)) day  ;round by nearest day
    (> (- newest oldest) (* 5 day))  qday ;round by nearest quarter day
@@ -36,22 +38,26 @@
    (> (- newest oldest) (* 4 hr))   qhr  ;round by nearest quarter hour
    :else                            m))  ;round by nearest minute
 
-(defn empty-ts-map [newest oldest interval]
+(defn empty-ts-map
   "generates map with all rounded intervals between oldest and newest, initialized to a count of 0"
+  [newest oldest interval]
   (let [rounder (date-round interval)
         values (range (rounder oldest) (rounder newest) interval)]
     (apply sorted-map-by < (flatten [(interpose 0 values) 0]))))
 
-(defn count-into-map [ts-map k]
+(defn count-into-map
   "increment count for time interval"
+  [ts-map k]
   (update-in ts-map [k] inc))
 
-(defn tweet-ts [t]
+(defn tweet-ts
   "retrieve seconds since epoch from tweet using moment.js"
+  [t]
   (.unix (js/moment. (:created_at t))))
 
-(defn ts-data [app]
+(defn ts-data
   "perform time series analysis by counting tweets in even intervals"
+  [app]
   (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) @app 10000)]
     (if (> (count tweets-by-id) 100)
       (let [oldest (tweet-ts (last tweets-by-id))
@@ -63,11 +69,13 @@
                 (map #(rounder (tweet-ts %)) tweets-by-id)))
       (empty-ts-map 0 0 9))))
 
-(defn ts-map-vec [ts-map]
+(defn ts-map-vec
   "creates a vector of maps required by Rickshaw chart"
+  [ts-map]
   (map #(zipmap [:x :y] %)(vec ts-map)))
 
-(defn update [chart app]
+(defn update
   "update time series chart"
+  [chart app]
   (aset graph-with-legend "series" "0" "data" (clj->js (ts-map-vec (ts-data app))))
   (.update chart))

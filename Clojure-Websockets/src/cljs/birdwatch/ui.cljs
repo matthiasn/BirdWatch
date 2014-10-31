@@ -10,34 +10,39 @@
 
 (enable-console-print!)
 
-(defn count-view [app owner]
+(defn count-view
   "rendering tweet counter"
+  [app owner]
   (reify
     om/IRender
     (render [this] (dom/span nil (:count app)))))
 
-(defn users-count-view [app owner]
+(defn users-count-view
   "rendering users counter"
+  [app owner]
   (reify
     om/IRender
     (render [this]
             (let [users (:users-count app)]
               (dom/span nil "Connected: " (dom/strong nil users) (if (> users 1) " users" " user"))))))
 
-(defn total-count-view [app owner]
+(defn total-count-view
   "rendering total tweets counter"
+  [app owner]
   (reify
     om/IRender
     (render [this]
             (dom/span nil "Indexed: " (dom/strong nil (:total-tweet-count app)) " tweets"))))
 
-(defn sort-button-js [app key]
+(defn sort-button-js
   "generates JS for sort button for both updating sort order and showing active button"
+  [app key]
   #js {:onClick (fn [e] (om/update! app [:sorted] key))
        :className (str "btn " (if (= key (:sorted app)) "btn-primary"))})
 
-(defn sort-buttons-view [app owner]
+(defn sort-buttons-view
   "rendering sort buttons"
+  [app owner]
   (reify
     om/IRender
     (render [this]
@@ -53,8 +58,9 @@
 (defn handle-search-change [e app]
   (swap! state/app assoc :search-text (.. e -target -value)))
 
-(defn search-view [app owner]
+(defn search-view
   "rendering search bar"
+  [app owner]
   (reify
     om/IRender
     (render [this]
@@ -69,14 +75,16 @@
                                (dom/button #js {:className "btn btn-primary" :onClick #(comm/start-search)}
                                            (dom/span #js {:className "glyphicon glyphicon-search"})))))))
 
-(defn pag-items [app page-change-chan]
+(defn pag-items
   "function creating pagination items"
+  [app page-change-chan]
   (map #(dom/li #js {:className (if (= % (:page app)) "active" "") :onClick (fn [e] (put! page-change-chan %))}
                 (dom/a nil %))
        (take 25 (range 1 (Math/floor (/ (:count app) (:n app)))))))
 
-(defn pagination-view [app owner]
+(defn pagination-view
   "rendering pagination list"
+  [app owner]
   (reify
     om/IInitState
     (init-state [_]

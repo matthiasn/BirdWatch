@@ -1,8 +1,9 @@
 (ns birdwatch.persistence.tools
   (:gen-class))
 
-(defn- strip-tweet [t]
+(defn- strip-tweet
   "take only actually needed fields from tweet"
+  [t]
   (let [u (:user t)]
     {:id_str (:id_str t)
      :id (:id t)
@@ -16,8 +17,9 @@
             :profile_image_url (:profile_image_url u)
             :screen_name (:screen_name u)}}))
 
-(defn strip-source [val]
+(defn strip-source
   "get tweet stripped down to necessary fields"
+  [val]
   (let [s (:_source val)
         t (strip-tweet s)
         rt (:retweeted_status s)]
@@ -25,6 +27,7 @@
       (assoc t :retweeted_status (strip-tweet rt))
       t)))
 
-(defn get-source [coll]
+(defn get-source
   "get vector with :_source of each ElasticSearch result"
+  [coll]
   (map strip-source coll))

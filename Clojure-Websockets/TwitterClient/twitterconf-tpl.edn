@@ -1,0 +1,19 @@
+;; Template for Birdwatch configuration file
+
+;; You probably want to change the :track settings as the term "love" results
+;; in millions of matches per day. It works though on a fast machine.
+;; The limiting factor then really becomes ElasticSearch.
+
+{ :consumer-key             "<YOUR API KEY HERE>"
+  :consumer-secret          "<YOUR API SECRET HERE>"
+  :user-access-token        "<YOUR ACCESS TOKEN HERE>"
+  :user-access-token-secret "<YOUR ACCESS TOKEN SECRET HERE>"
+  :es-address               "http://127.0.0.1:9200"
+  :es-native-address        ["127.0.0.1" 9300]
+  :es-cluster-name          "<YOUR CLUSTER NAME HERE>"
+  :es-index                 "birdwatch"
+  :track                    "clojure,love"
+  :tw-check-interval-sec    10
+  :tw-restart-wait          60
+  :port                     8888
+  :pidfile-name             "birdwatch.pid"}

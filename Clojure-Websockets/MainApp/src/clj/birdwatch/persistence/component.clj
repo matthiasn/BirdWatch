@@ -6,8 +6,7 @@
    [birdwatch.persistence.elastic :as es]
    [clojure.tools.logging :as log]
    [clojure.pprint :as pp]
-   [clojurewerkz.elastisch.native           :as esn]
-   [clojurewerkz.elastisch.rest             :as esr]
+   [clojurewerkz.elastisch.rest :as esr]
    [com.stuartsierra.component :as component]
    [clojure.core.async :as async :refer [<! chan go-loop tap]]))
 
@@ -15,8 +14,7 @@
   component/Lifecycle
   (start [component]
          (log/info "Starting Persistence Component")
-         (let [conn (esr/connect (:es-address conf))
-               native-conn (esn/connect [(:es-native-address conf)] {"cluster.name" (:es-cluster-name conf)})]
+         (let [conn (esr/connect (:es-address conf))]
            (es/run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels) conf conn)
 
            (es/run-query-loop (:query channels) (:query-results channels) conf conn)

@@ -36,4 +36,5 @@
   (pid/save (:pidfile-name conf))
   (pid/delete-on-shutdown! (:pidfile-name conf))
   (log/info "Application started, PID" (pid/current))
-  (alter-var-root #'system component/start))
+  (alter-var-root #'system component/start)
+  (Thread/sleep Long/MAX_VALUE)) ;; Without the Thread/sleep, the application stops after 60 seconds.

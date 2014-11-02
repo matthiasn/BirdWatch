@@ -26,11 +26,6 @@
            (es/run-query-loop (:query channels) (:query-results channels) conf conn)
            (es/run-query-loop (:query channels) (:query-results channels) conf conn)
 
-           ;(es/run-query-loop (:query channels) (:query-results channels) conf native-conn)
-           ;(es/run-query-loop (:query channels) (:query-results channels) conf native-conn)
-           ;(es/run-query-loop (:query channels) (:query-results channels) conf native-conn)
-           ;(es/run-query-loop (:query channels) (:query-results channels) conf native-conn)
-
            (es/run-tweet-count-loop (:tweet-count channels) conf conn)
            (assoc component :conn conn :native-conn native-conn)))
   (stop [component] ;; TODO: proper teardown of resources

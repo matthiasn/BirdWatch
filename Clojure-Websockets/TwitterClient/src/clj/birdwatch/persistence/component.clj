@@ -19,19 +19,6 @@
                native-conn (esn/connect [(:es-native-address conf)] {"cluster.name" (:es-cluster-name conf)})]
            (es/run-persistence-loop (:persistence channels) conf conn)
            (es/run-rt-persistence-loop (:rt-persistence channels) (:persistence channels))
-           (es/run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels) conf conn)
-
-           (es/run-query-loop (:query channels) (:query-results channels) conf conn)
-           (es/run-query-loop (:query channels) (:query-results channels) conf conn)
-           (es/run-query-loop (:query channels) (:query-results channels) conf conn)
-           (es/run-query-loop (:query channels) (:query-results channels) conf conn)
-
-           ;(es/run-query-loop (:query channels) (:query-results channels) conf native-conn)
-           ;(es/run-query-loop (:query channels) (:query-results channels) conf native-conn)
-           ;(es/run-query-loop (:query channels) (:query-results channels) conf native-conn)
-           ;(es/run-query-loop (:query channels) (:query-results channels) conf native-conn)
-
-           (es/run-tweet-count-loop (:tweet-count channels) conf conn)
            (assoc component :conn conn :native-conn native-conn)))
   (stop [component] ;; TODO: proper teardown of resources
         (log/info "Stopping Persistence Component")
@@ -43,15 +30,9 @@
   component/Lifecycle
   (start [component] (log/info "Starting Persistence Channels Component")
          (assoc component
-           :query (chan)
-           :query-results (chan)
-           :tweet-missing (chan)
-           :missing-tweet-found (chan)
            :persistence (chan)
-           :rt-persistence (chan)
-           :tweet-count (chan)))
+           :rt-persistence (chan)))
   (stop [component] (log/info "Stop Persistence Channels Component")
-        (assoc component :query nil :query-results nil :tweet-missing nil :missing-tweet-found nil
-                         :persistence nil :rt-persistence nil :tweet-count nil)))
+        (assoc component :persistence nil :rt-persistence nil)))
 
 (defn new-persistence-channels [] (map->Persistence-Channels {}))

@@ -1,5 +1,5 @@
 (defproject birdwatch "0.1.0-SNAPSHOT"
-  :description "Twitter Streaming Client"
+  :description "Main part of the BirdWatch system (without TwitterClient)"
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}

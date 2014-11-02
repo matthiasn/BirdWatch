@@ -3,7 +3,7 @@
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0-alpha2"]
+  :dependencies [[org.clojure/clojure "1.7.0-alpha3"]
                  [twitter-api "0.7.6" :exclusions [org.clojure/clojure org.clojure/data.json]]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.1.0-beta9" :exclusions [com.fasterxml.jackson.core/jackson-core]]

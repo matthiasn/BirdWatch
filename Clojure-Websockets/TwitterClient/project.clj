@@ -24,7 +24,8 @@
                  [com.cognitect/transit-clj  "0.8.259"]
                  [com.cognitect/transit-cljs "0.8.188"]
                  [clj-pid "0.1.1"]
-                 [com.stuartsierra/component "0.2.2"]]
+                 [com.stuartsierra/component "0.2.2"]
+                 [com.taoensso/carmine "2.7.1"]]
 
   :source-paths ["src/clj/"]
 

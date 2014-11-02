@@ -1,0 +1,8 @@
+{ :es-address               "http://127.0.0.1:9200"
+  :es-native-address        ["127.0.0.1" 9300]
+  :es-cluster-name          "elasticsearch_mn"
+  :es-index                 "ferguson-isis-ebola"
+  :port                     8888
+  :pidfile-name             "birdwatch.pid"
+  :redis-host               "127.0.0.1"
+  :redis-port               6379}

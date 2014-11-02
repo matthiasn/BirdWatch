@@ -32,22 +32,6 @@
     (log/info "Total hits:" (esrsp/total-hits search) "Retrieved:" (count hits) "Characters:"  (count (str res)))
     res))
 
-(defn run-persistence-loop
-  "run loop for persisting tweets"
-  [persistence-chan conf conn]
-  (go-loop [] (let [t (<! persistence-chan)]
-                (try
-                  (esd/put conn (:es-index conf) "tweet" (:id_str t) t)
-                  (catch Exception ex (log/error ex "esd/put error"))))
-           (recur)))
-
-(defn run-rt-persistence-loop
-  "run loop for persisting retweets"
-  [rt-persistence-chan persistence-chan]
-  (go-loop [] (when-let [rt (:retweeted_status (<! rt-persistence-chan))]
-                (put! persistence-chan rt))
-           (recur)))
-
 (defn run-find-missing-loop
   "starts loop for finding missing tweets, puts result on missing-tweet-found-chan"
   [tweet-missing-chan missing-tweet-found-chan conf conn]
@@ -67,7 +51,6 @@
                 (log/debug "Received query:" q)
                 (put! query-results-chan {:uid (:uid q) :result result}))
            (recur)))
-
 
 (defn run-query-loop
   "run loop for answering queries"

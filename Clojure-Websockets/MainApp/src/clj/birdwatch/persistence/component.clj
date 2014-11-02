@@ -17,8 +17,6 @@
          (log/info "Starting Persistence Component")
          (let [conn (esr/connect (:es-address conf))
                native-conn (esn/connect [(:es-native-address conf)] {"cluster.name" (:es-cluster-name conf)})]
-           (es/run-persistence-loop (:persistence channels) conf conn)
-           (es/run-rt-persistence-loop (:rt-persistence channels) (:persistence channels))
            (es/run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels) conf conn)
 
            (es/run-query-loop (:query channels) (:query-results channels) conf conn)
@@ -42,11 +40,9 @@
            :query-results (chan)
            :tweet-missing (chan)
            :missing-tweet-found (chan)
-           :persistence (chan)
-           :rt-persistence (chan)
            :tweet-count (chan)))
   (stop [component] (log/info "Stop Persistence Channels Component")
         (assoc component :query nil :query-results nil :tweet-missing nil :missing-tweet-found nil
-                         :persistence nil :rt-persistence nil :tweet-count nil)))
+                         :tweet-count nil)))
 
 (defn new-persistence-channels [] (map->Persistence-Channels {}))

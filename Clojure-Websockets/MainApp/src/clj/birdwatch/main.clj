@@ -12,7 +12,7 @@
    [clj-pid.core :as pid]
    [com.stuartsierra.component :as component]))
 
-(def conf (edn/read-string (slurp "twitterconf.edn")))
+(def conf (edn/read-string (slurp "conf.edn")))
 
 (defn get-system
   "Create system by wiring individual components so that component/start

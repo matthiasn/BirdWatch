@@ -1,11 +1,11 @@
-(ns birdwatch.main
+(ns birdwatch-tc.main
   (:gen-class)
   (:require
-   [birdwatch.twitterclient.component :as tc]
-   [birdwatch.persistence.component :as p]
-   [birdwatch.percolator.component :as perc]
-   [birdwatch.interop.component :as iop]
-   [birdwatch.switchboard :as sw]
+   [birdwatch-tc.twitterclient.component :as tc]
+   [birdwatch-tc.persistence.component :as p]
+   [birdwatch-tc.percolator.component :as perc]
+   [birdwatch-tc.interop.component :as iop]
+   [birdwatch-tc.switchboard :as sw]
    [clojure.edn :as edn]
    [clojure.tools.logging :as log]
    [clj-pid.core :as pid]

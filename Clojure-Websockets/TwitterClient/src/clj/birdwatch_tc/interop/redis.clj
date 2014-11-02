@@ -1,4 +1,4 @@
-(ns birdwatch.interop.redis
+(ns birdwatch-tc.interop.redis
   (:gen-class)
   (:require
    [clojure.tools.logging :as log]

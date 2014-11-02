@@ -1,7 +1,7 @@
-(ns birdwatch.interop.component
+(ns birdwatch-tc.interop.component
   (:gen-class)
   (:require
-   [birdwatch.interop.redis :as red]
+   [birdwatch-tc.interop.redis :as red]
    [clojure.tools.logging :as log]
    [clojure.pprint :as pp]
    [com.stuartsierra.component :as component]

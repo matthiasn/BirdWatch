@@ -1,9 +1,9 @@
-(ns birdwatch.twitterclient.component
+(ns birdwatch-tc.twitterclient.component
   (:gen-class)
   (:require
    [clojure.string :as str]
-   [birdwatch.twitterclient.http :as http-client]
-   [birdwatch.twitterclient.processing :as processing]
+   [birdwatch-tc.twitterclient.http :as http-client]
+   [birdwatch-tc.twitterclient.processing :as processing]
    [clojure.data.json :as json]
    [clj-time.core :as t]
    [clojure.pprint :as pp]

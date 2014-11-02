@@ -1,4 +1,4 @@
-(ns birdwatch.percolator.elastic
+(ns birdwatch-tc.percolator.elastic
   (:gen-class)
   (:require
    [clojure.tools.logging :as log]

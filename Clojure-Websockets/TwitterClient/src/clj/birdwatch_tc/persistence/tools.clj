@@ -1,4 +1,4 @@
-(ns birdwatch.persistence.tools
+(ns birdwatch-tc.persistence.tools
   (:gen-class))
 
 (defn- strip-tweet

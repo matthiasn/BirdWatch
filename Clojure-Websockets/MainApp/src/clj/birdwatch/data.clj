@@ -26,4 +26,3 @@
   "get map with key :id_str and value :favorite_count"
   [coll acc]
   (reduce-res (rt-status-reducer :favorite_count) acc coll))
-

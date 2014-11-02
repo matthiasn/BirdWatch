@@ -1,4 +1,4 @@
-(ns birdwatch.switchboard
+(ns birdwatch-tc.switchboard
   (:gen-class)
   (:require
    [clojure.tools.logging :as log]

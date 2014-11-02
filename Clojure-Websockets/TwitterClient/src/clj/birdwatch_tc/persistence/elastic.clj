@@ -1,8 +1,7 @@
-(ns birdwatch.persistence.elastic
+(ns birdwatch-tc.persistence.elastic
   (:gen-class)
   (:require
-   [birdwatch.data :as d]
-   [birdwatch.persistence.tools :as pt]
+   [birdwatch-tc.persistence.tools :as pt]
    [clojure.tools.logging :as log]
    [clojure.pprint :as pp]
    [clojurewerkz.elastisch.rest             :as esr]

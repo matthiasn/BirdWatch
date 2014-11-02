@@ -1,7 +1,7 @@
-(ns birdwatch.percolator.component
+(ns birdwatch-tc.percolator.component
   (:gen-class)
   (:require
-   [birdwatch.percolator.elastic :as es]
+   [birdwatch-tc.percolator.elastic :as es]
    [clojure.tools.logging :as log]
    [pandect.core :refer [sha1]]
    [clojure.pprint :as pp]

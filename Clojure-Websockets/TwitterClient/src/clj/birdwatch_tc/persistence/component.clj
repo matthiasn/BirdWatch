@@ -15,7 +15,6 @@
          (log/info "Starting Persistence Component")
          (let [conn (esr/connect (:es-address conf))]
            (es/run-persistence-loop (:persistence channels) conf conn)
-           (es/run-rt-persistence-loop (:rt-persistence channels) (:persistence channels))
            (assoc component :conn conn :native-conn native-conn)))
   (stop [component] ;; TODO: proper teardown of resources
         (log/info "Stopping Persistence Component")
@@ -27,9 +26,8 @@
   component/Lifecycle
   (start [component] (log/info "Starting Persistence Channels Component")
          (assoc component
-           :persistence (chan)
-           :rt-persistence (chan)))
+           :persistence (chan)))
   (stop [component] (log/info "Stop Persistence Channels Component")
-        (assoc component :persistence nil :rt-persistence nil)))
+        (assoc component :persistence nil)))
 
 (defn new-persistence-channels [] (map->Persistence-Channels {}))

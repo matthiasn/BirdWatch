@@ -15,7 +15,6 @@
          (let [tweets-mult (mult (:tweets tc-chans))]
            (tap tweets-mult (:percolation perc-chans))   ; Tweets are distributed to multiple channels
            (tap tweets-mult (:persistence pers-chans))   ; through tapping the mult created above
-           (tap tweets-mult (:rt-persistence pers-chans))
            ;; Connect channels 1 on 1. Here, it would be easy to add message logging.
            (pipe (:percolation-matches perc-chans) (:send iop-chans))))
   (stop [component] (log/info "Stop Switchboard Component")))

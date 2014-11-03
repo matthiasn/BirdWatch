@@ -16,10 +16,3 @@
                   (esd/put conn (:es-index conf) "tweet" (:id_str t) t)
                   (catch Exception ex (log/error ex "esd/put error"))))
            (recur)))
-
-(defn run-rt-persistence-loop
-  "run loop for persisting retweets"
-  [rt-persistence-chan persistence-chan]
-  (go-loop [] (when-let [rt (:retweeted_status (<! rt-persistence-chan))]
-                (put! persistence-chan rt))
-           (recur)))

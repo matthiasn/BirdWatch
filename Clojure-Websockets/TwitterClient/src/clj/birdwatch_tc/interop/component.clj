@@ -9,7 +9,7 @@
 
 ;;; The interop component allows sending and receiving messages via Redis Pub/Sub.
 ;;; It has both a :send and a :receive channel and can be used on both sides of the Pub/Sub.
-(defrecord Interop [conf channels conn]
+(defrecord Interop [conf channels]
   component/Lifecycle
   (start [component] (log/info "Starting Interop Component")
          (let [conn {:pool {} :spec {:host (:redis-host conf) :port (:redis-port conf)}}]

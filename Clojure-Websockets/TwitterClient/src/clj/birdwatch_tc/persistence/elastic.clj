@@ -4,8 +4,8 @@
    [birdwatch-tc.persistence.tools :as pt]
    [clojure.tools.logging :as log]
    [clojure.pprint :as pp]
-   [clojurewerkz.elastisch.rest             :as esr]
-   [clojurewerkz.elastisch.rest.document    :as esd]
+   [clojurewerkz.elastisch.rest :as esr]
+   [clojurewerkz.elastisch.rest.document :as esd]
    [clojure.core.async :as async :refer [<! chan put! timeout go-loop]]))
 
 (defn run-persistence-loop

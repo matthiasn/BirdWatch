@@ -1,7 +1,6 @@
 (ns birdwatch.persistence.component
   (:gen-class)
   (:require
-   [birdwatch.data :as d]
    [birdwatch.persistence.tools :as pt]
    [birdwatch.persistence.elastic :as es]
    [clojure.tools.logging :as log]
@@ -10,7 +9,7 @@
    [com.stuartsierra.component :as component]
    [clojure.core.async :as async :refer [<! chan go-loop tap]]))
 
-(defrecord Persistence [conf channels conn native-conn]
+(defrecord Persistence [conf channels]
   component/Lifecycle
   (start [component]
          (log/info "Starting Persistence Component")
@@ -23,10 +22,10 @@
            (es/run-query-loop (:query channels) (:query-results channels) conf conn)
 
            (es/run-tweet-count-loop (:tweet-count channels) conf conn)
-           (assoc component :conn conn :native-conn native-conn)))
+           (assoc component :conn conn)))
   (stop [component] ;; TODO: proper teardown of resources
         (log/info "Stopping Persistence Component")
-        (assoc component :conn nil :native-conn nil)))
+        (assoc component :conn nil)))
 
 (defn new-persistence [conf] (map->Persistence {:conf conf}))
 

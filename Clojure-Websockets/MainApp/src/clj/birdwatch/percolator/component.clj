@@ -9,7 +9,7 @@
    [com.stuartsierra.component :as component]
    [clojure.core.async :as async :refer [chan tap]]))
 
-(defrecord Percolator [conf channels conn subscriptions]
+(defrecord Percolator [conf channels]
   component/Lifecycle
   (start [component] (log/info "Starting Percolator Component")
          (let [conn (esr/connect (:es-address conf))

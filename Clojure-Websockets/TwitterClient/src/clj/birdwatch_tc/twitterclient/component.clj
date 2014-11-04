@@ -11,7 +11,7 @@
    [clojure.core.async :as async :refer [chan go-loop pipe]]
    [com.stuartsierra.component :as component]))
 
-(defrecord Twitterclient [conf channels conn chunk-chan watch-active]
+(defrecord Twitterclient [conf channels watch-active conn]
   component/Lifecycle
   (start [component] (log/info "Starting Twitterclient Component")
          (let [last-received (atom (t/epoch))
@@ -22,6 +22,7 @@
            (pipe chunk-chan (:tweets channels) false)
            (http-client/run-watch-loop conf conn chunk-chan last-received watch-active)
            (assoc component :conn conn :chunk-chan chunk-chan :watch-active watch-active)))
+
   (stop [component] (log/info "Stopping Twitterclient Component")
         (reset! watch-active false)
         (http-client/stop-twitter-conn! conn)

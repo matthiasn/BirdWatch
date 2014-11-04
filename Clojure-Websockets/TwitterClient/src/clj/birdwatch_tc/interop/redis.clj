@@ -27,5 +27,14 @@
   (car/with-new-pubsub-listener
     (:spec conn)
     {"matches" (msg-handler-fn receive-chan)}
-    (car/subscribe topic))
-  (log/info "subscribe-topic"))
+    (car/subscribe topic)))
+
+(defn unsubscribe
+  "unsubscribe listener from all topics"
+  [listener]
+  (car/with-open-listener listener (car/unsubscribe)))
+
+(defn close
+  "close listener"
+  [listener]
+  (car/close-listener listener))

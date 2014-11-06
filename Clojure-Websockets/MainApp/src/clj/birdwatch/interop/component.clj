@@ -15,7 +15,6 @@
          (let [conn {:pool {} :spec {:host (:redis-host conf) :port (:redis-port conf)}}
                listener (red/subscribe-topic (:receive channels) conn "matches")]
            (assoc component :conn conn :listener listener)))
-
   (stop  [component] (log/info "Stopping Interop Component")
          (red/unsubscribe listener)
          (red/close listener)

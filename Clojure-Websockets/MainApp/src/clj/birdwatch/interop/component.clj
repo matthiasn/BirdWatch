@@ -24,11 +24,9 @@
 
 (defrecord Interop-Channels []
   component/Lifecycle
-  (start [component]
-         (log/info "Starting Interop Channels Component")
+  (start [component] (log/info "Starting Interop Channels Component")
          (assoc component :send (chan) :receive (chan)))
-  (stop  [component]
-         (log/info "Stop Interop Channels Component")
+  (stop  [component] (log/info "Stop Interop Channels Component")
          (assoc component :send nil :receive nil)))
 
 (defn new-interop-channels [] (map->Interop-Channels {}))

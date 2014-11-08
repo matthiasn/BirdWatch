@@ -17,7 +17,7 @@
 (defn make-handler
   "create event handler function for the websocket connection"
   [query-chan tweet-missing-chan register-percolation-chan]
-  (fn [{:as ev-msg :keys [event ?reply-fn]}]
+  (fn [{event :event}]
     (match event
            [:cmd/percolate params] (put! register-percolation-chan params)
            [:cmd/query params]     (put! query-chan params)

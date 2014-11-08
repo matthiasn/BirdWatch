@@ -9,6 +9,7 @@
    [birdwatch.switchboard :as sw]
    [clojure.edn :as edn]
    [clojure.tools.logging :as log]
+   [clojure.tools.namespace.repl :refer (refresh)]
    [clj-pid.core :as pid]
    [com.stuartsierra.component :as component]))
 
@@ -34,8 +35,13 @@
                                                                 :iop-chans  :interop-channels})))
 (def system (get-system conf))
 
+
+(defn start [] (alter-var-root #'system component/start))
+(defn stop [] (alter-var-root #'system component/stop))
+(defn reload [] (stop) (refresh) (start))
+
 (defn -main [& args]
   (pid/save (:pidfile-name conf))
   (pid/delete-on-shutdown! (:pidfile-name conf))
   (log/info "Application started, PID" (pid/current))
-  (alter-var-root #'system component/start))
+  (start))

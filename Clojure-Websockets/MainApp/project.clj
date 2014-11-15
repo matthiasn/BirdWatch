@@ -3,10 +3,11 @@
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0-alpha3"]
+  :dependencies [[org.clojure/clojure "1.7.0-alpha4"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [clojurewerkz/elastisch "2.1.0-beta9" :exclusions [com.fasterxml.jackson.core/jackson-core]]
+                 [clojurewerkz/elastisch "2.1.0-rc1" :exclusions [com.fasterxml.jackson.core/jackson-core]]
                  [org.clojure/tools.logging "0.3.0"]
+                 [com.matthiasnehlsen/inspect "0.1.1"]
                  [org.clojure/tools.namespace "0.2.7"]
                  [ch.qos.logback/logback-classic "1.1.1"]
                  [com.taoensso/sente "1.2.0" :exclusions [org.clojure/clojure]]
@@ -20,7 +21,7 @@
                  [org.clojure/clojurescript "0.0-2371"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.5"]
-                 [om "0.8.0-alpha1"]
+                 [om "0.8.0-alpha2"]
                  [com.cognitect/transit-clj  "0.8.259"]
                  [com.cognitect/transit-cljs "0.8.188"]
                  [clj-pid "0.1.1"]

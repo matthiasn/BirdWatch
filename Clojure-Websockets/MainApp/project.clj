@@ -7,7 +7,7 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.1.0-rc1" :exclusions [com.fasterxml.jackson.core/jackson-core]]
                  [org.clojure/tools.logging "0.3.0"]
-                 [com.matthiasnehlsen/inspect "0.1.1"]
+                 [com.matthiasnehlsen/inspect "0.1.3"]
                  [org.clojure/tools.namespace "0.2.7"]
                  [ch.qos.logback/logback-classic "1.1.1"]
                  [com.taoensso/sente "1.2.0" :exclusions [org.clojure/clojure]]

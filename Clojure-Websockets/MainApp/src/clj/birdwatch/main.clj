@@ -7,6 +7,7 @@
    [birdwatch.interop.component :as iop]
    [birdwatch.http.component :as http]
    [birdwatch.switchboard :as sw]
+   [com.matthiasnehlsen.inspect :as inspect]
    [clojure.edn :as edn]
    [clojure.tools.logging :as log]
    [clojure.tools.namespace.repl :refer (refresh)]
@@ -35,6 +36,7 @@
                                                                 :iop-chans  :interop-channels})))
 (def system (get-system conf))
 
+(inspect/configure {:port (:inspect-port conf)})
 
 (defn start [] (alter-var-root #'system component/start))
 (defn stop [] (alter-var-root #'system component/stop))
@@ -44,4 +46,5 @@
   (pid/save (:pidfile-name conf))
   (pid/delete-on-shutdown! (:pidfile-name conf))
   (log/info "Application started, PID" (pid/current))
+  (inspect/start)
   (start))

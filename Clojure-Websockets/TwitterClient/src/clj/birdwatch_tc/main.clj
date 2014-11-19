@@ -6,6 +6,7 @@
    [birdwatch-tc.percolator.component :as perc]
    [birdwatch-tc.interop.component :as iop]
    [birdwatch-tc.switchboard :as sw]
+   [com.matthiasnehlsen.inspect :as inspect]
    [clojure.edn :as edn]
    [clojure.tools.logging :as log]
    [clj-pid.core :as pid]
@@ -32,9 +33,11 @@
                                                                 :iop-chans  :interop-channels})))
 (def system (get-system conf))
 
+(inspect/configure {:port (:inspect-port conf)})
+
 (defn -main [& args]
   (pid/save (:pidfile-name conf))
   (pid/delete-on-shutdown! (:pidfile-name conf))
   (log/info "Application started, PID" (pid/current))
   (alter-var-root #'system component/start)
-  (Thread/sleep Long/MAX_VALUE)) ;; Without the Thread/sleep, the application stops after 60 seconds.
+  (inspect/start))

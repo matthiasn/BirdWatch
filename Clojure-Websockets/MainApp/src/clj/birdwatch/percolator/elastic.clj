@@ -4,6 +4,7 @@
    [clojure.tools.logging :as log]
    [pandect.core :refer [sha1]]
    [clojure.pprint :as pp]
+   [com.matthiasnehlsen.inspect :as inspect :refer [inspect]]
    [clojurewerkz.elastisch.rest.percolation :as perc]
    [clojurewerkz.elastisch.rest.response    :as esrsp]
    [clojure.core.async :as async :refer [<! put! go-loop]]))
@@ -14,12 +15,13 @@
   (let [sha (sha1 (str query))]
     (swap! subscriptions assoc uid sha)
     (perc/register-query conn "percolator" sha :query query)
-    (log/debug "Percolation registered for query" query "with SHA1" sha)))
+    (inspect :perc/start-percolator {:query query :sha sha})))
 
 (defn run-percolation-register-loop
   "loop for finding percolation matches and delivering those on the appropriate socket"
   [register-percolation-chan conn subscriptions]
   (go-loop [] (let [params (<! register-percolation-chan)]
+                (inspect :perc/params params)
                 (start-percolator params conn subscriptions)
                 (recur))))
 

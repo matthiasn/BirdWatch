@@ -1,6 +1,6 @@
-(ns birdwatch.main-test
+(ns birdwatch-tc.main-test
   (:require [clojure.test :refer :all]
-            [birdwatch.main :refer :all]))
+            [birdwatch-tc.main :refer :all]))
 
 (deftest a-test
   (testing "Okay, I won't fail."

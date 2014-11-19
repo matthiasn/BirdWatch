@@ -4,6 +4,7 @@
    [clojure.tools.logging :as log]
    [clojure.pprint :as pp]
    [clojure.core.match :as match :refer (match)]
+   [com.matthiasnehlsen.inspect :as inspect :refer [inspect]]
    [taoensso.carmine :as car :refer (wcar)]
    [clojure.core.async :as async :refer [<! put! go-loop]]))
 
@@ -19,6 +20,7 @@
   [receive-chan]
   (fn [[msg-type topic payload]]
     (when (= msg-type "message")
+      (inspect :redis/receive payload)
       (put! receive-chan payload))))
 
 (defn subscribe-topic

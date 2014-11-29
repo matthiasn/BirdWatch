@@ -7,15 +7,17 @@
    [clojure.pprint :as pp]
    [clojurewerkz.elastisch.rest :as esr]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [chan tap]]))
+   [clojure.core.async :as async :refer [chan tap pipeline]]))
 
 (defrecord Percolator [conf channels]
   component/Lifecycle
   (start [component] (log/info "Starting Percolator Component")
          (let [conn (esr/connect (:es-address conf))
-               subscriptions (atom {})]
+               subscriptions (atom {})
+               perc-matches-chan (:percolation-matches channels)
+               perc-chan (:percolation channels)]
+           (pipeline 1 perc-matches-chan (es/percolation-xf subscriptions) perc-chan)
            (es/run-percolation-register-loop (:register-percolation channels) conn subscriptions)
-           (es/run-percolation-loop (:percolation channels) (:percolation-matches channels) conn subscriptions)
            (assoc component :conn conn :subscriptions subscriptions)))
   (stop [component] (log/info "Stopping Percolator Component") ;; TODO: proper teardown of resources
         (assoc component :conn nil :subscriptions nil)))

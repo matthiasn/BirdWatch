@@ -25,9 +25,7 @@
                 (start-percolator params conn subscriptions)
                 (recur))))
 
-(defn run-percolation-loop
-  "loop for finding percolation matches and delivering those on the appropriate socket"
-  [percolation-chan percolation-matches-chan conn subscriptions]
-  (go-loop [] (let [[t matches] (<! percolation-chan)] ;; set with SHAs
-                (put! percolation-matches-chan [t matches @subscriptions]) ;; send deref'd subscriptions as val
-                (recur))))
+(defn percolation-xf
+  "create transducer for adding de-ref'd subscription to percolation result"
+  [subscriptions]
+  (map (fn [[t matches]] [t matches @subscriptions])))

@@ -51,10 +51,5 @@
    (filter tweet?)
    (log-count last-received)))
 
-#_(defn- json->map [jstr]
-    "parse JSON string"
-    (try (json/read-str jstr :key-fn clojure.core/keyword)
-      (catch Exception e {:exception (str e) :jstr jstr})))
-
 (defn ex-handler [ex]
   (log/error "Exception while processing chunk" ex))

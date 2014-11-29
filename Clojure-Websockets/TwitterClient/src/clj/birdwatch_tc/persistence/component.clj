@@ -25,8 +25,7 @@
 (defrecord Persistence-Channels []
   component/Lifecycle
   (start [component] (log/info "Starting Persistence Channels Component")
-         (assoc component
-           :persistence (chan)))
+         (assoc component :persistence (chan)))
   (stop [component] (log/info "Stop Persistence Channels Component")
         (assoc component :persistence nil)))
 

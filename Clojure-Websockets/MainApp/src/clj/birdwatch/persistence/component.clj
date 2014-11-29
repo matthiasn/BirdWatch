@@ -7,20 +7,19 @@
    [clojure.pprint :as pp]
    [clojurewerkz.elastisch.rest :as esr]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [<! chan go-loop tap]]))
+   [clojure.core.async :as async :refer [<! chan go-loop tap pipeline-blocking]]))
 
 (defrecord Persistence [conf channels]
   component/Lifecycle
   (start [component]
          (log/info "Starting Persistence Component")
-         (let [conn (esr/connect (:es-address conf))]
-           (es/run-find-missing-loop (:tweet-missing channels) (:missing-tweet-found channels) conf conn)
-
-           (es/run-query-loop (:query channels) (:query-results channels) conf conn)
-           (es/run-query-loop (:query channels) (:query-results channels) conf conn)
-           (es/run-query-loop (:query channels) (:query-results channels) conf conn)
-           (es/run-query-loop (:query channels) (:query-results channels) conf conn)
-
+         (let [conn (esr/connect (:es-address conf))
+               q-chan (:query channels)
+               q-res-chan (:query-results channels)
+               mt-chan (:tweet-missing channels)
+               mt-res-chan (:missing-tweet-found channels)]
+           (pipeline-blocking 4 q-res-chan (es/query-xf conf conn) q-chan)
+           (pipeline-blocking 2 mt-res-chan (es/tweet-query-xf conf conn) mt-chan)
            (es/run-tweet-count-loop (:tweet-count channels) conf conn)
            (assoc component :conn conn)))
   (stop [component] ;; TODO: proper teardown of resources

@@ -25,25 +25,21 @@
                                  :chars (count (str res))})
     res))
 
-(defn run-find-missing-loop
-  "starts loop for finding missing tweets, puts result on missing-tweet-found-chan"
-  [tweet-missing-chan missing-tweet-found-chan conf conn]
-  (go-loop [] (let [req (<! tweet-missing-chan)
-                    res (esd/get conn (:es-index conf) "tweet" (:id_str req))]
-                (inspect :elastic/missing {:req req :res res})
-                (if res
-                  (put! missing-tweet-found-chan
-                        {:tweet (pt/strip-source res) :uid (:uid req)})
-                  (log/debug "birdwatch.persistence missing" (:id_str req) res)))
-           (recur)))
+(defn query-xf
+  "create transducer for answering queries"
+  [conf conn]
+  (map (fn [q]
+         (inspect :elastic/query q)
+         {:uid (:uid q) :result (query q conf conn)})))
 
-(defn run-query-loop
-  "run loop for answering queries"
-  [query-chan query-results-chan conf conn]
-  (go-loop [] (let [q (<! query-chan)]
-                (inspect :elastic/query q)
-                (put! query-results-chan {:uid (:uid q) :result (query q conf conn)}))
-           (recur)))
+(defn tweet-query-xf
+  "create transducer for finding missing tweets"
+  [conf conn]
+  (map (fn [req]
+         (let [res (esd/get conn (:es-index conf) "tweet" (:id_str req))]
+           (inspect :elastic/missing {:req req :res res})
+           (when-not res (log/debug "birdwatch.persistence missing" (:id_str req) res))
+           {:tweet (pt/strip-source res) :uid (:uid req)}))))
 
 (defn run-tweet-count-loop
   "run loop for sending stats about total number of indexed tweets"

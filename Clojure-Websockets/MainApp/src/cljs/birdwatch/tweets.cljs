@@ -16,16 +16,6 @@
          assoc-in [tweets-map (keyword (:id_str tweet))]
          tweet))
 
-(defn add-to-tweets-map2
-  "adds tweet to tweets-map"
-  [app tweets-map tweet]
-  (swap! app
-         assoc-in [tweets-map (keyword (:id_str tweet))]
-         (if (zero? (mod (:id tweet) 1000))
-           tweet
-           {:created_at (:created_at tweet)
-            :id_str (:id_str tweet)})))
-
 (defn swap-when-larger
   "swaps item in priority-map when new value is larger than old value"
   [app priority-map rt-id n]
@@ -44,12 +34,6 @@
       (util/swap-pmap app :by-rt-since-startup rt-id (inc (get (:by-rt-since-startup state) rt-id 0)))
       (util/swap-pmap app :by-reach rt-id (+ (get (:by-reach state) rt-id 0) (:followers_count (:user tweet))))
       (when (> rt-count (:retweet_count (rt-id (:tweets-map state)))) (add-to-tweets-map! app :tweets-map rt)))))
-
-(defn ignore-tweet!
-  "only increment counter, otherwise ignore tweet"
-  [tweet app]
-  (let [state @app]
-    (swap! app assoc :count (inc (:count state)))))
 
 (defn add-tweet!
   "increment counter, add tweet to tweets map and to sorted sets by id and by followers"
@@ -71,7 +55,6 @@
 
 (go-loop [] (let [t (<! c/prev-tweets-chan)]
               (add-tweet! t state/app)
-;              (ignore-tweet! t state/app)
               (recur)))
 
 (go-loop []
@@ -81,7 +64,6 @@
 
 (go-loop []
          (let [chunk (<! c/prev-chunks-chan)]
-           (doseq [t chunk]
-             (put! c/prev-tweets-chan t))
+           (doseq [t chunk] (put! c/prev-tweets-chan t))
            (<! (timeout 50))
            (recur)))

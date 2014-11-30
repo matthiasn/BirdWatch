@@ -1,8 +1,7 @@
 (defproject birdwatch "0.1.0-SNAPSHOT"
   :description "Main part of the BirdWatch system (without TwitterClient)"
   :url "https://github.com/matthiasn/Birdwatch"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :license {:name "Eclipse Public License" :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.7.0-alpha4"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.1.0-rc1" :exclusions [com.fasterxml.jackson.core/jackson-core]]
@@ -23,7 +22,7 @@
                  [org.clojure/data.priority-map "0.0.5"]
                  [om "0.8.0-alpha2"]
                  [com.cognitect/transit-clj  "0.8.259"]
-                 [com.cognitect/transit-cljs "0.8.188"]
+                 [com.cognitect/transit-cljs "0.8.192"]
                  [clj-pid "0.1.1"]
                  [com.stuartsierra/component "0.2.2"]
                  [com.taoensso/carmine "2.7.1"]]
@@ -49,15 +48,13 @@
                         :compiler {:output-to "resources/public/js/build/birdwatch-opt.js"
                                    :optimizations :advanced
                                    ;:preamble ["react/react.min.js"]
-                                   :externs ["externs/react.js" "externs/misc.js"]
-                                   }}
+                                   :externs ["externs/react.js" "externs/misc.js"]}}
                        {:id "test"
                         :source-paths ["src/cljs" "test/cljs"]
                         :compiler {:output-to "test-out/birdwatch.js"
                                    :output-dir "test-out/"
                                    :optimizations :simple
                                    :externs ["externs/react.js" "externs/misc.js"]}}]
-
               :test-commands {"unit-tests" ["phantomjs" :runner
                                             "resources/public/bower_components/react/react.js"
                                             "resources/public/bower_components/momentjs/moment.js"

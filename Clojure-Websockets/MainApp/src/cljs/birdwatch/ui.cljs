@@ -64,16 +64,14 @@
   (reify
     om/IRender
     (render [this]
-            (dom/div #js {:className "input-group"}
-                     (dom/input #js {:className "form-control"
-                                     :type "text" :ref "new-contact"
-                                     :value (:search-text (om/get-props owner))
-                                     :placeholder "Example search: java (job OR jobs OR hiring)"
-                                     :onKeyPress #(when (== (.-keyCode %) 13) (comm/start-search))
-                                     :onChange #(handle-search-change % app)})
-                     (dom/span #js {:className "input-group-btn"}
-                               (dom/button #js {:className "btn btn-primary" :onClick #(comm/start-search)}
-                                           (dom/span #js {:className "glyphicon glyphicon-search"})))))))
+            (dom/form #js {:className "pure-form"}
+                      (dom/input #js {:type "text" :ref "new-contact"
+                                      :value (:search-text (om/get-props owner))
+                                      :placeholder "Example search: java (job OR jobs OR hiring)"
+                                      :onKeyPress #(when (== (.-keyCode %) 13) (comm/start-search))
+                                      :onChange #(handle-search-change % app)})
+                      (dom/button #js {:className "pure-button pure-button-primary" :onClick #(comm/start-search)}
+                                  (dom/span #js {:className "glyphicon glyphicon-search"}))))))
 
 (defn pag-items
   "function creating pagination items"

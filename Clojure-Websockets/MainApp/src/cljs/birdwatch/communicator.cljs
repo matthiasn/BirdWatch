@@ -48,15 +48,6 @@
                                :from (* chunk-size @prev-chunks-loaded)}])
       (swap! prev-chunks-loaded inc))))
 
-(defn load-prev2
-  "load previous tweets matching the current search"
-  []
-  (dotimes [n 20]
-    (chsk-send! [:cmd/query {:query (query-string)
-                             :n 1000
-                             :uid (:uid @chsk-state)
-                             :from (* 1000 n)}])))
-
 (defn start-search
   "initiate new search by starting SSE stream"
   []
@@ -68,9 +59,7 @@
     (swap! state/app assoc :search s)
     (aset js/window "location" "hash" (js/encodeURIComponent s))
     (start-percolator)
-    (dotimes [n 4] (load-prev))
-    ;(load-prev2)
-    ))
+    (dotimes [n 4] (load-prev))))
 
 (defn- event-handler [{:keys [event]}]
   (match event

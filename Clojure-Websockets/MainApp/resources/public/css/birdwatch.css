@@ -11,7 +11,6 @@
 body {
   font-size: 13px;
   font-family: "Lato", sans-serif;
-  overflow-x: hidden;
 }
 
 h1,
@@ -112,6 +111,7 @@ label {
   top: 50px;
   width: 100%;
   z-index: 2;
+  overflow-x: hidden;
 }
 
 /*

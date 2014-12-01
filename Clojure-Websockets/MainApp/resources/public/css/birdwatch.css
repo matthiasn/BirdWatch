@@ -11,6 +11,7 @@
 body {
   font-size: 13px;
   font-family: "Lato", sans-serif;
+  overflow-x: hidden;
 }
 
 h1,
@@ -41,10 +42,6 @@ label {
   border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 
-.is-center {
-  text-align: center;
-}
-
 /*
 * -- PURE FORM STYLES --
 * Style the form inputs and labels
@@ -73,7 +70,6 @@ label {
 
 .home-menu {
   padding: 0.5em;
-  text-align: center;
   box-shadow: 0 1px 1px rgba(0,0,0, 0.10);
 }
 .home-menu.pure-menu-open {
@@ -113,7 +109,7 @@ label {
 .content-wrapper {
   /* These styles are required for the "scroll-over" effect */
   position: absolute;
-  top: 18%;
+  top: 50px;
   width: 100%;
   z-index: 2;
 }
@@ -128,10 +124,6 @@ label {
   /* We increase the body font size */
   body {
     font-size: 16px;
-  }
-
-  .content-wrapper {
-    top: 6%;
   }
 
   /* We want to give the content area some more padding */
@@ -183,4 +175,3 @@ table, th, td {
 #count {
   float: right;
 }
-

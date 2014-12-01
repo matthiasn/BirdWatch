@@ -24,7 +24,7 @@
     om/IRender
     (render [this]
             (let [users (:users-count app)]
-              (dom/span nil "Connected: " (dom/strong nil users) (if (> users 1) " users" " user"))))))
+              (dom/span nil "Connected: " (dom/strong nil users) (if (= users 1) " user" " users"))))))
 
 (defn total-count-view
   "rendering total tweets counter"

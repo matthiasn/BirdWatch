@@ -2,7 +2,7 @@
 
 <html lang="en">
     <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
 
         <title>BirdWatch</title>
 
@@ -23,99 +23,70 @@
         <div class="header">
             <div id="demo-horizontal-menu" class="home-menu pure-menu pure-menu-open pure-menu-horizontal pure-menu-fixed">
                 <a class="pure-menu-heading" href="">Birdwatch</a>
-
-
-                <ul id="std-menu-items">
+                <ul>
                     <li><a href="https://github.com/matthiasn/Birdwatch" target="_blank">GitHub</a></li>
                     <li><a href="http://matthiasnehlsen.com/blog/2014/09/24/Building-Systems-in-Clojure-1/" target="_blank">About</a></li>
-                    <li>
-                        <a href="#">Settings</a>
-                        <ul>
-                            <li><a href="#" onclick="BirdWatch.legalStuff()">Legal stuff</a></li>
-                            <li><a href="#"><span id="users-count" /></a></li>
-                            <li><a href="#" id="total-tweet-count"></a></li>
-                        </ul>
-                    </li>
                 </ul>
-
-
             </div>
         </div>
 
         <div class="content-wrapper">
-            <div class="content">
 
-                <div class="l-box">
-                    <div id="count">Tweets: <span id="tweet-count"></span></div>
-                    <div id="search"></div>
-                    <div id="pagination"></div>
-                    <div id="sort-buttons"></div>
+            <div class="l-box">
+                <div id="count">Tweets: <span id="tweet-count"></span></div>
+                <div id="search"></div>
+                <div id="pagination"></div>
+                <div id="sort-buttons"></div>
+            </div>
+
+            <div class="pure-g">
+                <div class="pure-u-1 pure-u-sm-1-2 pure-u-lg-5-12 l-box">
+                    <div id="tweet-frame"></div>
                 </div>
 
-                <div class="pure-g">
-                        <div class="pure-u-1 pure-u-sm-1-2 pure-u-lg-5-12 l-box">
-                            <div id="tweet-frame"></div>
-                        </div>
-
-                        <div class="pure-u-1 pure-u-sm-1-2 pure-u-lg-7-12 l-box">
-                            <div id="timeseries1" class="timeseries"></div>
-                            <hr />
-                            <div id="wordCloud" class="cloud" ></div>
-                            <hr />
-                            <h5>word frequency</h5>
-                            <div id="react-bar-chart" class="barchart" ></div>
-                            <hr />
-                        </div>
-                    </div>
-
+                <div class="pure-u-1 pure-u-sm-1-2 pure-u-lg-7-12 l-box">
+                    <div id="timeseries1" class="timeseries"></div>
+                    <hr />
+                    <div id="wordCloud" class="cloud" ></div>
+                    <hr />
+                    <h5>word frequency</h5>
+                    <div id="react-bar-chart" class="barchart" ></div>
+                    <hr />
+                    <div id="users-count"></div>
+                    <div id="total-tweet-count"></div>
+                </div>
             </div>
+
         </div>
+    </div>
 
-        <!-- Scripts placed at the end of the document so the pages load faster -->
+    <!-- Scripts placed at the end of the document so the pages load faster -->
 
-        <script src="/bower_components/jquery/jquery.min.js"></script>
-        <script src="/bower_components/jquery.cookie/jquery.cookie.js"></script>
-        <script src="/bower_components/d3/d3.min.js"></script>
-        <script src="/bower_components/rickshaw/rickshaw.min.js"></script>
-        <script src="/bower_components/momentjs/min/moment.min.js"></script>
-        <script src="/bower_components/underscore/underscore-min.js"></script>
-        <script src="/bower_components/react/react.js"></script>
-        <script src="/bower_components/regression-js/build/regression.min.js"></script>
-        <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-        <script src="/js/vendor/d3.layout.cloud.js"></script>
-        <script src="/js/barchart.js"></script>
-        <script src="/js/wordcloud.js"></script>
-        <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+    <script src="/bower_components/jquery/jquery.min.js"></script>
+    <script src="/bower_components/jquery.cookie/jquery.cookie.js"></script>
+    <script src="/bower_components/d3/d3.min.js"></script>
+    <script src="/bower_components/rickshaw/rickshaw.min.js"></script>
+    <script src="/bower_components/momentjs/min/moment.min.js"></script>
+    <script src="/bower_components/underscore/underscore-min.js"></script>
+    <script src="/bower_components/react/react.js"></script>
+    <script src="/bower_components/regression-js/build/regression.min.js"></script>
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/js/vendor/d3.layout.cloud.js"></script>
+    <script src="/js/barchart.js"></script>
+    <script src="/js/wordcloud.js"></script>
+    <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 
-        <script src="/js/build/birdwatch-opt.js"></script>
+    <script src="/js/build/birdwatch-opt.js"></script>
 
-        <script src="http://yui.yahooapis.com/combo?3.17.2/yui/yui-min.js"></script>
+    <!-- Analytics, Todo: replace or remove in your own project. -->
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                                })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-40261983-4', 'auto');
+        ga('send', 'pageview');
+    </script>
 
-        <!-- Analytics, Todo: replace or remove in your own project. -->
-        <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-                                    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-            ga('create', 'UA-40261983-4', 'auto');
-            ga('send', 'pageview');
-        </script>
-
-        <script>
-            YUI({
-                classNamePrefix: 'pure'
-            }).use('gallery-sm-menu', function (Y) {
-                var horizontalMenu = new Y.Menu({
-                    container         : '#demo-horizontal-menu',
-                    sourceNode        : '#std-menu-items',
-                    orientation       : 'horizontal',
-                    hideOnOutsideClick: false,
-                    hideOnClick       : false
-                });
-                horizontalMenu.render();
-                horizontalMenu.show();
-            });
-        </script>
-
-    </body>
+</body>
 </html>

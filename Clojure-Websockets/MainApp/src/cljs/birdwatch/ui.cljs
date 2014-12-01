@@ -66,7 +66,7 @@
     (render [this]
             (dom/form #js {:className "pure-form"}
                       (dom/fieldset nil
-                               (dom/input #js {:type "text" :ref "new-contact"
+                               (dom/input #js {:type "text"
                                                :value (:search-text (om/get-props owner))
                                                :placeholder "Example search: java (job OR jobs OR hiring)"
                                                :onKeyPress #(when (== (.-keyCode %) 13) (comm/start-search))

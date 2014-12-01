@@ -57,7 +57,7 @@ label {
 
 .pure-form input {
   box-shadow: none;
-  width: 50%;
+  width: 60%;
   margin-right: 3px;
 }
 
@@ -116,27 +116,6 @@ label {
   top: 18%;
   width: 100%;
   z-index: 2;
-}
-
-/* This is the class used for the main content headers (<h2>) */
-.content-head {
-  font-weight: 400;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin: 2em 0 1em;
-}
-
-/* This is a modifier class used when the content-head is inside a ribbon */
-.content-head-ribbon {
-  color: white;
-}
-
-/* This is the class used for the content sub-headers (<h3>) */
-.content-subhead {
-  color: #1f8dd6;
-}
-.content-subhead i {
-  margin-right: 7px;
 }
 
 /*

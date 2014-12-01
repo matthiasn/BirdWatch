@@ -48,15 +48,11 @@ a {
     float: left;
 }
 
-#tweet-frame {
-    background-color: #EEE;
-}
-
 .tweet {
     padding: 10px 10px 5px 10px;
-    margin-top: 10px;
+    margin-top: 5px;
     margin-bottom: 5px;
-    background-color: #FFF;
+    background-color: #EEE;
     overflow: auto;
 }
 
@@ -98,4 +94,8 @@ a {
 
 .intent {
     float: right;
+}
+
+.button-xsmall {
+  font-size: 70%;
 }

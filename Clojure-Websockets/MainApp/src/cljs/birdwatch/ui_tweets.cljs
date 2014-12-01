@@ -47,7 +47,7 @@
                          (when (pos? (count media))
                            (dom/div #js {:className "tweet-image"}
                                     (dom/a #js {:href (:url (get media 0)) :target "_blank"}
-                                           (dom/img #js {:src (str (:media_url (get media 0)) ":small")}))))
+                                           (dom/img #js {:className "pure-img-responsive" :src (str (:media_url (get media 0)) ":small")}))))
                          (dom/div #js {:className "intent"}
                                   (twitter-intent tweet "tweet?in_reply_to=" "reply.png")
                                   (twitter-intent tweet "retweet?tweet_id=" "retweet.png")

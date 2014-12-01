@@ -38,7 +38,7 @@
   "generates JS for sort button for both updating sort order and showing active button"
   [app key]
   #js {:onClick (fn [e] (om/update! app [:sorted] key))
-       :className (str "pure-button" (if (= key (:sorted app)) " pure-button-primary" ""))})
+       :className (str "pure-button not-rounded" (if (= key (:sorted app)) " pure-button-primary" ""))})
 
 (defn sort-buttons-view
   "rendering sort buttons"
@@ -47,7 +47,7 @@
     om/IRender
     (render [this]
             (dom/div nil
-                     (dom/button #js {:className "pure-button"} "Sort by")
+                     (dom/button #js {:className "pure-button not-rounded"} "Sort by")
                      (dom/button (sort-button-js app :by-id) "latest")
                      (dom/button (sort-button-js app :by-followers) "followers")
                      (dom/button (sort-button-js app :by-retweets) "retweets")
@@ -65,20 +65,21 @@
     om/IRender
     (render [this]
             (dom/form #js {:className "pure-form"}
-                      (dom/input #js {:type "text" :ref "new-contact"
-                                      :value (:search-text (om/get-props owner))
-                                      :placeholder "Example search: java (job OR jobs OR hiring)"
-                                      :onKeyPress #(when (== (.-keyCode %) 13) (comm/start-search))
-                                      :onChange #(handle-search-change % app)})
-                      (dom/button #js {:className "pure-button pure-button-primary" :onClick #(comm/start-search)}
-                                  (dom/span #js {:className "glyphicon glyphicon-search"}))))))
+                      (dom/fieldset nil
+                               (dom/input #js {:type "text" :ref "new-contact"
+                                               :value (:search-text (om/get-props owner))
+                                               :placeholder "Example search: java (job OR jobs OR hiring)"
+                                               :onKeyPress #(when (== (.-keyCode %) 13) (comm/start-search))
+                                               :onChange #(handle-search-change % app)})
+                               (dom/button #js {:className "pure-button pure-button-primary" :onClick #(comm/start-search)}
+                                           (dom/span #js {:className "glyphicon glyphicon-search"})))))))
 
 (defn pag-items
   "function creating pagination items"
   [app page-change-chan]
-  (map #(dom/button #js {:className (if (= % (:page app)) "pure-button pure-button-primary" "pure-button")
-                      :onClick (fn [e] (put! page-change-chan %))} %)
-       (take 10 (range 1 (Math/floor (/ (:count app) (:n app)))))))
+  (map #(dom/button #js {:className (str "pure-button not-rounded button-xsmall" (if (= % (:page app)) " pure-button-primary" ""))
+                         :onClick (fn [e] (put! page-change-chan %))} %)
+       (take 15 (range 1 (Math/floor (/ (:count app) (:n app)))))))
 
 (defn pagination-view
   "rendering pagination list"
@@ -97,5 +98,5 @@
     om/IRenderState
     (render-state [this {:keys [page-change]}]
                   (apply dom/div nil
-                         (flatten [(dom/button #js {:className "pure-button"} "Page")
+                         (flatten [(dom/button #js {:className "pure-button not-rounded button-xsmall"} "Page")
                                    (pag-items app page-change)])))))

@@ -2,18 +2,14 @@
 
 <html lang="en">
     <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
         <title>BirdWatch</title>
 
         <!-- Stylesheets -->
-
         <link rel="stylesheet" media="screen" href="/css/main.css">
         <link rel="stylesheet" media="screen" href="/css/bootstrap-glyphicons.css">
-        <!--link rel="stylesheet" media="screen" href="/css/bootstrap.min.css"-->
-
         <link rel="stylesheet" media="screen" href="/bower_components/pure/pure.css">
-
         <link rel="stylesheet" media="screen" href="/css/birdwatch.css">
 
         <link href='http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
@@ -28,9 +24,6 @@
                 <a class="pure-menu-heading" href="">Birdwatch</a>
 
                 <ul id="std-menu-items">
-                    <li><span id="search"></li>
-                    <li>Tweets: <span id="tweet-count"></span></li>
-                    <li><a href="https://twitter.com/matthiasnehlsen" target="_blank">Author</a></li>
                     <li><a href="https://github.com/matthiasn/Birdwatch" target="_blank">GitHub</a></li>
                     <li><a href="http://matthiasnehlsen.com/blog/2014/09/24/Building-Systems-in-Clojure-1/" target="_blank">About</a></li>
                     <li>
@@ -43,28 +36,31 @@
                     </li>
                 </ul>
 
+                <ul>
+                    <li><a>Tweets: <span id="tweet-count"></span></a></li>
+                </ul>
+
             </div>
         </div>
 
         <div class="content-wrapper">
             <div class="content">
 
-                <div class="pure-g">
-                    <div class="l-box-lrg">
-                        <div id="pagination"></div>
-                        <div id="sort-buttons"></div>
-                    </div>
+                <div class="l-box">
+                    <div id="search"></div>
+                    <div id="pagination"></div>
+                    <div id="sort-buttons"></div>
                 </div>
 
                 <div class="pure-g">
-                    <div class="l-box-lrg">
-                        <div class="pure-u-2-5">
+                    <div class="l-box">
+                        <div class="pure-u-9-24">
                             <div id="tweet-frame"></div>
                         </div>
 
-                        <div class="pure-u-1-5"></div>
+                        <div class="pure-u-1-24"></div>
 
-                        <div class="pure-u-2-5">
+                        <div class="pure-u-14-24">
                             <div id="timeseries1" class="timeseries"></div>
                             <hr />
                             <div id="wordCloud" class="cloud" ></div>

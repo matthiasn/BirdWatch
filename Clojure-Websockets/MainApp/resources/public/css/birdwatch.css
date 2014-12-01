@@ -9,7 +9,6 @@
 * Most of these are inherited from Base, but I want to change a few.
 */
 body {
-  color: #7f8c8d;
   font-size: 13px;
   font-family: "Lato", sans-serif;
 }
@@ -34,7 +33,7 @@ label {
 * These are some useful classes which I will need
 */
 .l-box {
-  padding: 1em;
+  padding: 1em 1em 0 1em;
 }
 
 .l-box-lrg {
@@ -56,12 +55,10 @@ label {
   font-size: 100%;
 }
 
-.pure-form input[type] {
-  border: 2px solid #ddd;
+.pure-form input {
   box-shadow: none;
-  font-size: 100%;
-  width: 100%;
-  margin-bottom: 1em;
+  width: 50%;
+  margin-right: 3px;
 }
 
 .pure-button-primary {
@@ -109,7 +106,6 @@ label {
   color: #AECFE5;
 }
 
-
 /*
 * -- CONTENT STYLES --
 * This represents the content area (everything below the blue section)
@@ -117,11 +113,9 @@ label {
 .content-wrapper {
   /* These styles are required for the "scroll-over" effect */
   position: absolute;
-  top: 12%;
+  top: 8%;
   width: 100%;
-  min-height: 12%;
   z-index: 2;
-  background: #eee;
 }
 
 /* This is the class used for the main content headers (<h2>) */
@@ -176,23 +170,6 @@ label {
     float: right;
   }
 
-  /* We increase the height of the splash-container */
-  /*    .splash-container {
-  height: 500px;
-}*/
-
-  /* We decrease the width of the .splash, since we have more width
-  to work with */
-  .splash {
-    width: 50%;
-    /*height: 50%;*/
-  }
-
-  .splash-head {
-    /*font-size: 250%;*/
-  }
-
-
   /* We remove the border-separator assigned to .l-box-lrg */
   .l-box-lrg {
     border: none;
@@ -218,44 +195,14 @@ table, th, td {
 
 .button-xsmall {
   font-size: 70%;
-  margin: 2px;
-}
-
-.table-small {
-  font-size: 70%;
-}
-
-.event h4 {
-  margin-top: 0px;
-  margin-bottom: 0px;
-}
-
-.event span {
-  margin-top: 0px;
-  margin-bottom: 0px;
-  font-size: 0.7em;
-  float: right;
-}
-
-.event pre {
-  margin-top: 2px;
-  background-color: #ddd;
-  color: black;
-  overflow: scroll-x;
-  border-radius: 2px;
-  padding: 10px;
-}
-
-.event pre code {
-  font-family: Monaco, monospace;
-  font-size: 0.7em;
-  line-height: 10px;
-  margin-top: 0px;
-  margin-bottom: 10px;
-  overflow: scroll-x;
 }
 
 .active {
   color: black;
   font-weight: bold;
 }
+
+.not-rounded {
+  border-radius: 0;
+}
+

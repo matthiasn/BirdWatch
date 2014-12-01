@@ -113,7 +113,7 @@ label {
 .content-wrapper {
   /* These styles are required for the "scroll-over" effect */
   position: absolute;
-  top: 8%;
+  top: 18%;
   width: 100%;
   z-index: 2;
 }
@@ -145,6 +145,18 @@ label {
   color: #aaa;
 }
 
+@media (min-width: 30em) {
+  .content-wrapper {
+    top: 10%;
+  }
+}
+
+@media (min-width: 34em) {
+  .content-wrapper {
+    top: 5%;
+  }
+}
+
 /*
 * -- TABLET (AND UP) MEDIA QUERIES --
 * On tablets and other medium-sized devices, we want to customize some
@@ -156,6 +168,7 @@ label {
   body {
     font-size: 16px;
   }
+
   /* We want to give the content area some more padding */
   .content {
     padding: 1em;
@@ -183,10 +196,6 @@ label {
 * of the mobile and tablet styles.
 */
 @media (min-width: 78em) {
-  /* We increase the header font size even more */
-  .splash-head {
-    /*font-size: 300%;*/
-  }
 }
 
 table, th, td {

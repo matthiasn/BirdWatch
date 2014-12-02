@@ -38,7 +38,7 @@
   "generates JS for sort button for both updating sort order and showing active button"
   [app key]
   #js {:onClick (fn [e] (om/update! app [:sorted] key))
-       :className (str "pure-button not-rounded" (if (= key (:sorted app)) " pure-button-primary" ""))})
+       :className (str "pure-button not-rounded" (if (= key (:sorted app)) " pure-button-primary" " sort-button"))})
 
 (defn sort-buttons-view
   "rendering sort buttons"
@@ -47,7 +47,7 @@
     om/IRender
     (render [this]
             (dom/div nil
-                     (dom/button #js {:className "pure-button not-rounded"} "Sort by")
+                     (dom/button #js {:className "pure-button not-rounded sort-button"} "Sort by")
                      (dom/button (sort-button-js app :by-id) "latest")
                      (dom/button (sort-button-js app :by-followers) "followers")
                      (dom/button (sort-button-js app :by-retweets) "retweets")

@@ -175,3 +175,7 @@ table, th, td {
 #count {
   float: right;
 }
+
+.sort-button {
+  background-color: #c0c0c0;
+}

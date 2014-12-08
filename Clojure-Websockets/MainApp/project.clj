@@ -4,7 +4,7 @@
   :license {:name "Eclipse Public License" :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.7.0-alpha4"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [clojurewerkz/elastisch "2.1.0-rc1" :exclusions [com.fasterxml.jackson.core/jackson-core]]
+                 [clojurewerkz/elastisch "2.1.0" :exclusions [com.fasterxml.jackson.core/jackson-core]]
                  [org.clojure/tools.logging "0.3.0"]
                  [com.matthiasnehlsen/inspect "0.1.3"]
                  [org.clojure/tools.namespace "0.2.7"]

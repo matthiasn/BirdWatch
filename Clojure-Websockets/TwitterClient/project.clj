@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.7.0-alpha4"]
                  [twitter-api "0.7.6" :exclusions [org.clojure/clojure org.clojure/data.json]]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [clojurewerkz/elastisch "2.1.0-rc1"]
+                 [clojurewerkz/elastisch "2.1.0"]
                  [org.clojure/tools.logging "0.3.0"]
                  [com.matthiasnehlsen/inspect "0.1.3"]
                  [ch.qos.logback/logback-classic "1.1.1"]

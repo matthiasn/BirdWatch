@@ -74,7 +74,7 @@
   [ts-map]
   (map #(zipmap [:x :y] %)(vec ts-map)))
 
-(defn update
+(defn update-ts
   "update time series chart"
   [chart app]
   (aset graph-with-legend "series" "0" "data" (clj->js (ts-map-vec (ts-data app))))

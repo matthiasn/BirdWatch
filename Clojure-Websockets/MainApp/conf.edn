@@ -1,6 +1,6 @@
 {
  :es-address       "http://127.0.0.1:9200"
- :es-index         "ferguson-isis-ebola"
+ :es-index         "ferguson-ericgarner-blacklivesmatter-icantbreathe"
  :port             8888
  :pidfile-name     "birdwatch.pid"
  :redis-host       "127.0.0.1"

@@ -74,11 +74,4 @@ You may want to remove Google Analytics script in main.scala.html or adapt the A
 Please note that only one connection to the Twitter Streaming API is possible from any one public IP address. Starting a connection to the Streaming API will potentially end other connections from the same network if **[NAT](http://en.wikipedia.org/wiki/Network_address_translation)** is in place using the same public IP address. Access from mobile networks is discouraged and most likely won't work.
 
 ## Licence
-
-This software is licensed under the Apache 2 license, quoted below.
-
-Copyright &copy; 2013 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**.
-
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use this project except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
-
-Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+Copyright © 2013 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the GNU GENERAL PUBLIC LICENSE, Version 3. See separate LICENSE file.

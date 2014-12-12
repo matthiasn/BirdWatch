@@ -34,7 +34,7 @@ In the conf.edn, you can specify
 * address and port of running instance of Redis (default localhost:6379)
 
 ## Installation of TwitterClient
-You will need to create a file named twitterconf.edn. You can copy **twitterconf-tpl.edn** as a template. Edit it and fill out the credentials you have obtained from dev.twitter.com:
+You will need to create a file named twitterconf.edn. You can copy **twitterconf-tpl.edn** as a template. Edit it and fill out the credentials you have obtained from **[dev.twitter.com](dev.twitter.com)**:
 
       { :consumer-key             "<YOUR API KEY HERE>"
         :consumer-secret          "<YOUR API SECRET HERE>"
@@ -67,4 +67,4 @@ Alternatively, you can use the REPL:
     birdwatch.main=> (alter-var-root #'system component/start)
 
 ## License
-Copyright © 2014 Matthias Nehlsen. Distributed under the Apache License, Version 2.0. See separate LICENSE file.
+Copyright © 2014 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the GNU GENERAL PUBLIC LICENSE, Version 3. See separate LICENSE file.

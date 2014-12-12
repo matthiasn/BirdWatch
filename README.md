@@ -19,4 +19,4 @@ There are a couple of blog posts covering this application. The best starting po
 A series of articles about the all-Clojure version is currently in the works. Check out **[matthiasnehlsen.com](http://matthiasnehlsen.com)** and subscribe to the newsletter if you want to stay up to date.
 
 ## License
-Copyright © 2014 Matthias Nehlsen. Distributed under the Apache License, Version 2.0. See separate LICENSE file. 
+Copyright © 2014 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the GNU GENERAL PUBLIC LICENSE, Version 3. See separate LICENSE file.

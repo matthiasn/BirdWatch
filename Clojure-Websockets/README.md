@@ -67,4 +67,4 @@ Alternatively, you can use the REPL:
     birdwatch.main=> (alter-var-root #'system component/start)
 
 ## License
-Copyright © 2014 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the GNU GENERAL PUBLIC LICENSE, Version 3. See separate LICENSE file.
+Copyright © 2014 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the **GNU GENERAL PUBLIC LICENSE**, Version 3. See separate LICENSE file.

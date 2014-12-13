@@ -1,9 +1,39 @@
 (ns birdwatch.timeseries
-  (:require [birdwatch.util :as util]))
+  (:require [birdwatch.util :as util]
+            [reagent.core :as r :refer [atom]]))
 
 (enable-console-print!)
+;(.log js/console (pr-str mx))
 
-(def ts-elem (.getElementById js/document "timeseries1"))
+(defn by-id [id] (.getElementById js/document id))
+
+(def bars (atom []))
+
+(defn bar [{:keys [x y h w]}]
+  [:rect {:x x :y (- y h) :fill "steelblue" :width w :height h}])
+
+(def ts-elem2 (by-id "timeseries2"))
+(def ts-w2 (aget ts-elem2 "offsetWidth"))
+(def ts-h 100)
+
+(defn main []
+  [:svg {:width ts-w2 :height ts-h}
+   [:g
+    (doall (for [[idx itm] (map-indexed vector @bars)]
+             (let [bars @bars
+                   mx (apply max bars)
+                   cnt (count bars)
+                   w (/ ts-w2 cnt)
+                   gap (/ (/ ts-w2 20) cnt)]
+               [bar {:x (* idx w)
+                     :y ts-h
+                     :h (* (/ itm mx) ts-h)
+                     :w (- w gap)}])))]])
+
+(defn run []
+  (r/render-component [main] ts-elem2))
+
+(def ts-elem (by-id "timeseries1"))
 (def ts-w (aget ts-elem "offsetWidth"))
 
 (def graph-with-legend
@@ -18,7 +48,7 @@
 
 (defn date-round
   "return function that rounds the provided seconds since epoch down to the nearest time interval s
-   e.g. (date-round 60) creates a function that takes seconds t and rounds them to the nearest minute"
+  e.g. (date-round 60) creates a function that takes seconds t and rounds them to the nearest minute"
   [s]
   (fn [t] (* s (Math/floor (/ t s)))))
 
@@ -72,10 +102,15 @@
 (defn ts-map-vec
   "creates a vector of maps required by Rickshaw chart"
   [ts-map]
-  (map #(zipmap [:x :y] %)(vec ts-map)))
+  (map #(zipmap [:x :y] %) (vec ts-map)))
 
 (defn update-ts
   "update time series chart"
   [chart app]
   (aset graph-with-legend "series" "0" "data" (clj->js (ts-map-vec (ts-data app))))
+
+  (reset! bars (map (fn [[k v]] v) (vec (ts-data app))))
+
+  ;(.log js/console (pr-str (ts-data app)))
+
   (.update chart))

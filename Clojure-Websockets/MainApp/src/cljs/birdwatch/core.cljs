@@ -47,4 +47,4 @@
 ;;; The app starts with the search string encoded in the URI location hash.
 (swap! state/app assoc :search-text (util/search-hash))
 
-
+(ts/run)

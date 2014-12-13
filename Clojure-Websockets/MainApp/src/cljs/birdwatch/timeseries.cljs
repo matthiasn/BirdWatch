@@ -4,18 +4,16 @@
   (:import [goog.events EventType]))
 
 (enable-console-print!)
-;(.log js/console (pr-str mx))
 
 (defn by-id [id] (.getElementById js/document id))
 
 (def bars (atom []))
-
 (def label (atom {}))
 
-(defn bar [{:keys [x y h w itm]}]
+(defn bar [{:keys [x y h w itm idx]}]
   [:rect {:x x :y (- y h) :fill "steelblue" :width w :height h
-          :on-mouse-enter (fn [_ elem] (reset! label {:top (str (- y h) "px") :left (str x "px") :itm itm}))
-          :on-mouse-leave (fn [_ elem] (reset! label {}))}])
+          :on-mouse-over #(reset! label {:top (str (- y h) "px") :left (str x "px") :idx idx :itm itm})
+          :on-mouse-leave #(reset! label {})}])
 
 (def ts-elem2 (by-id "timeseries2"))
 (def ts-w2 (aget ts-elem2 "offsetWidth"))
@@ -23,17 +21,18 @@
 
 (defn main []
   (let [label @label
-        bars @bars]
+        bars @bars
+        mx (apply max bars)
+        scaled-bars (map #(* (/ % mx) ts-h) bars)
+        cnt (count bars)
+        w (/ ts-w2 cnt)
+        gap (/ (/ ts-w2 20) cnt)]
     [:div.rickshaw_graph
-     [:svg {:width ts-w2 :height ts-h}
+     [:svg {:width ts-w2 :height ts-h :on-mouse-move (fn [ev el] (.log js/console ev))}
       [:g
        (doall (for [[idx itm] (map-indexed vector bars)]
-                (let [mx (apply max bars)
-                      cnt (count bars)
-                      w (/ ts-w2 cnt)
-                      gap (/ (/ ts-w2 20) cnt)]
-                  [bar {:x (* idx w) :y ts-h :itm itm
-                        :h (* (/ itm mx) ts-h) :w (- w gap)}])))]]
+                [bar {:x (* idx w) :y ts-h :itm itm :idx idx
+                      :h (* (/ itm mx) ts-h) :w (- w gap)}]))]]
      [:div.detail {:style {:left (:left label)} :class (if (empty? label)"inactive")}
       [:div.x_label.right "Fri, 12 Dec 2014 23:51:00 GMT"]
       [:div.item.active.right {:style {:top (:top label)}} (str "Tweets: " (:itm label))]
@@ -97,7 +96,7 @@
 (defn ts-data
   "perform time series analysis by counting tweets in even intervals"
   [app]
-  (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) @app 10000)]
+  (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) @app 100000)]
     (if (> (count tweets-by-id) 100)
       (let [oldest (tweet-ts (last tweets-by-id))
             newest (tweet-ts (first tweets-by-id))

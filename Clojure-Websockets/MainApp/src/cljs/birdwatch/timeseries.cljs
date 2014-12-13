@@ -1,6 +1,7 @@
 (ns birdwatch.timeseries
   (:require [birdwatch.util :as util]
-            [reagent.core :as r :refer [atom]]))
+            [reagent.core :as r :refer [atom]])
+  (:import [goog.events EventType]))
 
 (enable-console-print!)
 ;(.log js/console (pr-str mx))
@@ -9,26 +10,34 @@
 
 (def bars (atom []))
 
-(defn bar [{:keys [x y h w]}]
-  [:rect {:x x :y (- y h) :fill "steelblue" :width w :height h}])
+(def label (atom {}))
+
+(defn bar [{:keys [x y h w itm]}]
+  [:rect {:x x :y (- y h) :fill "steelblue" :width w :height h
+          :on-mouse-enter (fn [_ elem] (reset! label {:top (str (- y h) "px") :left (str x "px") :itm itm}))
+          :on-mouse-leave (fn [_ elem] (reset! label {}))}])
 
 (def ts-elem2 (by-id "timeseries2"))
 (def ts-w2 (aget ts-elem2 "offsetWidth"))
 (def ts-h 100)
 
 (defn main []
-  [:svg {:width ts-w2 :height ts-h}
-   [:g
-    (doall (for [[idx itm] (map-indexed vector @bars)]
-             (let [bars @bars
-                   mx (apply max bars)
-                   cnt (count bars)
-                   w (/ ts-w2 cnt)
-                   gap (/ (/ ts-w2 20) cnt)]
-               [bar {:x (* idx w)
-                     :y ts-h
-                     :h (* (/ itm mx) ts-h)
-                     :w (- w gap)}])))]])
+  (let [label @label
+        bars @bars]
+    [:div.rickshaw_graph
+     [:svg {:width ts-w2 :height ts-h}
+      [:g
+       (doall (for [[idx itm] (map-indexed vector bars)]
+                (let [mx (apply max bars)
+                      cnt (count bars)
+                      w (/ ts-w2 cnt)
+                      gap (/ (/ ts-w2 20) cnt)]
+                  [bar {:x (* idx w) :y ts-h :itm itm
+                        :h (* (/ itm mx) ts-h) :w (- w gap)}])))]]
+     [:div.detail {:style {:left (:left label)} :class (if (empty? label)"inactive")}
+      [:div.x_label.right "Fri, 12 Dec 2014 23:51:00 GMT"]
+      [:div.item.active.right {:style {:top (:top label)}} (str "Tweets: " (:itm label))]
+      [:div.dot.active {:style {:top (:top label) :border-color "rgb(70, 130, 180)"}}]]]))
 
 (defn run []
   (r/render-component [main] ts-elem2))

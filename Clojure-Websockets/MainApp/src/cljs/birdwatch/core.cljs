@@ -36,7 +36,7 @@
 ; update the cheap charts every second
 (go-loop [] (<! (timeout 1000))
          (.updateBarchart js/BirdWatch (clj->js (wc/get-words state/app 25)))
-         (ts/update-ts ts/graph-with-legend state/app)
+         (ts/update-ts state/app)
          (recur))
 
 ; update the expensive word cloud periodically
@@ -46,5 +46,3 @@
 
 ;;; The app starts with the search string encoded in the URI location hash.
 (swap! state/app assoc :search-text (util/search-hash))
-
-(ts/run)

@@ -1,7 +1,6 @@
 (ns birdwatch.timeseries
   (:require [birdwatch.util :as util]
-            [reagent.core :as r :refer [atom]])
-  (:import [goog.events EventType]))
+            [reagent.core :as r :refer [atom]]))
 
 (enable-console-print!)
 
@@ -10,49 +9,44 @@
 (def bars (atom []))
 (def label (atom {}))
 
-(defn bar [{:keys [x y h w itm idx]}]
-  [:rect {:x x :y (- y h) :fill "steelblue" :width w :height h
-          :on-mouse-over #(reset! label {:top (str (- y h) "px") :left (str x "px") :idx idx :itm itm})
-          :on-mouse-leave #(reset! label {})}])
-
-(def ts-elem2 (by-id "timeseries2"))
-(def ts-w2 (aget ts-elem2 "offsetWidth"))
-(def ts-h 100)
-
-(defn main []
-  (let [label @label
-        bars @bars
-        mx (apply max bars)
-        scaled-bars (map #(* (/ % mx) ts-h) bars)
-        cnt (count bars)
-        w (/ ts-w2 cnt)
-        gap (/ (/ ts-w2 20) cnt)]
-    [:div.rickshaw_graph
-     [:svg {:width ts-w2 :height ts-h :on-mouse-move (fn [ev el] (.log js/console ev))}
-      [:g
-       (doall (for [[idx itm] (map-indexed vector bars)]
-                [bar {:x (* idx w) :y ts-h :itm itm :idx idx
-                      :h (* (/ itm mx) ts-h) :w (- w gap)}]))]]
-     [:div.detail {:style {:left (:left label)} :class (if (empty? label)"inactive")}
-      [:div.x_label.right "Fri, 12 Dec 2014 23:51:00 GMT"]
-      [:div.item.active.right {:style {:top (:top label)}} (str "Tweets: " (:itm label))]
-      [:div.dot.active {:style {:top (:top label) :border-color "rgb(70, 130, 180)"}}]]]))
-
-(defn run []
-  (r/render-component [main] ts-elem2))
-
 (def ts-elem (by-id "timeseries1"))
 (def ts-w (aget ts-elem "offsetWidth"))
+(def ts-h 100)
 
-(def graph-with-legend
-  (doto
-    (Rickshaw.Graph. (clj->js {:element ts-elem :renderer "bar"
-                               :width ts-w      :height 100
-                               :series [{:color "steelblue" :data [{:x 1 :y 0}] :name "Tweets"}]}))
-    (.render)))
+(defn bar [x y h w idx]
+  [:rect {:x x :y (- y h) :fill "steelblue" :width w :height h
+          :on-mouse-enter #(reset! label {:idx idx})
+          :on-mouse-leave #(reset! label {})}])
 
-(Rickshaw.Graph.Axis.Time. (clj->js {:graph graph-with-legend}))
-(def hover-detail (Rickshaw.Graph.HoverDetail. (clj->js {:graph graph-with-legend :yFormatter #(Math/round %)})))
+(defn barchart [indexed mx cnt w]
+    (let [gap (/ (/ ts-w 20) cnt)]
+      [:svg {:width ts-w :height ts-h}
+       [:g
+        (doall (for [[idx [k v]] indexed]
+                 [bar (* idx w) ts-h (* (/ v mx) ts-h) (- w gap) idx]))]]))
+
+(defn labels [bars mx cnt w]
+  (when-not (empty? @label)
+    (let [idx (:idx @label)
+          [k v] (get bars idx)
+          top (- ts-h (* (/ v mx) ts-h))
+          lr (if (< (/ idx cnt) 0.6) "left" "right")]
+      [:div.detail {:style {:left (* idx w)}}
+       [:div.x_label {:class lr} (.toString (.unix js/moment k))]
+       [:div.item.active {:class lr :style {:top top}} "Tweets: " v]
+       [:div.dot.active {:style {:top top :border-color "steelblue"}}]])))
+
+(defn ts-chart []
+  (let [bars @bars
+        indexed (map-indexed vector bars)
+        mx (apply max (map (fn [[k v]] v) bars))
+        cnt (count bars)
+        w (/ ts-w cnt)]
+    [:div.rickshaw_graph
+     [barchart indexed mx cnt w]
+     [labels bars mx cnt w]]))
+
+(r/render-component [ts-chart] ts-elem)
 
 (defn date-round
   "return function that rounds the provided seconds since epoch down to the nearest time interval s
@@ -107,18 +101,9 @@
                 (map #(rounder (tweet-ts %)) tweets-by-id)))
       (empty-ts-map 0 0 9))))
 
-(defn ts-map-vec
-  "creates a vector of maps required by Rickshaw chart"
-  [ts-map]
-  (map #(zipmap [:x :y] %) (vec ts-map)))
-
 (defn update-ts
   "update time series chart"
-  [chart app]
-  (aset graph-with-legend "series" "0" "data" (clj->js (ts-map-vec (ts-data app))))
+  [app]
+  (reset! bars (vec (ts-data app))))
 
-  (reset! bars (map (fn [[k v]] v) (vec (ts-data app))))
-
-  ;(.log js/console (pr-str (ts-data app)))
-
-  (.update chart))
+;(.log js/console (pr-str (ts-data app)))

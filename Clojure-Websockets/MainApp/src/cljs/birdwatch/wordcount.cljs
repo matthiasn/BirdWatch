@@ -23,6 +23,11 @@
   [app n]
   (vec (map (fn [w] (let [[k v] w] {:key k :value v})) (take n (:words-sorted-by-count @app)))))
 
+(defn get-words2
+  "get vector of maps with word as :key and count as :value"
+  [app n]
+  (vec (take n (:words-sorted-by-count @app))))
+
 (defn add-word
   "add word to the words map and the sorted set with the counts (while discarding old entry)"
   [app word]

@@ -5,6 +5,7 @@
             [birdwatch.timeseries :as ts]
             [birdwatch.communicator :as comm]
             [birdwatch.wordcount :as wc]
+            [birdwatch.wordcount-barchart :as wc-bc]
             [birdwatch.ui :as ui]
             [birdwatch.ui-tweets :as ui-t]
             [birdwatch.state :as state]
@@ -17,13 +18,13 @@
 (reset! state/app (state/initial-state))
 
 ;;; Om components for the application are initialized here.
-(om/root ui-t/tweets-view     state/app {:target (. js/document (getElementById "tweet-frame"))})
-(om/root ui/count-view        state/app {:target (. js/document (getElementById "tweet-count"))})
-(om/root ui/users-count-view  state/app {:target (. js/document (getElementById "users-count"))})
-(om/root ui/total-count-view  state/app {:target (. js/document (getElementById "total-tweet-count"))})
-(om/root ui/search-view       state/app {:target (. js/document (getElementById "search"))})
-(om/root ui/sort-buttons-view state/app {:target (. js/document (getElementById "sort-buttons"))})
-(om/root ui/pagination-view   state/app {:target (. js/document (getElementById "pagination"))})
+(om/root ui-t/tweets-view     state/app {:target (util/by-id "tweet-frame")})
+(om/root ui/count-view        state/app {:target (util/by-id "tweet-count")})
+(om/root ui/users-count-view  state/app {:target (util/by-id "users-count")})
+(om/root ui/total-count-view  state/app {:target (util/by-id "total-tweet-count")})
+(om/root ui/search-view       state/app {:target (util/by-id "search")})
+(om/root ui/sort-buttons-view state/app {:target (util/by-id "sort-buttons")})
+(om/root ui/pagination-view   state/app {:target (util/by-id "pagination")})
 
 (defn ^:export append-search-text [s]
   (swap! state/app assoc :search-text (str (:search-text @state/app) " " s)))
@@ -34,8 +35,9 @@
 (def word-cloud (.WordCloud js/BirdWatch cloud-w (* cloud-w 0.7) 250 append-search-text "#wordCloud"))
 
 ; update the cheap charts every second
-(go-loop [] (<! (timeout 1000))
+(go-loop [] (<! (timeout 2000))
          (.updateBarchart js/BirdWatch (clj->js (wc/get-words state/app 25)))
+         (wc-bc/update-words (wc/get-words2 state/app 25))
          (ts/update-ts state/app)
          (recur))
 

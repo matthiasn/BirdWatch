@@ -3,6 +3,8 @@
             [birdwatch.state :as state]
             [tailrecursion.priority-map :refer [priority-map-by]]))
 
+(defn by-id [id] (.getElementById js/document id))
+
 (defn search-hash []
   (subs (js/decodeURIComponent (aget js/window "location" "hash")) 1))
 

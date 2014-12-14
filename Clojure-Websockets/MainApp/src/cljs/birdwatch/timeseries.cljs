@@ -4,12 +4,10 @@
 
 (enable-console-print!)
 
-(defn by-id [id] (.getElementById js/document id))
-
 (def bars (atom []))
 (def label (atom {}))
 
-(def ts-elem (by-id "timeseries1"))
+(def ts-elem (util/by-id "timeseries1"))
 (def ts-w (aget ts-elem "offsetWidth"))
 (def ts-h 100)
 
@@ -106,4 +104,3 @@
   [app]
   (reset! bars (vec (ts-data app))))
 
-;(.log js/console (pr-str (ts-data app)))

@@ -1,0 +1,26 @@
+(ns birdwatch.stats.regression)
+
+(enable-console-print!)
+
+(defn square [x] (* x x))
+(defn mean [xs]
+  (let [cnt (count xs)]
+    (when (pos? cnt) (/ (apply + xs) cnt))))
+
+; adapted from from http://compbio.ucdenver.edu/Hunter_lab/Hunter/cl-statistics.lisp
+(defn linear-regression [ys]
+  (let [n (count ys)]
+    (when (pos? n)
+      (let [xs (range n)
+            x-bar (mean xs)
+            y-bar (mean ys)
+            Lxx (reduce + (map (fn [xi] (square (- xi x-bar))) xs))
+            Lyy (reduce + (map (fn [yi] (square (- yi y-bar))) ys))
+            Lxy (reduce + (map (fn [xi yi] (* (- xi x-bar) (- yi y-bar))) xs ys))
+            slope (/ Lxy Lxx)
+            intercept (- y-bar (* slope x-bar))
+            reg-ss (* slope Lxy)
+            res-ms (/ (- Lyy reg-ss) (- n 2))
+            r (/ Lxy (Math/sqrt (* Lxx Lyy)))
+            r2 (/ reg-ss Lyy)]
+        [intercept slope r r2]))))

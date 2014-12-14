@@ -180,7 +180,6 @@ table, th, td {
   background-color: #c0c0c0;
 }
 
-
 /* Rickshaw chart replaced by constructing SVG directly from ClojureScript. */
 .rickshaw_graph .detail {
 	pointer-events: none;
@@ -200,12 +199,14 @@ table, th, td {
 	font-family: Arial, sans-serif;
 	border-radius: 3px;
 	padding: 4px;
-	opacity: 0.7;
+	opacity: 0.8;
 	border: 1px solid #e0e0e0;
 	font-size: 10px;
 	position: absolute;
+  top: 85px;
 	background: white;
 	white-space: nowrap;
+  transition:opacity .5s linear;
 }
 .rickshaw_graph .detail .x_label.left {
 	left: 0;
@@ -228,6 +229,7 @@ table, th, td {
 	margin-right: 1em;
 	margin-top: -1em;
 	white-space: nowrap;
+  transition:opacity .5s linear;
 }
 .rickshaw_graph .detail .item.left {
 	left: 0;

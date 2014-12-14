@@ -12,9 +12,23 @@
 (def opts1 [[10 "10 seconds"][30 "30 seconds"][60 "1 minute"][300 "5 minutes"][600 "10 minutes"]])
 (def opts2 [[10 "10 tweets"][100 "100 tweets"][500 "500 tweets"][1000 "1000 tweets"]])
 
+(def arrows
+  {:RIGHT      ["#428bca" "-600,100 200,100 -200,500 100,500 600,0 100,-500 -200,-500 200,-100 -600,-100 "]
+   :UP         ["#45cc40" "100,600 100,-200 500,200 500,-100 0,-600 -500,-100 -500,200 -100,-200 -100,600"]
+   :DOWN       ["#dc322f" "100,-600 100,200 500,-200 500,100 0,600 -500,100 -500,-200 -100,200 -100,-600"]
+   :RIGHT-UP   ["#45cc40" "400,-400 -200,-400 -350,-250 125,-250 -400,275 -275,400 250,-125 250,350 400,200"]
+   :RIGHT-DOWN ["#dc322f" "400,400 -200,400 -350,250 125,250 -400,-275 -275,-400 250,125 250,-350 400,-200"]})
+
+(defn arrow [x y dir]
+  (let [[color points] (dir arrows)
+        arrowTrans (str "translate(" x ", " (+ y 7) ") scale(0.01) ")]
+    [:polygon {:transform arrowTrans :stroke "none" :fill color :points points}]))
+
 (defn bar [text cnt y h w idx]
   [:g
    [:text {:y (+ y 8) :x 138 :stroke "none" :fill "black" :dy ".35em" :textAnchor "end"} text]
+   [arrow 146 y :RIGHT-UP]
+   [arrow 160 y :RIGHT]
    [:rect {:y y :x 168 :height 15 :width w :stroke "white" :fill "#428bca"}]
    (if (> w 50)
      [:text (merge text-defaults {:y (+ y 8) :x (+ w 160)}) cnt]

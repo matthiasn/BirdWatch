@@ -2,7 +2,8 @@
   (:require-macros [cljs.core.async.macros :refer [go-loop go alt!]])
   (:require [birdwatch.channels :as c]
             [tailrecursion.priority-map :refer [priority-map-by]]
-            [cljs.core.async :as async :refer [<!]]))
+            [cljs.core.async :as async :refer [<!]]
+            [reagent.core :as r :refer [atom]]))
 
 ;;; Application state in a single atom
 ;;; Will be initialized with the map returned by util/initial-state.

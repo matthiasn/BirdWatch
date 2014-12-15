@@ -18,13 +18,8 @@
 (reset! state/app (state/initial-state))
 
 ;;; Om components for the application are initialized here.
-(om/root ui-t/tweets-view     state/app {:target (util/by-id "tweet-frame")})
-(om/root ui/count-view        state/app {:target (util/by-id "tweet-count")})
-(om/root ui/users-count-view  state/app {:target (util/by-id "users-count")})
-(om/root ui/total-count-view  state/app {:target (util/by-id "total-tweet-count")})
-(om/root ui/search-view       state/app {:target (util/by-id "search")})
-(om/root ui/sort-buttons-view state/app {:target (util/by-id "sort-buttons")})
-(om/root ui/pagination-view   state/app {:target (util/by-id "pagination")})
+(om/root ui-t/tweets-view   state/app {:target (util/by-id "tweet-frame")})
+(ui/init-views)
 
 (defn ^:export append-search-text [s]
   (swap! state/app assoc :search-text (str (:search-text @state/app) " " s)))

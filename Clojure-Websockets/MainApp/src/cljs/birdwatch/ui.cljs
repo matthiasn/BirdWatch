@@ -1,102 +1,59 @@
 (ns birdwatch.ui
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [birdwatch.util :as util]
+  (:require [birdwatch.util :as util]
             [birdwatch.channels :as c]
             [birdwatch.communicator :as comm]
             [birdwatch.state :as state]
-            [cljs.core.async :as async :refer [<! chan put!]]))
+            [cljs.core.async :as async :refer [<! chan put!]]
+            [reagent.core :as r]))
 
 (enable-console-print!)
 
-(defn count-view
-  "rendering tweet counter"
-  [app owner]
-  (reify
-    om/IRender
-    (render [this] (dom/span nil (:count app)))))
+(defn count-view []
+  [:span (:count @state/app)])
 
-(defn users-count-view
-  "rendering users counter"
-  [app owner]
-  (reify
-    om/IRender
-    (render [this]
-            (let [users (:users-count app)]
-              (dom/span nil "Connected: " (dom/strong nil users) (if (= users 1) " user" " users"))))))
+(defn users-count-view []
+  (let [users (:users-count @state/app)]
+    [:span "Connected: " [:strong users] (if (= users 1) " user" " users")]))
 
-(defn total-count-view
-  "rendering total tweets counter"
-  [app owner]
-  (reify
-    om/IRender
-    (render [this]
-            (dom/span nil "Indexed: " (dom/strong nil (:total-tweet-count app)) " tweets"))))
+(defn total-count-view []
+  [:span "Indexed: " [:strong (:total-tweet-count @state/app)] " tweets"])
 
-(defn sort-button-js
-  "generates JS for sort button for both updating sort order and showing active button"
-  [app key]
-  #js {:onClick (fn [e] (om/update! app [:sorted] key))
-       :className (str "pure-button not-rounded" (if (= key (:sorted app)) " pure-button-primary" " sort-button"))})
+(def sort-orders [[:by-id "latest"][:by-followers "followers"][:by-retweets "retweets"]
+                  [:by-rt-since-startup "retweets2"][:by-reach "reach"][:by-favorites "favorites"]])
 
-(defn sort-buttons-view
-  "rendering sort buttons"
-  [app owner]
-  (reify
-    om/IRender
-    (render [this]
-            (dom/div nil
-                     (dom/button #js {:className "pure-button not-rounded sort-button"} "Sort by")
-                     (dom/button (sort-button-js app :by-id) "latest")
-                     (dom/button (sort-button-js app :by-followers) "followers")
-                     (dom/button (sort-button-js app :by-retweets) "retweets")
-                     (dom/button (sort-button-js app :by-rt-since-startup) "retweets2")
-                     (dom/button (sort-button-js app :by-reach) "reach")
-                     (dom/button (sort-button-js app :by-favorites) "favorites")))))
+(defn sort-view []
+  (let [curr-order (:sorted @state/app)]
+    [:div
+     [:button.pure-button.not-rounded.sort-button "Sort by"]
+     (for [[k text] sort-orders :let [btn-class (if (= k curr-order) " pure-button-primary" " sort-button")]]
+       ^{:key text} [:button.pure-button.not-rounded
+                     {:class btn-class :on-click #(swap! state/app assoc :sorted k)} text])]))
 
-(defn handle-search-change [e app]
-  (swap! state/app assoc :search-text (.. e -target -value)))
+(defn search-view []
+  [:form.pure-form
+   [:fieldset
+    [:input {:type "text" :value (:search-text @state/app)
+             :on-key-press #(when (== (.-keyCode %) 13) (comm/start-search))
+             :on-change #(swap! state/app assoc :search-text (.. % -target -value))
+             :placeholder "Example search: java (job OR jobs OR hiring)"}]
+    [:button.pure-button.pure-button-primary {:on-click #(comm/start-search)}
+     [:span {:class "glyphicon glyphicon-search"}]]]])
 
-(defn search-view
-  "rendering search bar"
-  [app owner]
-  (reify
-    om/IRender
-    (render [this]
-            (dom/form #js {:className "pure-form"}
-                      (dom/fieldset nil
-                               (dom/input #js {:type "text"
-                                               :value (:search-text (om/get-props owner))
-                                               :placeholder "Example search: java (job OR jobs OR hiring)"
-                                               :onKeyPress #(when (== (.-keyCode %) 13) (comm/start-search))
-                                               :onChange #(handle-search-change % app)})
-                               (dom/button #js {:className "pure-button pure-button-primary" :onClick #(comm/start-search)}
-                                           (dom/span #js {:className "glyphicon glyphicon-search"})))))))
+(defn pag-item [idx]
+  [:button.pure-button.not-rounded.button-xsmall
+   {:class (if (= idx (:page @state/app)) " pure-button-primary" "")
+    :on-click #(swap! state/app assoc :page idx)} idx])
 
-(defn pag-items
-  "function creating pagination items"
-  [app page-change-chan]
-  (map #(dom/button #js {:className (str "pure-button not-rounded button-xsmall" (if (= % (:page app)) " pure-button-primary" ""))
-                         :onClick (fn [e] (put! page-change-chan %))} %)
-       (take 15 (range 1 (Math/floor (/ (:count app) (:n app)))))))
+(defn pagination-view []
+  [:div
+   [:button.pure-button.not-rounded.button-xsmall "Page"]
+   (for [idx (take 15 (range 1 (Math/floor (/ (:count @state/app) (:n @state/app)))))]
+     ^{:key idx} [pag-item idx])])
 
-(defn pagination-view
-  "rendering pagination list"
-  [app owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-                {:page-change (chan)})
-    om/IWillMount
-    (will-mount [_]
-                (let [page-change (om/get-state owner :page-change)]
-                  (go (loop []
-                        (let [page (<! page-change)]
-                          (om/update! app :page page)
-                          (recur))))))
-    om/IRenderState
-    (render-state [this {:keys [page-change]}]
-                  (apply dom/div nil
-                         (flatten [(dom/button #js {:className "pure-button not-rounded button-xsmall"} "Page")
-                                   (pag-items app page-change)])))))
+(def views [[count-view "tweet-count"][search-view "search"][total-count-view "total-tweet-count"]
+            [users-count-view "users-count"][sort-view "sort-buttons"][pagination-view "pagination"]])
+
+(defn init-views []
+  (doseq [[component id] views]
+    (r/render-component [component] (util/by-id id))))

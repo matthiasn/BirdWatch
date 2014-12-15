@@ -1,50 +1,9 @@
 (ns birdwatch.timeseries
   (:require [birdwatch.util :as util]
+            [birdwatch.charts.ts-chart :as tsc]
             [reagent.core :as r :refer [atom]]))
 
 (enable-console-print!)
-
-(def bars (atom []))
-(def label (atom {}))
-
-(def ts-elem (util/by-id "timeseries1"))
-(def ts-w (aget ts-elem "offsetWidth"))
-(def ts-h 100)
-
-(defn bar [x y h w idx]
-  [:rect {:x x :y (- y h) :fill "steelblue" :width w :height h
-          :on-mouse-enter #(reset! label {:idx idx})
-          :on-mouse-leave #(reset! label {})}])
-
-(defn barchart [indexed mx cnt w]
-    (let [gap (/ (/ ts-w 20) cnt)]
-      [:svg {:width ts-w :height ts-h}
-       [:g
-        (doall (for [[idx [k v]] indexed]
-                 [bar (* idx w) ts-h (* (/ v mx) ts-h) (- w gap) idx]))]]))
-
-(defn labels [bars mx cnt w]
-  (when-not (empty? @label)
-    (let [idx (:idx @label)
-          [k v] (get bars idx)
-          top (- ts-h (* (/ v mx) ts-h))
-          lr (if (< (/ idx cnt) 0.6) "left" "right")]
-      [:div.detail {:style {:left (* idx w)}}
-       [:div.x_label {:class lr} (.toString (.unix js/moment k))]
-       [:div.item.active {:class lr :style {:top top}} "Tweets: " v]
-       [:div.dot.active {:style {:top top :border-color "steelblue"}}]])))
-
-(defn ts-chart []
-  (let [bars @bars
-        indexed (map-indexed vector bars)
-        mx (apply max (map (fn [[k v]] v) bars))
-        cnt (count bars)
-        w (/ ts-w cnt)]
-    [:div.rickshaw_graph
-     [barchart indexed mx cnt w]
-     [labels bars mx cnt w]]))
-
-(r/render-component [ts-chart] ts-elem)
 
 (defn date-round
   "return function that rounds the provided seconds since epoch down to the nearest time interval s
@@ -102,5 +61,5 @@
 (defn update-ts
   "update time series chart"
   [app]
-  (reset! bars (vec (ts-data app))))
+  (reset! tsc/bars (vec (ts-data app))))
 

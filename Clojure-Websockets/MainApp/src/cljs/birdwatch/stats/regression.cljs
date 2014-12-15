@@ -20,7 +20,5 @@
             slope (/ Lxy Lxx)
             intercept (- y-bar (* slope x-bar))
             reg-ss (* slope Lxy)
-            res-ms (/ (- Lyy reg-ss) (- n 2))
-            r (/ Lxy (Math/sqrt (* Lxx Lyy)))
-            r2 (/ reg-ss Lyy)]
-        [intercept slope r r2]))))
+            res-ms (/ (- Lyy reg-ss) (- n 2))]
+        [intercept slope]))))

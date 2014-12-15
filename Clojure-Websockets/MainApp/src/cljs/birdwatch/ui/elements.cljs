@@ -1,10 +1,8 @@
-(ns birdwatch.ui
-  (:require-macros [cljs.core.async.macros :refer [go]])
+(ns birdwatch.ui.elements
   (:require [birdwatch.util :as util]
-            [birdwatch.channels :as c]
             [birdwatch.communicator :as comm]
             [birdwatch.state :as state]
-            [cljs.core.async :as async :refer [<! chan put!]]
+            [birdwatch.ui.tweets :as ui-tweets]
             [reagent.core :as r]))
 
 (enable-console-print!)
@@ -52,7 +50,8 @@
      ^{:key idx} [pag-item idx])])
 
 (def views [[count-view "tweet-count"][search-view "search"][total-count-view "total-tweet-count"]
-            [users-count-view "users-count"][sort-view "sort-buttons"][pagination-view "pagination"]])
+            [users-count-view "users-count"][sort-view "sort-buttons"][pagination-view "pagination"]
+            [ui-tweets/tweets-view "tweet-frame"]])
 
 (defn init-views []
   (doseq [[component id] views]

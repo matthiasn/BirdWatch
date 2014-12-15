@@ -1,13 +1,11 @@
 (ns birdwatch.core
   (:require-macros [cljs.core.async.macros :refer [go-loop go alt!]])
-  (:require [om.core :as om :include-macros true]
-            [birdwatch.util :as util]
+  (:require [birdwatch.util :as util]
             [birdwatch.timeseries :as ts]
             [birdwatch.communicator :as comm]
             [birdwatch.wordcount :as wc]
             [birdwatch.charts.wordcount-chart :as wc-c]
-            [birdwatch.ui :as ui]
-            [birdwatch.ui-tweets :as ui-t]
+            [birdwatch.ui.elements :as ui]
             [birdwatch.state :as state]
             [cljs.core.async :as async :refer [<! >! chan put! alts! timeout]]))
 
@@ -17,8 +15,7 @@
 ;;; will be initialized with the map returned by state/initial-state.
 (reset! state/app (state/initial-state))
 
-;;; Om components for the application are initialized here.
-(om/root ui-t/tweets-view   state/app {:target (util/by-id "tweet-frame")})
+;;; Reagent components for the application are initialized here.
 (ui/init-views)
 
 (defn ^:export append-search-text [s]

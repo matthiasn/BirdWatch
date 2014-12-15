@@ -30,14 +30,12 @@
     [:polygon {:transform arrowTrans :stroke "none" :fill color :points points}]))
 
 (defn bar [text cnt y h w idx]
-  (let [pos-slope (get @pos-trends text)]
+  (let [pos-slope (get @pos-trends text)
+        ratio-slope (get @ratio-trends text)]
     [:g
      [:text {:y (+ y 8) :x 138 :stroke "none" :fill "black" :dy ".35em" :textAnchor "end"} text]
-     [arrow 146 y (cond
-                   (pos? pos-slope) :UP
-                   (neg? pos-slope ) :DOWN
-                   :else :RIGHT)]
-     [arrow 160 y :RIGHT]
+     [arrow 146 y (cond (pos? pos-slope)   :UP       (neg? pos-slope )   :DOWN       :else :RIGHT)]
+     [arrow 160 y (cond (pos? ratio-slope) :RIGHT-UP (neg? ratio-slope ) :RIGHT-DOWN :else :RIGHT)]
      [:rect {:y y :x 168 :height 15 :width w :stroke "white" :fill "#428bca"}]
      (if (> w 50)
        [:text (merge text-defaults {:y (+ y 8) :x (+ w 160)}) cnt]
@@ -66,8 +64,12 @@
   "update wordcount chart"
   [words]
   (reset! items (vec (map-indexed vector words)))
-  (doseq [[idx [text cnt]] @items]
-    (let [slope (get (reg/linear-regression (take 3 (get @pos-items text))) 1)]
+  (let [items @items
+        total-cnt (apply + (map (fn [[_[_ cnt]]] cnt) items))]
+    (doseq [[idx [text cnt]] items]
       (swap! pos-items update-in [text] conj idx)
-      (swap! pos-trends assoc-in [text] slope))))
-
+      (swap! ratio-items update-in [text] conj (/ total-cnt cnt))
+      (swap! pos-trends assoc-in [text]
+             (get (reg/linear-regression (take 3 (get @pos-items text))) 1))
+      (swap! ratio-trends assoc-in [text]
+             (get (reg/linear-regression (take 1000 (get @ratio-items text))) 1)))))

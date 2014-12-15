@@ -15,8 +15,7 @@
 (def ts-w (aget ts-elem "offsetWidth"))
 (def text-defaults {:stroke "none" :fill "#DDD" :fontWeight 500 :fontSize "0.8em" :dy ".35em" :textAnchor "end"})
 
-(def opts1 [[10 "10 seconds"][30 "30 seconds"][60 "1 minute"][300 "5 minutes"][600 "10 minutes"]])
-(def opts2 [[10 "10 tweets"][100 "100 tweets"][500 "500 tweets"][1000 "1000 tweets"]])
+(def opts [[10 "10 tweets"][100 "100 tweets"][500 "500 tweets"][1000 "1000 tweets"]])
 
 (def arrows
   {:RIGHT      ["#428bca" "-600,100 200,100 -200,500 100,500 600,0 100,-500 -200,-500 200,-100 -600,-100 "]
@@ -54,12 +53,12 @@
        (for [[idx [text cnt]] indexed]
          ^{:key text}[bar text cnt (* idx 15) 15 (* (- ts-w 190) (/ cnt mx)) idx])
        [:line {:transform "translate(168, 0)" :y 0 :y2 (* cnt 15) :stroke "black"}]]]
-     [:p.legend [:strong "1st trend indicator:"] " position changes in last "
-      [:select {:defaultValue 300000}
-       (for [[v t] opts1] ^{:key v} [:option {:value (* v 1000)} t])]]
-     [:p.legend [:strong "2nd trend indicator:"] " ratio change termCount / totalTermsCounted over last "
+     [:p.legend [:strong "1st trend indicator:"]
+      " recent position changes"]
+     [:p.legend [:strong "2nd trend indicator:"]
+      " ratio change termCount / totalTermsCounted over last "
       [:select {:defaultValue 100}
-       (for [[v t] opts2] ^{:key v} [:option {:value v} t])]]]))
+       (for [[v t] opts] ^{:key v} [:option {:value v} t])]]]))
 
 (r/render-component [wordcount-barchart] ts-elem)
 

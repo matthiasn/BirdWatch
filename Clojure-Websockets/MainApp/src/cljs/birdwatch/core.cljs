@@ -36,7 +36,6 @@
 
 ; update the cheap charts every second
 (go-loop [] (<! (timeout 1000))
-         (.updateBarchart js/BirdWatch (clj->js (wc/get-words state/app 25)))
          (wc-c/update-words (wc/get-words2 state/app 25))
          (ts/update-ts state/app)
          (recur))

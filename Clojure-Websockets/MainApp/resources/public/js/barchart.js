@@ -87,7 +87,7 @@ var BirdWatch = BirdWatch || {};
             var bars = this.props.words.map(function (bar, i, arr) {
                 if (!bar) return "";
                 var y = i * 15;
-                var w = bar.value / arr[0].value * (barChartElem.width() - 190);
+                var w = bar.value / arr[0].value * (barChartElem.offsetWidth - 190);
                 return Bar( {t:bar.key, y:y, w:w, key:bar.key, idx:i, val:bar.value,
                             posChangeDur:this.refs.posChangeDur.getDOMNode().value,
                             ratioChangeTweets:this.refs.ratioChangeTweets.getDOMNode().value} );
@@ -120,8 +120,8 @@ var BirdWatch = BirdWatch || {};
         }
     });
 
-    var barChartElem = $("#react-bar-chart");
-    var barChart = React.renderComponent(BarChart( {numPages:1, words:[]}), document.getElementById('react-bar-chart'));
+    var barChartElem = document.getElementById('react-bar-chart')
+    var barChart = React.renderComponent(BarChart( {numPages:1, words:[]}), barChartElem);
 
     BirdWatch.updateBarchart = function (words) { barChart.setProps({words: _.take(words, 25) }); };
 })();

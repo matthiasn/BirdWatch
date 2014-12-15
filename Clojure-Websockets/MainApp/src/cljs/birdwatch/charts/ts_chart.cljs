@@ -17,11 +17,11 @@
           :on-mouse-leave #(reset! label {})}])
 
 (defn barchart [indexed mx cnt w]
-    (let [gap (/ (/ ts-w 20) cnt)]
-      [:svg {:width ts-w :height ts-h}
-       [:g
-         (for [[idx [k v]] indexed]
-           [bar (* idx w) ts-h (* (/ v mx) ts-h) (- w gap) idx])]]))
+  (let [gap (/ (/ ts-w 20) cnt)]
+    [:svg {:width ts-w :height ts-h}
+     [:g
+      (for [[idx [k v]] indexed]
+        ^{:key k} [bar (* idx w) ts-h (* (/ v mx) ts-h) (- w gap) idx])]]))
 
 (defn labels [bars mx cnt w]
   (when-not (empty? @label)

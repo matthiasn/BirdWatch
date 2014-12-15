@@ -35,7 +35,7 @@
 (def word-cloud (.WordCloud js/BirdWatch cloud-w (* cloud-w 0.7) 250 append-search-text "#wordCloud"))
 
 ; update the cheap charts every second
-(go-loop [] (<! (timeout 2000))
+(go-loop [] (<! (timeout 1000))
          (.updateBarchart js/BirdWatch (clj->js (wc/get-words state/app 25)))
          (wc-bc/update-words (wc/get-words2 state/app 25))
          (ts/update-ts state/app)

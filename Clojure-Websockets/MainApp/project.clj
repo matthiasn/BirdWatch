@@ -20,7 +20,7 @@
                  [org.clojure/clojurescript "0.0-2411"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.5"]
-                 [reagent "0.4.3"]
+                 [reagent "0.5.0-alpha"]
                  [com.cognitect/transit-clj  "0.8.259"]
                  [com.cognitect/transit-cljs "0.8.192"]
                  [clj-pid "0.1.1"]
@@ -47,8 +47,8 @@
                         :source-paths ["src/cljs"]
                         :compiler {:output-to "resources/public/js/build/birdwatch-opt.js"
                                    :optimizations :advanced
-                                   ;:preamble ["reagent/react.js"]
-                                   :externs ["externs/react.js" "externs/misc.js"]}}
+                                   :preamble ["reagent/react.min.js"]
+                                   :externs ["externs/misc.js"]}}
                        {:id "test"
                         :source-paths ["src/cljs" "test/cljs"]
                         :compiler {:output-to "test-out/birdwatch.js"

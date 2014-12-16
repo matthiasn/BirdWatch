@@ -2,6 +2,7 @@
   (:require [birdwatch.util :as util]
             [birdwatch.stats.regression :as reg]
             [birdwatch.charts.shapes :as s]
+            [birdwatch.state :as state]
             [reagent.core :as r :refer [atom]]))
 
 (enable-console-print!)
@@ -19,7 +20,7 @@
 (defn bar [text cnt y h w idx]
   (let [pos-slope (get @pos-trends text)
         ratio-slope (get @ratio-trends text)]
-    [:g
+    [:g {:on-click #(state/append-search-text text)}
      [:text {:y (+ y 8) :x 138 :stroke "none" :fill "black" :dy ".35em" :textAnchor "end"} text]
      [s/arrow 146 y (cond (pos? pos-slope)   :UP       (neg? pos-slope )   :DOWN       :else :RIGHT)]
      [s/arrow 160 y (cond (pos? ratio-slope) :RIGHT-UP (neg? ratio-slope ) :RIGHT-DOWN :else :RIGHT)]

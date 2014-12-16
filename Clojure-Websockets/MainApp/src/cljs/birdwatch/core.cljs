@@ -18,13 +18,10 @@
 ;;; Reagent components for the application are initialized here.
 (ui/init-views)
 
-(defn ^:export append-search-text [s]
-  (swap! state/app assoc :search-text (str (:search-text @state/app) " " s)))
-
 ;;; WordCloud element (implemented externally in JavaScript)
 (def cloud-elem (.getElementById js/document "wordCloud"))
 (def cloud-w (aget cloud-elem "offsetWidth"))
-(def word-cloud (.WordCloud js/BirdWatch cloud-w (* cloud-w 0.7) 250 append-search-text "#wordCloud"))
+(def word-cloud (.WordCloud js/BirdWatch cloud-w (* cloud-w 0.7) 250 state/append-search-text "#wordCloud"))
 
 ; update the cheap charts every second
 (go-loop [] (<! (timeout 1000))

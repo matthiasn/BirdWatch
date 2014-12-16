@@ -39,3 +39,6 @@
          (let [ttc (<! c/total-tweets-count-chan)]
            (swap! app assoc :total-tweet-count ttc)
            (recur)))
+
+(defn append-search-text [s]
+  (swap! app assoc :search-text (str (:search-text @app) " " s)))

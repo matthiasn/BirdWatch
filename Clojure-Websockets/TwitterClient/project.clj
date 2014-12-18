@@ -10,7 +10,7 @@
                  [org.clojure/tools.logging "0.3.0"]
                  [com.matthiasnehlsen/inspect "0.1.3"]
                  [ch.qos.logback/logback-classic "1.1.1"]
-                 [org.clojure/core.match "0.2.1"]
+                 [org.clojure/core.match "0.3.0-alpha3"]
                  [clj-time "0.8.0"]
                  [pandect "0.4.1"]
                  [clj-pid "0.1.1"]

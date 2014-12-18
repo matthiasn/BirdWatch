@@ -9,7 +9,7 @@
                  [com.matthiasnehlsen/inspect "0.1.3"]
                  [org.clojure/tools.namespace "0.2.7"]
                  [ch.qos.logback/logback-classic "1.1.1"]
-                 [com.taoensso/sente "1.2.0" :exclusions [org.clojure/clojure com.taoensso/encore]]
+                 [com.taoensso/sente "1.3.0-RC1"]
                  [org.clojure/core.match "0.3.0-alpha3"]
                  [http-kit "2.1.19"]
                  [compojure "1.2.1"]

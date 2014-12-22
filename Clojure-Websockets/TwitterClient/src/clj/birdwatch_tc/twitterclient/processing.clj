@@ -30,7 +30,9 @@
       (fn
         ([r] (step r))
         ([r x]
-         (let [json-lines (-> (str @buff x) (insert-newline) (str/split-lines))
+         (let [json-lines (-> (str @buff x)
+                              (insert-newline)
+                              (str/split-lines))
                to-process (butlast json-lines)]
            (reset! buff (last json-lines))
            (if to-process (reduce step r to-process) r)))))))

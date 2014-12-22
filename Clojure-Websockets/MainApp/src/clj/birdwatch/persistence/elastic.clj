@@ -18,11 +18,6 @@
         hits (esrsp/hits-from search)
         source (pt/get-source hits)
         res (vec source)]
-    (inspect :elastic/query-res {:query query
-                                 :total-hits (esrsp/total-hits search)
-                                 :retrieved (count hits)
-                                 :first-hit (first hits)
-                                 :chars (count (str res))})
     res))
 
 (defn query-xf

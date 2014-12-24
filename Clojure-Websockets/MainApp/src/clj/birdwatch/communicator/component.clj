@@ -40,13 +40,11 @@
            :query-results (chan)
            :tweet-missing (chan)
            :missing-tweet-found (chan)
-           :persistence (chan)
-           :rt-persistence (chan)
            :tweet-count (chan)
            :register-perc (chan)
            :perc-matches (chan)))
   (stop [component] (log/info "Stop Communicator Channels Component")
-        (assoc component :query nil :query-results nil :tweet-missing nil :missing-tweet-found nil
-                         :persistence nil :rt-persistence nil :tweet-count nil)))
+        (assoc component :query nil :query-results nil :tweet-missing nil
+                         :missing-tweet-found nil :tweet-count nil)))
 
 (defn new-communicator-channels [] (map->Communicator-Channels {}))

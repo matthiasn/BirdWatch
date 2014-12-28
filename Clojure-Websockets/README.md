@@ -1,5 +1,5 @@
 # Birdwatch using Clojure, ClojureScript and Om
-This is an **all-Clojure** implementation of the **BirdWatch** application. There is a book being written about this application: **[Building a System in Clojure](https://leanpub.com/building-a-system-in-clojure)**
+This is an **all-Clojure** implementation of the **BirdWatch** application. There is a **book** being written about this application: **[Building a System in Clojure](https://leanpub.com/building-a-system-in-clojure)**
 
 ## Building blocks:
 Here is a brief overview of the building blocks:

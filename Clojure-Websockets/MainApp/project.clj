@@ -17,7 +17,7 @@
                  [ring/ring-defaults "0.1.1"]
                  [clj-time "0.8.0"]
                  [pandect "0.4.1"]
-                 [org.clojure/clojurescript "0.0-2496"]
+                 [org.clojure/clojurescript "0.0-2629"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.5"]
                  [reagent "0.5.0-alpha"]
@@ -27,13 +27,13 @@
                  [com.stuartsierra/component "0.2.2"]
                  [com.taoensso/carmine "2.9.0"]]
 
-  :source-paths ["src/clj/"]
+  :source-paths ["src/clj/" "target/classes/"]
 
   :main ^:skip-aot birdwatch.main
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
 
-  :plugins [[lein-cljsbuild "1.0.3"]
+  :plugins [[lein-cljsbuild "1.0.4"]
             [com.cemerick/clojurescript.test "0.3.1"]
             [quickie "0.3.5" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]]
 

@@ -1,5 +1,5 @@
 (ns birdwatch.channels
-  (:require [cljs.core.async :as async :refer [<! >! chan put! alts! timeout]]))
+  (:require [cljs.core.async :as async :refer [chan]]))
 
 ;;; Channels for handling information flow in the application.
 (def tweets-chan (chan 1))

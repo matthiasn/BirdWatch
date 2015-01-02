@@ -13,7 +13,7 @@
 (def ratio-trends (atom {}))
 (def ratio-items (atom {}))
 (def ts-elem (util/by-id "wordcount-barchart"))
-(def ts-w (aget ts-elem "offsetWidth"))
+(def ts-w (util/elem-width ts-elem))
 (def text-defaults {:stroke "none" :fill "#DDD" :fontWeight 500 :fontSize "0.8em" :dy ".35em" :textAnchor "end"})
 (def opts [[10 "10 tweets"][100 "100 tweets"][500 "500 tweets"][1000 "1000 tweets"]])
 
@@ -61,3 +61,4 @@
              (get (reg/linear-regression (take 3 (get @pos-items text))) 1))
       (swap! ratio-trends assoc-in [text]
              (get (reg/linear-regression (take 1000 (get @ratio-items text))) 1)))))
+

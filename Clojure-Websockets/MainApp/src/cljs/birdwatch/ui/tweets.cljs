@@ -36,7 +36,7 @@
     [:img.pure-img-responsive {:src (str (:media_url (get media 0)) ":small")}]]])
 
 (defn tweet-view [raw-tweet]
-  (let [tweet (util/format-tweet raw-tweet)
+  (let [tweet ((memoize util/format-tweet) raw-tweet)
         user (:user tweet)
         screen-name (:screen_name user)
         href (str "http://www.twitter.com/" screen-name)]

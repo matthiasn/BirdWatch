@@ -31,9 +31,9 @@
     [:br] (util/rt-count-since-startup tweet)]])
 
 (defn image-view [media]
-   [:div.tweet-image
-        [:a {:href (:url (get media 0)) :target "_blank"}
-         [:img.pure-img-responsive {:src (str (:media_url (get media 0)) ":small")}]]])
+  [:div.tweet-image
+   [:a {:href (:url (get media 0)) :target "_blank"}
+    [:img.pure-img-responsive {:src (str (:media_url (get media 0)) ":small")}]]])
 
 (defn tweet-view [raw-tweet]
   (let [tweet (util/format-tweet raw-tweet)
@@ -47,7 +47,7 @@
      [:div.pull-right.timeInterval (util/from-now (:created_at tweet))]
      [tweet-text tweet user]
      (when-let [media (:media (:entities tweet))] (pos? (count media)) [image-view media])
-     [twitter-intents tweet]])) ; generate placeholder while fetching tweet
+     [twitter-intents tweet]]))
 
 (defn tweets-view []
   (let [app @state/app

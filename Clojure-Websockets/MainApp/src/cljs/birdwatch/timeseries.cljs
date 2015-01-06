@@ -48,15 +48,13 @@
   "perform time series analysis by counting tweets in even intervals"
   [app]
   (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) @app 100000)]
-    (if (> (count tweets-by-id) 100)
-      (let [oldest (tweet-ts (last tweets-by-id))
-            newest (tweet-ts (first tweets-by-id))
-            interval (grouping-interval newest oldest)
-            rounder (date-round interval)]
-        (reduce count-into-map
-                (empty-ts-map newest oldest interval)
-                (map #(rounder (tweet-ts %)) tweets-by-id)))
-      (empty-ts-map 0 0 9))))
+    (let [oldest (tweet-ts (last tweets-by-id))
+          newest (tweet-ts (first tweets-by-id))
+          interval (grouping-interval newest oldest)
+          rounder (date-round interval)]
+      (reduce count-into-map
+              (empty-ts-map newest oldest interval)
+              (map #(rounder (tweet-ts %)) tweets-by-id)))))
 
 (defn update-ts
   "update time series chart"

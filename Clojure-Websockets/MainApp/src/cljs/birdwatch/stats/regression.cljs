@@ -7,7 +7,7 @@
   (let [cnt (count xs)]
     (when (pos? cnt) (/ (apply + xs) cnt))))
 
-; adapted from from http://compbio.ucdenver.edu/Hunter_lab/Hunter/cl-statistics.lisp
+; adapted from http://compbio.ucdenver.edu/Hunter_lab/Hunter/cl-statistics.lisp
 (defn linear-regression [ys]
   (let [n (count ys)]
     (when (pos? n)

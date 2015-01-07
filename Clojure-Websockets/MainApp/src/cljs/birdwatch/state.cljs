@@ -21,7 +21,7 @@
    :search "*"
    :users-count 0
    :total-tweet-count 0
-   :sorted :by-rt-since-startup
+   :sorted :by-id
    :by-followers (priority-map-by >)
    :by-retweets (priority-map-by >)
    :by-favorites (priority-map-by >)
@@ -42,3 +42,4 @@
 
 (defn append-search-text [s]
   (swap! app assoc :search-text (str (:search-text @app) " " s)))
+

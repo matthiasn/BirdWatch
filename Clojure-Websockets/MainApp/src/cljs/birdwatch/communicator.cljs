@@ -49,7 +49,7 @@
       (swap! prev-chunks-loaded inc))))
 
 (defn start-search
-  "initiate new search by starting SSE stream"
+  "initiate new search"
   []
   (let [search (:search-text @state/app)
         s (if (= search "") "*" search)]
@@ -64,15 +64,19 @@
 (defn- event-handler [{:keys [event]}]
   (match event
          [:chsk/state {:first-open? true}] (do (print "Socket established!") (start-search))
-         [:chsk/state new-state]           (print "Chsk state change:" new-state)
          [:chsk/recv  payload]
          (let [[msg-type msg] payload]
+           (case (keyword (namespace msg-type))
+             :stats   (put! c/stats-chan payload)
+             :tweet   (put! c/data-chan payload)
+             :default (print "unmatched message" payload)
+             )
            (match [msg-type msg]
-                  [:tweet/new             tweet] (put! c/tweets-chan tweet)
-                  [:tweet/missing-tweet   tweet] (put! c/missing-tweet-found-chan tweet)
+                  ;[:tweet/new             tweet] (put! c/tweets-chan tweet)
+                  ;[:tweet/missing-tweet   tweet] (put! c/missing-tweet-found-chan tweet)
                   [:tweet/prev-chunk prev-chunk] (do (put! c/prev-chunks-chan prev-chunk)(load-prev))
-                  [:stats/users-count        uc] (put! c/user-count-chan uc)
-                  [:stats/total-tweet-count ttc] (put! c/total-tweets-count-chan ttc)))
+                  :else ()
+                  ))
          :else (print "Unmatched event: %s" event)))
 
 (defonce chsk-router (sente/start-chsk-router! ch-chsk event-handler))
@@ -91,3 +95,8 @@
                             :by-rt-since-startup  (into {} (:by-rt-since-startup @state/app))
                             :by-reach  (into {} (:by-reach @state/app))
                             :by-id  (into {} (:by-id @state/app))}]))
+
+(defn send-ds
+  "helper function to send state to server (where it can be pretty printed for debugging)"
+  [ds]
+  (chsk-send! [:some/state ds]))

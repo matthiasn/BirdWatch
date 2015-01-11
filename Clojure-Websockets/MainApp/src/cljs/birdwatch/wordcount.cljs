@@ -1,6 +1,5 @@
 (ns birdwatch.wordcount
-  (:require [clojure.string :as s]
-            [birdwatch.util :as util]))
+  (:require [clojure.string :as s]))
 
 (def stop-words
   #{"use" "good" "want" "amp" "just" "now" "like" "til" "new" "get" "one" "i" "me" "my" "myself" "we"
@@ -29,10 +28,15 @@
   [app n]
   (vec (take n (:words-sorted-by-count @app))))
 
+(defn swap-pmap
+  "swaps item in priority-map"
+  [app priority-map id n]
+  (swap! app assoc priority-map (assoc (priority-map @app) id n)))
+
 (defn add-word
   "add word to the words map and the sorted set with the counts (while discarding old entry)"
   [app word]
-  (util/swap-pmap app :words-sorted-by-count word (inc (get (:words-sorted-by-count @app) word 0))))
+  (swap-pmap app :words-sorted-by-count word (inc (get (:words-sorted-by-count @app) word 0))))
 
 (defn process-tweet
   "process tweet: split, filter, lower case, replace punctuation, add word"

@@ -9,8 +9,8 @@
  :user-access-token        "<YOUR ACCESS TOKEN HERE>"
  :user-access-token-secret "<YOUR ACCESS TOKEN SECRET HERE>"
  :es-address               "http://127.0.0.1:9200"
- :es-index                 "ferguson-ericgarner-blacklivesmatter-icantbreathe"
- :track                    "ferguson,ericgarner,blacklivesmatter,icantbreathe"
+ :es-index                 "charliehebdo"
+ :track                    "CharlieHebdo,jesuischarlie"
  :tw-check-interval-sec    10
  :tw-restart-wait          60
  :pidfile-name             "twitterclient.pid"

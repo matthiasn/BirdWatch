@@ -2,7 +2,7 @@
   :description "Main part of the BirdWatch system (without TwitterClient)"
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "Eclipse Public License" :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0-alpha4"]
+  :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.1.0" :exclusions [com.fasterxml.jackson.core/jackson-core]]
                  [org.clojure/tools.logging "0.3.0"]
@@ -17,7 +17,7 @@
                  [ring/ring-defaults "0.1.1"]
                  [clj-time "0.8.0"]
                  [pandect "0.4.1"]
-                 [org.clojure/clojurescript "0.0-2629"]
+                 [org.clojure/clojurescript "0.0-2665"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.5"]
                  [reagent "0.5.0-alpha"]

@@ -24,7 +24,7 @@
            [:cmd/query params]     (put! query-chan params)
            [:cmd/missing params]   (put! tweet-missing-chan params)
            [:chsk/ws-ping]         () ; currently just do nothing with ping (no logging either)
-           :else                   (log/debug "Unmatched event:" (pp/pprint event)))))
+           :else                   (log/info "Unmatched event:" (pp/pprint event)))))
 
 (defn send-loop
   "run loop, call f with message on channel"

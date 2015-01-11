@@ -1,11 +1,10 @@
 (ns birdwatch.state
-  (:require-macros [cljs.core.match.macros :refer (match)]
-                   [cljs.core.async.macros :refer [go-loop go alt!]])
+  (:require-macros [cljs.core.async.macros :refer [go-loop go alt!]])
   (:require [birdwatch.channels :as c]
             [birdwatch.wordcount :as wc]
             [tailrecursion.priority-map :refer [priority-map-by]]
             [cljs.core.async :as async :refer [<! put! timeout]]
-            [cljs.core.match]
+            [cljs.core.match :refer-macros [match]]
             [reagent.core :as r :refer [atom]]))
 
 ;;; Application state in a single atom

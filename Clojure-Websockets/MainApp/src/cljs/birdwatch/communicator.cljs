@@ -68,14 +68,8 @@
            (case (keyword (namespace msg-type))
              :stats   (put! c/stats-chan payload)
              :tweet   (put! c/data-chan payload)
-             :default (print "unmatched message" payload)
-             )
-           (match [msg-type msg]
-                  ;[:tweet/new             tweet] (put! c/tweets-chan tweet)
-                  ;[:tweet/missing-tweet   tweet] (put! c/missing-tweet-found-chan tweet)
-                  [:tweet/prev-chunk prev-chunk] (do (put! c/prev-chunks-chan prev-chunk)(load-prev))
-                  :else ()
-                  ))
+             :default (print "unmatched message" payload))
+           (match [msg-type msg] [:tweet/prev-chunk prev-chunk] (load-prev) :else ()))
          :else (print "Unmatched event: %s" event)))
 
 (defonce chsk-router (sente/start-chsk-router! ch-chsk event-handler))

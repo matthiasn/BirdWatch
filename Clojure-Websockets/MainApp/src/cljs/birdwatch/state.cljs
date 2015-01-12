@@ -3,7 +3,7 @@
   (:require [birdwatch.channels :as c]
             [birdwatch.wordcount :as wc]
             [tailrecursion.priority-map :refer [priority-map-by]]
-            [cljs.core.async :as async :refer [<! put! timeout]]
+            [cljs.core.async :as async :refer [<! put! timeout chan]]
             [cljs.core.match :refer-macros [match]]
             [reagent.core :as r :refer [atom]]))
 
@@ -46,25 +46,8 @@
    :by-id (priority-map-by >)
    :words-sorted-by-count (priority-map-by >)})
 
-(go-loop []
-         (let [[msg-type msg] (<! c/stats-chan)]
-           (match [msg-type msg]
-                  [:stats/users-count       n] (swap! app assoc :users-count n)
-                  [:stats/total-tweet-count n] (swap! app assoc :total-tweet-count n))
-           (recur)))
-
 (defn append-search-text [s]
   (swap! app assoc :search-text (str (:search-text @app) " " s)))
-
-(go-loop []
-         (let [[msg-type msg] (<! c/data-chan)]
-           (match [msg-type msg]
-                  [:tweet/new             tweet] (put! c/tweets-chan tweet)
-                  [:tweet/missing-tweet   tweet] (put! c/missing-tweet-found-chan tweet)
-                 ; [:tweet/prev-chunk prev-chunk] (do (put! c/prev-chunks-chan prev-chunk)(load-prev))
-                  :else ()
-                  )
-           (recur)))
 
 (defn add-to-tweets-map!
   "adds tweet to tweets-map"
@@ -100,28 +83,42 @@
         id-key (keyword id-str)]
     (swap! app assoc :count (inc (:count state)))
     (add-to-tweets-map! app :tweets-map tweet)
-    (swap-pmap app :by-followers (keyword id-str) (:followers_count (:user tweet)))
-    (swap-pmap app :by-id (keyword id-str) id-str)
+    (swap-pmap app :by-followers id-key (:followers_count (:user tweet)))
+    (swap-pmap app :by-id id-key id-str)
     (swap-pmap app :by-reach id-key (+ (get (:by-reach state) id-key 0) (:followers_count (:user tweet))))
     (add-rt-status! app tweet)
-    (wc/process-tweet app (:text tweet))
-    ))
+    (wc/process-tweet app (:text tweet))))
 
-(go-loop [] (let [t (<! c/tweets-chan)]
-              (add-tweet! t app)
-              (recur)))
 
-(go-loop [] (let [t (<! c/prev-tweets-chan)]
-              (add-tweet! t app)
-              (recur)))
+;;; Channels processing section, here messages are taken from channels and processed.
 
+;;; Process messages from the stats channel and update application state accordingly.
 (go-loop []
-         (let [mt (<! c/missing-tweet-found-chan)]
-           (add-to-tweets-map! app :tweets-map mt)
+         (let [[msg-type msg] (<! c/stats-chan)]
+           (match [msg-type msg]
+                  [:stats/users-count       n] (swap! app assoc :users-count n)
+                  [:stats/total-tweet-count n] (swap! app assoc :total-tweet-count n))
            (recur)))
 
+;;; Process messages from the data channel and process / add to application state.
+;;; In the case of :tweet/prev-chunk messages: put! on separate channel individual items
+;;; are handled with a lower priority.
+(def prev-chunks-chan (chan))
 (go-loop []
-         (let [chunk (<! c/prev-chunks-chan)]
-           (doseq [t chunk] (put! c/prev-tweets-chan t))
+         (let [[msg-type msg] (<! c/data-chan)]
+           (match [msg-type msg]
+                  [:tweet/new             tweet] (add-tweet! tweet app)
+                  [:tweet/missing-tweet   tweet] (add-to-tweets-map! app :tweets-map tweet)
+                  [:tweet/prev-chunk prev-chunk] (put! prev-chunks-chan prev-chunk)
+                  :else ()
+                  )
+           (recur)))
+
+;;; Take messages (vectors of tweets) from channel, add each tweet to application state, then
+;;; pause to give the event loop back to the application (otherwise, UI becomes unresponsive
+;;; for a short while).
+(go-loop []
+         (let [chunk (<! prev-chunks-chan)]
+           (doseq [t chunk] (add-tweet! t app))
            (<! (timeout 50))
            (recur)))

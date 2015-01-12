@@ -1,6 +1,5 @@
 (ns birdwatch.ui.elements
   (:require [birdwatch.util :as util]
-            [birdwatch.communicator :as comm]
             [birdwatch.state :as state]
             [birdwatch.ui.tweets :as ui-tweets]
             [reagent.core :as r]))
@@ -32,10 +31,10 @@
   [:form.pure-form
    [:fieldset
     [:input {:type "text" :value (:search-text @state/app)
-             :on-key-press #(when (== (.-keyCode %) 13) (comm/start-search))
+             :on-key-press #(when (== (.-keyCode %) 13) (state/start-search))
              :on-change #(swap! state/app assoc :search-text (.. % -target -value))
              :placeholder "Example search: java (job OR jobs OR hiring)"}]
-    [:button.pure-button.pure-button-primary {:on-click #(comm/start-search)}
+    [:button.pure-button.pure-button-primary {:on-click #(state/start-search)}
      [:span {:class "glyphicon glyphicon-search"}]]]])
 
 (defn pag-item [idx]

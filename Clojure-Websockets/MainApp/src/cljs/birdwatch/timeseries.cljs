@@ -60,4 +60,3 @@
   "update time series chart"
   [app]
   (reset! tsc/bars (vec (ts-data app))))
-

@@ -1,7 +1,6 @@
 (ns birdwatch.ui.tweets
   (:require [birdwatch.ui.util :as util]
             [birdwatch.channels :as c]
-            [birdwatch.communicator :as comm]
             [birdwatch.state :as state]
             [cljs.core.async :as async :refer [put!]]
             [reagent.core :as r]))

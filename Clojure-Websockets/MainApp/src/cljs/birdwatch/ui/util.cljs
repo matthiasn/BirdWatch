@@ -5,10 +5,10 @@
   "formats a number for display, e.g. 1.7K, 122K or 1.5M followers"
   [number]
   (cond
-    (< number 1000) (str number)
-    (< number 100000) (str (/ (.round js/Math (/ number 100)) 10) "K")
-    (< number 1000000) (str (.round js/Math (/ number 1000)) "K")
-    :default (str (/ (.round js/Math (/ number 100000)) 10) "M")))
+   (< number 1000) (str number)
+   (< number 100000) (str (/ (.round js/Math (/ number 100)) 10) "K")
+   (< number 1000000) (str (.round js/Math (/ number 1000)) "K")
+   :default (str (/ (.round js/Math (/ number 100000)) 10) "M")))
 
 (defn from-now
   "format date using the external moment.js library"
@@ -76,10 +76,7 @@
 (defn tweets-by-order
   "find top n tweets by specified order"
   [order app n skip]
-  (vec
-   (filter identity
-           (map
-            (fn [m] ((first m) (:tweets-map app)))
-            (->> (order app)
-                 (drop (* n skip) ,)
-                 (take n ,))))))
+  (map (fn [m] ((first m) (:tweets-map app)))
+       (->> (order app)
+            (drop (* n skip) ,)
+            (take n ,))))

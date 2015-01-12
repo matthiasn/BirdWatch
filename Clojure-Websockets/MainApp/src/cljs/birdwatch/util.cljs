@@ -21,3 +21,9 @@
   (fn [app n skip]
     (vec (map (fn [m] ((keyword (first m))(tweets-map app))) (take n (drop (* n skip) (order app)))))))
 
+(defn query-string
+  "format and modify query string"
+  [state]
+  {:query_string {:default_field "text"
+                  :default_operator "AND"
+                  :query (str "(" (:search state) ") AND lang:en")}})

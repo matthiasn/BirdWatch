@@ -20,17 +20,10 @@
   (def chsk-send! send-fn) ; ChannelSocket's send API fn
   (def chsk-state state))  ; Watchable, read-only atom
 
-(defn query-string
-  "format and modify query string"
-  []
-  {:query_string {:default_field "text"
-                  :default_operator "AND"
-                  :query (str "(" (:search @state/app) ") AND lang:en")}})
-
 (defn start-percolator
   "trigger starting of percolation matching of new tweets"
   []
-  (chsk-send! [:cmd/percolate {:query (query-string)
+  (chsk-send! [:cmd/percolate {:query (util/query-string @state/app)
                                :uid (:uid @chsk-state)}]))
 
 (def prev-chunks-loaded (atom 0))
@@ -41,7 +34,7 @@
   (let [chunks-to-load 10
         chunk-size 500]
     (when (< @prev-chunks-loaded chunks-to-load)
-      (chsk-send! [:cmd/query {:query (query-string)
+      (chsk-send! [:cmd/query {:query (util/query-string @state/app)
                                :n chunk-size
                                :uid (:uid @chsk-state)
                                :from (* chunk-size @prev-chunks-loaded)}])

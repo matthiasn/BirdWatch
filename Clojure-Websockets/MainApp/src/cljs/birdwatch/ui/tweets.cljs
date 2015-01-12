@@ -20,7 +20,6 @@
 
 (defn missing-tweet [tweet]
   (put! c/tweet-missing-chan (:id_str tweet))
-  (print "retrieving tweet" (:id_str tweet))
   [:div.tweet "loading..." (:id_str tweet)])
 
 (defn tweet-text [tweet user app]

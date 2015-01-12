@@ -18,11 +18,6 @@
 (defn search-hash []
   (subs (js/decodeURIComponent (aget js/window "location" "hash")) 1))
 
-(defn swap-pmap
-  "swaps item in priority-map"
-  [app priority-map id n]
-  (swap! app assoc priority-map (assoc (priority-map @app) id n)))
-
 (defn tweets-by-order
   "find top n tweets by specified order"
   [tweets-map order]

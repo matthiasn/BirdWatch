@@ -78,18 +78,3 @@
 (go-loop [] (let [tid (<! c/tweet-missing-chan)]
               (chsk-send! [:cmd/missing {:id_str tid :uid (:uid @chsk-state)}])
               (recur)))
-
-(defn ^:export send-state
-  "helper function to send state to server (where it can be pretty printed for debugging)"
-  []
-  (chsk-send! [:some/state {:by-followers (into {} (:by-followers @state/app))
-                            :by-retweets  (into {} (:by-followers @state/app))
-                            :by-favorites  (into {} (:by-favorites @state/app))
-                            :by-rt-since-startup  (into {} (:by-rt-since-startup @state/app))
-                            :by-reach  (into {} (:by-reach @state/app))
-                            :by-id  (into {} (:by-id @state/app))}]))
-
-(defn send-ds
-  "helper function to send state to server (where it can be pretty printed for debugging)"
-  [ds]
-  (chsk-send! [:some/state ds]))

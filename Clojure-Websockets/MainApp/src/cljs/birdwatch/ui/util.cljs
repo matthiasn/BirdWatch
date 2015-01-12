@@ -76,7 +76,7 @@
 (defn tweets-by-order
   "find top n tweets by specified order"
   [order app n skip]
-  (vec (filter identity (map (fn [m] ((first m) (:tweets-map app)))
-                             (->> (order app)
-                                  (drop (* n skip) ,)
-                                  (take n ,))))))
+  (map (fn [[k v]] (get (:tweets-map app) k {:id_str (name k)}))
+       (->> (order app)
+            (drop (* n skip) ,)
+            (take n ,))))

@@ -1,6 +1,5 @@
 (ns birdwatch.ui.tweets
   (:require [birdwatch.ui.util :as util]
-            [birdwatch.channels :as c]
             [birdwatch.state :as state]
             [cljs.core.async :as async :refer [put!]]
             [reagent.core :as r]))
@@ -18,8 +17,9 @@
    [twitter-intent tweet "favorite?tweet_id=" "favorite.png"]])
 
 (defn missing-tweet [tweet]
-  (put! c/tweet-missing-chan (:id_str tweet))
-  [:div.tweet "loading..." (:id_str tweet)])
+  (let [id-str (:id_str tweet)]
+    (put! state/qry-chan [:cmd/missing {:id_str id-str}])
+    [:div.tweet "loading... " (:id_str tweet)]))
 
 (defn tweet-text [tweet user app]
   [:div.tweettext

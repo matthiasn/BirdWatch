@@ -111,8 +111,15 @@
   []
   (put! qry-chan [:cmd/percolate {:query (util/query-string @app)}]))
 
+(defn init
+  "Initialize application start when application starts by providing fresh state
+   and setting the :search-text from the URI location hash."
+  []
+  (reset! app (initial-state))
+  (swap! app assoc :search-text (util/search-hash)))
+
 (defn start-search
-  "initiate new search"
+  "Initiate new search"
   []
   (let [search (:search-text @app)
         s (if (= search "") "*" search)]

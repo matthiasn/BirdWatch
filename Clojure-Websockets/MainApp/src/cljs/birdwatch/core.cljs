@@ -5,6 +5,7 @@
             [birdwatch.communicator :as comm]
             [birdwatch.charts.wordcount-chart :as wc-c]
             [birdwatch.charts.cloud-chart :as cloud]
+            [birdwatch.ui.tweets :as tw]
             [birdwatch.ui.elements :as ui]
             [birdwatch.state :as state]
             [birdwatch.wordcount :as wc]))
@@ -20,8 +21,11 @@
 (ui/init-views c/cmd-chan)
 (wc-c/mount-wc-chart c/cmd-chan)
 
-; The expensive word cloud is updated periodically (every 5 seconds).
-(util/update-loop cloud/redraw 5000)
+;;; Update the expensive word cloud periodically (every 5 seconds).
+(util/update-loop #(cloud/redraw (wc/get-words state/app 250)) 5000)
+
+;;; Connect cmd channel for interaction with application state.
+(cloud/connect-cmd-chan c/cmd-chan)
 
 ; The cheap charts are updated every second.
 (util/update-loop #(ts/update-ts state/app) 1000)

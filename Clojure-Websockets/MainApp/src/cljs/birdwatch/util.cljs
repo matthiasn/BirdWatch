@@ -7,10 +7,13 @@
 
 (defn update-loop
   "run a loop that calls f every t milliseconds"
-  [f t]
-  (go-loop [] (<! (timeout t))
-           (f)
-           (recur)))
+  ([f t1 t2]
+   (go-loop []
+            (<! (timeout t1))
+            (f)
+            (<! (timeout t2))
+            (recur)))
+  ([f t] (update-loop f t 0)))
 
 (defn search-hash []
   (subs (js/decodeURIComponent (aget js/window "location" "hash")) 1))

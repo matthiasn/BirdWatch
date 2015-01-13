@@ -23,7 +23,7 @@
 (tw/mount-tweets c/state-mult c/cmd-chan)
 
 ;;; Update the expensive word cloud periodically (every 5 seconds).
-(util/update-loop #(cloud/redraw (wc/get-words state/app 250)) 5000)
+(util/update-loop #(cloud/redraw (wc/get-words state/app 250)) 3000 5000)
 
 ;;; Connect cmd channel for interaction with application state.
 (cloud/connect-cmd-chan c/cmd-chan)

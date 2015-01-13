@@ -9,7 +9,7 @@
             [birdwatch.state :as state]
             [birdwatch.wordcount :as wc]))
 
-;;;; Main file of the BirdWatch application written in ClojureScript
+;;;; Main file of the BirdWatch client-side application.
 
 ;;; The application state lives in a single atom in birdwatch.state. Here, it
 ;;; will be initialized and the search string encoded in the URI location hash

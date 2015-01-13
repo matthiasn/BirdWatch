@@ -1,7 +1,6 @@
 (ns birdwatch.ui.tweets
   (:require [birdwatch.ui.util :as util]
             [birdwatch.state :as state]
-            [cljs.core.async :as async :refer [put!]]
             [reagent.core :as r]))
 
 (enable-console-print!)
@@ -18,7 +17,7 @@
 
 (defn missing-tweet [tweet]
   (let [id-str (:id_str tweet)]
-    (put! state/qry-chan [:cmd/missing {:id_str id-str}])
+    (state/retrieve-missing id-str)
     [:div.tweet "loading... " (:id_str tweet)]))
 
 (defn tweet-text [tweet user app]

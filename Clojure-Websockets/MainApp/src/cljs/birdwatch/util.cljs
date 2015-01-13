@@ -1,6 +1,6 @@
 (ns birdwatch.util
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
-  (:require [cljs.core.async :as async :refer [timeout]]))
+  (:require [cljs.core.async :as async :refer [<! timeout]]))
 
 (defn by-id [id] (.getElementById js/document id))
 (defn elem-width [elem] (aget elem "offsetWidth"))

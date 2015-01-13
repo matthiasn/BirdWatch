@@ -130,6 +130,10 @@
     (start-percolator)
     (dotimes [n 2] (load-prev))))
 
+(defn retrieve-missing
+  "Retrieve missing tweet from server."
+  [id-str]
+  (put! qry-chan [:cmd/missing {:id_str id-str}]))
 
 ;;; Channels processing section, here messages are taken from channels and processed.
 

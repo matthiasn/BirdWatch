@@ -40,7 +40,7 @@
 
 (defn query-loop
   "Take command / query message off of channel, enrich payload with :uid of current
-  WebSocket connection and send to server. Channel is injected when loop is started."
+   WebSocket connection and send to server. Channel is injected when loop is started."
   [channel]
   (go-loop []
            (let [[cmd-type payload] (<! channel)]

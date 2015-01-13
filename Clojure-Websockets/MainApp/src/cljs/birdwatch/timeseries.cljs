@@ -1,7 +1,6 @@
 (ns birdwatch.timeseries
   (:require [birdwatch.util :as util]
-            [birdwatch.charts.ts-chart :as tsc]
-            [reagent.core :as r :refer [atom]]))
+            [birdwatch.charts.ts-chart :as tsc]))
 
 (enable-console-print!)
 

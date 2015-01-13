@@ -6,8 +6,7 @@
 
 (enable-console-print!)
 
-(defn count-view []
-  [:span (:count @state/app)])
+(defn count-view [] [:span (:count @state/app)])
 
 (defn users-count-view []
   (let [users (:users-count @state/app)]
@@ -52,6 +51,8 @@
             [users-count-view "users-count"][sort-view "sort-buttons"][pagination-view "pagination"]
             [ui-tweets/tweets-view "tweet-frame"]])
 
-(defn init-views []
+(defn init-views
+  "Initialize all views contained in the vector above."
+  []
   (doseq [[component id] views]
     (r/render-component [component] (util/by-id id))))

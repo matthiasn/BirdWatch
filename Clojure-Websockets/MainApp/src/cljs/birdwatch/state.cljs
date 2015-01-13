@@ -173,3 +173,13 @@
                       [:tweet/prev-chunk prev-chunk] (do (put! prev-chunks-chan prev-chunk) (load-prev))
                       :else ())
                (recur)))))
+
+(defn set-current-page
+  "Set the current page index."
+  [page]
+  (swap! app assoc :page page))
+
+(defn set-search-text
+  "Set the current search text."
+  [text]
+  (swap! app assoc :search-text text))

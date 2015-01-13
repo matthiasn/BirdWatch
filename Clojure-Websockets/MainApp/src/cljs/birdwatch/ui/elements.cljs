@@ -31,7 +31,7 @@
    [:fieldset
     [:input {:type "text" :value (:search-text @state/app)
              :on-key-press #(when (== (.-keyCode %) 13) (state/start-search))
-             :on-change #(swap! state/app assoc :search-text (.. % -target -value))
+             :on-change #(state/set-search-text (.. % -target -value))
              :placeholder "Example search: java (job OR jobs OR hiring)"}]
     [:button.pure-button.pure-button-primary {:on-click #(state/start-search)}
      [:span {:class "glyphicon glyphicon-search"}]]]])
@@ -39,7 +39,7 @@
 (defn pag-item [idx]
   [:button.pure-button.not-rounded.button-xsmall
    {:class (if (= idx (:page @state/app)) " pure-button-primary" "")
-    :on-click #(swap! state/app assoc :page idx)} idx])
+    :on-click #(state/set-current-page idx)} idx])
 
 (defn pagination-view []
   [:div

@@ -2,9 +2,12 @@
   (:require [birdwatch.util :as util]
             [birdwatch.state :as state]
             [birdwatch.ui.tweets :as ui-tweets]
+            [cljs.core.async :as async :refer [put! pipe chan]]
             [reagent.core :as r]))
 
 (enable-console-print!)
+
+(def cmd-out-chan (chan))
 
 (defn count-view [] [:span (:count @state/app)])
 
@@ -31,7 +34,7 @@
    [:fieldset
     [:input {:type "text" :value (:search-text @state/app)
              :on-key-press #(when (== (.-keyCode %) 13) (state/start-search))
-             :on-change #(state/set-search-text (.. % -target -value))
+             :on-change #(put! cmd-out-chan [:set-search-text (.. % -target -value)])
              :placeholder "Example search: java (job OR jobs OR hiring)"}]
     [:button.pure-button.pure-button-primary {:on-click #(state/start-search)}
      [:span {:class "glyphicon glyphicon-search"}]]]])
@@ -39,7 +42,7 @@
 (defn pag-item [idx]
   [:button.pure-button.not-rounded.button-xsmall
    {:class (if (= idx (:page @state/app)) " pure-button-primary" "")
-    :on-click #(state/set-current-page idx)} idx])
+    :on-click #(put! cmd-out-chan [:set-current-page idx])} idx])
 
 (defn pagination-view []
   [:div
@@ -52,7 +55,9 @@
             [ui-tweets/tweets-view "tweet-frame"]])
 
 (defn init-views
-  "Initialize all views contained in the vector above."
-  []
+  "Initialize all views contained in the vector above and connect channel for outgoing command
+   messages (e.g. for altering state)"
+  [cmd-chan]
+  (pipe cmd-out-chan cmd-chan)
   (doseq [[component id] views]
     (r/render-component [component] (util/by-id id))))

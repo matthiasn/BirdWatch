@@ -9,5 +9,8 @@
 ;;; Channel for data from server, e.g. new tweets and previous chunks.
 (def data-chan (chan))
 
-;;; Channel fro queries that will be forwarded to the server.
+;;; Channel for queries that will be forwarded to the server.
 (def qry-chan (chan))
+
+;;; Channel for command web-client internal command messages (e.g. state modification)
+(def cmd-chan (chan))

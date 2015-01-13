@@ -17,7 +17,7 @@
 (state/init)
 
 ;;; Reagent components for the application are initialized here.
-(ui/init-views)
+(ui/init-views c/cmd-chan)
 
 ; The expensive word cloud is updated periodically (every 5 seconds).
 (util/update-loop cloud/redraw 5000)
@@ -36,4 +36,5 @@
 ;;; required channels for the loops and also the query channel are injected.
 (state/stats-loop c/stats-chan)
 (state/data-loop c/data-chan)
+(state/cmd-loop c/cmd-chan)
 (state/connect-qry-chan c/qry-chan)

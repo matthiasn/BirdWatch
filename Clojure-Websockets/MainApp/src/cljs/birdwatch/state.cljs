@@ -174,12 +174,14 @@
                       :else ())
                (recur)))))
 
-(defn set-current-page
-  "Set the current page index."
-  [page]
-  (swap! app assoc :page page))
+(defn cmd-loop
+  "Process command messages, e.g. those that alter application state."
+  [cmd-chan]
+  (go-loop []
+           (let [[msg-type msg] (<! cmd-chan)]
+             (match [msg-type msg]
+                    [:set-search-text  text] (swap! app assoc :search-text text)
+                    [:set-current-page page] (swap! app assoc :page page)
+                    :else ())
+             (recur))))
 
-(defn set-search-text
-  "Set the current search text."
-  [text]
-  (swap! app assoc :search-text text))

@@ -4,8 +4,9 @@
             [birdwatch.wordcount :as wc]
             [tailrecursion.priority-map :refer [priority-map-by]]
             [cljs.core.async :as async :refer [<! put! pipe timeout chan]]
-            [cljs.core.match :refer-macros [match]]
-            [reagent.core :as r :refer [atom]]))
+            [cljs.core.match :refer-macros [match]]))
+
+(enable-console-print!)
 
 ;;; Application state in a single atom
 ;;; Will be initialized with the map returned by initial-state.
@@ -42,6 +43,7 @@
    :users-count 0
    :total-tweet-count 0
    :sorted :by-id
+   :live true
    :by-followers (priority-map-by >)
    :by-retweets (priority-map-by >)
    :by-favorites (priority-map-by >)
@@ -97,7 +99,7 @@
 (defn- load-prev
   "load previous tweets matching the current search"
   []
-  (let [chunks-to-load 20
+  (let [chunks-to-load 10
         chunk-size 500
         prev-chunks-loaded (:prev-chunks-loaded @app)]
     (when (< prev-chunks-loaded chunks-to-load)
@@ -175,6 +177,7 @@
   (go-loop []
            (let [[msg-type msg] (<! cmd-chan)]
              (match [msg-type msg]
+                    [:toggle-live           _] (swap! app update :live #(not %))
                     [:set-search-text    text] (swap! app assoc :search-text text)
                     [:set-current-page   page] (swap! app assoc :page page)
                     [:start-search          _] (start-search)
@@ -184,3 +187,9 @@
                     :else ())
              (recur))))
 
+(defn broadcast-state
+  ""
+  [channel]
+  (add-watch app :watcher
+             (fn [_ _ _ new-state]
+               (put! channel new-state))))

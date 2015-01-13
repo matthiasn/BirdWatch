@@ -18,8 +18,9 @@
 (state/init)
 
 ;;; Initialize Reagent components and pass command channel, e.g. for interaction with state.
-(ui/init-views c/cmd-chan)
+(ui/init-views c/state-mult c/cmd-chan)
 (wc-c/mount-wc-chart c/cmd-chan)
+(tw/mount-tweets c/state-mult c/cmd-chan)
 
 ;;; Update the expensive word cloud periodically (every 5 seconds).
 (util/update-loop #(cloud/redraw (wc/get-words state/app 250)) 5000)
@@ -43,3 +44,4 @@
 (state/data-loop c/data-chan)
 (state/cmd-loop c/cmd-chan)
 (state/connect-qry-chan c/qry-chan)
+(state/broadcast-state c/state-chan)

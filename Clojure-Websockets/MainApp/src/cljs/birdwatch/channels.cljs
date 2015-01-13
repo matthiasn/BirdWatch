@@ -1,5 +1,5 @@
 (ns birdwatch.channels
-  (:require [cljs.core.async :as async :refer [chan]]))
+  (:require [cljs.core.async :as async :refer [chan sliding-buffer mult]]))
 
 ;;;; Channels for handling information flow in the application.
 
@@ -12,5 +12,10 @@
 ;;; Channel for queries that will be forwarded to the server.
 (def qry-chan (chan))
 
-;;; Channel for command web-client internal command messages (e.g. state modification)
+;;; Channel for command web-client internal command messages (e.g. state modification).
 (def cmd-chan (chan))
+
+;;; Channel and mult for publishing state changes.
+(def state-chan (chan (sliding-buffer 1)))
+(def state-mult (mult state-chan))
+

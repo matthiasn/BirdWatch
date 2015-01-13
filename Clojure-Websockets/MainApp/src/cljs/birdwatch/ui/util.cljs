@@ -1,6 +1,8 @@
 (ns birdwatch.ui.util
   (:require [clojure.string :as s]))
 
+(defn by-id [id] (.getElementById js/document id))
+
 (defn number-format
   "formats a number for display, e.g. 1.7K, 122K or 1.5M followers"
   [number]

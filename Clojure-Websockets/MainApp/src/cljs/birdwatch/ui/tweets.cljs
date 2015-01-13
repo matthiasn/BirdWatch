@@ -1,8 +1,8 @@
 (ns birdwatch.ui.tweets
+  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.ui.util :as util]
-            [birdwatch.state :as state]
-            [cljs.core.async :as async :refer [put!]]
-            [reagent.core :as r]))
+            [cljs.core.async :as async :refer [put! chan tap <!]]
+            [reagent.core :as r :refer [atom]]))
 
 (enable-console-print!)
 
@@ -47,9 +47,25 @@
      (when-let [media (:media (:entities tweet))] (pos? (count media)) [image-view media])
      [twitter-intents tweet]]))
 
-(defn tweets-view [cmd-chan]
-  (let [app @state/app
-        tweets (util/tweets-by-order (:sorted app) app (:n app) (dec (:page app)))]
-    [:div (for [t tweets] (if (:user t)
-                            ^{:key (:id_str t)} [tweet-view t app]
-                            ^{:key (:id_str t)} [missing-tweet t cmd-chan]))]))
+(defn tweets-view [app tweets cmd-chan]
+  (let [state @app]
+    [:div (for [t @tweets] (if (:user t)
+                             ^{:key (:id_str t)} [tweet-view t state]
+                             ^{:key (:id_str t)} [missing-tweet t cmd-chan]))]))
+
+(defn mount-tweets
+  "Mount tweet component, keep local state, update when new state comes in on channel."
+  [state-mult cmd-chan]
+  (let [app (atom {})
+        tweets (atom [])
+        state-chan (chan)]
+    (tap state-mult state-chan)
+    (go-loop []
+             (let [state (<! state-chan)
+                   order (:sorted state)
+                   n (:n state)
+                   page (dec (:page state))]
+               (when (:live state) (reset! app state))
+               (reset! tweets (util/tweets-by-order order @app n page)))
+             (recur))
+    (r/render-component [tweets-view app tweets cmd-chan] (util/by-id "tweet-frame"))))

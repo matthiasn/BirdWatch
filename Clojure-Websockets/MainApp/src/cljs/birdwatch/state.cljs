@@ -180,6 +180,7 @@
                     [:toggle-live           _] (swap! app update :live #(not %))
                     [:set-search-text    text] (swap! app assoc :search-text text)
                     [:set-current-page   page] (swap! app assoc :page page)
+                    [:set-page-size         n] (swap! app assoc :n n)
                     [:start-search          _] (start-search)
                     [:set-sort-order by-order] (swap! app assoc :sorted by-order)
                     [:retrieve-missing id-str] (put! qry-chan [:cmd/missing {:id_str id-str}])
@@ -188,7 +189,7 @@
              (recur))))
 
 (defn broadcast-state
-  ""
+  "Broadcast state changes on the specified channel."
   [channel]
   (add-watch app :watcher
              (fn [_ _ _ new-state]

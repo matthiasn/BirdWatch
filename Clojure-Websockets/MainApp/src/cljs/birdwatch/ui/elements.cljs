@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
             [birdwatch.ui.tweets :as ui-tweets]
-            [cljs.core.async :as async :refer [put! pipe chan tap]]
+            [cljs.core.async :as async :refer [put! pipe chan tap timeout sliding-buffer]]
             [reagent.core :as r :refer [atom]]))
 
 (enable-console-print!)
@@ -50,11 +50,19 @@
    {:class (when (= idx (:page @app)) " pure-button-primary")
     :on-click #(put-cmd [:set-current-page idx])} idx])
 
+(defn pag-size-item [n]
+  [:button.pure-button.not-rounded.button-xsmall
+   {:class (when (= n (:n @app)) " pure-button-primary")
+    :on-click #(put-cmd [:set-page-size n])} n])
+
 (defn pagination-view []
   [:div
-   [:button.pure-button.not-rounded.button-xsmall "Page:"]
+   [:button.pure-button.not-rounded.button-xsmall [:strong "Page:"]]
    (for [idx (take 15 (range 1 (Math/floor (/ (:count @app) (:n @app)))))]
-     ^{:key idx} [pag-item idx])])
+     ^{:key idx} [pag-item idx])
+   [:button.pure-button.not-rounded.button-xsmall [:strong "per Page:"]]
+   (for [n [5 10 25 100]]
+     ^{:key (str "pag-size" n)} [pag-size-item n])])
 
 (def views [[count-view "tweet-count"][search-view "search"][total-count-view "total-tweet-count"]
             [users-count-view "users-count"][sort-view "sort-buttons"][pagination-view "pagination"]])
@@ -63,12 +71,13 @@
   "Initialize all views contained in the vector above and connect channel for outgoing command
    messages (e.g. for altering state)"
   [state-mult cmd-out-chan]
-  (let [state-chan (chan)]
+  (let [state-chan (chan (sliding-buffer 1))]
     (pipe cmd-chan cmd-out-chan)
     (tap state-mult state-chan)
     (go-loop []
              (let [state (<! state-chan)]
                (reset! app state)
+               (<! (timeout 10))
                (recur)))
     (doseq [[component id] views]
       (r/render-component [component] (util/by-id id)))))

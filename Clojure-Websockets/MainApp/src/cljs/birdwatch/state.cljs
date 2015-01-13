@@ -53,19 +53,19 @@
 (defn append-search-text [s]
   (swap! app assoc :search-text (str (:search-text @app) " " s)))
 
-(defn add-to-tweets-map!
+(defn- add-to-tweets-map!
   "adds tweet to tweets-map"
   [app tweets-map tweet]
   (swap! app
          assoc-in [tweets-map (keyword (:id_str tweet))]
          tweet))
 
-(defn swap-when-larger
+(defn- swap-when-larger
   "swaps item in priority-map when new value is larger than old value"
   [app priority-map rt-id n]
   (when (> n (rt-id (priority-map @app))) (swap-pmap app priority-map rt-id n)))
 
-(defn add-rt-status!
+(defn- add-rt-status!
   "handles original, retweeted tweet"
   [app tweet]
   (if (contains? tweet :retweeted_status)
@@ -80,7 +80,7 @@
       (when (> rt-count (:retweet_count (rt-id (:tweets-map state))))
         (add-to-tweets-map! app :tweets-map rt)))))
 
-(defn add-tweet!
+(defn- add-tweet!
   "increment counter, add tweet to tweets map and to sorted sets by id and by followers"
   [tweet app]
   (let [state @app
@@ -94,7 +94,7 @@
     (add-rt-status! app tweet)
     (wc/process-tweet app (:text tweet))))
 
-(defn load-prev
+(defn- load-prev
   "load previous tweets matching the current search"
   []
   (let [chunks-to-load 20
@@ -118,7 +118,7 @@
   (reset! app (initial-state))
   (swap! app assoc :search-text (util/search-hash)))
 
-(defn start-search
+(defn- start-search
   "Initiate new search"
   []
   (let [search (:search-text @app)
@@ -129,11 +129,6 @@
     (aset js/window "location" "hash" (js/encodeURIComponent s))
     (start-percolator)
     (dotimes [n 2] (load-prev))))
-
-(defn retrieve-missing
-  "Retrieve missing tweet from server."
-  [id-str]
-  (put! qry-chan [:cmd/missing {:id_str id-str}]))
 
 ;;; Channels processing section, here messages are taken from channels and processed.
 
@@ -180,8 +175,12 @@
   (go-loop []
            (let [[msg-type msg] (<! cmd-chan)]
              (match [msg-type msg]
-                    [:set-search-text  text] (swap! app assoc :search-text text)
-                    [:set-current-page page] (swap! app assoc :page page)
+                    [:set-search-text    text] (swap! app assoc :search-text text)
+                    [:set-current-page   page] (swap! app assoc :page page)
+                    [:start-search          _] (start-search)
+                    [:set-sort-order by-order] (swap! app assoc :sorted by-order)
+                    [:retrieve-missing id-str] (put! qry-chan [:cmd/missing {:id_str id-str}])
+                    [:append-search-text text] (append-search-text text)
                     :else ())
              (recur))))
 

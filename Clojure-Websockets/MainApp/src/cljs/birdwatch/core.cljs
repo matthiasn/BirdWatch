@@ -16,8 +16,9 @@
 ;;; set within the application state.
 (state/init)
 
-;;; Reagent components for the application are initialized here.
+;;; Initialize Reagent components and pass command channel, e.g. for interaction with state.
 (ui/init-views c/cmd-chan)
+(wc-c/mount-wc-chart c/cmd-chan)
 
 ; The expensive word cloud is updated periodically (every 5 seconds).
 (util/update-loop cloud/redraw 5000)
@@ -29,7 +30,7 @@
 ;;; Here, the WebSocket communication is initialized. The router handles incoming
 ;;; messages and the loop handles outgoing messages. The channels for interfacing
 ;;; with the rest of the application are injected.
-(comm/start-router state/start-search c/data-chan c/stats-chan)
+(comm/start-router c/cmd-chan c/data-chan c/stats-chan)
 (comm/query-loop c/qry-chan)
 
 ;;; Here, the loops for processing messages from the server are started. The

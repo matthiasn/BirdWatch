@@ -2,7 +2,7 @@
   (:require [birdwatch.util :as util]
             [birdwatch.stats.regression :as reg]
             [birdwatch.charts.shapes :as s]
-            [birdwatch.state :as state]
+            [cljs.core.async :as async :refer [put!]]
             [reagent.core :as r :refer [atom]]))
 
 (enable-console-print!)
@@ -17,10 +17,10 @@
 (def text-defaults {:stroke "none" :fill "#DDD" :fontWeight 500 :fontSize "0.8em" :dy ".35em" :textAnchor "end"})
 (def opts [[10 "10 tweets"][100 "100 tweets"][500 "500 tweets"][1000 "1000 tweets"]])
 
-(defn bar [text cnt y h w idx]
+(defn bar [text cnt y h w idx cmd-chan]
   (let [pos-slope (get @pos-trends text)
         ratio-slope (get @ratio-trends text)]
-    [:g {:on-click #(state/append-search-text text)}
+    [:g {:on-click #(put! cmd-chan [:append-search-text text])}
      [:text {:y (+ y 8) :x 138 :stroke "none" :fill "black" :dy ".35em" :textAnchor "end"} text]
      [s/arrow 146 y (cond (pos? pos-slope)   :UP       (neg? pos-slope )   :DOWN       :else :RIGHT)]
      [s/arrow 160 y (cond (pos? ratio-slope) :RIGHT-UP (neg? ratio-slope ) :RIGHT-DOWN :else :RIGHT)]
@@ -29,7 +29,7 @@
        [:text (merge text-defaults {:y (+ y 8) :x (+ w 160)}) cnt]
        [:text (merge text-defaults {:y (+ y 8) :x (+ w 171) :fill "#666" :textAnchor "start"}) cnt])]))
 
-(defn wordcount-barchart []
+(defn wordcount-barchart [cmd-chan]
   (let [indexed @items
         mx (apply max (map (fn [[idx [k v]]] v) indexed))
         cnt (count indexed)]
@@ -37,7 +37,7 @@
      [:svg {:width ts-w :height (+ (* cnt 15) 5)}
       [:g
        (for [[idx [text cnt]] indexed]
-         ^{:key text} [bar text cnt (* idx 15) 15 (* (- ts-w 190) (/ cnt mx)) idx])
+         ^{:key text} [bar text cnt (* idx 15) 15 (* (- ts-w 190) (/ cnt mx)) idx cmd-chan])
        [:line {:transform "translate(168, 0)" :y 0 :y2 (* cnt 15) :stroke "black"}]]]
      [:p.legend [:strong "1st trend indicator:"]
       " recent position changes"]
@@ -46,7 +46,9 @@
       [:select {:defaultValue 100}
        (for [[v t] opts] ^{:key v} [:option {:value v} t])]]]))
 
-(r/render-component [wordcount-barchart] ts-elem)
+(defn mount-wc-chart
+  [cmd-chan]
+  (r/render-component [wordcount-barchart cmd-chan] ts-elem))
 
 (defn update-words
   "update wordcount chart"

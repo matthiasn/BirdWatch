@@ -27,16 +27,16 @@
      [:button.pure-button.not-rounded.sort-button "Sort by"]
      (for [[k text] sort-orders :let [btn-class (if (= k curr-order) " pure-button-primary" " sort-button")]]
        ^{:key text} [:button.pure-button.not-rounded
-                     {:class btn-class :on-click #(swap! state/app assoc :sorted k)} text])]))
+                     {:class btn-class :on-click #(put! cmd-out-chan [:set-sort-order k])} text])]))
 
 (defn search-view []
   [:form.pure-form
    [:fieldset
     [:input {:type "text" :value (:search-text @state/app)
-             :on-key-press #(when (== (.-keyCode %) 13) (state/start-search))
+             :on-key-press #(when (== (.-keyCode %) 13) (put! cmd-out-chan [:start-search]))
              :on-change #(put! cmd-out-chan [:set-search-text (.. % -target -value)])
              :placeholder "Example search: java (job OR jobs OR hiring)"}]
-    [:button.pure-button.pure-button-primary {:on-click #(state/start-search)}
+    [:button.pure-button.pure-button-primary {:on-click #(put! cmd-out-chan [:start-search])}
      [:span {:class "glyphicon glyphicon-search"}]]]])
 
 (defn pag-item [idx]
@@ -51,8 +51,7 @@
      ^{:key idx} [pag-item idx])])
 
 (def views [[count-view "tweet-count"][search-view "search"][total-count-view "total-tweet-count"]
-            [users-count-view "users-count"][sort-view "sort-buttons"][pagination-view "pagination"]
-            [ui-tweets/tweets-view "tweet-frame"]])
+            [users-count-view "users-count"][sort-view "sort-buttons"][pagination-view "pagination"]])
 
 (defn init-views
   "Initialize all views contained in the vector above and connect channel for outgoing command
@@ -60,4 +59,5 @@
   [cmd-chan]
   (pipe cmd-out-chan cmd-chan)
   (doseq [[component id] views]
-    (r/render-component [component] (util/by-id id))))
+    (r/render-component [component] (util/by-id id)))
+  (r/render-component [ui-tweets/tweets-view cmd-chan] (util/by-id "tweet-frame")))

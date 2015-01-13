@@ -1,6 +1,7 @@
 (ns birdwatch.ui.tweets
   (:require [birdwatch.ui.util :as util]
             [birdwatch.state :as state]
+            [cljs.core.async :as async :refer [put!]]
             [reagent.core :as r]))
 
 (enable-console-print!)
@@ -15,9 +16,9 @@
    [twitter-intent tweet "retweet?tweet_id=" "retweet.png"]
    [twitter-intent tweet "favorite?tweet_id=" "favorite.png"]])
 
-(defn missing-tweet [tweet]
+(defn missing-tweet [tweet cmd-chan]
   (let [id-str (:id_str tweet)]
-    (state/retrieve-missing id-str)
+    (put! cmd-chan [:retrieve-missing id-str])
     [:div.tweet "loading... " (:id_str tweet)]))
 
 (defn tweet-text [tweet user app]
@@ -46,9 +47,9 @@
      (when-let [media (:media (:entities tweet))] (pos? (count media)) [image-view media])
      [twitter-intents tweet]]))
 
-(defn tweets-view []
+(defn tweets-view [cmd-chan]
   (let [app @state/app
         tweets (util/tweets-by-order (:sorted app) app (:n app) (dec (:page app)))]
     [:div (for [t tweets] (if (:user t)
                             ^{:key (:id_str t)} [tweet-view t app]
-                            ^{:key (:id_str t)} [missing-tweet t]))]))
+                            ^{:key (:id_str t)} [missing-tweet t cmd-chan]))]))

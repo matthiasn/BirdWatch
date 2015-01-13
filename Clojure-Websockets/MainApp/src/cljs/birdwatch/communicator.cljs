@@ -20,10 +20,10 @@
 (defn make-handler
   "Create handler function for messages from WebSocket connection, wire channels and the
    start-function to call when the socket is established."
-  [start-fn data-chan stats-chan]
+  [cmd-chan data-chan stats-chan]
   (fn [{:keys [event]}]
     (match event
-           [:chsk/state {:first-open? true}] (do (print "Socket established!") (start-fn))
+           [:chsk/state {:first-open? true}] (do (print "WS connected") (put! cmd-chan [:start-search]))
            [:chsk/recv  payload]
            (let [[msg-type msg] payload]
              (case (keyword (namespace msg-type))
@@ -34,8 +34,8 @@
 
 (defn start-router
   "Start router after creating the handler with the provided start-function and channels."
-  [start-fn data-chan stats-chan]
-  (let [handler (make-handler start-fn data-chan stats-chan)]
+  [cmd-chan data-chan stats-chan]
+  (let [handler (make-handler cmd-chan data-chan stats-chan)]
     (defonce chsk-router (sente/start-chsk-router! ch-chsk handler))))
 
 (defn query-loop

@@ -1,6 +1,7 @@
 (ns birdwatch.core
   (:require [birdwatch.util :as util]
             [birdwatch.timeseries :as ts]
+            [birdwatch.charts.ts-chart :as ts-c]
             [birdwatch.channels :as c]
             [birdwatch.communicator :as comm]
             [birdwatch.charts.wordcount-chart :as wc-c]
@@ -19,18 +20,18 @@
 
 ;;; Initialize Reagent components and pass command channel, e.g. for interaction with state.
 (ui/init-views c/state-mult c/cmd-chan)
-(wc-c/mount-wc-chart c/cmd-chan)
 (tw/mount-tweets c/state-mult c/cmd-chan)
 
-;;; Update the expensive word cloud periodically (every 5 seconds).
-(util/update-loop #(cloud/redraw (wc/get-words state/app 250)) 3000 5000)
+(wc-c/mount-wc-chart c/cmd-chan c/state-pub)
+(ts-c/mount-ts-chart c/state-pub)
+(cloud/mount-wordcloud c/cmd-chan c/state-pub)
 
-;;; Connect cmd channel for interaction with application state.
-(cloud/connect-cmd-chan c/cmd-chan)
+;;; Update the expensive word cloud periodically (every 5 seconds).
+(util/update-loop c/state-pub-chan :words-cloud #(wc/get-words state/app 250) 3 5)
 
 ; The cheap charts are updated every second.
-(util/update-loop #(ts/update-ts state/app) 1000)
-(util/update-loop #(wc-c/update-words (wc/get-words2 state/app 25)) 1000)
+(util/update-loop c/state-pub-chan :ts-data #(ts/ts-data state/app) 1)
+(util/update-loop c/state-pub-chan :words-bar #(wc/get-words2 state/app 25) 1)
 
 ;;; Here, the WebSocket communication is initialized. The router handles incoming
 ;;; messages and the loop handles outgoing messages. The channels for interfacing

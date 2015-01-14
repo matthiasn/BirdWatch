@@ -1,19 +1,22 @@
 (ns birdwatch.util
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
-  (:require [cljs.core.async :as async :refer [<! timeout]]))
+  (:require [cljs.core.async :as async :refer [<! timeout put!]]))
 
 (defn by-id [id] (.getElementById js/document id))
 (defn elem-width [elem] (aget elem "offsetWidth"))
 
 (defn update-loop
   "run a loop that calls f every t milliseconds"
-  ([f t1 t2]
+  ([c t f t1 t2]
    (go-loop []
-            (<! (timeout t1))
-            (f)
-            (<! (timeout t2))
+            (<! (timeout (* t1 1000)))
+            (put! c [t (f)])
+            (<! (timeout (* t2 1000)))
             (recur)))
-  ([f t] (update-loop f t 0)))
+  ([c t f t1] (update-loop c t f t1 0)))
+
+(defn put-on-chan [c item]
+  (put! c item))
 
 (defn search-hash []
   (subs (js/decodeURIComponent (aget js/window "location" "hash")) 1))

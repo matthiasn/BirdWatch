@@ -1,5 +1,5 @@
 (ns birdwatch.channels
-  (:require [cljs.core.async :as async :refer [chan sliding-buffer mult]]))
+  (:require [cljs.core.async :as async :refer [chan sliding-buffer mult pub]]))
 
 ;;;; Channels for handling information flow in the application.
 
@@ -18,4 +18,8 @@
 ;;; Channel and mult for publishing state changes.
 (def state-chan (chan (sliding-buffer 1)))
 (def state-mult (mult state-chan))
+
+(def state-pub-chan (chan))
+(def state-pub (pub state-pub-chan #(first %)))
+
 

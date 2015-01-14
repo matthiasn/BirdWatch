@@ -1,6 +1,8 @@
 (ns birdwatch.charts.ts-chart
+  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
-            [reagent.core :as r :refer [atom]]))
+            [reagent.core :as r :refer [atom]]
+            [cljs.core.async :as async :refer [chan sub]]))
 
 (enable-console-print!)
 
@@ -44,4 +46,14 @@
      [barchart indexed mx cnt w]
      [labels bars mx cnt w]]))
 
-(r/render-component [ts-chart] ts-elem)
+(defn mount-ts-chart
+  "Mount timeseries chart and wire channels for incoming data."
+  [state-pub]
+  (r/render-component [ts-chart] ts-elem)
+  (let [sub-chan (chan)]
+    (go-loop []
+             (let [[_ ts-data] (<! sub-chan)]
+               (reset! bars ts-data)
+               (recur)))
+    (sub state-pub :ts-data sub-chan)))
+

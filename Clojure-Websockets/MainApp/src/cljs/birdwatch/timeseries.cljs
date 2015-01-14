@@ -1,6 +1,5 @@
 (ns birdwatch.timeseries
-  (:require [birdwatch.util :as util]
-            [birdwatch.charts.ts-chart :as tsc]))
+  (:require [birdwatch.util :as util]))
 
 (enable-console-print!)
 
@@ -55,7 +54,3 @@
               (empty-ts-map newest oldest interval)
               (map #(rounder (tweet-ts %)) tweets-by-id)))))
 
-(defn update-ts
-  "update time series chart"
-  [app]
-  (reset! tsc/bars (vec (ts-data app))))

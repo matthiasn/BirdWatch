@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
             [birdwatch.ui.tweets :as ui-tweets]
-            [cljs.core.async :as async :refer [put! pipe chan tap timeout sliding-buffer]]
+            [cljs.core.async :as async :refer [put! pipe chan sub timeout sliding-buffer]]
             [reagent.core :as r :refer [atom]]))
 
 (enable-console-print!)
@@ -21,17 +21,19 @@
 (defn- total-count-view []
   [:span "Indexed: " [:strong (:total-tweet-count @app)] " tweets"])
 
-(def sort-orders [[:by-id "latest"][:by-followers "followers"][:by-retweets "retweets"]
-                  [:by-rt-since-startup "retweets2"][:by-reach "reach"][:by-favorites "favorites"]])
+(def sort-orders [[:by-id "latest"][:by-followers "followers"]
+                  [:by-retweets "retweets"][:by-rt-since-startup "retweets2"]
+                  [:by-reach "reach"][:by-favorites "favorites"]])
+
+(defn btn-class? [p] (if p " pure-button-primary" " sort-button"))
 
 (defn- sort-view []
   (let [curr-order (:sorted @app)]
     [:div
      [:button.pure-button.not-rounded
-      {:class (if (:live @app) " pure-button-primary" " sort-button")
-       :on-click #(put-cmd [:toggle-live])} "Live"]
+      {:class (btn-class? (:live @app)) :on-click #(put-cmd [:toggle-live])} "Live"]
      [:button.pure-button.not-rounded.sort-button "Sort by:"]
-     (for [[k text] sort-orders :let [btn-class (if (= k curr-order) " pure-button-primary" " sort-button")]]
+     (for [[k text] sort-orders :let [btn-class (btn-class? (= k curr-order))]]
        ^{:key text} [:button.pure-button.not-rounded
                      {:class btn-class :on-click #(put-cmd [:set-sort-order k])} text])]))
 
@@ -64,20 +66,21 @@
    (for [n [5 10 25 100]]
      ^{:key (str "pag-size" n)} [pag-size-item n])])
 
-(def views [[count-view "tweet-count"][search-view "search"][total-count-view "total-tweet-count"]
-            [users-count-view "users-count"][sort-view "sort-buttons"][pagination-view "pagination"]])
+(def views [[count-view "tweet-count"][total-count-view "total-tweet-count"]
+            [search-view "search"][users-count-view "users-count"]
+            [sort-view "sort-buttons"][pagination-view "pagination"]])
 
 (defn init-views
-  "Initialize all views contained in the vector above and connect channel for outgoing command
-   messages (e.g. for altering state)"
-  [state-mult cmd-out-chan]
-  (let [state-chan (chan (sliding-buffer 1))]
+  "Initialize all views contained in the vector above and connect channel for
+   outgoing command messages (e.g. for altering state)"
+  [state-pub cmd-out-chan]
+  (let [state-chan (chan)]
     (pipe cmd-chan cmd-out-chan)
-    (tap state-mult state-chan)
     (go-loop []
-             (let [state (<! state-chan)]
+             (let [[_ state] (<! state-chan)]
                (reset! app state)
                (<! (timeout 10))
                (recur)))
-    (doseq [[component id] views]
-      (r/render-component [component] (util/by-id id)))))
+    (sub state-pub :app-state state-chan)
+    (doseq [[component id] views] (r/render-component [component] (util/by-id id)))))
+

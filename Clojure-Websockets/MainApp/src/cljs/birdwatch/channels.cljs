@@ -1,5 +1,5 @@
 (ns birdwatch.channels
-  (:require [cljs.core.async :as async :refer [chan sliding-buffer mult pub]]))
+  (:require [cljs.core.async :as async :refer [chan pub]]))
 
 ;;;; Channels for handling information flow in the application.
 
@@ -15,10 +15,7 @@
 ;;; Channel for command web-client internal command messages (e.g. state modification).
 (def cmd-chan (chan))
 
-;;; Channel and mult for publishing state changes.
-(def state-chan (chan (sliding-buffer 1)))
-(def state-mult (mult state-chan))
-
+;;; Channel and pub for publishing state changes.
 (def state-pub-chan (chan))
 (def state-pub (pub state-pub-chan #(first %)))
 

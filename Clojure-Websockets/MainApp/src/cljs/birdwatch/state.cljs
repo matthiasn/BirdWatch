@@ -1,9 +1,9 @@
 (ns birdwatch.state
-  (:require-macros [cljs.core.async.macros :refer [go-loop go alt!]])
+  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
             [birdwatch.wordcount :as wc]
             [tailrecursion.priority-map :refer [priority-map-by]]
-            [cljs.core.async :as async :refer [<! put! pipe timeout chan]]
+            [cljs.core.async :as async :refer [<! put! pipe timeout chan sliding-buffer]]
             [cljs.core.match :refer-macros [match]]))
 
 (enable-console-print!)
@@ -189,8 +189,13 @@
              (recur))))
 
 (defn broadcast-state
-  "Broadcast state changes on the specified channel."
-  [channel]
-  (add-watch app :watcher
-             (fn [_ _ _ new-state]
-               (put! channel new-state))))
+  "Broadcast state changes on the specified channel. Internally uses a sliding
+   buffer of size one in order to not overwhelm the rest of the system with too
+   frequent updates. The only one that matters next is the latest state anyway.
+   It doesn't harm to drop older ones on the channel."
+  [channel pub-channel]
+  (let [sliding-chan (chan (sliding-buffer 1))]
+    (pipe sliding-chan pub-channel)
+    (add-watch app :watcher
+               (fn [_ _ _ new-state]
+                 (put! sliding-chan [:app-state new-state])))))

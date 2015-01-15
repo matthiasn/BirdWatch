@@ -12,9 +12,8 @@
 (defn mount-wordcloud
   "Mount wordcloud and wire channels for incoming data and outgoing commands."
   [cmd-chan state-pub]
-  (let [word-cloud (.WordCloud js/BirdWatch w (* w 0.7) 250
-                               #(put! cmd-chan [:append-search-text %])
-                               cloud-elem)
+  (let [on-click #(put! cmd-chan [:append-search-text %])
+        word-cloud (.WordCloud js/BirdWatch w (* w 0.7) 250 on-click cloud-elem)
         sub-chan (chan)]
     (go-loop []
              (let [[_ words] (<! sub-chan)]

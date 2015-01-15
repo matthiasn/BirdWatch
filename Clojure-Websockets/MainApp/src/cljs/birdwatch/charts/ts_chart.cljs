@@ -47,7 +47,7 @@
      [labels bars mx cnt w]]))
 
 (defn mount-ts-chart
-  "Mount timeseries chart and wire channels for incoming data."
+  "Mount timeseries chart and subscribe to specified pub for state changes."
   [state-pub]
   (r/render-component [ts-chart] ts-elem)
   (let [sub-chan (chan)]

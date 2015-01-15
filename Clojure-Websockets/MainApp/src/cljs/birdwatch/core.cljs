@@ -19,8 +19,8 @@
 (state/init)
 
 ;;; Initialize Reagent components and pass command channel, e.g. for interaction with state.
-(ui/init-views c/state-mult c/cmd-chan)
-(tw/mount-tweets c/state-mult c/cmd-chan)
+(ui/init-views c/state-pub c/cmd-chan)
+(tw/mount-tweets c/state-pub c/cmd-chan)
 
 (wc-c/mount-wc-chart c/cmd-chan c/state-pub)
 (ts-c/mount-ts-chart c/state-pub)
@@ -45,4 +45,4 @@
 (state/data-loop c/data-chan)
 (state/cmd-loop c/cmd-chan)
 (state/connect-qry-chan c/qry-chan)
-(state/broadcast-state c/state-chan)
+(state/broadcast-state c/state-chan c/state-pub-chan)

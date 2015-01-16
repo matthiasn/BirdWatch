@@ -1,4 +1,4 @@
-(ns birdwatch.timeseries
+(ns birdwatch.stats.timeseries
   (:require [birdwatch.util :as util]))
 
 (enable-console-print!)

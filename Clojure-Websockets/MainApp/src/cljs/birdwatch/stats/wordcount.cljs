@@ -1,4 +1,4 @@
-(ns birdwatch.wordcount
+(ns birdwatch.stats.wordcount
   (:require [clojure.string :as s]))
 
 (def stop-words

@@ -1,7 +1,7 @@
 (ns birdwatch.state
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
-            [birdwatch.wordcount :as wc]
+            [birdwatch.stats.wordcount :as wc]
             [tailrecursion.priority-map :refer [priority-map-by]]
             [cljs.core.async :as async :refer [<! put! pipe timeout chan sliding-buffer]]
             [cljs.core.match :refer-macros [match]]))

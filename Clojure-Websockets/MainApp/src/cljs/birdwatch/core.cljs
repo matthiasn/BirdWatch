@@ -1,6 +1,5 @@
 (ns birdwatch.core
   (:require [birdwatch.util :as util]
-            [birdwatch.timeseries :as ts]
             [birdwatch.charts.ts-chart :as ts-c]
             [birdwatch.channels :as c]
             [birdwatch.communicator :as comm]
@@ -9,7 +8,8 @@
             [birdwatch.ui.tweets :as tw]
             [birdwatch.ui.elements :as ui]
             [birdwatch.state :as state]
-            [birdwatch.wordcount :as wc]))
+            [birdwatch.stats.timeseries :as ts]
+            [birdwatch.stats.wordcount :as wc]))
 
 ;;;; Main file of the BirdWatch client-side application.
 

@@ -18,5 +18,3 @@
 ;;; Channel and pub for publishing state changes.
 (def state-pub-chan (chan))
 (def state-pub (pub state-pub-chan #(first %)))
-
-

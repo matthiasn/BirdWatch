@@ -193,7 +193,7 @@
    buffer of size one in order to not overwhelm the rest of the system with too
    frequent updates. The only one that matters next is the latest state anyway.
    It doesn't harm to drop older ones on the channel."
-  [channel pub-channel]
+  [pub-channel]
   (let [sliding-chan (chan (sliding-buffer 1))]
     (pipe sliding-chan pub-channel)
     (add-watch app :watcher

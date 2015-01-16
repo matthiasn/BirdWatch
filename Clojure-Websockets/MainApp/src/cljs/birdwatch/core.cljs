@@ -45,4 +45,4 @@
 (state/data-loop c/data-chan)
 (state/cmd-loop c/cmd-chan)
 (state/connect-qry-chan c/qry-chan)
-(state/broadcast-state c/state-chan c/state-pub-chan)
+(state/broadcast-state c/state-pub-chan)

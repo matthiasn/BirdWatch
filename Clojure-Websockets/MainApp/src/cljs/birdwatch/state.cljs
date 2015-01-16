@@ -113,7 +113,7 @@
   []
   (put! qry-chan [:cmd/percolate {:query (util/query-string @app)}]))
 
-(defn init
+(defn- init
   "Initialize application start when application starts by providing fresh state
    and setting the :search-text from the URI location hash."
   []
@@ -134,7 +134,7 @@
 
 ;;; Channels processing section, here messages are taken from channels and processed.
 
-(defn stats-loop
+(defn- stats-loop
   "Process messages from the stats channel and update application state accordingly."
   [stats-chan]
   (go-loop []
@@ -155,7 +155,7 @@
              (<! (timeout 50))
              (recur))))
 
-(defn data-loop
+(defn- data-loop
   "Process messages from the data channel and process / add to application state.
    In the case of :tweet/prev-chunk messages: put! on separate channel individual items
    are handled with a lower priority."
@@ -171,7 +171,7 @@
                       :else ())
                (recur)))))
 
-(defn cmd-loop
+(defn- cmd-loop
   "Process command messages, e.g. those that alter application state."
   [cmd-chan]
   (go-loop []
@@ -188,7 +188,7 @@
                     :else ())
              (recur))))
 
-(defn broadcast-state
+(defn- broadcast-state
   "Broadcast state changes on the specified channel. Internally uses a sliding
    buffer of size one in order to not overwhelm the rest of the system with too
    frequent updates. The only one that matters next is the latest state anyway.
@@ -199,3 +199,13 @@
     (add-watch app :watcher
                (fn [_ _ _ new-state]
                  (put! sliding-chan [:app-state new-state])))))
+
+(defn- init-state
+  "Init app state and wire all channels required in the state namespace."
+  [data-chan qry-chan stats-chan cmd-chan state-pub-chan]
+  (init)
+  (stats-loop stats-chan)
+  (data-loop data-chan)
+  (cmd-loop cmd-chan)
+  (connect-qry-chan qry-chan)
+  (broadcast-state state-pub-chan))

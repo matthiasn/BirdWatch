@@ -47,6 +47,8 @@
              (chsk-send! [cmd-type (assoc payload :uid (:uid @chsk-state))])
              (recur))))
 
-
-
-
+(defn start-communicator
+  "Start communicator by wiring channels."
+  [cmd-chan data-chan stats-chan qry-chan]
+  (start-router cmd-chan data-chan stats-chan)
+  (query-loop qry-chan))

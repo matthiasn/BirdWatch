@@ -63,7 +63,7 @@
 
 (defn mount-wc-chart
   "Mount wordcount bar chart and wire channels for incoming data and outgoing commands."
-  [cmd-chan state-pub]
+  [state-pub cmd-chan]
   (r/render-component [wordcount-barchart cmd-chan] wc-elem)
   (let [sub-chan (chan)]
     (go-loop []

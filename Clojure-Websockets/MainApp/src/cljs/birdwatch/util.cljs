@@ -5,19 +5,18 @@
 (defn by-id [id] (.getElementById js/document id))
 (defn elem-width [elem] (aget elem "offsetWidth"))
 
-(defn update-loop
-  "Run a go-loop that calls f every t1 + t2 seconds, where the execution
-   of f occurs between t1 and t2. Then publishes the result of f on channel
-   c for type t.
+(defn msg-loop
+  "Run a go-loop that puts message m on channel c every t1 + t2 seconds , where the send
+   of msg occurs between t1 and t2. Then publishes the result of f on channel c.
    Also exists in another arity that only takes t1 as the pre-exection
    wait time, with post-execution set to zero."
-  ([c t f t1 t2]
+  ([c m t1 t2]
    (go-loop []
             (<! (timeout (* t1 1000)))
-            (put! c [t (f)])
+            (put! c m)
             (<! (timeout (* t2 1000)))
             (recur)))
-  ([c t f t1] (update-loop c t f t1 0)))
+  ([c m t1] (msg-loop c m t1 0)))
 
 (defn search-hash []
   (subs (js/decodeURIComponent (aget js/window "location" "hash")) 1))

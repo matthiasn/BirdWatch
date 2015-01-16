@@ -1,6 +1,7 @@
 (ns birdwatch.state
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
+            [birdwatch.stats.timeseries :as ts]
             [birdwatch.stats.wordcount :as wc]
             [tailrecursion.priority-map :refer [priority-map-by]]
             [cljs.core.async :as async :refer [<! put! pipe timeout chan sliding-buffer]]
@@ -173,7 +174,7 @@
 
 (defn- cmd-loop
   "Process command messages, e.g. those that alter application state."
-  [cmd-chan]
+  [cmd-chan pub-chan]
   (go-loop []
            (let [[msg-type msg] (<! cmd-chan)]
              (match [msg-type msg]
@@ -185,6 +186,9 @@
                     [:set-sort-order by-order] (swap! app assoc :sorted by-order)
                     [:retrieve-missing id-str] (put! qry-chan [:cmd/missing {:id_str id-str}])
                     [:append-search-text text] (append-search-text text)
+                    [:words-cloud n] (put! pub-chan [msg-type (wc/get-words app n)])
+                    [:words-bar   n] (put! pub-chan [msg-type (wc/get-words2 app n)])
+                    [:ts-data     _] (put! pub-chan [msg-type (ts/ts-data app)])
                     :else ())
              (recur))))
 
@@ -206,6 +210,6 @@
   (init)
   (stats-loop stats-chan)
   (data-loop data-chan)
-  (cmd-loop cmd-chan)
+  (cmd-loop cmd-chan state-pub-chan)
   (connect-qry-chan qry-chan)
   (broadcast-state state-pub-chan))

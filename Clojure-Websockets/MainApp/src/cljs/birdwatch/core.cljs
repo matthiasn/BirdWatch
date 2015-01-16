@@ -35,6 +35,6 @@
 (ts-c/mount-ts-chart   state-pub)
 
 ;;; Update charts periodically (every 8 seconds for cloud, every second for others).
-(util/update-loop state-pub-chan :words-cloud #(wc/get-words state/app 250) 3 5)
-(util/update-loop state-pub-chan :ts-data     #(ts/ts-data state/app) 1)
-(util/update-loop state-pub-chan :words-bar   #(wc/get-words2 state/app 25) 1)
+(util/msg-loop cmd-chan [:words-cloud 250] 3 5)
+(util/msg-loop cmd-chan [:ts-data] 1)
+(util/msg-loop cmd-chan [:words-bar 25] 1)

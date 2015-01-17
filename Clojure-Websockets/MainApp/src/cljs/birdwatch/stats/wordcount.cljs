@@ -26,12 +26,12 @@
 (defn get-words2
   "get vector of maps with word as :key and count as :value"
   [app n]
-  (vec (take n (:words-sorted-by-count @app))))
+  (vec (take n (:words-sorted-by-count app))))
 
 (defn swap-pmap
   "swaps item in priority-map"
   [app priority-map id n]
-  (swap! app assoc priority-map (assoc (priority-map @app) id n)))
+  (swap! app assoc priority-map (assoc (priority-map app) id n)))
 
 (defn add-word
   "add word to the words map and the sorted set with the counts (while discarding old entry)"

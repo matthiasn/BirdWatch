@@ -1,11 +1,9 @@
 (ns birdwatch.communicator
-  (:require-macros [cljs.core.async.macros :refer [go-loop go]])
+  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [cljs.core.match :refer-macros [match]]
             [taoensso.sente  :as sente  :refer (cb-success?)]
             [taoensso.sente.packers.transit :as sente-transit]
             [cljs.core.async :as async :refer [<! chan put!]]))
-
-(enable-console-print!)
 
 (def packer
   "Defines our packing (serialization) format for client<->server comms."

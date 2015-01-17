@@ -1,5 +1,4 @@
 (ns birdwatch.state.search
-  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
             [cljs.core.async :as async :refer [put!]]))
 
@@ -18,12 +17,12 @@
                                   :from (* chunk-size prev-chunks-loaded)}])
       (swap! app update-in [:prev-chunks-loaded] inc))))
 
-(defn start-percolator
+(defn- start-percolator
   "trigger starting of percolation matching of new tweets"
   [app qry-chan]
   (put! qry-chan [:cmd/percolate {:query (util/query-string @app)}]))
 
-(defn- start-search
+(defn start-search
   "Initiate new search"
   [app initial-state qry-chan]
   (let [search (:search-text @app)

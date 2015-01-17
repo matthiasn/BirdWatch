@@ -6,7 +6,7 @@
             [birdwatch.charts.cloud-chart :as cloud]
             [birdwatch.ui.tweets :as tw]
             [birdwatch.ui.elements :as ui]
-            [birdwatch.state :as state]
+            [birdwatch.state.data :as state]
             [birdwatch.stats.timeseries :as ts]
             [birdwatch.stats.wordcount :as wc]
             [cljs.core.async :as async :refer [chan pub]]))

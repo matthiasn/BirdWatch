@@ -1,8 +1,9 @@
-(ns birdwatch.state
+(ns birdwatch.state.data
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
             [birdwatch.stats.timeseries :as ts]
             [birdwatch.stats.wordcount :as wc]
+            [birdwatch.state.search :as s]
             [tailrecursion.priority-map :refer [priority-map-by]]
             [cljs.core.async :as async :refer [<! put! pipe timeout chan sliding-buffer]]
             [cljs.core.match :refer-macros [match]]))
@@ -97,41 +98,12 @@
     (add-rt-status! app tweet)
     (wc/process-tweet app (:text tweet))))
 
-(defn- load-prev
-  "load previous tweets matching the current search"
-  []
-  (let [chunks-to-load 10
-        chunk-size 500
-        prev-chunks-loaded (:prev-chunks-loaded @app)]
-    (when (< prev-chunks-loaded chunks-to-load)
-      (put! qry-chan [:cmd/query {:query (util/query-string @app)
-                                  :n chunk-size
-                                  :from (* chunk-size prev-chunks-loaded)}])
-      (swap! app update-in [:prev-chunks-loaded] inc))))
-
-(defn start-percolator
-  "trigger starting of percolation matching of new tweets"
-  []
-  (put! qry-chan [:cmd/percolate {:query (util/query-string @app)}]))
-
 (defn- init
   "Initialize application start when application starts by providing fresh state
    and setting the :search-text from the URI location hash."
   []
   (reset! app (initial-state))
   (swap! app assoc :search-text (util/search-hash)))
-
-(defn- start-search
-  "Initiate new search"
-  []
-  (let [search (:search-text @app)
-        s (if (= search "") "*" search)]
-    (reset! app (initial-state))
-    (swap! app assoc :search-text search)
-    (swap! app assoc :search s)
-    (aset js/window "location" "hash" (js/encodeURIComponent s))
-    (start-percolator)
-    (dotimes [n 2] (load-prev))))
 
 ;;; Channels processing section, here messages are taken from channels and processed.
 
@@ -168,7 +140,9 @@
                (match [msg-type msg]
                       [:tweet/new             tweet] (add-tweet! tweet app)
                       [:tweet/missing-tweet   tweet] (add-to-tweets-map! app :tweets-map tweet)
-                      [:tweet/prev-chunk prev-chunk] (do (put! prev-chunks-chan prev-chunk) (load-prev))
+                      [:tweet/prev-chunk prev-chunk] (do
+                                                       (put! prev-chunks-chan prev-chunk)
+                                                       (s/load-prev app qry-chan))
                       :else ())
                (recur)))))
 
@@ -182,7 +156,7 @@
                     [:set-search-text    text] (swap! app assoc :search-text text)
                     [:set-current-page   page] (swap! app assoc :page page)
                     [:set-page-size         n] (swap! app assoc :n n)
-                    [:start-search          _] (start-search)
+                    [:start-search          _] (s/start-search app (initial-state) qry-chan)
                     [:set-sort-order by-order] (swap! app assoc :sorted by-order)
                     [:retrieve-missing id-str] (put! qry-chan [:cmd/missing {:id_str id-str}])
                     [:append-search-text text] (append-search-text text)

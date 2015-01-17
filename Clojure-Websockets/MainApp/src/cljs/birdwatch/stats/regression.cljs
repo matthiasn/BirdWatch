@@ -1,7 +1,5 @@
 (ns birdwatch.stats.regression)
 
-(enable-console-print!)
-
 (defn square [x] (* x x))
 (defn mean [xs]
   (let [cnt (count xs)]

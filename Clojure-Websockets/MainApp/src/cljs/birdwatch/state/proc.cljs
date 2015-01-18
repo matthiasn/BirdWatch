@@ -18,6 +18,12 @@
   [app priority-map rt-id n]
   (when (> n (rt-id (priority-map @app))) (swap-pmap app priority-map rt-id n)))
 
+(defn add-words
+  "add word to the words map and the sorted set with the counts (while discarding old entry)"
+  [app words]
+  (doseq [word words]
+    (swap-pmap app :words-sorted-by-count word (inc (get (:words-sorted-by-count @app) word 0)))))
+
 (defn add-rt-status!
   "handles original, retweeted tweet"
   [app tweet]
@@ -45,4 +51,4 @@
     (swap-pmap app :by-id id-key id-str)
     (swap-pmap app :by-reach id-key (+ (get (:by-reach state) id-key 0) (:followers_count (:user tweet))))
     (add-rt-status! app tweet)
-    (wc/process-tweet app (:text tweet))))
+    (add-words app (wc/words-in-tweet (:text tweet)))))

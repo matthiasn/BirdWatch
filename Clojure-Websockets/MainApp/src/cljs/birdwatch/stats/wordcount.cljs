@@ -21,32 +21,20 @@
 (defn get-words
   "get vector of maps with word as :key and count as :value"
   [app n]
-  (vec (map (fn [w] (let [[k v] w] {:key k :value v})) (take n (:words-sorted-by-count @app)))))
+  (vec (map (fn [w] (let [[k v] w] {:key k :value v})) (take n (:words-sorted-by-count app)))))
 
 (defn get-words2
   "get vector of maps with word as :key and count as :value"
   [app n]
   (vec (take n (:words-sorted-by-count app))))
 
-(defn swap-pmap
-  "swaps item in priority-map"
-  [app priority-map id n]
-  (swap! app assoc priority-map (assoc (priority-map app) id n)))
-
-(defn add-word
-  "add word to the words map and the sorted set with the counts (while discarding old entry)"
-  [app word]
-  (swap-pmap app :words-sorted-by-count word (inc (get (:words-sorted-by-count @app) word 0))))
-
-(defn process-tweet
+(defn words-in-tweet
   "process tweet: split, filter, lower case, replace punctuation, add word"
-  [app text]
-  (doall ;; initially lazy, needs realization
-   (->> (s/split text #"[\s—\u3031-\u3035\u0027\u309b\u309c\u30a0\u30fc\uff70]+")
-        (filter #(not (re-find #"(@|https?:)" %)) ,)
-        (filter #(> (count %) 3) ,)
-        (filter #(< (count %) 25) ,)
-        (map s/lower-case ,)
-        (map #(s/replace % #"[;:,/‘’…~\-!?\[\]\"<>()\"@.]+" "" ) ,)
-        (filter (fn [item] (not (contains? stop-words item))) ,)
-        (map #(add-word app %) ,))))
+  [text]
+  (->> (s/split text #"[\s—\u3031-\u3035\u0027\u309b\u309c\u30a0\u30fc\uff70]+")
+       (filter #(not (re-find #"(@|https?:)" %)) ,)
+       (filter #(> (count %) 3) ,)
+       (filter #(< (count %) 25) ,)
+       (map s/lower-case ,)
+       (map #(s/replace % #"[;:,/‘’…~\-!?\[\]\"<>()\"@.]+" "" ) ,)
+       (filter (fn [item] (not (contains? stop-words item))) ,)))

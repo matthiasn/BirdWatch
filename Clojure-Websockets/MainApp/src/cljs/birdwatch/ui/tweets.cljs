@@ -56,7 +56,7 @@
   [state-pub cmd-chan]
   (let [app (atom {})
         tweets (atom [])
-        state-chan (chan)]
+        state-chan (chan (sliding-buffer 1))]
     (go-loop []
              (let [[_ state] (<! state-chan)
                    order (:sorted state)

@@ -71,7 +71,7 @@
    outgoing command messages (e.g. for altering state)"
   [state-pub cmd-out-chan]
   (let [app (atom {})
-        state-chan (chan)]
+        state-chan (chan (sliding-buffer 1))]
     (pipe cmd-chan cmd-out-chan)
     (go-loop []
              (let [[_ state] (<! state-chan)]

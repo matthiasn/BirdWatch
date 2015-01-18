@@ -5,7 +5,7 @@
             [birdwatch.stats.regression :as reg]
             [birdwatch.charts.shapes :as s]
             [reagent.core :as r :refer [atom]]
-            [cljs.core.async :as async :refer [put! chan sub timeout]]))
+            [cljs.core.async :as async :refer [put! chan sub timeout sliding-buffer]]))
 
 (def items (atom []))
 (def pos-trends (atom {}))
@@ -62,10 +62,10 @@
 
 (defn mount-wc-chart
   "Mount wordcount bar chart and wire channels for incoming data and outgoing commands.
-   The number of bars and the wait time until re-render is specified in the configration map."
+   The number of bars and the wait time until re-render is specified in the configuration map."
   [state-pub cmd-chan {:keys [bars every-ms]}]
   (r/render-component [wordcount-barchart cmd-chan] wc-elem)
-  (let [state-chan (chan)]
+  (let [state-chan (chan (sliding-buffer 1))]
     (go-loop []
              (let [[_ state] (<! state-chan)]
                (update-words (wc/get-words2 state bars))

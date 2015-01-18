@@ -2,15 +2,17 @@
   (:require [birdwatch.state.initial :as i]
             [birdwatch.state.comm :as c]))
 
-;;;; Application state in a single atom.
-(def app (atom {}))
-
 (defn init-state
-  "Init app state and wire all channels required in the state namespace."
+  "Init app state and wire all channels required in the state namespace. The app
+   atom is held inside the let binding of this function and thus protected from
+   outside access / alteration. The only way to interact with it is by sending
+   messages on channels, such the provided data channel for adding new data or
+   sending commands on the cmd-chan."
   [data-chan qry-chan stats-chan cmd-chan state-pub-chan]
-  (i/init app)
-  (c/stats-loop stats-chan app)
-  (c/data-loop data-chan app)
-  (c/cmd-loop cmd-chan state-pub-chan app)
-  (c/connect-qry-chan qry-chan)
-  (c/broadcast-state state-pub-chan app))
+  (let [app (atom {})]
+    (i/init app)
+    (c/stats-loop stats-chan app)
+    (c/data-loop data-chan app)
+    (c/cmd-loop cmd-chan state-pub-chan app)
+    (c/connect-qry-chan qry-chan)
+    (c/broadcast-state state-pub-chan app)))

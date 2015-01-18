@@ -1,14 +1,12 @@
 (ns birdwatch.state.comm
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
-  (:require [birdwatch.stats.timeseries :as ts]
-            [birdwatch.stats.wordcount :as wc]
-            [birdwatch.state.search :as s]
+  (:require [birdwatch.state.search :as s]
             [birdwatch.state.initial :as i]
             [birdwatch.state.proc :as p]
             [cljs.core.async :as async :refer [<! put! pipe timeout chan sliding-buffer]]
             [cljs.core.match :refer-macros [match]]))
 
-;;;; Channels processing namespace., here messages are taken from channels and processed.
+;;;; Channels processing namespace. Here, messages are taken from channels and processed.
 
 (def qry-chan (chan))
 (defn connect-qry-chan [c] (pipe qry-chan c))
@@ -69,8 +67,6 @@
                     [:set-sort-order by-order] (swap! app assoc :sorted by-order)
                     [:retrieve-missing id-str] (put! qry-chan [:cmd/missing {:id_str id-str}])
                     [:append-search-text text] (append-search-text text app)
-                    [:words-cloud n] (put! pub-chan [msg-type (wc/get-words @app n)])
-                    [:ts-data     _] (put! pub-chan [msg-type (ts/ts-data @app)])
                     :else ())
              (recur))))
 

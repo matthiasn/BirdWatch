@@ -21,7 +21,9 @@
   [cmd-chan data-chan stats-chan]
   (fn [{:keys [event]}]
     (match event
-           [:chsk/state {:first-open? true}] (do (print "WS connected") (put! cmd-chan [:start-search]))
+           [:chsk/state {:first-open? true}] (do
+                                               (print "WS connected")
+                                               (put! cmd-chan [:start-search]))
            [:chsk/recv  payload]
            (let [[msg-type msg] payload]
              (case (keyword (namespace msg-type))

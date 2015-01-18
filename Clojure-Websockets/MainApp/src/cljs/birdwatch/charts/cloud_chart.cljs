@@ -3,8 +3,6 @@
   (:require [birdwatch.util :as util]
             [cljs.core.async :as async :refer [put! chan sub]]))
 
-(enable-console-print!)
-
 ;;; WordCloud element (implemented externally in JavaScript)
 (def cloud-elem (util/by-id "wordCloud"))
 (def w (util/elem-width cloud-elem))

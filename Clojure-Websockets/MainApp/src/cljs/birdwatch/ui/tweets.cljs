@@ -4,8 +4,6 @@
             [cljs.core.async :as async :refer [put! chan sub <! timeout sliding-buffer]]
             [reagent.core :as r :refer [atom]]))
 
-(enable-console-print!)
-
 (defn twitter-intent [tweet intent icon]
   [:a {:href (str "https://twitter.com/intent/" intent (:id_str tweet))}
    [:img {:src (str "/images/" icon)}]])

@@ -5,8 +5,6 @@
             [cljs.core.async :as async :refer [put! pipe chan sub timeout sliding-buffer]]
             [reagent.core :as r :refer [atom]]))
 
-(enable-console-print!)
-
 (def app (atom {}))
 
 (def cmd-chan (chan))

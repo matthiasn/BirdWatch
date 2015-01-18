@@ -5,8 +5,10 @@
   (let [cnt (count xs)]
     (when (pos? cnt) (/ (apply + xs) cnt))))
 
-; adapted from http://compbio.ucdenver.edu/Hunter_lab/Hunter/cl-statistics.lisp
-(defn linear-regression [ys]
+(defn linear-regression
+  "Computes linear regression. Adapted from
+   http://compbio.ucdenver.edu/Hunter_lab/Hunter/cl-statistics.lisp"
+  [ys]
   (let [n (count ys)]
     (when (pos? n)
       (let [xs (range n)

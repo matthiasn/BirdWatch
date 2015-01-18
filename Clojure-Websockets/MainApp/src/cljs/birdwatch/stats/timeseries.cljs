@@ -43,7 +43,7 @@
   (.unix (js/moment. (:created_at t))))
 
 (defn ts-data
-  "perform time series analysis by counting tweets in even intervals"
+  "Perform time series analysis by counting tweets in even intervals."
   [app]
   (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) app 100000)]
     (let [oldest (tweet-ts (last tweets-by-id))

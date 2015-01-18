@@ -31,9 +31,5 @@
 (ui/init-views         state-pub cmd-chan)
 (tw/mount-tweets       state-pub cmd-chan)
 (wc-c/mount-wc-chart   state-pub cmd-chan {:bars 25 :every-ms 1000})
-(cloud/mount-wordcloud state-pub cmd-chan)
-(ts-c/mount-ts-chart   state-pub)
-
-;;; Update charts periodically (every 8 seconds for cloud, every second for others).
-(util/msg-loop cmd-chan [:words-cloud 250] 3 5)
-(util/msg-loop cmd-chan [:ts-data] 1)
+(cloud/mount-wordcloud state-pub cmd-chan {:n 250 :every-ms 5000})
+(ts-c/mount-ts-chart   state-pub {:every-ms 1000})

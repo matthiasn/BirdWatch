@@ -1,8 +1,9 @@
 (ns birdwatch.charts.ts-chart
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
+            [birdwatch.stats.timeseries :as ts]
             [reagent.core :as r :refer [atom]]
-            [cljs.core.async :as async :refer [chan sub]]))
+            [cljs.core.async :as async :refer [chan sub timeout sliding-buffer]]))
 
 (enable-console-print!)
 
@@ -47,13 +48,15 @@
      [labels bars mx cnt w]]))
 
 (defn mount-ts-chart
-  "Mount timeseries chart and subscribe to specified pub for state changes."
-  [state-pub]
+  "Mount timeseries chart and subscribe to specified pub for state changes.
+   The wait time until re-render is specified in the configuration map."
+  [state-pub {:keys [every-ms]}]
   (r/render-component [ts-chart] ts-elem)
-  (let [sub-chan (chan)]
+  (let [state-chan (chan (sliding-buffer 1))]
     (go-loop []
-             (let [[_ ts-data] (<! sub-chan)]
-               (reset! bars ts-data)
+             (let [[_ state] (<! state-chan)]
+               (reset! bars (ts/ts-data state))
+               (<! (timeout every-ms))
                (recur)))
-    (sub state-pub :ts-data sub-chan)))
+    (sub state-pub :app-state state-chan)))
 

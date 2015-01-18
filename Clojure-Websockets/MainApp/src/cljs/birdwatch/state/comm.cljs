@@ -70,7 +70,6 @@
                     [:retrieve-missing id-str] (put! qry-chan [:cmd/missing {:id_str id-str}])
                     [:append-search-text text] (append-search-text text app)
                     [:words-cloud n] (put! pub-chan [msg-type (wc/get-words @app n)])
-                    [:words-bar   n] (put! pub-chan [msg-type (wc/get-words2 @app n)])
                     [:ts-data     _] (put! pub-chan [msg-type (ts/ts-data @app)])
                     :else ())
              (recur))))

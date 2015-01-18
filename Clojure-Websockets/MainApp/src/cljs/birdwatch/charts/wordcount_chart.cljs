@@ -1,12 +1,11 @@
 (ns birdwatch.charts.wordcount-chart
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
+            [birdwatch.stats.wordcount :as wc]
             [birdwatch.stats.regression :as reg]
             [birdwatch.charts.shapes :as s]
             [reagent.core :as r :refer [atom]]
-            [cljs.core.async :as async :refer [put! chan sub]]))
-
-(enable-console-print!)
+            [cljs.core.async :as async :refer [put! chan sub timeout]]))
 
 (def items (atom []))
 (def pos-trends (atom {}))
@@ -62,12 +61,14 @@
              (get (reg/linear-regression (take 1000 (get @ratio-items text))) 1)))))
 
 (defn mount-wc-chart
-  "Mount wordcount bar chart and wire channels for incoming data and outgoing commands."
-  [state-pub cmd-chan]
+  "Mount wordcount bar chart and wire channels for incoming data and outgoing commands.
+   The number of bars and the wait time until re-render is specified in the configration map."
+  [state-pub cmd-chan {:keys [bars every-ms]}]
   (r/render-component [wordcount-barchart cmd-chan] wc-elem)
-  (let [sub-chan (chan)]
+  (let [state-chan (chan)]
     (go-loop []
-             (let [[_ words] (<! sub-chan)]
-               (update-words words)
+             (let [[_ state] (<! state-chan)]
+               (update-words (wc/get-words2 state bars))
+               (<! (timeout every-ms))
                (recur)))
-    (sub state-pub :words-bar sub-chan)))
+    (sub state-pub :app-state state-chan)))

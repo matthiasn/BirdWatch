@@ -14,18 +14,18 @@
          tweet))
 
 (defn- swap-when-larger
-  "swaps item in priority-map when new value is larger than old value"
+  "Swaps item in priority-map when new value is larger than old value."
   [app priority-map rt-id n]
   (when (> n (rt-id (priority-map @app))) (swap-pmap app priority-map rt-id n)))
 
 (defn add-words
-  "add word to the words map and the sorted set with the counts (while discarding old entry)"
+  "Add words to the words map and the sorted set with the counts (while discarding old entry)."
   [app words]
   (doseq [word words]
     (swap-pmap app :words-sorted-by-count word (inc (get (:words-sorted-by-count @app) word 0)))))
 
 (defn add-rt-status!
-  "handles original, retweeted tweet"
+  "Process original, retweeted tweet."
   [app tweet]
   (if (contains? tweet :retweeted_status)
     (let [state @app
@@ -40,7 +40,8 @@
         (add-to-tweets-map! app :tweets-map rt)))))
 
 (defn add-tweet!
-  "increment counter, add tweet to tweets map and to sorted sets by id and by followers"
+  "Increment counter, add tweet to tweets map and to sorted sets by id and by followers. Modifies
+   application state."
   [tweet app]
   (let [state @app
         id-str (:id_str tweet)

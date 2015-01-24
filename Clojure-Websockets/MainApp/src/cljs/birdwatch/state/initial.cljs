@@ -3,7 +3,7 @@
             [tailrecursion.priority-map :refer [priority-map-by]]))
 
 (defn initial-state
-  "function returning fresh application state"
+  "Returns fresh application state."
   []
   {:count 0
    :n 10
@@ -25,7 +25,7 @@
    :words-sorted-by-count (priority-map-by >)})
 
 (defn init
-  "Initialize application start when application starts by providing fresh state
+  "Initializes application start when application starts by providing fresh state
    and setting the :search-text from the URI location hash."
   [app]
   (reset! app (initial-state))

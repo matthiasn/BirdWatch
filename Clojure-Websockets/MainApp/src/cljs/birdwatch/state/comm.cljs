@@ -11,9 +11,6 @@
 (def qry-chan (chan))
 (defn connect-qry-chan [c] (pipe qry-chan c))
 
-(defn append-search-text [s app]
-  (swap! app assoc :search-text (str (:search-text @app) " " s)))
-
 (defn- stats-loop
   "Process messages from the stats channel and update application state accordingly."
   [stats-chan app]
@@ -66,7 +63,7 @@
                     [:start-search          _] (s/start-search app (i/initial-state) qry-chan)
                     [:set-sort-order by-order] (swap! app assoc :sorted by-order)
                     [:retrieve-missing id-str] (put! qry-chan [:cmd/missing {:id_str id-str}])
-                    [:append-search-text text] (append-search-text text app)
+                    [:append-search-text text] (s/append-search-text text app)
                     :else ())
              (recur))))
 

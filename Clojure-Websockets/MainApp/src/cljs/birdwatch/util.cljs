@@ -1,9 +1,18 @@
 (ns birdwatch.util)
 
-(defn by-id [id] (.getElementById js/document id))
-(defn elem-width [elem] (aget elem "offsetWidth"))
+(defn by-id
+  "Get DOM element by specified ID."
+  [id]
+  (.getElementById js/document id))
 
-(defn search-hash []
+(defn elem-width
+  "Get width of specified DOM element."
+  [elem]
+  (aget elem "offsetWidth"))
+
+(defn search-hash
+  "Get location hash for current page."
+  []
   (subs (js/decodeURIComponent (aget js/window "location" "hash")) 1))
 
 (defn tweets-by-order

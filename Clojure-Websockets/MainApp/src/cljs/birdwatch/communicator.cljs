@@ -40,6 +40,6 @@
   [cmd-chan data-chan stats-chan qry-chan]
   (let [ws (sente/make-channel-socket! "/chsk" {:packer packer :type :auto})
         {:keys [ch-recv send-fn state]} ws
-        handler (make-handler cmd-chan data-chan stats-chan)
-        chsk-router (sente/start-chsk-router! ch-recv handler)]
+        handler (make-handler cmd-chan data-chan stats-chan)]
+    (sente/start-chsk-router! ch-recv handler)
     (query-loop qry-chan send-fn state)))

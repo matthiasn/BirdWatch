@@ -42,6 +42,8 @@
                         :compiler {:output-to "resources/public/js/build/birdwatch.js"
                                    :output-dir "resources/public/js/build/out"
                                    :optimizations :simple
+                                   :preamble ["reagent/react.js"]
+                                   :externs ["externs/misc.js"]
                                    :source-map "resources/public/js/build/birdwatch.js.map"}}
                        {:id "release"
                         :source-paths ["src/cljs"]

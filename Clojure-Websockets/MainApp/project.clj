@@ -17,7 +17,7 @@
                  [ring/ring-defaults "0.1.1"]
                  [clj-time "0.8.0"]
                  [pandect "0.4.1"]
-                 [org.clojure/clojurescript "0.0-2665"]
+                 [org.clojure/clojurescript "0.0-2727"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.5"]
                  [reagent "0.5.0-alpha"]

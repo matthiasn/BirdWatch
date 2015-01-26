@@ -39,7 +39,7 @@
   "Start communicator by wiring channels."
   [cmd-chan data-chan stats-chan qry-chan]
   (let [ws (sente/make-channel-socket! "/chsk" {:packer packer :type :auto})
-        {:keys [chsk ch-recv send-fn state]} ws
+        {:keys [ch-recv send-fn state]} ws
         handler (make-handler cmd-chan data-chan stats-chan)
         chsk-router (sente/start-chsk-router! ch-recv handler)]
     (query-loop qry-chan send-fn state)))

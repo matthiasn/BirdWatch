@@ -9,12 +9,6 @@
   "Defines our packing (serialization) format for client<->server comms."
   (sente-transit/get-flexi-packer :json))
 
-(let [{:keys [chsk ch-recv send-fn state]} (sente/make-channel-socket! "/chsk" {:packer packer :type :auto})]
-  (def chsk       chsk)
-  (def ch-chsk    ch-recv) ; ChannelSocket's receive channel
-  (def chsk-send! send-fn) ; ChannelSocket's send API fn
-  (def chsk-state state))  ; Watchable, read-only atom
-
 (defn make-handler
   "Create handler function for messages from WebSocket connection, wire channels and the
    start-function to call when the socket is established."
@@ -32,23 +26,20 @@
                :default (print "unmatched message" payload)))
            :else (print "Unmatched event: %s" event))))
 
-(defn start-router
-  "Start router after creating the handler with the provided start-function and channels."
-  [cmd-chan data-chan stats-chan]
-  (let [handler (make-handler cmd-chan data-chan stats-chan)]
-    (defonce chsk-router (sente/start-chsk-router! ch-chsk handler))))
-
 (defn query-loop
   "Take command / query message off of channel, enrich payload with :uid of current
    WebSocket connection and send to server. Channel is injected when loop is started."
-  [channel]
+  [channel send-fn chsk-state]
   (go-loop []
            (let [[cmd-type payload] (<! channel)]
-             (chsk-send! [cmd-type (assoc payload :uid (:uid @chsk-state))])
+             (send-fn [cmd-type (assoc payload :uid (:uid @chsk-state))])
              (recur))))
 
 (defn start-communicator
   "Start communicator by wiring channels."
   [cmd-chan data-chan stats-chan qry-chan]
-  (start-router cmd-chan data-chan stats-chan)
-  (query-loop qry-chan))
+  (let [ws (sente/make-channel-socket! "/chsk" {:packer packer :type :auto})
+        {:keys [chsk ch-recv send-fn state]} ws
+        handler (make-handler cmd-chan data-chan stats-chan)
+        chsk-router (sente/start-chsk-router! ch-recv handler)]
+    (query-loop qry-chan send-fn state)))

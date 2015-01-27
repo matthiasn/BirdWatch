@@ -13,5 +13,5 @@
     (i/init app)
     (c/stats-loop stats-chan app)
     (c/data-loop data-chan qry-chan app)
-    (c/cmd-loop cmd-chan state-pub-chan qry-chan app)
+    (c/cmd-loop cmd-chan qry-chan app)
     (c/broadcast-state state-pub-chan app)))

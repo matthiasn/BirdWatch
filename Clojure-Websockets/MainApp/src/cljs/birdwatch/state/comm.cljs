@@ -50,7 +50,7 @@
 
 (defn- cmd-loop
   "Process command messages, e.g. those that alter application state."
-  [cmd-chan pub-chan qry-chan app]
+  [cmd-chan qry-chan app]
   (go-loop []
            (let [msg (<! cmd-chan)]
              (match msg
@@ -70,9 +70,9 @@
    buffer of size one in order to not overwhelm the rest of the system with too
    frequent updates. The only one that matters next is the latest state anyway.
    It doesn't harm to drop older ones on the channel."
-  [pub-channel app]
+  [pub-chan app]
   (let [sliding-chan (chan (sliding-buffer 1))]
-    (pipe sliding-chan pub-channel)
+    (pipe sliding-chan pub-chan)
     (add-watch app :watcher
                (fn [_ _ _ new-state]
                  (put! sliding-chan [:app-state new-state])))))

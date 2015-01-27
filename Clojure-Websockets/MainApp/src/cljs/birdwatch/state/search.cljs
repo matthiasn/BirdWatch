@@ -2,11 +2,6 @@
   (:require [birdwatch.util :as util]
             [cljs.core.async :as async :refer [put!]]))
 
-(defn append-search-text
-  "Appends string s to search-text in app, separated by space."
-  [app s]
-  (swap! app assoc :search-text (str (:search-text @app) " " s)))
-
 (defn- load-prev
   "Loads previous tweets matching the current search. Search is contructed
    by calling the util/query-string function with dereferenced app state."

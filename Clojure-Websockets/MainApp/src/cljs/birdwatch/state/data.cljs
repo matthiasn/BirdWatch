@@ -12,7 +12,6 @@
   (let [app (atom {})]
     (i/init app)
     (c/stats-loop stats-chan app)
-    (c/data-loop data-chan app)
-    (c/cmd-loop cmd-chan state-pub-chan app)
-    (c/connect-qry-chan qry-chan)
+    (c/data-loop data-chan qry-chan app)
+    (c/cmd-loop cmd-chan state-pub-chan qry-chan app)
     (c/broadcast-state state-pub-chan app)))

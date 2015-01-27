@@ -8,9 +8,6 @@
 
 ;;;; Channels processing namespace. Here, messages are taken from channels and processed.
 
-(def qry-chan (chan))
-(defn connect-qry-chan [c] (pipe qry-chan c))
-
 (defn- stats-loop
   "Process messages from the stats channel and update application state accordingly."
   [stats-chan app]
@@ -36,7 +33,7 @@
   "Process messages from the data channel and process / add to application state.
    In the case of :tweet/prev-chunk messages: put! on separate channel individual items
    are handled with a lower priority."
-  [data-chan app]
+  [data-chan qry-chan app]
   (let [prev-chunks-chan (chan)]
     (prev-chunks-loop prev-chunks-chan app)
     (go-loop []
@@ -52,7 +49,7 @@
 
 (defn- cmd-loop
   "Process command messages, e.g. those that alter application state."
-  [cmd-chan pub-chan app]
+  [cmd-chan pub-chan qry-chan app]
   (go-loop []
            (let [[msg-type msg] (<! cmd-chan)]
              (match [msg-type msg]

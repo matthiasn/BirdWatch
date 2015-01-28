@@ -59,20 +59,20 @@
 
 (defn entity-count
   "gets count of specified entity from either tweet, or, when exists, original (retweeted) tweet"
-  [tweet app sym s]
+  [tweet state sym s]
   (let [rt-id (if (contains? tweet :retweeted_status) (:id_str (:retweeted_status tweet)) (:id_str tweet))
-        count (sym ((keyword rt-id) (:tweets-map app)))]
+        count (sym ((keyword rt-id) (:tweets-map state)))]
     (if (not (nil? count)) (str (number-format count) s) "")))
 
-(defn rt-count [tweet app] (entity-count tweet app :retweet_count " RT | "))
-(defn fav-count [tweet app] (entity-count tweet app :favorite_count " fav"))
+(defn rt-count [tweet state] (entity-count tweet state :retweet_count " RT | "))
+(defn fav-count [tweet state] (entity-count tweet state :favorite_count " fav"))
 
 (defn rt-count-since-startup
   "gets RT count since startup for tweet, if exists returns formatted string"
-  [tweet app]
+  [tweet state]
   (let [t (if (contains? tweet :retweeted_status) (:retweeted_status tweet) tweet)
-        cnt ((keyword (:id_str t)) (:by-rt-since-startup app))
-        reach ((keyword (:id_str t)) (:by-reach app))]
+        cnt ((keyword (:id_str t)) (:by-rt-since-startup state))
+        reach ((keyword (:id_str t)) (:by-reach state))]
     (if (> cnt 0) (str "analyzed: " (number-format cnt) " retweets, reach " (number-format reach)))))
 
 (defn tweets-by-order

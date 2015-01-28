@@ -1,7 +1,6 @@
 (ns birdwatch.ui.elements
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
-            [birdwatch.ui.tweets :as ui-tweets]
             [cljs.core.async :as async :refer [put! pipe chan sub timeout sliding-buffer]]
             [reagent.core :as r :refer [atom]]))
 
@@ -21,7 +20,7 @@
                   [:by-retweets "retweets"][:by-rt-since-startup "retweets2"]
                   [:by-reach "reach"][:by-favorites "favorites"]])
 
-(defn btn-class? [p] (if p " pure-button-primary" " sort-button"))
+(defn- btn-class? [p] (if p " pure-button-primary" " sort-button"))
 
 (defn- sort-view [app]
   (let [curr-order (:sorted @app)]

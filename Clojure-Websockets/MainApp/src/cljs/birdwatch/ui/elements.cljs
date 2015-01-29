@@ -73,8 +73,8 @@
         state-chan (chan (sliding-buffer 1))]
     (pipe cmd-chan cmd-out-chan)
     (go-loop []
-             (let [[_ state] (<! state-chan)]
-               (reset! app state)
+             (let [[_ state-snapshot] (<! state-chan)]
+               (reset! app state-snapshot)
                (<! (timeout 10))
                (recur)))
     (sub state-pub :app-state state-chan)

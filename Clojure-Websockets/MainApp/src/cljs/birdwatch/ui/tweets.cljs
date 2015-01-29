@@ -87,12 +87,13 @@
         tweets (atom [])
         state-chan (chan (sliding-buffer 1))]
     (go-loop []
-             (let [[_ state] (<! state-chan)
-                   order (:sorted state)
-                   n (:n state)
-                   page (dec (:page state))]
-               (when (:live state) (reset! app state))
-               (reset! tweets (util/tweets-by-order order @app n page))
+             (let [[_ state-snapshot] (<! state-chan)
+                   order (:sorted state-snapshot)
+                   n (:n state-snapshot)
+                   page (dec (:page state-snapshot))]
+               (when (:live state-snapshot)
+                 (reset! app state-snapshot)
+                 (reset! tweets (util/tweets-by-order order @app n page)))
                (<! (timeout 20)))
              (recur))
     (sub state-pub :app-state state-chan)

@@ -66,11 +66,11 @@
 
 (defn entity-count
   "Gets count of specified entity from either tweet, or, when exists, original (retweeted) tweet."
-  [tweet state sym s]
+  [tweet state k s]
   (let [rt-id (if (contains? tweet :retweeted_status)
                 (:id_str (:retweeted_status tweet))
                 (:id_str tweet))
-        count (sym ((keyword rt-id) (:tweets-map state)))]
+        count (k ((keyword rt-id) (:tweets-map state)))]
     (if (not (nil? count)) (str (number-format count) s) "")))
 
 (defn rt-count

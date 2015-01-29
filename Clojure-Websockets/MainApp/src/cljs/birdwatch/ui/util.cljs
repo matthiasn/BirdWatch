@@ -71,7 +71,7 @@
                 (:id_str (:retweeted_status tweet))
                 (:id_str tweet))
         count (k ((keyword rt-id) (:tweets-map state)))]
-    (if (not (nil? count)) (str (number-format count) s) "")))
+    (if count (str (number-format count) s) "")))
 
 (defn rt-count
   "Gets the formatted string for the :retweet_count if exists, otherwise yields empty string."

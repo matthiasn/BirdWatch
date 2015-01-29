@@ -93,7 +93,7 @@
                    page (dec (:page state-snapshot))]
                (when (:live state-snapshot)
                  (reset! app state-snapshot)
-                 (reset! tweets (util/tweets-by-order order @app n page)))
+                 (reset! tweets (util/tweets-by-order order state-snapshot n page)))
                (<! (timeout 20)))
              (recur))
     (sub state-pub :app-state state-chan)

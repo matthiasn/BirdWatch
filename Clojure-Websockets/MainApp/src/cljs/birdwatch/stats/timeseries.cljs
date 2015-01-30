@@ -3,10 +3,10 @@
 
 (defn date-round
   "Returns function that rounds the provided seconds since epoch down to the
-   nearest time interval s e.g. (date-round 60) creates a function that takes
-   seconds t and rounds them to the nearest minute."
-  [s]
-  (fn [t] (* s (Math/floor (/ t s)))))
+   nearest time interval; for example (date-round 60) creates a function that
+   takes seconds t and rounds them to the nearest minute."
+  [interval]
+  (fn [t] (* interval (Math/floor (/ t interval)))))
 
 (def m 60)
 (def qhr (* 15 m))

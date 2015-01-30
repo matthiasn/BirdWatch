@@ -29,7 +29,7 @@
   (str "<a href='" url "' target='_blank'>" text "</a>"))
 
 (defn- url-replacer
-  "Replace URL occurences in tweet texts with HTML (including links)."
+  "Replaces URL occurrences in tweet texts with HTML (including links)."
   [acc entity]
   (s/replace acc (:url entity) (a-blank (:url entity) (:display_url entity))))
 
@@ -48,7 +48,7 @@
     (s/replace acc f-screen-name (a-blank (str twitter-url screen-name) f-screen-name))))
 
 (defn- reducer
-  "Generic reducer, allows calling specified function for each item in provided collection."
+  "Generic reducer, allows calling specified function for each item in the collection."
   [text coll fun]
   (reduce fun text coll))
 
@@ -65,7 +65,7 @@
           (s/replace , "RT " "<strong>RT </strong>")))))
 
 (defn entity-count
-  "Gets count of specified entity from either tweet, or, when exists, original (retweeted) tweet."
+  "Gets count of specified entity from either tweet or, if exists, original (retweeted) tweet."
   [tweet state k s]
   (let [rt-id (if (contains? tweet :retweeted_status)
                 (:id_str (:retweeted_status tweet))

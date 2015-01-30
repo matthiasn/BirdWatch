@@ -11,6 +11,8 @@
             [birdwatch.stats.wordcount :as wc]
             [cljs.core.async :as async :refer [chan pub]]))
 
+(enable-console-print!)
+
 ;;;; Main file of the BirdWatch client-side application.
 
 ;;; Channels for handling information flow in the application.

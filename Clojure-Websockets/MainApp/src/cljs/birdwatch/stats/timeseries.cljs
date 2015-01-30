@@ -1,11 +1,10 @@
 (ns birdwatch.stats.timeseries
   (:require [birdwatch.util :as util]))
 
-(enable-console-print!)
-
 (defn date-round
-  "return function that rounds the provided seconds since epoch down to the nearest time interval s
-  e.g. (date-round 60) creates a function that takes seconds t and rounds them to the nearest minute"
+  "Returns function that rounds the provided seconds since epoch down to the
+   nearest time interval s e.g. (date-round 60) creates a function that takes
+   seconds t and rounds them to the nearest minute."
   [s]
   (fn [t] (* s (Math/floor (/ t s)))))
 
@@ -16,7 +15,8 @@
 (def day (* 24 hr))
 
 (defn grouping-interval
-  "determine duration of individual intervals (bars) depending on duration of timespan between newest and oldest"
+  "Determines duration of individual intervals (bars) depending on duration of
+   timespan between newest and oldest."
   [newest oldest]
   (cond
    (> (- newest oldest) (* 20 day)) day  ;round by nearest day
@@ -26,24 +26,25 @@
    :else                            m))  ;round by nearest minute
 
 (defn empty-ts-map
-  "generates map with all rounded intervals between oldest and newest, initialized to a count of 0"
+  "Generates map with all rounded intervals between oldest and newest,
+   initialized to a count of 0."
   [newest oldest interval]
   (let [rounder (date-round interval)
         values (range (rounder oldest) (rounder newest) interval)]
     (apply sorted-map-by < (flatten [(interpose 0 values) 0]))))
 
 (defn count-into-map
-  "increment count for time interval"
+  "Increments count for time interval."
   [ts-map k]
   (update-in ts-map [k] inc))
 
 (defn tweet-ts
-  "retrieve seconds since epoch from tweet using moment.js"
+  "Retrieves seconds since epoch from tweet using moment.js."
   [t]
   (.unix (js/moment. (:created_at t))))
 
 (defn ts-data
-  "Perform time series analysis by counting tweets in even intervals."
+  "Performs time series analysis by counting tweets in even intervals."
   [app]
   (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) app 100000)]
     (let [oldest (tweet-ts (last tweets-by-id))
@@ -53,4 +54,3 @@
       (reduce count-into-map
               (empty-ts-map newest oldest interval)
               (map #(rounder (tweet-ts %)) tweets-by-id)))))
-

@@ -4,4 +4,4 @@
 # except for .gitignore and .bowerrc
 !.gitignore
 !.bowerrc
-
+*.iml

@@ -3,6 +3,7 @@
   (:require
    [birdwatch.communicator.component :as comm]
    [birdwatch.persistence.component :as p]
+   [birdwatch.metrics.component :as m]
    [birdwatch.percolator.component :as perc]
    [birdwatch.interop.component :as iop]
    [birdwatch.http.component :as http]
@@ -25,15 +26,18 @@
    :persistence-channels   (p/new-persistence-channels)
    :percolation-channels   (perc/new-percolation-channels)
    :interop-channels       (iop/new-interop-channels)
-   :comm          (component/using (comm/new-communicator)     {:channels   :comm-channels})
-   :interop       (component/using (iop/new-interop conf)      {:channels   :interop-channels})
-   :persistence   (component/using (p/new-persistence conf)    {:channels   :persistence-channels})
-   :percolator    (component/using (perc/new-percolator conf)  {:channels   :percolation-channels})
-   :http          (component/using (http/new-http-server conf) {:comm       :comm})
-   :switchboard   (component/using (sw/new-switchboard)        {:comm-chans :comm-channels
-                                                                :pers-chans :persistence-channels
-                                                                :perc-chans :percolation-channels
-                                                                :iop-chans  :interop-channels})))
+   :metrics-channels       (m/new-metrics-channels)
+   :comm          (component/using (comm/new-communicator)     {:channels :comm-channels})
+   :interop       (component/using (iop/new-interop conf)      {:channels :interop-channels})
+   :persistence   (component/using (p/new-persistence conf)    {:channels :persistence-channels})
+   :percolator    (component/using (perc/new-percolator conf)  {:channels :percolation-channels})
+   :http          (component/using (http/new-http-server conf) {:comm     :comm})
+   :metrics       (component/using (m/new-metrics)             {:channels :metrics-channels})
+   :switchboard   (component/using (sw/new-switchboard)        {:comm-chans    :comm-channels
+                                                                :pers-chans    :persistence-channels
+                                                                :perc-chans    :percolation-channels
+                                                                :iop-chans     :interop-channels
+                                                                :metrics-chans :metrics-channels})))
 (def system (get-system conf))
 
 (inspect/configure {:port (:inspect-port conf)})

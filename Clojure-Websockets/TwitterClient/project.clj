@@ -16,7 +16,8 @@
                  [clj-pid "0.1.1"]
                  [com.stuartsierra/component "0.2.2"]
                  [com.taoensso/carmine "2.9.0"]
-                 [metrics-clojure "2.4.0"]]
+                 [metrics-clojure "2.4.0"]
+                 [clojurewerkz/quartzite "2.0.0"]]
 
   :source-paths ["src/clj/"]
 

@@ -9,7 +9,7 @@
    Also takes the type of the message as a namespaced keyword."
   [metrics-chan]
   (fn
-    [in out ev-type]
+    [{in :in out :out} ev-type]
     (let [m (mult in)
           t-chan (chan 1 (map (fn [ev] [ev-type ev])))]
       (tap m out)

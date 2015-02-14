@@ -13,31 +13,31 @@
   component/Lifecycle
   (start [component] (log/info "Starting Switchboard Component")
          (let [tweets-mult (chan)
-               perc-in (:receive iop-chans)
-               perc-out (:percolation perc-chans)
                pipe-w-metric (mt/pipe-w-metric (:events metrics-chans))
-               register-perc-in (:register-perc comm-chans)
-               register-perc-out (:register-percolation perc-chans)
-               tweet-count-in (:tweet-count pers-chans)
-               tweet-count-out (:tweet-count comm-chans)
-               perc-m-in (:percolation-matches perc-chans)
-               perc-m-out (:perc-matches comm-chans)
-               tweet-m-in (:tweet-missing comm-chans)
-               tweet-m-out (:tweet-missing pers-chans)
-               mt-found-in (:missing-tweet-found pers-chans)
-               mt-found-out (:missing-tweet-found comm-chans)
-               query-in (:query comm-chans)
-               query-out (:query pers-chans)
-               query-res-in (:query-results pers-chans)
-               query-res-out (:query-results comm-chans)]
-           (pipe-w-metric tweet-count-in tweet-count-out :stats/tweet-count)
-           (pipe-w-metric register-perc-in register-perc-out :stats/register-perc)
-           (pipe-w-metric perc-in perc-out :stats/redis-received)
-           (pipe-w-metric perc-m-in perc-m-out :stats/perc-matches)
-           (pipe-w-metric tweet-m-in tweet-m-out :stats/missing-t)
-           (pipe-w-metric mt-found-in mt-found-out :stats/tm-found)
-           (pipe-w-metric query-in query-out :stats/query)
-           (pipe-w-metric query-res-in query-res-out :stats/query-res)
+               perc          {:in (:receive iop-chans)
+                              :out (:percolation perc-chans)}
+               register-perc {:in (:register-perc comm-chans)
+                              :out (:register-percolation perc-chans)}
+               tweet-count   {:in (:tweet-count pers-chans)
+                              :out (:tweet-count comm-chans)}
+               perc-matches  {:in (:percolation-matches perc-chans)
+                              :out (:perc-matches comm-chans)}
+               tweet-missing {:in (:tweet-missing comm-chans)
+                              :out (:tweet-missing pers-chans)}
+               missing-found {:in (:missing-tweet-found pers-chans)
+                              :out (:missing-tweet-found comm-chans)}
+               query         {:in (:query comm-chans)
+                              :out (:query pers-chans)}
+               query-result  {:in (:query-results pers-chans)
+                              :out (:query-results comm-chans)}]
+           (pipe-w-metric tweet-count :stats/tweet-count)
+           (pipe-w-metric register-perc :stats/register-perc)
+           (pipe-w-metric perc :stats/redis-received)
+           (pipe-w-metric perc-matches :stats/perc-matches)
+           (pipe-w-metric tweet-missing :stats/missing-t)
+           (pipe-w-metric missing-found :stats/tm-found)
+           (pipe-w-metric query :stats/query)
+           (pipe-w-metric query-result :stats/query-res)
            (assoc component :tweets-mult tweets-mult)))
 
   (stop [component] (log/info "Stopping Switchboard Component")

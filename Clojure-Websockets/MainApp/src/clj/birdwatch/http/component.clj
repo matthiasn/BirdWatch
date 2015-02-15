@@ -24,7 +24,7 @@
            (POST "/chsk" req ((:ajax-post-fn comm) req))
            (route/resources "/") ; Static files, e.g. /js/build/birdwatch-opt.js (our cljs target)
            (route/not-found "Page not found"))
-         (let [my-ring-handler   (ring.middleware.defaults/wrap-defaults my-routes ring-defaults-config)
+         (let [my-ring-handler (ring.middleware.defaults/wrap-defaults my-routes ring-defaults-config)
                server (http-kit-server/run-server my-ring-handler {:port (:port conf)})
                uri (format "http://localhost:%s/" (:local-port (meta server)))]
            (log/info "Http-kit server is running at" uri)

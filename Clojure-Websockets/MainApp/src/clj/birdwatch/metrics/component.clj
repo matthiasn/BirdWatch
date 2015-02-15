@@ -3,6 +3,7 @@
   (:require
    [metrics.core :refer [new-registry]]
    [metrics.meters :refer [meter mark! rates]]
+   [com.matthiasnehlsen.inspect :refer [inspect]]
    [clojure.core.match :as match :refer (match)]
    [clojure.pprint :as pp]
    [clojure.tools.logging :as log]
@@ -18,7 +19,7 @@
   "Print dereferenced metrics with current rates."
   [metrics-map]
   (go-loop [] (<! (timeout 10000))
-           (pp/pprint (get-rates metrics-map))
+           (inspect :metrics/meters (get-rates metrics-map))
            (recur)))
 
 (defn metrics-loop

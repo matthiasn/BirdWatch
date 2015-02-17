@@ -1,7 +1,6 @@
 (ns birdwatch-tc.twitterclient.http
   (:gen-class)
   (:require
-   [clojure.string :as str]
    [clojure.tools.logging :as log]
    [twitter.api.streaming :as tas]
    [twitter.oauth :as oauth]

@@ -49,6 +49,7 @@
                         :source-paths ["src/cljs"]
                         :compiler {:output-to "resources/public/js/build/birdwatch-opt.js"
                                    :optimizations :advanced
+                                   :cache-analysis true
                                    :preamble ["reagent/react.min.js"]
                                    :externs ["externs/misc.js"]}}
                        {:id "test"

@@ -8,14 +8,15 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.1.0"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [com.matthiasnehlsen/inspect "0.1.3"]
+                 [com.matthiasnehlsen/inspect "0.1.8"]
                  [ch.qos.logback/logback-classic "1.1.1"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [clj-time "0.9.0"]
                  [pandect "0.5.1"]
                  [clj-pid "0.1.1"]
                  [com.stuartsierra/component "0.2.2"]
-                 [com.taoensso/carmine "2.9.0"]]
+                 [com.taoensso/carmine "2.9.0"]
+                 [metrics-clojure "2.4.0"]]
 
   :source-paths ["src/clj/"]
 

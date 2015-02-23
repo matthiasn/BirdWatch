@@ -36,7 +36,8 @@
 
   :plugins [[lein-cljsbuild "1.0.4"]
             [com.cemerick/clojurescript.test "0.3.3"]
-            [quickie "0.3.6" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]]
+            [quickie "0.3.6" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]
+            [codox "0.8.10"]]
 
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/cljs"]

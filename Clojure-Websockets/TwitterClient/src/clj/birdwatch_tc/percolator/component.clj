@@ -4,7 +4,6 @@
    [birdwatch-tc.percolator.elastic :as es]
    [clojure.tools.logging :as log]
    [pandect.core :refer [sha1]]
-   [clojure.pprint :as pp]
    [clojurewerkz.elastisch.rest :as esr]
    [com.stuartsierra.component :as component]
    [clojure.core.async :as async :refer [chan tap pipeline-blocking]]))

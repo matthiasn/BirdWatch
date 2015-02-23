@@ -1,12 +1,9 @@
 (ns birdwatch-tc.twitterclient.component
   (:gen-class)
   (:require
-   [clojure.string :as str]
    [birdwatch-tc.twitterclient.http :as http-client]
    [birdwatch-tc.twitterclient.processing :as processing]
-   [clojure.data.json :as json]
    [clj-time.core :as t]
-   [clojure.pprint :as pp]
    [clojure.tools.logging :as log]
    [clojure.core.async :as async :refer [chan go-loop pipe]]
    [com.stuartsierra.component :as component]))

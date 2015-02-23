@@ -1,10 +1,8 @@
 (ns birdwatch-tc.persistence.component
   (:gen-class)
   (:require
-   [birdwatch-tc.persistence.tools :as pt]
    [birdwatch-tc.persistence.elastic :as es]
    [clojure.tools.logging :as log]
-   [clojure.pprint :as pp]
    [clojurewerkz.elastisch.rest :as esr]
    [com.stuartsierra.component :as component]
    [clojure.core.async :as async :refer [<! chan go-loop tap]]))

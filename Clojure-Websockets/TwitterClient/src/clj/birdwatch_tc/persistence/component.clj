@@ -5,7 +5,7 @@
    [clojure.tools.logging :as log]
    [clojurewerkz.elastisch.rest :as esr]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [<! chan go-loop tap]]))
+   [clojure.core.async :refer [<! chan go-loop tap]]))
 
 (defrecord Persistence [conf channels]
   component/Lifecycle

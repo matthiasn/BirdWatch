@@ -6,7 +6,7 @@
    [pandect.core :refer [sha1]]
    [clojurewerkz.elastisch.rest :as esr]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [chan tap pipeline-blocking]]))
+   [clojure.core.async :refer [chan tap pipeline-blocking]]))
 
 (defrecord Percolator [conf channels]
   component/Lifecycle

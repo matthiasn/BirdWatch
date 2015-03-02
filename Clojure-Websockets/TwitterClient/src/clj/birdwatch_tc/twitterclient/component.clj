@@ -5,7 +5,7 @@
    [birdwatch-tc.twitterclient.processing :as processing]
    [clj-time.core :as t]
    [clojure.tools.logging :as log]
-   [clojure.core.async :as async :refer [chan go-loop pipe]]
+   [clojure.core.async :refer [chan go-loop pipe]]
    [com.stuartsierra.component :as component]))
 
 (defrecord Twitterclient [conf channels watch-active conn]

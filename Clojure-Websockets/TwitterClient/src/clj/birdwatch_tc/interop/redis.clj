@@ -1,9 +1,9 @@
 (ns birdwatch-tc.interop.redis
   (:gen-class)
   (:require
-   [com.matthiasnehlsen.inspect :as inspect :refer [inspect]]
+   [com.matthiasnehlsen.inspect :refer [inspect]]
    [taoensso.carmine :as car :refer (wcar)]
-   [clojure.core.async :as async :refer [<! put! go-loop]]))
+   [clojure.core.async :refer [<! put! go-loop]]))
 
 (defn run-send-loop
   "loop for sending items by publishing them on a Redis pub topic"

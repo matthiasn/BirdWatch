@@ -3,9 +3,8 @@
   (:require
    [birdwatch-tc.interop.redis :as red]
    [clojure.tools.logging :as log]
-   [clojure.pprint :as pp]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [chan]]))
+   [clojure.core.async :refer [chan]]))
 
 ;;; The interop component allows sending and receiving messages via Redis Pub/Sub.
 ;;; It has both a :send and a :receive channel and can be used on both sides of the Pub/Sub.

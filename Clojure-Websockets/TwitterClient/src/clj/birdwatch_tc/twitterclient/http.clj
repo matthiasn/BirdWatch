@@ -6,7 +6,7 @@
    [twitter.oauth :as oauth]
    [clj-time.core :as t]
    [twitter.callbacks.handlers :as tch]
-   [clojure.core.async :as async :refer [>!! <! timeout go-loop]])
+   [clojure.core.async :refer [>!! <! timeout go-loop]])
   (:import (twitter.callbacks.protocols AsyncStreamingCallback)))
 
 (defn- creds [config] (oauth/make-oauth-creds (:consumer-key config) (:consumer-secret config)

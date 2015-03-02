@@ -3,7 +3,7 @@
   (:require
    [clojure.tools.logging :as log]
    [clojurewerkz.elastisch.rest.document :as esd]
-   [clojure.core.async :as async :refer [<! chan put! timeout go-loop]]))
+   [clojure.core.async :refer [<! chan put! timeout go-loop]]))
 
 (defn run-persistence-loop
   "run loop for persisting tweets"

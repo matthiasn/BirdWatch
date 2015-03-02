@@ -35,6 +35,10 @@
 
 (inspect/configure {:port (:inspect-port conf)})
 
+(inspect/configure {:port (:inspect-port conf) 
+                    :title "Inspect: BirdWatch TwitterClient" 
+                    :header "BirdWatch - TwitterClient"})
+
 (defn -main [& args]
   (pid/save (:pidfile-name conf))
   (pid/delete-on-shutdown! (:pidfile-name conf))

@@ -8,7 +8,7 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.1.0"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [com.matthiasnehlsen/inspect "0.1.8"]
+                 [com.matthiasnehlsen/inspect "0.1.11"]
                  [ch.qos.logback/logback-classic "1.1.1"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [clj-time "0.9.0"]

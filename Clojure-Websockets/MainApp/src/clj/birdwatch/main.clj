@@ -40,7 +40,9 @@
                                                                 :metrics-chans :metrics-channels})))
 (def system (get-system conf))
 
-(inspect/configure {:port (:inspect-port conf)})
+(inspect/configure {:port (:inspect-port conf) 
+                    :title "Inspect: BirdWatch MainApp" 
+                    :header "BirdWatch - MainApp"})
 
 (defn start [] (alter-var-root #'system component/start))
 (defn stop [] (alter-var-root #'system component/stop))

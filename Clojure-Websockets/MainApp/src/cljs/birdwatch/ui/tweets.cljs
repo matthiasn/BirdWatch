@@ -1,7 +1,7 @@
 (ns birdwatch.ui.tweets
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.ui.util :as util]
-            [cljs.core.async :as async :refer [put! chan sub <! timeout sliding-buffer]]
+            [cljs.core.async :refer [put! chan sub <! timeout sliding-buffer]]
             [reagent.core :as r :refer [atom]]))
 
 (defn twitter-intent

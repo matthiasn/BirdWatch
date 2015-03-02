@@ -1,13 +1,12 @@
 (ns birdwatch.communicator.component
   (:gen-class)
   (:require
-   [clojure.pprint :as pp]
    [clojure.tools.logging :as log]
    [birdwatch.communicator.websockets :as ws]
    [taoensso.sente :as sente]
    [taoensso.sente.packers.transit :as sente-transit]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [chan]]))
+   [clojure.core.async :refer [chan]]))
 
 (def packer (sente-transit/get-flexi-packer :json)) ;; serialization format for client<->server comm
 

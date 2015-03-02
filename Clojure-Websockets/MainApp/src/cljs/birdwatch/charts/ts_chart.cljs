@@ -3,7 +3,7 @@
   (:require [birdwatch.util :as util]
             [birdwatch.stats.timeseries :as ts]
             [reagent.core :as r :refer [atom]]
-            [cljs.core.async :as async :refer [chan sub timeout sliding-buffer]]))
+            [cljs.core.async :refer [chan sub timeout sliding-buffer]]))
 
 (def ts-elem (util/by-id "timeseries1"))
 (def ts-w (aget ts-elem "offsetWidth"))

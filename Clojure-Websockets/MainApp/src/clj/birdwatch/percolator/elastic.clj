@@ -1,13 +1,10 @@
 (ns birdwatch.percolator.elastic
   (:gen-class)
   (:require
-   [clojure.tools.logging :as log]
    [pandect.core :refer [sha1]]
-   [clojure.pprint :as pp]
-   [com.matthiasnehlsen.inspect :as inspect :refer [inspect]]
+   [com.matthiasnehlsen.inspect :refer [inspect]]
    [clojurewerkz.elastisch.rest.percolation :as perc]
-   [clojurewerkz.elastisch.rest.response    :as esrsp]
-   [clojure.core.async :as async :refer [<! put! go-loop]]))
+   [clojure.core.async :refer [<! put! go-loop]]))
 
 (defn start-percolator
   "register percolation search with ID based on hash of the query"

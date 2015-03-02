@@ -4,11 +4,10 @@
    [metrics.core :refer [new-registry]]
    [metrics.meters :refer [meter mark! rates]]
    [com.matthiasnehlsen.inspect :refer [inspect]]
-   [clojure.core.match :as match :refer (match)]
-   [clojure.pprint :as pp]
+   [clojure.core.match :refer (match)]
    [clojure.tools.logging :as log]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [chan go-loop <! put! timeout]]))
+   [clojure.core.async :refer [chan go-loop <! put! timeout]]))
 
 (defn get-rates
   "Returns map with the actual rates stored in  metrics-map."

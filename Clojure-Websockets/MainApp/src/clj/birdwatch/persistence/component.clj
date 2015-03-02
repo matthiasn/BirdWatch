@@ -3,10 +3,9 @@
   (:require
    [birdwatch.persistence.elastic :as es]
    [clojure.tools.logging :as log]
-   [clojure.pprint :as pp]
    [clojurewerkz.elastisch.rest :as esr]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [<! chan go-loop tap pipeline-blocking]]))
+   [clojure.core.async :refer [<! chan go-loop tap pipeline-blocking]]))
 
 (defrecord Persistence [conf channels]
   component/Lifecycle

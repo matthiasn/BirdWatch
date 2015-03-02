@@ -1,12 +1,11 @@
 (ns birdwatch.communicator.websockets
   (:gen-class)
   (:require
-   [clojure.core.match :as match :refer (match)]
+   [clojure.core.match :refer (match)]
    [clojure.pprint :as pp]
    [clojure.tools.logging :as log]
-   [taoensso.sente :as sente]
-   [com.matthiasnehlsen.inspect :as inspect :refer [inspect]]
-   [clojure.core.async :as async :refer [<! >! put! timeout go-loop]]))
+   [com.matthiasnehlsen.inspect :refer [inspect]]
+   [clojure.core.async :refer [<! >! put! timeout go-loop]]))
 
 (defn user-id-fn
   "generates unique ID for request"

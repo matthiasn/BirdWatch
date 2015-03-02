@@ -5,7 +5,7 @@
    [org.httpkit.server :as http-kit-server]
    [ring.middleware.defaults]
    [ring.util.response :refer [resource-response response content-type]]
-   [compojure.core     :as comp :refer (defroutes GET POST)]
+   [compojure.core     :refer (defroutes GET POST)]
    [compojure.route    :as route]
    [com.stuartsierra.component :as component]))
 

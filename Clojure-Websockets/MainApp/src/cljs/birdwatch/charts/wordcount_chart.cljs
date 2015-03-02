@@ -5,7 +5,7 @@
             [birdwatch.stats.regression :as reg]
             [birdwatch.charts.shapes :as s]
             [reagent.core :as r :refer [atom]]
-            [cljs.core.async :as async :refer [put! chan sub timeout sliding-buffer]]))
+            [cljs.core.async :refer [put! chan sub timeout sliding-buffer]]))
 
 (def items (atom []))
 (def pos-trends (atom {}))

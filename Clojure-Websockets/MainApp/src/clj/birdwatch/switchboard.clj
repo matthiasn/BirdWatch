@@ -4,7 +4,7 @@
    [clojure.tools.logging :as log]
    [birdwatch.metrics.tools :as mt]
    [com.stuartsierra.component :as component]
-   [clojure.core.async :as async :refer [chan mult tap pipe]]))
+   [clojure.core.async :refer [chan mult tap pipe]]))
 
 ;;;; This component is the central switchboard for information flow in this application.
 ;;;; The individual channel components come together like wiring harnesses in a car.

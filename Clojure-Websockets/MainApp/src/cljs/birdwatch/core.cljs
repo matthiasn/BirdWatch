@@ -1,15 +1,12 @@
 (ns birdwatch.core
-  (:require [birdwatch.util :as util]
-            [birdwatch.charts.ts-chart :as ts-c]
+  (:require [birdwatch.charts.ts-chart :as ts-c]
             [birdwatch.communicator :as comm]
             [birdwatch.charts.wordcount-chart :as wc-c]
             [birdwatch.charts.cloud-chart :as cloud]
             [birdwatch.ui.tweets :as tw]
             [birdwatch.ui.elements :as ui]
             [birdwatch.state.data :as state]
-            [birdwatch.stats.timeseries :as ts]
-            [birdwatch.stats.wordcount :as wc]
-            [cljs.core.async :as async :refer [chan pub]]))
+            [cljs.core.async :refer [chan pub]]))
 
 (enable-console-print!)
 

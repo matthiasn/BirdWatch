@@ -3,7 +3,7 @@
   (:require [cljs.core.match :refer-macros [match]]
             [taoensso.sente  :as sente  :refer (cb-success?)]
             [taoensso.sente.packers.transit :as sente-transit]
-            [cljs.core.async :as async :refer [<! chan put!]]))
+            [cljs.core.async :refer [<! chan put!]]))
 
 (def packer
   "Defines our packing (serialization) format for client<->server comms."
@@ -19,7 +19,7 @@
                                                (print "WS connected")
                                                (put! cmd-chan [:start-search]))
            [:chsk/recv  payload]
-           (let [[msg-type msg] payload]
+           (let [[msg-type _] payload]
              (case (keyword (namespace msg-type))
                :tweet   (put! data-chan payload)
                :stats   (put! stats-chan payload)

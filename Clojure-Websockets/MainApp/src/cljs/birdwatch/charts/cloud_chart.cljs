@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
             [birdwatch.stats.wordcount :as wc]
-            [cljs.core.async :as async :refer [put! chan sub sliding-buffer timeout]]))
+            [cljs.core.async :refer [put! chan sub sliding-buffer timeout]]))
 
 ;;; WordCloud element (implemented externally in JavaScript)
 (def cloud-elem (util/by-id "wordCloud"))

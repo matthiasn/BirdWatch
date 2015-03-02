@@ -2,14 +2,11 @@
   (:gen-class)
   (:require
    [birdwatch.persistence.tools :as pt]
-   [com.matthiasnehlsen.inspect :as inspect :refer [inspect]]
+   [com.matthiasnehlsen.inspect :refer [inspect]]
    [clojure.tools.logging :as log]
-   [clojure.pprint :as pp]
-   [clojurewerkz.elastisch.rest :as esr]
    [clojurewerkz.elastisch.rest.document :as esd]
-   [clojurewerkz.elastisch.query :as q]
    [clojurewerkz.elastisch.rest.response :as esrsp]
-   [clojure.core.async :as async :refer [<! <!! chan put! timeout go-loop thread onto-chan]]))
+   [clojure.core.async :refer [<! <!! chan put! timeout go-loop thread onto-chan]]))
 
 (defn query
   "run a query on previous matching tweets"

@@ -1,7 +1,7 @@
 (ns birdwatch.metrics.tools
   (:gen-class)
   (:require
-   [clojure.core.async :as async :refer [chan mult tap pipe]]))
+   [clojure.core.async :refer [chan mult tap pipe]]))
 
 (defn pipe-w-metric
   "Pipe messages from one channel to another while also sending the msg to the Metrics

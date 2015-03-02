@@ -3,7 +3,7 @@
   (:require [birdwatch.state.search :as s]
             [birdwatch.state.initial :as i]
             [birdwatch.state.proc :as p]
-            [cljs.core.async :as async :refer [<! put! pipe timeout chan sliding-buffer]]
+            [cljs.core.async :refer [<! put! pipe timeout chan sliding-buffer]]
             [cljs.core.match :refer-macros [match]]))
 
 ;;;; Channels processing namespace. Here, messages are taken from channels and processed.

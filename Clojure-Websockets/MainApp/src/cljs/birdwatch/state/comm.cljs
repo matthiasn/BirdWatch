@@ -19,15 +19,15 @@
              (<! (timeout 50))
              (recur))))
 
-(defn- data-loop
+(defn- state-in-loop
   "Process messages from the data channel and process / add to application state.
    In the case of :tweet/prev-chunk messages: put! on separate channel individual items
    are handled with a lower priority."
-  [data-chan qry-chan app]
+  [state-in-chan qry-chan app]
   (let [prev-chunks-chan (chan)]
     (prev-chunks-loop prev-chunks-chan app)
     (go-loop []
-             (let [msg (<! data-chan)]
+             (let [msg (<! state-in-chan)]
                (match msg
                       [:tweet/new             tweet] (p/add-tweet! tweet app)
                       [:tweet/missing-tweet   tweet] (p/add-to-tweets-map! app :tweets-map tweet)
@@ -36,25 +36,18 @@
                                                        (s/load-prev app qry-chan))
                       [:stats/users-count       n] (swap! app assoc :users-count n)
                       [:stats/total-tweet-count n] (swap! app assoc :total-tweet-count n)
+
+                      [:toggle-live            ] (swap! app update :live not)
+                      [:set-search-text    text] (swap! app assoc :search-text text)
+                      [:set-current-page   page] (swap! app assoc :page page)
+                      [:set-page-size         n] (swap! app assoc :n n)
+                      [:start-search           ] (s/start-search app (i/initial-state) qry-chan)
+                      [:set-sort-order by-order] (swap! app assoc :sorted by-order)
+                      [:retrieve-missing id-str] (put! qry-chan [:cmd/missing {:id_str id-str}])
+                      [:append-search-text text] (s/append-search-text text app)
+                      
                       :else (prn "unknown msg in data-loop" msg))
                (recur)))))
-
-(defn- cmd-loop
-  "Process command messages, e.g. those that alter application state."
-  [cmd-chan qry-chan app]
-  (go-loop []
-           (let [msg (<! cmd-chan)]
-             (match msg
-                    [:toggle-live            ] (swap! app update :live not)
-                    [:set-search-text    text] (swap! app assoc :search-text text)
-                    [:set-current-page   page] (swap! app assoc :page page)
-                    [:set-page-size         n] (swap! app assoc :n n)
-                    [:start-search           ] (s/start-search app (i/initial-state) qry-chan)
-                    [:set-sort-order by-order] (swap! app assoc :sorted by-order)
-                    [:retrieve-missing id-str] (put! qry-chan [:cmd/missing {:id_str id-str}])
-                    [:append-search-text text] (s/append-search-text text app)
-                    :else (prn "unknown msg in cmd-loop" msg))
-             (recur))))
 
 (defn- broadcast-state
   "Broadcast state changes on the specified channel. Internally uses a sliding

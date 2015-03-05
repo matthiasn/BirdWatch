@@ -8,9 +8,8 @@
    outside access / alteration. The only way to interact with it is by sending
    messages on channels, such as the provided data channel for adding new data or
    sending commands on the cmd-chan."
-  [data-chan qry-chan cmd-chan state-pub-chan]
+  [data-chan qry-chan state-pub-chan]
   (let [app (atom {})]
     (i/init app)
-    (c/data-loop data-chan qry-chan app)
-    (c/cmd-loop cmd-chan qry-chan app)
+    (c/state-in-loop data-chan qry-chan app)
     (c/broadcast-state state-pub-chan app)))

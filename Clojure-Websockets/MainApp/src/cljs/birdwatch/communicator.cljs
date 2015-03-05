@@ -12,12 +12,12 @@
 (defn make-handler
   "Create handler function for messages from WebSocket connection, wire channels and the
    start-function to call when the socket is established."
-  [cmd-chan data-chan]
+  [data-chan]
   (fn [{:keys [event]}]
     (match event
            [:chsk/state {:first-open? true}] (do
                                                (print "WS connected")
-                                               (put! cmd-chan [:start-search]))
+                                               (put! data-chan [:start-search]))
            [:chsk/recv payload] (put! data-chan payload)
            :else (print "Unmatched event: %s" event))))
 
@@ -32,9 +32,9 @@
 
 (defn start-communicator
   "Start communicator by wiring channels."
-  [cmd-chan data-chan qry-chan]
+  [data-chan qry-chan]
   (let [ws (sente/make-channel-socket! "/chsk" {:packer packer :type :auto})
         {:keys [ch-recv send-fn state]} ws
-        handler (make-handler cmd-chan data-chan)]
+        handler (make-handler data-chan)]
     (sente/start-chsk-router! ch-recv handler)
     (query-loop qry-chan send-fn state)))

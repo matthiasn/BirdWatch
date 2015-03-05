@@ -4,13 +4,14 @@
             [birdwatch.charts.wordcount-chart :as wc-c]
             [birdwatch.charts.cloud-chart :as cloud]
             [birdwatch.ui.tweets :as tw]
-            [birdwatch.ui.elements :as ui]
             [birdwatch.ui.search :as sv]
             [birdwatch.ui.count-views :as cv]
             [birdwatch.ui.pagination :as pag]
             [birdwatch.state.data :as state]
             [com.matthiasnehlsen.systems-toolbox.component :as comp]
             [cljs.core.async :refer [chan pub sub buffer sliding-buffer pipe]]))
+
+(enable-console-print!)
 
 ;;;; Main file of the BirdWatch client-side application.
 
@@ -29,7 +30,6 @@
 (comm/start-communicator cmd-chan data-chan stats-chan qry-chan)
 
 ;;; Initialize Reagent components and inject channels.
-(ui/init-views         state-pub cmd-chan)
 (wc-c/mount-wc-chart   state-pub cmd-chan {:bars 25 :every-ms 1000})
 (cloud/mount-wordcloud state-pub cmd-chan {:n 250 :every-ms 5000})
 (ts-c/mount-ts-chart   state-pub {:every-ms 1000})

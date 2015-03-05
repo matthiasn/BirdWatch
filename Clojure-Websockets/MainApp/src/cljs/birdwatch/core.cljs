@@ -25,9 +25,6 @@
 (def state-pub-chan (chan (sliding-buffer 1))) ; Publication of state changes.
 (def state-pub (pub state-pub-chan first)) ; Pub for subscribing to
 
-;;; Initialize application state (atom in state namespace) and wire channels.
-;(state/init-state state-in-chan qry-chan state-pub-chan)
-
 ;;; Initialization of WebSocket communication.
 (comm/start-communicator state-in-chan qry-chan)
 
@@ -44,10 +41,8 @@
                   [:cmd/query _] (>! qry-chan msg)
                   [:cmd/percolate _] (>! qry-chan msg)
                   [:app-state _] (>! state-pub-chan msg)
-                  :else (prn "else" msg)
-                  )
-           (recur)
-           ))
+                  :else (prn "else" msg))
+           (recur)))
 
 (def tweets-comp (toolbox/component-with-channels tw/init-component (sliding-buffer 1) (buffer 1)))
 (sub state-pub :app-state (:in-chan tweets-comp))

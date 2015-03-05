@@ -25,18 +25,7 @@
        ^{:key text} [:button.pure-button.not-rounded
                      {:class btn-class :on-click #(put-cmd [:set-sort-order k])} text])]))
 
-(defn- search-view [app]
-  [:form.pure-form
-   [:fieldset
-    [:input {:type "text" :value (:search-text @app)
-             :on-key-press #(when (== (.-keyCode %) 13) (put-cmd [:start-search]))
-             :on-change #(put-cmd [:set-search-text (.. % -target -value)])
-             :placeholder "Example search: java (job OR jobs OR hiring)"}]
-    [:button.pure-button.pure-button-primary {:on-click #(put-cmd [:start-search])}
-     [:span {:class "glyphicon glyphicon-search"}]]]])
-
-(def views [[search-view "search"]
-            [sort-view "sort-buttons"]])
+(def views [[sort-view "sort-buttons"]])
 
 (defn init-views
   "Initialize all views contained in the vector above and connect channel for

@@ -5,6 +5,7 @@
             [birdwatch.charts.cloud-chart :as cloud]
             [birdwatch.ui.tweets :as tw]
             [birdwatch.ui.elements :as ui]
+            [birdwatch.ui.search :as sv]
             [birdwatch.ui.count-views :as cv]
             [birdwatch.ui.pagination :as pag]
             [birdwatch.state.data :as state]
@@ -44,3 +45,7 @@
 (def pagination-comp (comp/component-with-channels pag/init-component (sliding-buffer 1) (buffer 1)))
 (sub state-pub :app-state (:in-chan pagination-comp))
 (pipe (:out-chan pagination-comp) cmd-chan)
+
+(def search-comp (comp/component-with-channels sv/init-component (sliding-buffer 1) (buffer 1)))
+(sub state-pub :app-state (:in-chan search-comp))
+(pipe (:out-chan search-comp) cmd-chan)

@@ -37,3 +37,6 @@
 (sub state-pub :app-state (:in-chan tweets-comp))
 (pipe (:out-chan tweets-comp) cmd-chan)
 
+(def count-comp (comp/component-with-channels cv/init-component (sliding-buffer 1) (buffer 1)))
+(sub state-pub :app-state (:in-chan count-comp))
+(pipe (:out-chan count-comp) cmd-chan)

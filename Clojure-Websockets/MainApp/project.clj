@@ -42,10 +42,12 @@
             [quickie "0.3.6" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]
             [codox "0.8.10"]]
 
+  :clean-targets ^{:protect false} ["resources/public/js/build/"]
+
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/cljs"]
                         :compiler {:output-to "resources/public/js/build/birdwatch.js"
-                                   :output-dir "resources/public/js/build/out"
+                                   :output-dir "resources/public/js/build/dev-out"
                                    :optimizations :simple
                                    :externs ["externs/misc.js"]
                                    :source-map "resources/public/js/build/birdwatch.js.map"}}
@@ -61,6 +63,7 @@
                                    :output-dir "test-out/"
                                    :optimizations :simple
                                    :externs ["externs/react.js" "externs/misc.js"]}}]
+              
               :test-commands {"unit-tests" ["phantomjs" :runner
                                             "resources/public/bower_components/react/react.js"
                                             "resources/public/bower_components/momentjs/moment.js"

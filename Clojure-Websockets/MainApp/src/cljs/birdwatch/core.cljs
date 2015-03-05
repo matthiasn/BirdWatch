@@ -5,10 +5,12 @@
             [birdwatch.charts.cloud-chart :as cloud]
             [birdwatch.ui.tweets :as tw]
             [birdwatch.ui.search :as sv]
+            [birdwatch.ui.sort :as st]
             [birdwatch.ui.count-views :as cv]
             [birdwatch.ui.pagination :as pag]
             [birdwatch.state.data :as state]
             [com.matthiasnehlsen.systems-toolbox.component :as comp]
+            [com.matthiasnehlsen.systems-toolbox.reagent :as r]
             [cljs.core.async :refer [chan pub sub buffer sliding-buffer pipe]]))
 
 (enable-console-print!)
@@ -38,14 +40,9 @@
 (sub state-pub :app-state (:in-chan tweets-comp))
 (pipe (:out-chan tweets-comp) cmd-chan)
 
-(def count-comp (comp/component-with-channels cv/init-component (sliding-buffer 1) (buffer 1)))
-(sub state-pub :app-state (:in-chan count-comp))
-(pipe (:out-chan count-comp) cmd-chan)
-
-(def pagination-comp (comp/component-with-channels pag/init-component (sliding-buffer 1) (buffer 1)))
-(sub state-pub :app-state (:in-chan pagination-comp))
-(pipe (:out-chan pagination-comp) cmd-chan)
-
-(def search-comp (comp/component-with-channels sv/init-component (sliding-buffer 1) (buffer 1)))
-(sub state-pub :app-state (:in-chan search-comp))
-(pipe (:out-chan search-comp) cmd-chan)
+(r/wrap-component cv/count-view state-pub cmd-chan "tweet-count")
+(r/wrap-component cv/users-count-view state-pub cmd-chan "users-count")
+(r/wrap-component cv/total-count-view state-pub cmd-chan "total-tweet-count")
+(r/wrap-component pag/pagination-view state-pub cmd-chan "pagination")
+(r/wrap-component sv/search-view state-pub cmd-chan "search")
+(r/wrap-component st/sort-view state-pub cmd-chan "sort-buttons")

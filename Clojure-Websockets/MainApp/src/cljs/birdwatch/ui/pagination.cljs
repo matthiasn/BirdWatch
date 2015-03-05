@@ -1,6 +1,4 @@
-(ns birdwatch.ui.pagination
-  (:require [birdwatch.util :as util]
-            [reagent.core :as r :refer [atom]]))
+(ns birdwatch.ui.pagination)
 
 (defn- pag-item [idx app put-fn]
   [:button.pure-button.not-rounded.button-xsmall
@@ -20,12 +18,3 @@
    [:button.pure-button.not-rounded.button-xsmall [:strong "per Page:"]]
    (for [n [5 10 25 100]]
      ^{:key (str "pag-size" n)} [pag-size-item n app put-fn])])
-
-(defn init-component
-  "Mounts pagination-view component. Takes put-fn as the function that can be called when some message
-   needs to be sent back to the switchboard. Returns a function that handles incoming messages."
-  [put-fn]
-  (let [app (atom {})]
-    (r/render-component [pagination-view app put-fn] (util/by-id "pagination"))
-    (fn [[_ state-snapshot]]
-      (reset! app state-snapshot))))

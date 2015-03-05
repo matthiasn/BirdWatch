@@ -8,17 +8,6 @@
 
 ;;;; Channels processing namespace. Here, messages are taken from channels and processed.
 
-(defn- stats-loop
-  "Process messages from the stats channel and update application state accordingly."
-  [stats-chan app]
-  (go-loop []
-           (let [msg (<! stats-chan)]
-             (match msg
-                    [:stats/users-count       n] (swap! app assoc :users-count n)
-                    [:stats/total-tweet-count n] (swap! app assoc :total-tweet-count n)
-                    :else (prn "unknown msg in stats-loop" msg))
-             (recur))))
-
 (defn- prev-chunks-loop
   "Take messages (vectors of tweets) from prev-chunks-chan, add each tweet to application
    state, then pause to give the event loop back to the application (otherwise, UI becomes
@@ -45,6 +34,8 @@
                       [:tweet/prev-chunk prev-chunk] (do
                                                        (put! prev-chunks-chan prev-chunk)
                                                        (s/load-prev app qry-chan))
+                      [:stats/users-count       n] (swap! app assoc :users-count n)
+                      [:stats/total-tweet-count n] (swap! app assoc :total-tweet-count n)
                       :else (prn "unknown msg in data-loop" msg))
                (recur)))))
 

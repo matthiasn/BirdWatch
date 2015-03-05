@@ -18,7 +18,6 @@
 ;;;; Main file of the BirdWatch client-side application.
 
 ;;; Channels for handling information flow in the application.
-(def stats-chan (chan)) ; Stats from server, e.g. total tweets, connected users.
 (def data-chan  (chan)) ; Data from server, e.g. new tweets and previous chunks.
 (def qry-chan   (chan)) ; Queries that will be forwarded to the server.
 (def cmd-chan   (chan)) ; Web-client internal command messages (e.g. state modification).
@@ -26,10 +25,10 @@
 (def state-pub (pub state-pub-chan first)) ; Pub for subscribing to
 
 ;;; Initialize application state (atom in state namespace) and wire channels.
-(state/init-state data-chan qry-chan stats-chan cmd-chan state-pub-chan)
+(state/init-state data-chan qry-chan cmd-chan state-pub-chan)
 
 ;;; Initialization of WebSocket communication.
-(comm/start-communicator cmd-chan data-chan stats-chan qry-chan)
+(comm/start-communicator cmd-chan data-chan qry-chan)
 
 ;;; Initialize Reagent components and inject channels.
 (wc-c/mount-wc-chart   state-pub cmd-chan {:bars 25 :every-ms 1000})

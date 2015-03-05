@@ -1,6 +1,5 @@
 (ns birdwatch.ui.count-views
   (:require [birdwatch.util :as util]
-            [cljs.core.match :refer-macros [match]]
             [reagent.core :as r :refer [atom]]))
 
 (defn- count-view [app] [:span (:count @app)])

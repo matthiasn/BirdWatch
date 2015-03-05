@@ -1,7 +1,5 @@
 (ns birdwatch.ui.pagination
-  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
-            [cljs.core.async :refer [put! pipe chan sub timeout sliding-buffer]]
             [reagent.core :as r :refer [atom]]))
 
 (defn- pag-item [idx app put-fn]

@@ -9,7 +9,7 @@
             [birdwatch.ui.count-views :as cv]
             [birdwatch.ui.pagination :as pag]
             [birdwatch.state.data :as state]
-            [com.matthiasnehlsen.systems-toolbox.component :as toolbox-comp]
+            [com.matthiasnehlsen.systems-toolbox.core :as toolbox]
             [com.matthiasnehlsen.systems-toolbox.reagent :as toolbox-r]
             [cljs.core.async :refer [chan pub sub buffer sliding-buffer pipe]]))
 
@@ -35,7 +35,7 @@
 (cloud/mount-wordcloud state-pub cmd-chan {:n 250 :every-ms 5000})
 (ts-c/mount-ts-chart   state-pub {:every-ms 1000})
 
-(def tweets-comp (toolbox-comp/component-with-channels tw/init-component (sliding-buffer 1) (buffer 1)))
+(def tweets-comp (toolbox/component-with-channels tw/init-component (sliding-buffer 1) (buffer 1)))
 (sub state-pub :app-state (:in-chan tweets-comp))
 (pipe (:out-chan tweets-comp) cmd-chan)
 

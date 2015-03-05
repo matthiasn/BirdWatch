@@ -1,7 +1,6 @@
 (ns birdwatch.ui.tweets
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.ui.util :as util]
-            [cljs.core.async :refer [put! chan sub <! timeout sliding-buffer]]
             [reagent.core :as r :refer [atom]]))
 
 (defn twitter-intent
@@ -23,9 +22,9 @@
   "Renders the view for a missing tweet, which in ideal cases should only
    be shown for fractions of a second until the tweet that should have
    been displayed instead is loaded over the WebSockets connection."
-  [tweet cmd-chan]
+  [tweet put-fn]
   (let [id-str (:id_str tweet)]
-    (put! cmd-chan [:retrieve-missing id-str])
+    (put-fn [:retrieve-missing id-str])
     [:div.tweet "loading... " (:id_str tweet)]))
 
 (defn tweet-text
@@ -70,31 +69,24 @@
    so that so that the tweet-view component and all components down the hierarchy
    can be implemented as pure functions.
    Rerenders the entire list whenever one (or both) of the atoms change."
-  [app tweets cmd-chan]
+  [app tweets put-fn]
   (let [state @app]
     [:div (for [t @tweets] (if (:user t)
                              ^{:key (:id_str t)} [tweet-view t state]
-                             ^{:key (:id_str t)} [missing-tweet t cmd-chan]))]))
+                             ^{:key (:id_str t)} [missing-tweet t put-fn]))]))
 
-(defn mount-tweets
-  "Mounts tweet component and sets up the mechanism for subscribing to application
-   state changes that are broadcast on state-pub passed in as an argument.
-   Also takes the cmd-chan in order to wire component up with the backchannel
-   to the application state publisher. Not currently used, only for same signature
-   as birdwatch.ui.elements/init-views."
-  [state-pub cmd-chan]
+(defn init-component
+  "Mounts tweet component. Takes put-fn as the function that can be called when some message
+   needs to be sent back to the switchboard. Returns a function that handles incoming messages."
+  [put-fn]
   (let [app (atom {})
-        tweets (atom [])
-        state-chan (chan (sliding-buffer 1))]
-    (go-loop []
-             (let [[_ state-snapshot] (<! state-chan)
-                   order (:sorted state-snapshot)
-                   n (:n state-snapshot)
-                   page (dec (:page state-snapshot))]
-               (when (:live state-snapshot)
-                 (reset! app state-snapshot)
-                 (reset! tweets (util/tweets-by-order order state-snapshot n page)))
-               (<! (timeout 20)))
-             (recur))
-    (sub state-pub :app-state state-chan)
-    (r/render-component [tweets-view app tweets cmd-chan] (util/by-id "tweet-frame"))))
+        tweets (atom [])]
+    (r/render-component [tweets-view app tweets put-fn] (util/by-id "tweet-frame"))
+    (fn [msg]
+      (let [[_ state-snapshot] msg
+            order (:sorted state-snapshot)
+            n (:n state-snapshot)
+            page (dec (:page state-snapshot))]
+        (when (:live state-snapshot)
+          (reset! app state-snapshot)
+          (reset! tweets (util/tweets-by-order order state-snapshot n page)))))))

@@ -3,13 +3,13 @@
             [tailrecursion.priority-map :refer [priority-map-by]]))
 
 (defn initial-state
-  "Returns fresh application state."
+  "Returns fresh application state, with :search-text from the URI location hash.."
   []
   {:count 0
    :n 10
    :prev-chunks-loaded 0
    :tweets-map {}
-   :search-text ""
+   :search-text (util/search-hash)
    :page 1
    :search "*"
    :users-count 0
@@ -23,10 +23,3 @@
    :by-reach (priority-map-by >)
    :by-id (priority-map-by >)
    :words-sorted-by-count (priority-map-by >)})
-
-(defn init
-  "Initializes application start when application starts by providing fresh state
-   and setting the :search-text from the URI location hash."
-  [app]
-  (reset! app (initial-state))
-  (swap! app assoc :search-text (util/search-hash)))

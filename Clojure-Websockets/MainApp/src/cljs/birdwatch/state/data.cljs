@@ -9,7 +9,7 @@
    messages on channels, such as the provided data channel for adding new data or
    sending commands on the cmd-chan."
   [state-in-chan qry-chan state-pub-chan]
-  (let [app (atom {})]
-    (i/init app)
+  (let [app (atom (i/initial-state))]
     (c/state-in-loop state-in-chan qry-chan app)
     (c/broadcast-state state-pub-chan app)))
+

@@ -9,8 +9,8 @@
             [birdwatch.ui.count-views :as cv]
             [birdwatch.ui.pagination :as pag]
             [birdwatch.state.data :as state]
-            [com.matthiasnehlsen.systems-toolbox.component :as comp]
-            [com.matthiasnehlsen.systems-toolbox.reagent :as r]
+            [com.matthiasnehlsen.systems-toolbox.component :as toolbox-comp]
+            [com.matthiasnehlsen.systems-toolbox.reagent :as toolbox-r]
             [cljs.core.async :refer [chan pub sub buffer sliding-buffer pipe]]))
 
 (enable-console-print!)
@@ -36,13 +36,13 @@
 (cloud/mount-wordcloud state-pub cmd-chan {:n 250 :every-ms 5000})
 (ts-c/mount-ts-chart   state-pub {:every-ms 1000})
 
-(def tweets-comp (comp/component-with-channels tw/init-component (sliding-buffer 1) (buffer 1)))
+(def tweets-comp (toolbox-comp/component-with-channels tw/init-component (sliding-buffer 1) (buffer 1)))
 (sub state-pub :app-state (:in-chan tweets-comp))
 (pipe (:out-chan tweets-comp) cmd-chan)
 
-(r/wrap-component cv/count-view state-pub cmd-chan "tweet-count")
-(r/wrap-component cv/users-count-view state-pub cmd-chan "users-count")
-(r/wrap-component cv/total-count-view state-pub cmd-chan "total-tweet-count")
-(r/wrap-component pag/pagination-view state-pub cmd-chan "pagination")
-(r/wrap-component sv/search-view state-pub cmd-chan "search")
-(r/wrap-component st/sort-view state-pub cmd-chan "sort-buttons")
+(toolbox-r/init-component cv/count-view state-pub cmd-chan "tweet-count")
+(toolbox-r/init-component cv/users-count-view state-pub cmd-chan "users-count")
+(toolbox-r/init-component cv/total-count-view state-pub cmd-chan "total-tweet-count")
+(toolbox-r/init-component pag/pagination-view state-pub cmd-chan "pagination")
+(toolbox-r/init-component sv/search-view state-pub cmd-chan "search")
+(toolbox-r/init-component st/sort-view state-pub cmd-chan "sort-buttons")

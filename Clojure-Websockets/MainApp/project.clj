@@ -31,6 +31,8 @@
 
   :source-paths ["src/clj/" "target/classes/"]
 
+  :jvm-opts ^:replace ["-Xmx1G" "-server"]
+
   :main ^:skip-aot birdwatch.main
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}

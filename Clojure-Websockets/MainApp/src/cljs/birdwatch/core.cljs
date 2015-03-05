@@ -40,3 +40,7 @@
 (def count-comp (comp/component-with-channels cv/init-component (sliding-buffer 1) (buffer 1)))
 (sub state-pub :app-state (:in-chan count-comp))
 (pipe (:out-chan count-comp) cmd-chan)
+
+(def pagination-comp (comp/component-with-channels pag/init-component (sliding-buffer 1) (buffer 1)))
+(sub state-pub :app-state (:in-chan pagination-comp))
+(pipe (:out-chan pagination-comp) cmd-chan)

@@ -33,7 +33,7 @@
          [:set-search-text text] (swap! app assoc :search-text text)
          [:set-current-page page] (swap! app assoc :page page)
          [:set-page-size n] (swap! app assoc :n n)
-         [:start-search] (s/start-search app (i/initial-state) put-fn)
+         [:first-open true] (s/start-search app (i/initial-state) put-fn)
          [:set-sort-order by-order] (swap! app assoc :sorted by-order)
          [:retrieve-missing id-str] (put-fn [:cmd/missing {:id_str id-str}])
          [:retrieve-missing id-str] (put-fn [:cmd/missing {:id_str id-str}])

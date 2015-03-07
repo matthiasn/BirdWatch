@@ -1,7 +1,6 @@
 (ns birdwatch.core
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.charts.ts-chart :as ts-c]
-            [birdwatch.communicator :as comm]
             [birdwatch.charts.wordcount-chart :as wc-c]
             [birdwatch.charts.cloud-chart :as cloud]
             [birdwatch.ui.tweets :as tw]
@@ -13,6 +12,7 @@
             [birdwatch.state.data :as state]
             [com.matthiasnehlsen.systems-toolbox.core :as toolbox]
             [com.matthiasnehlsen.systems-toolbox.reagent :as toolbox-r]
+            [com.matthiasnehlsen.systems-toolbox.sente :as toolbox-ws]
             [cljs.core.async :refer [chan pub sub buffer sliding-buffer pipe]]))
 
 (enable-console-print!)
@@ -24,9 +24,6 @@
 (def qry-chan   (chan)) ; Queries that will be forwarded to the server.
 (def state-pub-chan (chan (sliding-buffer 1))) ; Publication of state changes.
 (def state-pub (pub state-pub-chan first)) ; Pub for subscribing to
-
-;;; Initialization of WebSocket communication.
-(comm/start-communicator state-in-chan qry-chan)
 
 ;;; Initialize Reagent components and inject channels.
 (wc-c/mount-wc-chart   state-pub state-in-chan {:bars 25 :every-ms 1000})
@@ -43,6 +40,11 @@
                   [:app-state _] (>! state-pub-chan msg)
                   :else (prn "else" msg))
            (recur)))
+
+;;; Initialization of WebSocket communication.
+(def ws-comp (toolbox-ws/component (buffer 1000) (buffer 1000)))
+(pipe (:out-chan ws-comp) state-in-chan)
+(pipe qry-chan (:in-chan ws-comp))
 
 (def tweets-comp (toolbox/component-with-channels tw/init-component (sliding-buffer 1) (buffer 1)))
 (sub state-pub :app-state (:in-chan tweets-comp))

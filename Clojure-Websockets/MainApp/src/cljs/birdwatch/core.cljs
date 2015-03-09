@@ -30,7 +30,7 @@
 (cloud/mount-wordcloud state-pub state-in-chan {:n 250 :every-ms 5000})
 (ts-c/mount-ts-chart   state-pub {:every-ms 1000})
 
-(def state-comp (toolbox/component-with-channels-2 
+(def state-comp (toolbox/component-single-in-mult-out
                   state/init-component
                   {:in-chan [:buffer 1]
                    :out-chans {:state-pub-out [:sliding 1] :qry-out [:buffer 1]}}
@@ -41,7 +41,7 @@
 (pipe (-> state-comp :out-chans :state-pub-out) state-pub-chan)
 
 ;;; Initialization of WebSocket communication.
-(def ws-comp (toolbox-ws/component (buffer 1000) (buffer 1000)))
+(def ws-comp (toolbox-ws/component))
 (pipe (:out-chan ws-comp) state-in-chan)
 (pipe qry-chan (:in-chan ws-comp))
 

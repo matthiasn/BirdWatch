@@ -21,16 +21,32 @@
 
 ;;; Channels for handling information flow in the application.
 (def state-in-chan (chan)) ; Data from server, e.g. new tweets and previous chunks.
-(def qry-chan   (chan)) ; Queries that will be forwarded to the server.
+(def qry-chan (chan)) ; Queries that will be forwarded to the server.
 (def state-pub-chan (chan (sliding-buffer 1))) ; Publication of state changes.
 (def state-pub (pub state-pub-chan first)) ; Pub for subscribing to
 
-;;; Initialize Reagent components and inject channels.
-(wc-c/mount-wc-chart   state-pub state-in-chan {:bars 25 :every-ms 1000})
-(cloud/mount-wordcloud state-pub state-in-chan {:n 250 :every-ms 5000})
-(ts-c/mount-ts-chart   state-pub {:every-ms 1000})
+(def ts-comp (toolbox/single-in-single-out ts-c/init-component
+                                           {:in-chan [:sliding 1]
+                                            :out-chan [:buffer 1]
+                                            :in-timeout 1000}))
+(sub state-pub :app-state (:in-chan ts-comp))
+(pipe (:out-chan ts-comp) state-in-chan)
 
-(def state-comp (toolbox/component-single-in-mult-out
+(def wc-c-comp (toolbox/single-in-single-out (partial wc-c/init-component 25)
+                                             {:in-chan [:sliding 1]
+                                              :out-chan [:buffer 1]
+                                              :in-timeout 1000}))
+(sub state-pub :app-state (:in-chan wc-c-comp))
+(pipe (:out-chan wc-c-comp) state-in-chan)
+
+(def wc-comp (toolbox/single-in-single-out (partial cloud/init-component 250)
+                                             {:in-chan [:sliding 1]
+                                              :out-chan [:buffer 1]
+                                              :in-timeout 5000}))
+(sub state-pub :app-state (:in-chan wc-comp))
+(pipe (:out-chan wc-comp) state-in-chan)
+
+(def state-comp (toolbox/single-in-multiple-out
                   state/init-component
                   {:in-chan [:buffer 1]
                    :out-chans {:state-pub-out [:sliding 1] :qry-out [:buffer 1]}}
@@ -45,7 +61,7 @@
 (pipe (:out-chan ws-comp) state-in-chan)
 (pipe qry-chan (:in-chan ws-comp))
 
-(def tweets-comp (toolbox/component-with-channels tw/init-component (sliding-buffer 1) (buffer 1)))
+(def tweets-comp (toolbox/single-in-single-out tw/init-component))
 (sub state-pub :app-state (:in-chan tweets-comp))
 (pipe (:out-chan tweets-comp) state-in-chan)
 
@@ -53,3 +69,5 @@
                            [[cv/count-view "tweet-count"] [cv/users-count-view "users-count"]
                             [cv/total-count-view "total-tweet-count"] [sv/search-view "search"]
                             [pag/pagination-view "pagination"] [st/sort-view "sort-buttons"]])
+
+

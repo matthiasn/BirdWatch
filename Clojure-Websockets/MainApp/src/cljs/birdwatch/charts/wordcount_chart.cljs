@@ -64,3 +64,14 @@
   [n put-fn]
   (r/render-component [wordcount-barchart put-fn] wc-elem)
   (fn [[_ state]] (update-words (wc/get-words2 state n))))
+
+(defn make-state
+  "Return clean initial component state atom."
+  [put-fn]
+  (r/render-component [wordcount-barchart put-fn] wc-elem)
+  (atom {}))
+
+(defn state-pub-handler
+  "Handle incoming messages: process / add to application state."
+  [_ _ [_ state]]
+  (update-words (wc/get-words2 state 25)))

@@ -21,29 +21,24 @@
 
 (def state-comp (toolbox/make-component c/make-state c/handle-incoming nil))
 (def wc-comp (toolbox/make-component cloud/make-state nil cloud/state-pub-handler))
+(def wc-c-comp (toolbox/make-component wc-c/make-state nil wc-c/state-pub-handler))
 
 (def ts-comp (toolbox/single-in-single-out ts-c/init-component
                                            {:in-chan [:sliding 1]
                                             :out-chan [:buffer 1]
                                             :in-timeout 1000}))
 
-(def wc-c-comp (toolbox/single-in-single-out (partial wc-c/init-component 25)
-                                             {:in-chan [:sliding 1]
-                                              :out-chan [:buffer 1]
-                                              :in-timeout 1000}))
-
 (def tweets-comp (toolbox/single-in-single-out tw/init-component))
 
 ;;; Initialization of WebSocket communication.
 (def ws-comp (toolbox-ws/component))
 
-(sub (:state-pub state-comp) :app-state (:in-chan wc-c-comp))
+(sub (:state-pub state-comp) :app-state (:sliding-in-chan wc-c-comp))
 (sub (:state-pub state-comp) :app-state (:in-chan ts-comp))
 (sub (:state-pub state-comp) :app-state (:sliding-in-chan wc-comp))
 (sub (:state-pub state-comp) :app-state (:in-chan tweets-comp))
 
 (pipe (:out-chan wc-c-comp)   (:in-chan state-comp))
-(pipe (:out-chan ts-comp)     (:in-chan state-comp))
 (pipe (:out-chan wc-comp)     (:in-chan state-comp))
 (pipe (:out-chan state-comp)  (:in-chan ws-comp))
 (pipe (:out-chan ws-comp)     (:in-chan state-comp))

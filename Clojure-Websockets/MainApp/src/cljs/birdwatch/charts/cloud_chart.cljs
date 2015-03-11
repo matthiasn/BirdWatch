@@ -8,7 +8,7 @@
 (def n 250)
 
 (defn make-state
-  "Return clean initial component state atom. put-fn argument not used."
+  "Return clean initial component state atom."
   [put-fn]
   (let [on-click #(put-fn [:append-search-text %])
         word-cloud (.WordCloud js/BirdWatch w (* w 0.7) n on-click cloud-elem)]

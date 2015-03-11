@@ -58,13 +58,6 @@
       (swap! ratio-trends assoc-in [text]
              (get (reg/linear-regression (take 1000 (get @ratio-items text))) 1)))))
 
-(defn init-component
-  "Initializes word chart component. Takes put-fn as the function that can be called when some message
-   needs to be sent back to the switchboard. Returns a function that handles incoming messages."
-  [n put-fn]
-  (r/render-component [wordcount-barchart put-fn] wc-elem)
-  (fn [[_ state]] (update-words (wc/get-words2 state n))))
-
 (defn make-state
   "Return clean initial component state atom."
   [put-fn]

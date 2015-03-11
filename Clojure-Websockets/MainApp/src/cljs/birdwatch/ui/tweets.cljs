@@ -80,13 +80,14 @@
                                  ^{:key (:id_str t)} [tweet-view t state]
                                  ^{:key (:id_str t)} [missing-tweet t put-fn]))]))))
 
-(defn init-component
-  "Mounts tweet component. Takes put-fn as the function that can be called when some message
-   needs to be sent back to the switchboard. Returns a function that handles incoming messages."
+(defn make-state
+  "Return clean initial component state atom."
   [put-fn]
   (let [app (atom {})]
     (r/render-component [tweets-view app put-fn] (util/by-id "tweet-frame"))
-    (fn [msg]
-      (let [[_ state-snapshot] msg]
-        (when (:live state-snapshot)
-          (reset! app state-snapshot))))))
+    app))
+
+(defn state-pub-handler
+  "Handle incoming messages: process / add to application state."
+  [app _ [_ state-snapshot]]
+  (when (:live state-snapshot) (reset! app state-snapshot)))

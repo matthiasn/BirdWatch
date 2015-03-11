@@ -12,7 +12,7 @@
             [com.matthiasnehlsen.systems-toolbox.core :as toolbox]
             [com.matthiasnehlsen.systems-toolbox.reagent :as toolbox-r]
             [com.matthiasnehlsen.systems-toolbox.sente :as toolbox-ws]
-            [cljs.core.async :refer [sub tap pipe]]))
+            [cljs.core.async :refer [sub tap]]))
 
 (enable-console-print!)
 
@@ -23,14 +23,13 @@
 (def wc-c-comp (toolbox/make-component wc-c/make-state nil wc-c/state-pub-handler {:sliding-in-timeout 1000}))
 (def ts-comp (toolbox/make-component ts-c/make-state nil ts-c/state-pub-handler {:sliding-in-timeout 1000}))
 (def ws-comp (toolbox-ws/component))
+(def tweets-comp (toolbox/make-component tw/make-state nil tw/state-pub-handler))
 (def count-comp (toolbox-r/component cv/count-view "tweet-count"))
 (def users-count-comp (toolbox-r/component cv/users-count-view "users-count"))
 (def search-comp (toolbox-r/component sv/search-view "search"))
 (def sort-comp (toolbox-r/component st/sort-view "sort-buttons"))
 (def pag-comp (toolbox-r/component pag/pagination-view "pagination"))
 (def ttc-comp (toolbox-r/component cv/total-count-view "total-tweet-count"))
-
-(def tweets-comp (toolbox/single-in-single-out tw/init-component))
 
 (sub (:state-pub state-comp) :app-state (:sliding-in-chan wc-c-comp))
 (sub (:state-pub state-comp) :app-state (:sliding-in-chan ts-comp))
@@ -41,8 +40,7 @@
 (sub (:state-pub state-comp) :app-state (:sliding-in-chan sort-comp))
 (sub (:state-pub state-comp) :app-state (:sliding-in-chan pag-comp))
 (sub (:state-pub state-comp) :app-state (:sliding-in-chan ttc-comp))
-
-(sub (:state-pub state-comp) :app-state (:in-chan tweets-comp))
+(sub (:state-pub state-comp) :app-state (:sliding-in-chan tweets-comp))
 
 (tap (:out-mult state-comp)  (:in-chan ws-comp))
 (tap (:out-mult ws-comp)     (:in-chan state-comp))
@@ -51,5 +49,4 @@
 (tap (:out-mult search-comp) (:in-chan state-comp))
 (tap (:out-mult wc-c-comp)   (:in-chan state-comp))
 (tap (:out-mult wc-comp)     (:in-chan state-comp))
-
-(pipe (:out-chan tweets-comp) (:in-chan state-comp))
+(tap (:out-mult tweets-comp) (:in-chan state-comp))

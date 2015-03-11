@@ -69,24 +69,24 @@
    so that so that the tweet-view component and all components down the hierarchy
    can be implemented as pure functions.
    Rerenders the entire list whenever one (or both) of the atoms change."
-  [app tweets put-fn]
-  (let [state @app]
-    [:div (for [t @tweets] (if (:user t)
-                             ^{:key (:id_str t)} [tweet-view t state]
-                             ^{:key (:id_str t)} [missing-tweet t put-fn]))]))
+  [app put-fn]
+  (let [state @app
+        order (:sorted state)
+        n (:n state)
+        page (dec (:page state))]
+    (when order
+      (let [tweets (util/tweets-by-order order state n page)]
+        [:div (for [t tweets] (if (:user t)
+                                 ^{:key (:id_str t)} [tweet-view t state]
+                                 ^{:key (:id_str t)} [missing-tweet t put-fn]))]))))
 
 (defn init-component
   "Mounts tweet component. Takes put-fn as the function that can be called when some message
    needs to be sent back to the switchboard. Returns a function that handles incoming messages."
   [put-fn]
-  (let [app (atom {})
-        tweets (atom [])]
-    (r/render-component [tweets-view app tweets put-fn] (util/by-id "tweet-frame"))
+  (let [app (atom {})]
+    (r/render-component [tweets-view app put-fn] (util/by-id "tweet-frame"))
     (fn [msg]
-      (let [[_ state-snapshot] msg
-            order (:sorted state-snapshot)
-            n (:n state-snapshot)
-            page (dec (:page state-snapshot))]
+      (let [[_ state-snapshot] msg]
         (when (:live state-snapshot)
-          (reset! app state-snapshot)
-          (reset! tweets (util/tweets-by-order order state-snapshot n page)))))))
+          (reset! app state-snapshot))))))

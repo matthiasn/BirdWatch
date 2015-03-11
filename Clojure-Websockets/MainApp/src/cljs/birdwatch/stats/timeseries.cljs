@@ -46,11 +46,12 @@
 (defn ts-data
   "Performs time series analysis by counting tweets in even intervals."
   [state]
-  (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) state 100000)]
-    (let [oldest (tweet-ts (last tweets-by-id))
-          newest (tweet-ts (first tweets-by-id))
-          interval (grouping-interval newest oldest)
-          rounder (date-round interval)]
-      (reduce count-into-map
-              (empty-ts-map newest oldest interval)
-              (map #(rounder (tweet-ts %)) tweets-by-id)))))
+  (when-not (empty? (:tweets-map state))
+    (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) state 100000)]
+      (let [oldest (tweet-ts (last tweets-by-id))
+            newest (tweet-ts (first tweets-by-id))
+            interval (grouping-interval newest oldest)
+            rounder (date-round interval)]
+        (reduce count-into-map
+                (empty-ts-map newest oldest interval)
+                (map #(rounder (tweet-ts %)) tweets-by-id))))))

@@ -45,7 +45,7 @@
   [bars-atom label]
   (let [bars @bars-atom
         indexed (vec (map-indexed vector bars))
-        mx (apply max (map (fn [[k v]] v) bars))
+        mx (apply max (map (fn [[_ v]] v) bars))
         cnt (count bars)
         w (/ ts-w cnt)]
     [:div.rickshaw_graph

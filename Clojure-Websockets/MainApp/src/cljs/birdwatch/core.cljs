@@ -29,36 +29,31 @@
                                            {:in-chan [:sliding 1]
                                             :out-chan [:buffer 1]
                                             :in-timeout 1000}))
-(sub state-pub :app-state (:in-chan ts-comp))
-(pipe (:out-chan ts-comp) state-in-chan)
 
 (def state-comp (toolbox/make-component c/make-state c/handle-incoming nil))
+
 
 (def wc-c-comp (toolbox/single-in-single-out (partial wc-c/init-component 25)
                                              {:in-chan [:sliding 1]
                                               :out-chan [:buffer 1]
                                               :in-timeout 1000}))
 
-(sub state-pub :app-state (:in-chan wc-c-comp))
-(pipe (:out-chan wc-c-comp) state-in-chan)
-
 (def wc-comp (toolbox/single-in-single-out (partial cloud/init-component 250)
                                              {:in-chan [:sliding 1]
                                               :out-chan [:buffer 1]
                                               :in-timeout 5000}))
+
+(sub state-pub :app-state (:in-chan wc-c-comp))
+(pipe (:out-chan wc-c-comp) state-in-chan)
+
+(sub state-pub :app-state (:in-chan ts-comp))
+(pipe (:out-chan ts-comp) state-in-chan)
+
 (sub state-pub :app-state (:in-chan wc-comp))
 (pipe (:out-chan wc-comp) state-in-chan)
 
-#_(def state-comp (toolbox/single-in-multiple-out
-                  state/init-component
-                  {:in-chan [:buffer 1]
-                   :out-chans {:state-pub-out [:sliding 1] :qry-out [:buffer 1]}}
-                  #(match % [:app-state _] :state-pub-out :else :qry-out)))
-
 (pipe state-in-chan (:in-chan state-comp))
-;(pipe (-> state-comp :out-chans :qry-out) qry-chan)
 (pipe (:out-chan state-comp) qry-chan)
-;(pipe (-> state-comp :out-chans :state-pub-out) state-pub-chan)
 (pipe (:sliding-out-chan state-comp) state-pub-chan)
 
 ;;; Initialization of WebSocket communication.

@@ -1,5 +1,4 @@
 (ns birdwatch.core
-  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.charts.ts-chart :as ts-c]
             [birdwatch.charts.wordcount-chart :as wc-c]
             [birdwatch.charts.cloud-chart :as cloud]
@@ -13,7 +12,7 @@
             [com.matthiasnehlsen.systems-toolbox.core :as toolbox]
             [com.matthiasnehlsen.systems-toolbox.reagent :as toolbox-r]
             [com.matthiasnehlsen.systems-toolbox.sente :as toolbox-ws]
-            [cljs.core.async :refer [chan pub sub <! >! tap buffer sliding-buffer pipe]]))
+            [cljs.core.async :refer [sub tap pipe]]))
 
 (enable-console-print!)
 

@@ -1,4 +1,4 @@
-(ns birdwatch.state.comm
+(ns birdwatch.state.comp
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.state.search :as s]
             [birdwatch.state.initial :as i]
@@ -20,23 +20,29 @@
   [app put-fn msg]
   (match msg
          ;; tweet-related messages from server
-         [:tweet/new tweet] (p/add-tweet! tweet app)
+         [:tweet/new tweet]           (p/add-tweet! tweet app)
          [:tweet/missing-tweet tweet] (p/add-to-tweets-map! app :tweets-map tweet)
-         [:tweet/prev-chunk chunk] (do (handle-prev-chunk chunk app) (s/load-prev app put-fn))
+         [:tweet/prev-chunk chunk]    (do (handle-prev-chunk chunk app) (s/load-prev app put-fn))
 
          ;; stats received 
-         [:stats/users-count n] (swap! app assoc :users-count n)
+         [:stats/users-count n]       (swap! app assoc :users-count n)
          [:stats/total-tweet-count n] (swap! app assoc :total-tweet-count n)
 
          ;; command messages
-         [:toggle-live] (swap! app update :live not)
-         [:set-search-text text] (swap! app assoc :search-text text)
-         [:set-current-page page] (swap! app assoc :page page)
-         [:set-page-size n] (swap! app assoc :n n)
-         [:first-open true] (s/start-search app (i/initial-state) put-fn)
+         [:toggle-live]             (swap! app update :live not)
+         [:set-search-text text]    (swap! app assoc :search-text text)
+         [:set-current-page page]   (swap! app assoc :page page)
+         [:set-page-size n]         (swap! app assoc :n n)
+         [:first-open true]         (s/start-search app (i/initial-state) put-fn)
+         [:start-search]            (s/start-search app (i/initial-state) put-fn)
          [:set-sort-order by-order] (swap! app assoc :sorted by-order)
          [:retrieve-missing id-str] (put-fn [:cmd/missing {:id_str id-str}])
          [:retrieve-missing id-str] (put-fn [:cmd/missing {:id_str id-str}])
          [:append-search-text text] (s/append-search-text app text)
 
          :else (prn "unknown msg in data-loop" msg)))
+
+(defn make-state
+  "Return clean initial component state atom. put-fn argument not used."
+  [_]
+  (atom (i/initial-state)))

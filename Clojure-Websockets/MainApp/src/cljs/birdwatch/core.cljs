@@ -9,8 +9,7 @@
             [birdwatch.ui.count-views :as cv]
             [birdwatch.ui.pagination :as pag]
             [cljs.core.match :refer-macros [match]]
-            [birdwatch.state.data :as state]
-            [birdwatch.state.comm :as c]
+            [birdwatch.state.comp :as c]
             [com.matthiasnehlsen.systems-toolbox.core :as toolbox]
             [com.matthiasnehlsen.systems-toolbox.reagent :as toolbox-r]
             [com.matthiasnehlsen.systems-toolbox.sente :as toolbox-ws]
@@ -33,7 +32,7 @@
 (sub state-pub :app-state (:in-chan ts-comp))
 (pipe (:out-chan ts-comp) state-in-chan)
 
-(def state-comp (toolbox/make-component state/initial-state c/handle-incoming nil))
+(def state-comp (toolbox/make-component c/make-state c/handle-incoming nil))
 
 (def wc-c-comp (toolbox/single-in-single-out (partial wc-c/init-component 25)
                                              {:in-chan [:sliding 1]

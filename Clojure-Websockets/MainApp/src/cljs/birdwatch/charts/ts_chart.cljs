@@ -54,17 +54,11 @@
      [barchart indexed mx cnt w label]
      [labels bars mx cnt w label]]))
 
-(defn mount-ts-chart
-  "Mount timeseries chart and subscribe to specified pub for state changes.
-   The wait time until re-render is specified in the configuration map."
-  [state-pub {:keys [every-ms]}]
-  (let [state-chan (chan (sliding-buffer 1))
-        bars (atom [])
+(defn init-component
+  "Initializes timeseries chart component. Takes put-fn as the function that can be called when some message
+   needs to be sent back to the switchboard. Returns a function that handles incoming messages."
+  [put-fn]
+  (let [bars (atom [])
         label (atom {})]
-    (go-loop []
-             (let [[_ state] (<! state-chan)]
-               (reset! bars (ts/ts-data state))
-               (<! (timeout every-ms))
-               (recur)))
     (r/render-component [ts-chart bars label] ts-elem)
-    (sub state-pub :app-state state-chan)))
+    (fn [[_ state]] (reset! bars (ts/ts-data state)))))

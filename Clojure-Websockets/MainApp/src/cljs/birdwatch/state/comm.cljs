@@ -37,6 +37,6 @@
          [:set-sort-order by-order] (swap! app assoc :sorted by-order)
          [:retrieve-missing id-str] (put-fn [:cmd/missing {:id_str id-str}])
          [:retrieve-missing id-str] (put-fn [:cmd/missing {:id_str id-str}])
-         [:append-search-text text] (s/append-search-text text app)
+         [:append-search-text text] (s/append-search-text app text)
 
          :else (prn "unknown msg in data-loop" msg)))

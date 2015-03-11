@@ -54,9 +54,11 @@
                        {:id "release"
                         :source-paths ["src/cljs"]
                         :compiler {:output-to "resources/public/js/build/birdwatch-opt.js"
+                                   :output-dir "resources/public/js/build/out"
                                    :optimizations :advanced
                                    :cache-analysis true
-                                   :externs ["externs/misc.js"]}}
+                                   :externs ["externs/misc.js"]
+                                   :source-map "resources/public/js/build/birdwatch-opt.js.map"}}
                        {:id "test"
                         :source-paths ["src/cljs" "test/cljs"]
                         :compiler {:output-to "test-out/birdwatch.js"

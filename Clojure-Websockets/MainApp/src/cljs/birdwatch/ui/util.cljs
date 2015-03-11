@@ -97,7 +97,7 @@
 (defn tweets-by-order
   "Finds top n tweets by specified order."
   [order state n skip]
-  (map (fn [[k v]] (get (:tweets-map state) k {:id_str (name k)}))
+  (map (fn [[k _]] (get (:tweets-map state) k {:id_str (name k)}))
        (->> (order state)
             (drop (* n skip) ,)
             (take n ,))))

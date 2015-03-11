@@ -9,9 +9,9 @@
             [birdwatch.ui.pagination :as pag]
             [cljs.core.match :refer-macros [match]]
             [birdwatch.state.comp :as c]
-            [com.matthiasnehlsen.systems-toolbox.core :as toolbox]
-            [com.matthiasnehlsen.systems-toolbox.reagent :as toolbox-r]
-            [com.matthiasnehlsen.systems-toolbox.sente :as toolbox-ws]
+            [matthiasn.systems-toolbox.core :as toolbox]
+            [matthiasn.systems-toolbox.reagent :as toolbox-r]
+            [matthiasn.systems-toolbox.sente :as toolbox-ws]
             [cljs.core.async :refer [sub tap]]))
 
 (enable-console-print!)

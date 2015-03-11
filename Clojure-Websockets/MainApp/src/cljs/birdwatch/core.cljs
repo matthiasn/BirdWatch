@@ -10,6 +10,7 @@
             [birdwatch.ui.pagination :as pag]
             [cljs.core.match :refer-macros [match]]
             [birdwatch.state.data :as state]
+            [birdwatch.state.comm :as c]
             [com.matthiasnehlsen.systems-toolbox.core :as toolbox]
             [com.matthiasnehlsen.systems-toolbox.reagent :as toolbox-r]
             [com.matthiasnehlsen.systems-toolbox.sente :as toolbox-ws]
@@ -30,15 +31,19 @@
 (cloud/mount-wordcloud state-pub state-in-chan {:n 250 :every-ms 5000})
 (ts-c/mount-ts-chart   state-pub {:every-ms 1000})
 
-(def state-comp (toolbox/component-single-in-mult-out
+(def state-comp (toolbox/make-component state/initial-state c/handle-incoming nil))
+
+#_(def state-comp (toolbox/component-single-in-mult-out
                   state/init-component
                   {:in-chan [:buffer 1]
                    :out-chans {:state-pub-out [:sliding 1] :qry-out [:buffer 1]}}
                   #(match % [:app-state _] :state-pub-out :else :qry-out)))
 
 (pipe state-in-chan (:in-chan state-comp))
-(pipe (-> state-comp :out-chans :qry-out) qry-chan)
-(pipe (-> state-comp :out-chans :state-pub-out) state-pub-chan)
+;(pipe (-> state-comp :out-chans :qry-out) qry-chan)
+(pipe (:out-chan state-comp) qry-chan)
+;(pipe (-> state-comp :out-chans :state-pub-out) state-pub-chan)
+(pipe (:sliding-out-chan state-comp) state-pub-chan)
 
 ;;; Initialization of WebSocket communication.
 (def ws-comp (toolbox-ws/component))

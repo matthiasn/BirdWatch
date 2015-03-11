@@ -9,3 +9,8 @@
   (let [app (atom (i/initial-state))]
     (add-watch app :watcher (fn [_ _ _ new-state] (put-fn [:app-state new-state])))
     (fn [msg] (c/handle-incoming app put-fn msg))))
+
+(defn initial-state
+  "Return clean initial component state atom."
+  []
+  (atom (i/initial-state)))

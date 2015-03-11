@@ -13,7 +13,7 @@
             [com.matthiasnehlsen.systems-toolbox.core :as toolbox]
             [com.matthiasnehlsen.systems-toolbox.reagent :as toolbox-r]
             [com.matthiasnehlsen.systems-toolbox.sente :as toolbox-ws]
-            [cljs.core.async :refer [chan pub sub <! >! buffer sliding-buffer pipe]]))
+            [cljs.core.async :refer [chan pub sub <! >! tap buffer sliding-buffer pipe]]))
 
 (enable-console-print!)
 
@@ -45,8 +45,12 @@
 
 (sub (:state-pub state-comp) :app-state (:in-chan tweets-comp))
 
-(pipe (:out-chan wc-c-comp)   (:in-chan state-comp))
-(pipe (:out-chan wc-comp)     (:in-chan state-comp))
-(pipe (:out-chan state-comp)  (:in-chan ws-comp))
-(pipe (:out-chan ws-comp)     (:in-chan state-comp))
+(tap (:out-mult state-comp)  (:in-chan ws-comp))
+(tap (:out-mult ws-comp)     (:in-chan state-comp))
+(tap (:out-mult sort-comp)   (:in-chan state-comp))
+(tap (:out-mult pag-comp)    (:in-chan state-comp))
+(tap (:out-mult search-comp) (:in-chan state-comp))
+(tap (:out-mult wc-c-comp)   (:in-chan state-comp))
+(tap (:out-mult wc-comp)     (:in-chan state-comp))
+
 (pipe (:out-chan tweets-comp) (:in-chan state-comp))

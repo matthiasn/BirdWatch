@@ -12,7 +12,7 @@
    positioned above the bar."
   [x y h w idx app]
   [:rect {:x x :y (- y h) :fill "steelblue" :width w :height h
-          :on-mouse-enter #(swap! app {:idx idx})
+          :on-mouse-enter #(swap! app assoc :label {:idx idx})
           :on-mouse-leave #(swap! app assoc :label {})}])
 
 (defn barchart
@@ -52,10 +52,14 @@
      [barchart indexed mx cnt w app]
      [labels bars mx cnt w (:label @app)]]))
 
-(defn init-component
-  "Initializes timeseries chart component. Takes put-fn as the function that can be called when some message
-   needs to be sent back to the switchboard. Returns a function that handles incoming messages."
+(defn make-state
+  "Return clean initial component state atom."
   [_]
   (let [app (atom {:bars [] :label {}})]
     (r/render-component [ts-chart app] ts-elem)
-    (fn [[_ state]] (swap! app assoc :bars (ts/ts-data state)))))
+    app))
+
+(defn state-pub-handler
+  "Handle incoming messages: process / add to application state."
+  [app _ [_ state-snapshot]]
+  (swap! app assoc :bars (ts/ts-data state-snapshot)))

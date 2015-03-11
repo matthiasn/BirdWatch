@@ -11,8 +11,8 @@
   "Loads previous tweets matching the current search. Search is contructed
    by calling the util/query-string function with dereferenced app state."
   [app put-fn]
-  (let [chunks-to-load 10
-        chunk-size 500
+  (let [chunks-to-load 20
+        chunk-size 250
         prev-chunks-loaded (:prev-chunks-loaded @app)]
     (when (< prev-chunks-loaded chunks-to-load)
       (put-fn [:cmd/query {:query (util/query-string @app)

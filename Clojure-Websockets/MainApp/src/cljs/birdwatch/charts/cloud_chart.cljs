@@ -1,8 +1,6 @@
 (ns birdwatch.charts.cloud-chart
-  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
-            [birdwatch.stats.wordcount :as wc]
-            [cljs.core.async :refer [put! chan sub sliding-buffer timeout]]))
+            [birdwatch.stats.wordcount :as wc]))
 
 ;;; WordCloud element (implemented externally in JavaScript)
 (def cloud-elem (util/by-id "wordCloud"))

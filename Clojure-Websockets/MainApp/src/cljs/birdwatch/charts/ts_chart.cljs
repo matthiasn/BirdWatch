@@ -1,9 +1,7 @@
 (ns birdwatch.charts.ts-chart
-  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.util :as util]
             [birdwatch.stats.timeseries :as ts]
-            [reagent.core :as r :refer [atom]]
-            [cljs.core.async :refer [chan sub timeout sliding-buffer]]))
+            [reagent.core :as r :refer [atom]]))
 
 (def ts-elem (util/by-id "timeseries1"))
 (def ts-w (aget ts-elem "offsetWidth"))
@@ -57,7 +55,7 @@
 (defn init-component
   "Initializes timeseries chart component. Takes put-fn as the function that can be called when some message
    needs to be sent back to the switchboard. Returns a function that handles incoming messages."
-  [put-fn]
+  [_]
   (let [bars (atom [])
         label (atom {})]
     (r/render-component [ts-chart bars label] ts-elem)

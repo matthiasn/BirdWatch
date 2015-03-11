@@ -19,45 +19,37 @@
 
 ;;;; Main file of the BirdWatch client-side application.
 
-;;; Channels for handling information flow in the application.
-(def state-pub-chan (chan (sliding-buffer 1))) ; Publication of state changes.
+(def state-comp (toolbox/make-component c/make-state c/handle-incoming nil))
+(def wc-comp (toolbox/make-component cloud/make-state nil cloud/state-pub-handler))
 
 (def ts-comp (toolbox/single-in-single-out ts-c/init-component
                                            {:in-chan [:sliding 1]
                                             :out-chan [:buffer 1]
                                             :in-timeout 1000}))
 
-(def state-comp (toolbox/make-component c/make-state c/handle-incoming nil))
-(def state-pub (pub (:sliding-out-chan state-comp) first)) ; Pub for subscribing to
-
 (def wc-c-comp (toolbox/single-in-single-out (partial wc-c/init-component 25)
                                              {:in-chan [:sliding 1]
                                               :out-chan [:buffer 1]
                                               :in-timeout 1000}))
-
-(def wc-comp (toolbox/single-in-single-out (partial cloud/init-component 250)
-                                             {:in-chan [:sliding 1]
-                                              :out-chan [:buffer 1]
-                                              :in-timeout 5000}))
 
 (def tweets-comp (toolbox/single-in-single-out tw/init-component))
 
 ;;; Initialization of WebSocket communication.
 (def ws-comp (toolbox-ws/component))
 
-(sub state-pub :app-state (:in-chan wc-c-comp))
-(sub state-pub :app-state (:in-chan ts-comp))
-(sub state-pub :app-state (:in-chan wc-comp))
-(sub state-pub :app-state (:in-chan tweets-comp))
+(sub (:state-pub state-comp) :app-state (:in-chan wc-c-comp))
+(sub (:state-pub state-comp) :app-state (:in-chan ts-comp))
+(sub (:state-pub state-comp) :app-state (:sliding-in-chan wc-comp))
+(sub (:state-pub state-comp) :app-state (:in-chan tweets-comp))
 
-(pipe (:out-chan wc-c-comp) (:in-chan state-comp))
-(pipe (:out-chan ts-comp) (:in-chan state-comp))
-(pipe (:out-chan wc-comp) (:in-chan state-comp))
-(pipe (:out-chan state-comp) (:in-chan ws-comp))
-(pipe (:out-chan ws-comp) (:in-chan state-comp))
+(pipe (:out-chan wc-c-comp)   (:in-chan state-comp))
+(pipe (:out-chan ts-comp)     (:in-chan state-comp))
+(pipe (:out-chan wc-comp)     (:in-chan state-comp))
+(pipe (:out-chan state-comp)  (:in-chan ws-comp))
+(pipe (:out-chan ws-comp)     (:in-chan state-comp))
 (pipe (:out-chan tweets-comp) (:in-chan state-comp))
 
-(toolbox-r/init-components state-pub (:in-chan state-comp)
+(toolbox-r/init-components (:state-pub state-comp) (:in-chan state-comp)
                            [[cv/count-view "tweet-count"] [cv/users-count-view "users-count"]
                             [cv/total-count-view "total-tweet-count"] [sv/search-view "search"]
                             [pag/pagination-view "pagination"] [st/sort-view "sort-buttons"]])

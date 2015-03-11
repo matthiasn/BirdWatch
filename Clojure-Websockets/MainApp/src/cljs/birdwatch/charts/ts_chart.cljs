@@ -30,7 +30,7 @@
   [bars mx cnt w label]
   (when-not (empty? @label)
     (let [idx (:idx @label)
-          [k v] (get bars idx)
+          [k v] (get (vec bars) idx)
           top (- ts-h (* (/ v mx) ts-h))
           lr (if (< (/ idx cnt) 0.6) "left" "right")]
       [:div.detail {:style {:left (* idx w)}}

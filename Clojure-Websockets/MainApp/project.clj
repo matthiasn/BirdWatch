@@ -18,7 +18,7 @@
                  [ring/ring-defaults "0.1.4"]
                  [clj-time "0.9.0"]
                  [pandect "0.5.1"]
-                 [org.clojure/clojurescript "0.0-2913"]
+                 [org.clojure/clojurescript "0.0-3058"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.5"]
                  [reagent "0.5.0-alpha3"]
@@ -56,7 +56,6 @@
                         :compiler {:output-to "resources/public/js/build/birdwatch-opt.js"
                                    :output-dir "resources/public/js/build/out"
                                    :optimizations :advanced
-                                   :cache-analysis true
                                    :externs ["externs/misc.js"]
                                    :source-map "resources/public/js/build/birdwatch-opt.js.map"}}
                        {:id "test"

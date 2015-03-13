@@ -52,7 +52,7 @@
      [barchart indexed mx cnt w app]
      [labels bars mx cnt w (:label @app)]]))
 
-(defn make-state
+(defn mk-state
   "Return clean initial component state atom."
   [_]
   (let [app (atom {:bars [] :label {}})]

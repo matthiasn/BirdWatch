@@ -7,7 +7,7 @@
 (def w (util/elem-width cloud-elem))
 (def n 250)
 
-(defn make-state
+(defn mk-state
   "Return clean initial component state atom."
   [put-fn]
   (let [on-click #(put-fn [:append-search-text %])

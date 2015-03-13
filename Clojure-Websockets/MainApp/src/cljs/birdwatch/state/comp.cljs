@@ -42,7 +42,7 @@
 
          :else (prn "unknown msg in data-loop" msg)))
 
-(defn make-state
+(defn mk-state
   "Return clean initial component state atom. put-fn argument not used."
   [_]
   (atom (i/initial-state)))

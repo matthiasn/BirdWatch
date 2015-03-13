@@ -58,7 +58,7 @@
       (swap! ratio-trends assoc-in [text]
              (get (reg/linear-regression (take 1000 (get @ratio-items text))) 1)))))
 
-(defn make-state
+(defn mk-state
   "Return clean initial component state atom."
   [put-fn]
   (r/render-component [wordcount-barchart put-fn] wc-elem)

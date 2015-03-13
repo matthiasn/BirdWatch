@@ -7,7 +7,7 @@
                  [clojurewerkz/elastisch "2.1.0" :exclusions [com.fasterxml.jackson.core/jackson-core]]
                  [org.clojure/tools.logging "0.3.1"]
                  [com.matthiasnehlsen/inspect "0.1.11"]
-                 [matthiasn/systems-toolbox "0.1.6-SNAPSHOT"]
+                 [matthiasn/systems-toolbox "0.1.7-SNAPSHOT"]
                  [org.clojure/tools.namespace "0.2.9"]
                  [ch.qos.logback/logback-classic "1.1.1"]
                  [com.taoensso/sente "1.3.0"]

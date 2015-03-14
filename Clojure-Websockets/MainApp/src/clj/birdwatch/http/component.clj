@@ -2,6 +2,7 @@
   (:gen-class)
   (:require
    [clojure.tools.logging :as log]
+   [birdwatch.http.markup :as m]
    [org.httpkit.server :as http-kit-server]
    [ring.middleware.defaults]
    [ring.util.response :refer [resource-response response content-type]]
@@ -18,8 +19,8 @@
   component/Lifecycle
   (start [component] (log/info "Starting HTTP Component")
          (defroutes my-routes  ; created during start so that the correct communicator instance is used
-           (GET  "/"    [] (static-html "index.html"))
-           (GET  "/dev" [] (static-html "index-dev.html"))
+           (GET "/" []    (content-type (response (m/index false)) "text/html"))
+           (GET "/dev" [] (content-type (response (m/index true)) "text/html"))
            (GET  "/chsk" req ((:ajax-get-or-ws-handshake-fn comm) req))
            (POST "/chsk" req ((:ajax-post-fn comm) req))
            (route/resources "/") ; Static files, e.g. /js/build/birdwatch-opt.js (our cljs target)

@@ -13,8 +13,6 @@
 (def ring-defaults-config (assoc-in ring.middleware.defaults/site-defaults [:security :anti-forgery]
                                     {:read-token (fn [req] (-> req :params :csrf-token))}))
 
-(defn- static-html [file-name] (content-type (resource-response file-name {:root "public"}) "text/html"))
-
 (defrecord Httpserver [conf comm server]
   component/Lifecycle
   (start [component] (log/info "Starting HTTP Component")

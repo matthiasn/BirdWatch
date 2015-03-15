@@ -155,31 +155,6 @@ label {
 @media (min-width: 78em) {
 }
 
-table, th, td {
-  text-align: right;
-}
-
-.button-xsmall {
-  font-size: 70%;
-}
-
-.active {
-  color: black;
-  font-weight: bold;
-}
-
-.not-rounded {
-  border-radius: 0;
-}
-
-#count {
-  float: right;
-}
-
-.sort-button {
-  background-color: #c0c0c0;
-}
-
 /* Rickshaw chart replaced by constructing SVG directly from ClojureScript. */
 .rickshaw_graph .detail {
 	pointer-events: none;

@@ -1,5 +1,6 @@
 (ns birdwatch.http.markup
-  (:require [hiccup.core :refer [html]]))
+  (:require [hiccup.core :refer [html]]
+            [birdwatch.http.css :refer [index-css]]))
 
 (defn analytics
   "Renders Google Analytics script (in order to keep track of visitors to the demo page)."
@@ -19,14 +20,14 @@
      [:head
       [:meta {:content "initial-scale=1.0, user-scalable=no, width=device-width", :name "viewport"}]
       [:title "BirdWatch"]
-      [:link {:href "/css/main.css", :media "screen", :rel "stylesheet"}]
       [:link {:href "/css/bootstrap-glyphicons.css", :media "screen", :rel "stylesheet"}]
       [:link {:href "/bower_components/pure/pure.css", :media "screen", :rel "stylesheet"}]
       [:link {:href "/bower_components/pure/grids-responsive.css", :media "screen", :rel "stylesheet"}]
       [:link {:href "/css/birdwatch.css", :media "screen", :rel "stylesheet"}]
+      [:style (index-css dev?)]
       [:link {:href "http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext" :rel "stylesheet" :type "text/css"}]
       [:link {:href "/images/favicon.png", :rel "shortcut icon", :type "image/png"}]]
-     [:body  {:data-twttr-rendered "true"}
+     [:body
       [:div.header
        [:div.home-menu.pure-menu.pure-menu-open.pure-menu-horizontal.pure-menu-fixed
         [:a.pure-menu-heading {:href ""} "Birdwatch"]

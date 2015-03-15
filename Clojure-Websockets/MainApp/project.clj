@@ -1,4 +1,4 @@
-(defproject birdwatch "0.1.0-SNAPSHOT"
+(defproject birdwatch "0.2.0-SNAPSHOT"
   :description "Main part of the BirdWatch system (without TwitterClient)"
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "Eclipse Public License" :url "http://www.eclipse.org/legal/epl-v10.html"}
@@ -14,6 +14,7 @@
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [http-kit "2.1.19"]
                  [hiccup "1.0.5"]
+                 [garden "1.2.5"]
                  [compojure "1.3.1"]
                  [ring "1.3.2"]
                  [ring/ring-defaults "0.1.4"]

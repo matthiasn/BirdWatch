@@ -33,8 +33,8 @@
   [tweet user state]
   [:div.tweettext
    [:div {:dangerouslySetInnerHTML #js {:__html (:html-text tweet)}}]
-   [:div.pull-left.timeInterval (str (util/number-format (:followers_count user)) " followers")]
-   [:div.pull-right.timeInterval (str (util/rt-count tweet state) (util/fav-count tweet state))
+   [:div.pull-left.time-interval (str (util/number-format (:followers_count user)) " followers")]
+   [:div.pull-right.time-interval (str (util/rt-count tweet state) (util/fav-count tweet state))
     [:br] (util/rt-count-since-startup tweet state)]])
 
 (defn image-view
@@ -58,7 +58,7 @@
      [:span [:a {:href href :target "_blank"} [:img.thumbnail{:src (:profile_image_url user)}]]]
      [:a {:href href :target "_blank"} [:span.username {:src (:profile_image_url user)} (:name user)]]
      [:span.username_screen (str " @" screen-name)]
-     [:div.pull-right.timeInterval (util/from-now (:created_at tweet))]
+     [:div.pull-right.time-interval (util/from-now (:created_at tweet))]
      [tweet-text tweet user state]
      (when-let [media (:media (:entities tweet))] (pos? (count media)) [image-view media])
      [twitter-intents tweet]]))

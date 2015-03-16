@@ -5,6 +5,7 @@
    [birdwatch.communicator.websockets :as ws]
    [taoensso.sente :as sente]
    [taoensso.sente.packers.transit :as sente-transit]
+   [taoensso.sente.server-adapters.http-kit :refer [sente-web-server-adapter]]
    [com.stuartsierra.component :as component]
    [clojure.core.async :refer [chan]]))
 
@@ -14,7 +15,7 @@
   component/Lifecycle
   (start [component] (log/info "Starting Communicator Component")
          (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn connected-uids]}
-               (sente/make-channel-socket! {:packer packer :user-id-fn ws/user-id-fn})
+               (sente/make-channel-socket! sente-web-server-adapter {:packer packer :user-id-fn ws/user-id-fn})
                event-handler (ws/make-handler (:query channels) (:tweet-missing channels) (:register-perc channels))
                chsk-router (sente/start-chsk-router! ch-recv event-handler)]
            (ws/run-users-count-loop send-fn connected-uids)

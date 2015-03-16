@@ -20,7 +20,7 @@
                  [ring/ring-defaults "0.1.4"]
                  [clj-time "0.9.0"]
                  [pandect "0.5.1"]
-                 [org.clojure/clojurescript "0.0-2913"]
+                 [org.clojure/clojurescript "0.0-3119"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.5"]
                  [reagent "0.5.0"]

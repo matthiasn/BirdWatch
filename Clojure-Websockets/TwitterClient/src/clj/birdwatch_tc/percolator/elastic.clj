@@ -1,7 +1,6 @@
 (ns birdwatch-tc.percolator.elastic
   (:gen-class)
   (:require
-   [pandect.core :refer [sha1]]
    [clojurewerkz.elastisch.rest.percolation :as perc]
    [clojurewerkz.elastisch.rest.response :as esrsp]))
 

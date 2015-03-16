@@ -3,7 +3,6 @@
   (:require
    [birdwatch-tc.percolator.elastic :as es]
    [clojure.tools.logging :as log]
-   [pandect.core :refer [sha1]]
    [clojurewerkz.elastisch.rest :as esr]
    [com.stuartsierra.component :as component]
    [clojure.core.async :refer [chan tap pipeline-blocking]]))

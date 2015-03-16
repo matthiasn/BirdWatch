@@ -12,19 +12,22 @@
 (defn- creds [config] (oauth/make-oauth-creds (:consumer-key config) (:consumer-secret config)
                                               (:user-access-token config) (:user-access-token-secret config)))
 
-(defn- tweet-chunk-callback [chunk-chan]
+(defn- tweet-chunk-callback
+  [chunk-chan]
   (tas/AsyncStreamingCallback. #(>!! chunk-chan (str %2))
                                (comp println tch/response-return-everything)
                                tch/exception-print))
 
-(defn start-twitter-conn! [conf conn chunk-chan]
+(defn start-twitter-conn!
+  [conf conn chunk-chan]
   (log/info "Starting Twitter client.")
   (reset! conn (tas/statuses-filter
                 :params {:track (:track conf)}
                 :oauth-creds (creds conf)
                 :callbacks (tweet-chunk-callback chunk-chan))))
 
-(defn stop-twitter-conn! [conn]
+(defn stop-twitter-conn!
+  [conn]
   (let [m (meta @conn)]
     (when m (log/info "Stopping Twitter client.")
       ((:cancel m)))))
@@ -40,6 +43,6 @@
                (when (> since-last-sec (:tw-check-interval-sec conf))
                  (log/error since-last-sec "seconds since last tweet received")
                  (stop-twitter-conn! conn)
-                 (<! (timeout (* (:tw-restart-wait conf) 1000)))
-                 (start-twitter-conn! conf conn chunk-chan))
+                 (start-twitter-conn! conf conn chunk-chan)
+                 (<! (timeout (* (:tw-restart-wait conf) 1000))))
                (recur)))))

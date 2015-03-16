@@ -6,7 +6,7 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.1.0" :exclusions [com.fasterxml.jackson.core/jackson-core]]
                  [org.clojure/tools.logging "0.3.1"]
-                 [com.matthiasnehlsen/inspect "0.1.12-SNAPSHOT"]
+                 [com.matthiasnehlsen/inspect "0.1.12"]
                  [matthiasn/systems-toolbox "0.1.8-SNAPSHOT"]
                  [org.clojure/tools.namespace "0.2.10"]
                  [ch.qos.logback/logback-classic "1.1.2"]

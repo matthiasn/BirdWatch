@@ -27,7 +27,7 @@
                  [com.cognitect/transit-clj  "0.8.259"]
                  [com.cognitect/transit-cljs "0.8.205"]
                  [clj-pid "0.1.1"]
-                 [com.stuartsierra/component "0.2.2"]
+                 [com.stuartsierra/component "0.2.3"]
                  [com.taoensso/carmine "2.9.0"]
                  [metrics-clojure "2.4.0"]]
 

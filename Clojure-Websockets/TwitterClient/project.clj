@@ -9,11 +9,11 @@
                  [clojurewerkz/elastisch "2.2.0-beta2"]
                  [org.clojure/tools.logging "0.3.1"]
                  [com.matthiasnehlsen/inspect "0.1.12"]
-                 [ch.qos.logback/logback-classic "1.1.1"]
+                 [ch.qos.logback/logback-classic "1.1.2"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [clj-time "0.9.0"]
                  [clj-pid "0.1.1"]
-                 [com.stuartsierra/component "0.2.2"]
+                 [com.stuartsierra/component "0.2.3"]
                  [com.taoensso/carmine "2.9.0" :exclusions [com.taoensso/encore]]
                  [metrics-clojure "2.4.0"]]
 

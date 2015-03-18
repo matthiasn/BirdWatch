@@ -9,14 +9,13 @@
             [birdwatch.ui.pagination :as pag]
             [cljs.core.match :refer-macros [match]]
             [birdwatch.state.comp :as c]
-            [matthiasn.systems-toolbox.switchboard :as toolbox-sw]
-            [cljs.core.async :refer [put!]]))
+            [matthiasn.systems-toolbox.switchboard :as sb]))
 
 (enable-console-print!)
 
 ;;;; Main file of the BirdWatch client-side application.
 
-(def switchboard (toolbox-sw/component))
+(def switchboard (sb/component))
 
 (def cmds
   [[:cmd/make-ws-comp]
@@ -36,24 +35,25 @@
    [:cmd/make-r-comp {:cmp-id :sort-comp :view-fn st/sort-view :dom-id "sort-buttons"}]
    [:cmd/make-r-comp {:cmp-id :pag-comp :view-fn pag/pagination-view :dom-id "pagination"}]
 
-   [:cmd/tap-comp {:mult-comp :ws :tap-comp :state-comp}]
-   [:cmd/tap-comp {:mult-comp :state-comp :tap-comp :ws}]
-   [:cmd/tap-comp {:mult-comp :tweets-comp :tap-comp :state-comp}]
-   [:cmd/tap-comp {:mult-comp :search-comp :tap-comp :state-comp}]
-   [:cmd/tap-comp {:mult-comp :sort-comp :tap-comp :state-comp}]
-   [:cmd/tap-comp {:mult-comp :pag-comp :tap-comp :state-comp}]
-   [:cmd/tap-comp {:mult-comp :cloud-comp :tap-comp :state-comp}]
-   [:cmd/tap-comp {:mult-comp :wc-c-comp :tap-comp :state-comp}]
+   [:cmd/tap-comp [:state-comp :ws]]
 
-   [:cmd/sub-comp {:pub-comp :state-comp :sub-comp :tweets-comp}]
-   [:cmd/sub-comp {:pub-comp :state-comp :sub-comp :cloud-comp}]
-   [:cmd/sub-comp {:pub-comp :state-comp :sub-comp :wc-c-comp}]
-   [:cmd/sub-comp {:pub-comp :state-comp :sub-comp :ts-comp}]
-   [:cmd/sub-comp {:pub-comp :state-comp :sub-comp :search-comp}]
-   [:cmd/sub-comp {:pub-comp :state-comp :sub-comp :sort-comp}]
-   [:cmd/sub-comp {:pub-comp :state-comp :sub-comp :pag-comp}]
-   [:cmd/sub-comp {:pub-comp :state-comp :sub-comp :count-comp}]
-   [:cmd/sub-comp {:pub-comp :state-comp :sub-comp :users-count-comp}]
-   [:cmd/sub-comp {:pub-comp :state-comp :sub-comp :tt-count-comp}]])
+   [:cmd/tap-comp [:ws :state-comp]]
+   [:cmd/tap-comp [:tweets-comp :state-comp]]
+   [:cmd/tap-comp [:search-comp :state-comp]]
+   [:cmd/tap-comp [:sort-comp :state-comp]]
+   [:cmd/tap-comp [:pag-comp :state-comp]]
+   [:cmd/tap-comp [:cloud-comp :state-comp]]
+   [:cmd/tap-comp [:wc-c-comp :state-comp]]
 
-(doseq [cmd cmds] (put! (:in-chan switchboard) cmd))
+   [:cmd/sub-comp [:state-comp :tweets-comp]]
+   [:cmd/sub-comp [:state-comp :cloud-comp]]
+   [:cmd/sub-comp [:state-comp :wc-c-comp]]
+   [:cmd/sub-comp [:state-comp :ts-comp]]
+   [:cmd/sub-comp [:state-comp :search-comp]]
+   [:cmd/sub-comp [:state-comp :sort-comp]]
+   [:cmd/sub-comp [:state-comp :pag-comp]]
+   [:cmd/sub-comp [:state-comp :count-comp]]
+   [:cmd/sub-comp [:state-comp :users-count-comp]]
+   [:cmd/sub-comp [:state-comp :tt-count-comp]]])
+
+(doseq [cmd cmds] (sb/send switchboard cmd))

@@ -1,7 +1,7 @@
 (ns birdwatch.communicator.websockets
   (:gen-class)
   (:require
-   [clojure.core.match :refer (match)]
+   [clojure.core.match :refer [match]]
    [clojure.pprint :as pp]
    [clojure.tools.logging :as log]
    [com.matthiasnehlsen.inspect :refer [inspect]]

@@ -10,7 +10,7 @@
             [cljs.core.match :refer-macros [match]]
             [birdwatch.state.comp :as c]
             [matthiasn.systems-toolbox.switchboard :as toolbox-sw]
-            [cljs.core.async :refer [sub tap put!]]))
+            [cljs.core.async :refer [put!]]))
 
 (enable-console-print!)
 

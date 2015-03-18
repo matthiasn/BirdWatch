@@ -4,7 +4,6 @@
    [clojure.tools.logging :as log]
    [birdwatch.communicator.websockets :as ws]
    [taoensso.sente :as sente]
-   [taoensso.sente.packers.transit :as sente-transit]
    [taoensso.sente.server-adapters.http-kit :refer [sente-web-server-adapter]]
    [com.stuartsierra.component :as component]
    [clojure.core.async :refer [chan]]))

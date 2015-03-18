@@ -24,8 +24,6 @@
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.5"]
                  [reagent "0.5.0"]
-                 [com.cognitect/transit-clj  "0.8.259"]
-                 [com.cognitect/transit-cljs "0.8.205"]
                  [clj-pid "0.1.1"]
                  [com.stuartsierra/component "0.2.3"]
                  [com.taoensso/carmine "2.9.0"]

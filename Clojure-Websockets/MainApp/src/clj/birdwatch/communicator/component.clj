@@ -9,13 +9,11 @@
    [com.stuartsierra.component :as component]
    [clojure.core.async :refer [chan]]))
 
-(def packer (sente-transit/get-flexi-packer :json)) ;; serialization format for client<->server comm
-
 (defrecord Communicator [channels chsk-router]
   component/Lifecycle
   (start [component] (log/info "Starting Communicator Component")
          (let [{:keys [ch-recv send-fn ajax-post-fn ajax-get-or-ws-handshake-fn connected-uids]}
-               (sente/make-channel-socket! sente-web-server-adapter {:packer packer :user-id-fn ws/user-id-fn})
+               (sente/make-channel-socket! sente-web-server-adapter {:user-id-fn ws/user-id-fn})
                event-handler (ws/make-handler (:query channels) (:tweet-missing channels) (:register-perc channels))
                chsk-router (sente/start-chsk-router! ch-recv event-handler)]
            (ws/run-users-count-loop send-fn connected-uids)

@@ -7,7 +7,7 @@
                  [clojurewerkz/elastisch "2.2.0-beta2"]
                  [org.clojure/tools.logging "0.3.1"]
                  [com.matthiasnehlsen/inspect "0.1.12"]
-                 [matthiasn/systems-toolbox "0.1.9-SNAPSHOT"]
+                 [matthiasn/systems-toolbox "0.1.10-SNAPSHOT"]
                  [org.clojure/tools.namespace "0.2.10"]
                  [ch.qos.logback/logback-classic "1.1.2"]
                  [com.taoensso/sente "1.4.1"]

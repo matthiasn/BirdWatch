@@ -22,11 +22,11 @@
    [:cmd/make-comp {:cmp-id :state-comp :mk-state-fn c/mk-state :handler-fn c/handle-incoming}]
    [:cmd/make-comp {:cmp-id :tweets-comp :mk-state-fn tw/make-state :state-pub-handler-fn tw/state-pub-handler}]
    [:cmd/make-comp {:cmp-id :cloud-comp :mk-state-fn cloud/mk-state :state-pub-handler-fn cloud/state-pub-handler
-                    :opts {:throttle-ms 5000}}]
+                    :opts   {:throttle-ms 5000}}]
    [:cmd/make-comp {:cmp-id :wc-c-comp :mk-state-fn wc-c/mk-state :state-pub-handler-fn wc-c/state-pub-handler
-                    :opts {:throttle-ms 1000}}]
+                    :opts   {:throttle-ms 1000}}]
    [:cmd/make-comp {:cmp-id :ts-comp :mk-state-fn ts-c/mk-state :state-pub-handler-fn ts-c/state-pub-handler
-                    :opts {:throttle-ms 500}}]
+                    :opts   {:throttle-ms 500}}]
 
    [:cmd/make-r-comp {:cmp-id :count-comp :view-fn cv/count-view :dom-id "tweet-count"}]
    [:cmd/make-r-comp {:cmp-id :users-count-comp :view-fn cv/users-count-view :dom-id "users-count"}]
@@ -36,24 +36,13 @@
    [:cmd/make-r-comp {:cmp-id :pag-comp :view-fn pag/pagination-view :dom-id "pagination"}]
 
    [:cmd/tap-comp [:state-comp :ws]]
+   [:cmd/tap-comps
+    [[:ws :tweets-comp :search-comp :sort-comp :pag-comp :cloud-comp :wc-c-comp]
+     :state-comp]]
 
-   [:cmd/tap-comp [:ws :state-comp]]
-   [:cmd/tap-comp [:tweets-comp :state-comp]]
-   [:cmd/tap-comp [:search-comp :state-comp]]
-   [:cmd/tap-comp [:sort-comp :state-comp]]
-   [:cmd/tap-comp [:pag-comp :state-comp]]
-   [:cmd/tap-comp [:cloud-comp :state-comp]]
-   [:cmd/tap-comp [:wc-c-comp :state-comp]]
-
-   [:cmd/sub-comp [:state-comp :tweets-comp]]
-   [:cmd/sub-comp [:state-comp :cloud-comp]]
-   [:cmd/sub-comp [:state-comp :wc-c-comp]]
-   [:cmd/sub-comp [:state-comp :ts-comp]]
-   [:cmd/sub-comp [:state-comp :search-comp]]
-   [:cmd/sub-comp [:state-comp :sort-comp]]
-   [:cmd/sub-comp [:state-comp :pag-comp]]
-   [:cmd/sub-comp [:state-comp :count-comp]]
-   [:cmd/sub-comp [:state-comp :users-count-comp]]
-   [:cmd/sub-comp [:state-comp :tt-count-comp]]])
+   [:cmd/sub-comps
+    [:state-comp
+     [:tweets-comp :cloud-comp :wc-c-comp :ts-comp :search-comp :sort-comp :pag-comp
+      :count-comp :users-count-comp :tt-count-comp]]]])
 
 (doseq [cmd cmds] (sb/send switchboard cmd))

@@ -17,7 +17,8 @@
 
 (def switchboard (sb/component))
 
-(def cmds
+(sb/send-mult
+  switchboard
   [[:cmd/make-ws-comp]
    [:cmd/make-comp {:cmp-id :state-comp :mk-state-fn c/mk-state :handler-fn c/handle-incoming}]
    [:cmd/make-comp {:cmp-id :tweets-comp :mk-state-fn tw/make-state :state-pub-handler-fn tw/state-pub-handler}]
@@ -44,5 +45,3 @@
     [:state-comp
      [:tweets-comp :cloud-comp :wc-c-comp :ts-comp :search-comp :sort-comp :pag-comp
       :count-comp :users-count-comp :tt-count-comp]]]])
-
-(doseq [cmd cmds] (sb/send switchboard cmd))

@@ -9,7 +9,8 @@
             [birdwatch.ui.pagination :as pag]
             [cljs.core.match :refer-macros [match]]
             [birdwatch.state.comp :as c]
-            [matthiasn.systems-toolbox.switchboard :as sb]))
+            [matthiasn.systems-toolbox.switchboard :as sb]
+            [matthiasn.systems-toolbox.sente :as sente]))
 
 (enable-console-print!)
 
@@ -17,9 +18,9 @@
 
 (def switchboard (sb/component))
 
-(sb/send-mult
+(sb/send-mult-cmd
   switchboard
-  [[:cmd/make-ws-comp]
+  [[:cmd/wire-comp {:cmp-id :ws-comp :cmp (sente/component)}]
    [:cmd/make-comp {:cmp-id :state-comp :mk-state-fn c/mk-state :handler-fn c/handle-incoming}]
    [:cmd/make-comp {:cmp-id :tweets-comp :mk-state-fn tw/make-state :state-pub-handler-fn tw/state-pub-handler}]
    [:cmd/make-comp {:cmp-id :cloud-comp :mk-state-fn cloud/mk-state :state-pub-handler-fn cloud/state-pub-handler
@@ -36,9 +37,9 @@
    [:cmd/make-r-comp {:cmp-id :sort-comp :view-fn st/sort-view :dom-id "sort-buttons"}]
    [:cmd/make-r-comp {:cmp-id :pag-comp :view-fn pag/pagination-view :dom-id "pagination"}]
 
-   [:cmd/tap-comp [:state-comp :ws]]
+   [:cmd/tap-comp [:state-comp :ws-comp]]
    [:cmd/tap-comps
-    [[:ws :tweets-comp :search-comp :sort-comp :pag-comp :cloud-comp :wc-c-comp]
+    [[:ws-comp :tweets-comp :search-comp :sort-comp :pag-comp :cloud-comp :wc-c-comp]
      :state-comp]]
 
    [:cmd/sub-comps

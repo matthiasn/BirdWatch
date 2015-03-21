@@ -8,7 +8,7 @@
             [birdwatch.ui.count-views :as cv]
             [birdwatch.ui.pagination :as pag]
             [cljs.core.match :refer-macros [match]]
-            [birdwatch.state.comp :as c]
+            [birdwatch.state.comp :as state]
             [matthiasn.systems-toolbox.switchboard :as sb]
             [matthiasn.systems-toolbox.sente :as sente]))
 
@@ -21,7 +21,8 @@
 (sb/send-mult-cmd
   switchboard
   [[:cmd/wire-comp {:cmp-id :ws-comp :cmp (sente/component)}]
-   [:cmd/make-comp {:cmp-id :state-comp :mk-state-fn c/mk-state :handler-fn c/handle-incoming}]
+   [:cmd/wire-comp {:cmp-id :state-comp :cmp (state/component)}]
+
    [:cmd/make-comp {:cmp-id :tweets-comp :mk-state-fn tw/make-state :state-pub-handler-fn tw/state-pub-handler}]
    [:cmd/make-comp {:cmp-id :cloud-comp :mk-state-fn cloud/mk-state :state-pub-handler-fn cloud/state-pub-handler
                     :opts   {:throttle-ms 5000}}]

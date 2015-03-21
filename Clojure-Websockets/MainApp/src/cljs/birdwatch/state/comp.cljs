@@ -4,7 +4,8 @@
             [birdwatch.state.initial :as i]
             [birdwatch.state.proc :as p]
             [cljs.core.async :refer [<! put! pipe timeout chan sliding-buffer]]
-            [cljs.core.match :refer-macros [match]]))
+            [cljs.core.match :refer-macros [match]]
+            [matthiasn.systems-toolbox.component :as comp]))
 
 ;;;; Channels processing namespace. Here, messages are taken from channels and processed.
 
@@ -46,3 +47,7 @@
   "Return clean initial component state atom. put-fn argument not used."
   [_]
   (atom (i/initial-state)))
+
+(defn component
+  []
+  (comp/make-component mk-state handle-incoming nil))

@@ -11,6 +11,8 @@
                  [org.clojure/tools.namespace "0.2.10"]
                  [ch.qos.logback/logback-classic "1.1.2"]
                  [com.taoensso/sente "1.4.1"]
+                 [com.cognitect/transit-clj  "0.8.259"]
+                 [com.cognitect/transit-cljs "0.8.205"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [http-kit "2.1.19"]
                  [hiccup "1.0.5"]

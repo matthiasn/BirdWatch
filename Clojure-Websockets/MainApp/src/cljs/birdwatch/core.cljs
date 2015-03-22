@@ -22,8 +22,8 @@
   switchboard
   [[:cmd/wire-comp {:cmp-id :ws-comp :cmp (sente/component)}]
    [:cmd/wire-comp {:cmp-id :state-comp :cmp (state/component)}]
-
-   [:cmd/make-comp {:cmp-id :tweets-comp :mk-state-fn tw/make-state :state-pub-handler-fn tw/state-pub-handler}]
+   [:cmd/wire-comp {:cmp-id :tweets-comp :cmp (tw/component)}]
+   
    [:cmd/make-comp {:cmp-id :cloud-comp :mk-state-fn cloud/mk-state :state-pub-handler-fn cloud/state-pub-handler
                     :opts   {:throttle-ms 5000}}]
    [:cmd/make-comp {:cmp-id :wc-c-comp :mk-state-fn wc-c/mk-state :state-pub-handler-fn wc-c/state-pub-handler

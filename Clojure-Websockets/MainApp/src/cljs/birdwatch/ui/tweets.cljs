@@ -1,7 +1,8 @@
 (ns birdwatch.ui.tweets
   (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.ui.util :as util]
-            [reagent.core :as r :refer [atom]]))
+            [reagent.core :as r :refer [atom]]
+            [matthiasn.systems-toolbox.component :as comp]))
 
 (defn twitter-intent
   "Renders a twitter intent as a clickable image, for example for retweeting directly
@@ -80,7 +81,7 @@
                                  ^{:key (:id_str t)} [tweet-view t state]
                                  ^{:key (:id_str t)} [missing-tweet t put-fn]))]))))
 
-(defn make-state
+(defn mk-state
   "Return clean initial component state atom."
   [put-fn]
   (let [app (atom {})]
@@ -91,3 +92,8 @@
   "Handle incoming messages: process / add to application state."
   [app _ [_ state-snapshot]]
   (when (:live state-snapshot) (reset! app state-snapshot)))
+
+
+(defn component
+  []
+  (comp/make-component mk-state nil state-pub-handler))

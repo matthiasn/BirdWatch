@@ -1,6 +1,7 @@
 (ns birdwatch.charts.cloud-chart
   (:require [birdwatch.util :as util]
-            [birdwatch.stats.wordcount :as wc]))
+            [birdwatch.stats.wordcount :as wc]
+            [matthiasn.systems-toolbox.component :as comp]))
 
 ;;; WordCloud element (implemented externally in JavaScript)
 (def cloud-elem (util/by-id "wordCloud"))
@@ -18,3 +19,7 @@
   "Handle incoming messages: process / add to application state."
   [app _ [_ state]]
   (.redraw (:word-cloud @app) (clj->js (wc/get-words state n))))
+
+(defn component
+  [throttle-ms]
+  (comp/make-component mk-state nil state-pub-handler {:throttle-ms throttle-ms}))

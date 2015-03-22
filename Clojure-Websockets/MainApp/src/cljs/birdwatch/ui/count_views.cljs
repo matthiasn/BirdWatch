@@ -1,6 +1,5 @@
 (ns birdwatch.ui.count-views
-  (:require [birdwatch.util :as util]
-            [reagent.core :as r :refer [atom]]))
+  (:require [matthiasn.systems-toolbox.reagent :as r]))
 
 (defn- count-view [app] [:span (:count @app)])
 
@@ -11,13 +10,6 @@
 (defn- total-count-view [app]
   [:span "Indexed: " [:strong (:total-tweet-count @app)] " tweets"])
 
-(defn init-component
-  "Mounts count view components. Takes put-fn as the function that can be called when some message
-   needs to be sent back to the switchboard. Returns a function that handles incoming messages."
-  [put-fn]
-  (let [app (atom {})]
-    (r/render-component [count-view app] (util/by-id "tweet-count"))
-    (r/render-component [users-count-view app] (util/by-id "users-count"))
-    (r/render-component [total-count-view app] (util/by-id "total-tweet-count"))
-    (fn [[_ state-snapshot]]
-      (reset! app state-snapshot))))
+(defn count-component       [] (r/component count-view "tweet-count" {}))
+(defn users-count-component [] (r/component users-count-view "users-count" {}))
+(defn total-count-component [] (r/component total-count-view "total-tweet-count" {}))

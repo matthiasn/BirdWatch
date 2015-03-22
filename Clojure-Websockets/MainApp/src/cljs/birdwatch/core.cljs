@@ -22,17 +22,17 @@
   switchboard
   [[:cmd/wire-comp [:ws-comp     (sente/component)]]
    [:cmd/wire-comp [:state-comp  (state/component)]]
-   [:cmd/wire-comp [:tweets-comp (tw/component)]]
-   [:cmd/wire-comp [:cloud-comp  (cloud/component 5000)]]
-   [:cmd/wire-comp [:wc-c-comp   (wc-c/component 1000)]]
-   [:cmd/wire-comp [:ts-comp     (ts-c/component 500)]]
 
-   [:cmd/make-r-comp {:cmp-id :count-comp :view-fn cv/count-view :dom-id "tweet-count"}]
-   [:cmd/make-r-comp {:cmp-id :users-count-comp :view-fn cv/users-count-view :dom-id "users-count"}]
-   [:cmd/make-r-comp {:cmp-id :tt-count-comp :view-fn cv/total-count-view :dom-id "total-tweet-count"}]
-   [:cmd/make-r-comp {:cmp-id :search-comp :view-fn sv/search-view :dom-id "search"}]
-   [:cmd/make-r-comp {:cmp-id :sort-comp :view-fn st/sort-view :dom-id "sort-buttons"}]
-   [:cmd/make-r-comp {:cmp-id :pag-comp :view-fn pag/pagination-view :dom-id "pagination"}]
+   [:cmd/wire-comp [:tweets-comp      (tw/component)]]
+   [:cmd/wire-comp [:cloud-comp       (cloud/component 5000)]]
+   [:cmd/wire-comp [:wc-c-comp        (wc-c/component 1000)]]
+   [:cmd/wire-comp [:ts-comp          (ts-c/component 500)]]
+   [:cmd/wire-comp [:count-comp       (cv/count-component)]]
+   [:cmd/wire-comp [:users-count-comp (cv/users-count-component)]]
+   [:cmd/wire-comp [:tt-count-comp    (cv/total-count-component)]]
+   [:cmd/wire-comp [:search-comp      (sv/component)]]
+   [:cmd/wire-comp [:sort-comp        (st/component)]]
+   [:cmd/wire-comp [:pag-comp         (pag/component)]]
 
    [:cmd/tap-comp [:state-comp :ws-comp]]
    [:cmd/tap-comps

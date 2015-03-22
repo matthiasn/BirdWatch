@@ -1,4 +1,5 @@
-(ns birdwatch.ui.search)
+(ns birdwatch.ui.search
+  (:require [matthiasn.systems-toolbox.reagent :as r]))
 
 (defn- search-view [app put-fn]
   [:form.pure-form
@@ -9,3 +10,5 @@
              :placeholder "Example search: java (job OR jobs OR hiring)"}]
     [:button.pure-button.pure-button-primary {:on-click #(put-fn [:start-search])}
      [:span {:class "glyphicon glyphicon-search"}]]]])
+
+(defn component [] (r/component search-view "search" {}))

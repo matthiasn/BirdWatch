@@ -1,4 +1,5 @@
-(ns birdwatch.ui.sort)
+(ns birdwatch.ui.sort
+  (:require [matthiasn.systems-toolbox.reagent :as r]))
 
 (def sort-orders [[:by-id "latest"][:by-followers "followers"]
                   [:by-retweets "retweets"][:by-rt-since-startup "retweets2"]
@@ -17,3 +18,5 @@
      (for [[k text] sort-orders :let [btn-class (btn-class? (= k curr-order))]]
        ^{:key text} [:button.pure-button.not-rounded
                      {:class btn-class :on-click #(put-fn [:set-sort-order k])} text])]))
+
+(defn component [] (r/component sort-view "sort-buttons" {}))

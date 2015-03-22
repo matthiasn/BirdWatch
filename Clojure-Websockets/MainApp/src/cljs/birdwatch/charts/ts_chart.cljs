@@ -1,7 +1,8 @@
 (ns birdwatch.charts.ts-chart
   (:require [birdwatch.util :as util]
             [birdwatch.stats.timeseries :as ts]
-            [reagent.core :as r :refer [atom]]))
+            [reagent.core :as r :refer [atom]]
+            [matthiasn.systems-toolbox.component :as comp]))
 
 (def ts-elem (util/by-id "timeseries1"))
 (def ts-w (aget ts-elem "offsetWidth"))
@@ -63,3 +64,7 @@
   "Handle incoming messages: process / add to application state."
   [app _ [_ state-snapshot]]
   (swap! app assoc :bars (ts/ts-data state-snapshot)))
+
+(defn component
+  [throttle-ms]
+  (comp/make-component mk-state nil state-pub-handler {:throttle-ms throttle-ms}))

@@ -25,9 +25,7 @@
    [:cmd/wire-comp [:tweets-comp (tw/component)]]
    [:cmd/wire-comp [:cloud-comp  (cloud/component 5000)]]
    [:cmd/wire-comp [:wc-c-comp   (wc-c/component 1000)]]
-   
-   [:cmd/make-comp {:cmp-id :ts-comp :mk-state-fn ts-c/mk-state :state-pub-handler-fn ts-c/state-pub-handler
-                    :opts   {:throttle-ms 500}}]
+   [:cmd/wire-comp [:ts-comp     (ts-c/component 500)]]
 
    [:cmd/make-r-comp {:cmp-id :count-comp :view-fn cv/count-view :dom-id "tweet-count"}]
    [:cmd/make-r-comp {:cmp-id :users-count-comp :view-fn cv/users-count-view :dom-id "users-count"}]

@@ -20,10 +20,10 @@
 
 (sb/send-mult-cmd
   switchboard
-  [[:cmd/wire-comp {:cmp-id :ws-comp :cmp (sente/component)}]
-   [:cmd/wire-comp {:cmp-id :state-comp :cmp (state/component)}]
-   [:cmd/wire-comp {:cmp-id :tweets-comp :cmp (tw/component)}]
-   
+  [[:cmd/wire-comp [:ws-comp (sente/component)]]
+   [:cmd/wire-comp [:state-comp (state/component)]]
+   [:cmd/wire-comp [:tweets-comp (tw/component)]]
+
    [:cmd/make-comp {:cmp-id :cloud-comp :mk-state-fn cloud/mk-state :state-pub-handler-fn cloud/state-pub-handler
                     :opts   {:throttle-ms 5000}}]
    [:cmd/make-comp {:cmp-id :wc-c-comp :mk-state-fn wc-c/mk-state :state-pub-handler-fn wc-c/state-pub-handler

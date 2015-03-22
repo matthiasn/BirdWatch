@@ -3,7 +3,8 @@
             [birdwatch.stats.wordcount :as wc]
             [birdwatch.stats.regression :as reg]
             [birdwatch.charts.shapes :as s]
-            [reagent.core :as r :refer [atom]]))
+            [reagent.core :as r :refer [atom]]
+            [matthiasn.systems-toolbox.component :as comp]))
 
 (def items (atom []))
 (def pos-trends (atom {}))
@@ -68,3 +69,7 @@
   "Handle incoming messages: process / add to application state."
   [_ _ [_ state]]
   (update-words (wc/get-words2 state 25)))
+
+(defn component
+  [throttle-ms]
+  (comp/make-component mk-state nil state-pub-handler {:throttle-ms throttle-ms}))

@@ -24,9 +24,8 @@
    [:cmd/wire-comp [:state-comp  (state/component)]]
    [:cmd/wire-comp [:tweets-comp (tw/component)]]
    [:cmd/wire-comp [:cloud-comp  (cloud/component 5000)]]
-
-   [:cmd/make-comp {:cmp-id :wc-c-comp :mk-state-fn wc-c/mk-state :state-pub-handler-fn wc-c/state-pub-handler
-                    :opts   {:throttle-ms 1000}}]
+   [:cmd/wire-comp [:wc-c-comp   (wc-c/component 1000)]]
+   
    [:cmd/make-comp {:cmp-id :ts-comp :mk-state-fn ts-c/mk-state :state-pub-handler-fn ts-c/state-pub-handler
                     :opts   {:throttle-ms 500}}]
 

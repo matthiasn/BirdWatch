@@ -93,7 +93,6 @@
   [app _ [_ state-snapshot]]
   (when (:live state-snapshot) (reset! app state-snapshot)))
 
-
 (defn component
   []
   (comp/make-component mk-state nil state-pub-handler))

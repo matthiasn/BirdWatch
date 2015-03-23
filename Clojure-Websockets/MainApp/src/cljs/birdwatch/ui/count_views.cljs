@@ -10,6 +10,6 @@
 (defn- total-count-view [app]
   [:span "Indexed: " [:strong (:total-tweet-count @app)] " tweets"])
 
-(defn count-component       [] (r/component count-view "tweet-count" {}))
-(defn users-count-component [] (r/component users-count-view "users-count" {}))
-(defn total-count-component [] (r/component total-count-view "total-tweet-count" {}))
+(defn count-component       [] (r/component :count-comp count-view "tweet-count" {}))
+(defn users-count-component [] (r/component :users-count-comp users-count-view "users-count" {}))
+(defn total-count-component [] (r/component :tt-count-comp total-count-view "total-tweet-count" {}))

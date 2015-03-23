@@ -7,7 +7,7 @@
                  [clojurewerkz/elastisch "2.2.0-beta2"]
                  [org.clojure/tools.logging "0.3.1"]
                  [com.matthiasnehlsen/inspect "0.1.12"]
-                 [matthiasn/systems-toolbox "0.1.15-SNAPSHOT"]
+                 [matthiasn/systems-toolbox "0.1.16-SNAPSHOT"]
                  [org.clojure/tools.namespace "0.2.10"]
                  [ch.qos.logback/logback-classic "1.1.2"]
                  [com.taoensso/sente "1.4.1"]
@@ -31,7 +31,7 @@
                  [com.taoensso/carmine "2.9.0"]
                  [metrics-clojure "2.4.0"]]
 
-  :source-paths ["src/clj/" "target/classes/"]
+  :source-paths ["src/clj/"]
 
   :jvm-opts ^:replace ["-Xmx1G" "-server"]
 

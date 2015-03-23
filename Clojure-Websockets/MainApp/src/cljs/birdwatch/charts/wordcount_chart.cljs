@@ -72,4 +72,4 @@
 
 (defn component
   [throttle-ms]
-  (comp/make-component mk-state nil state-pub-handler {:throttle-ms throttle-ms}))
+  (comp/make-component :wc-c-comp mk-state nil state-pub-handler {:throttle-ms throttle-ms}))

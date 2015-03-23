@@ -3,6 +3,7 @@
   (:require
    [birdwatch.communicator.component :as comm]
    [birdwatch.persistence.component :as p]
+   [birdwatch.persistence.persistence :as pc]
    [birdwatch.metrics.component :as m]
    [birdwatch.percolator.component :as perc]
    [birdwatch.interop.component :as iop]
@@ -23,13 +24,19 @@
 
 (def conf (edn/read-string (slurp "conf.edn")))
 
+(log/info "Application starting.")
+
 (def switchboard (sb/component))
 (sb/send-mult-cmd
   switchboard
   [[:cmd/wire-comp (sente/component markup/index 8888)]
    [:cmd/tap-comp [:ws-cmp :log-cmp]]
 
-   ])
+   [:cmd/wire-comp (pc/component :persistence-cmp conf)]
+   [:cmd/sub-comp [:ws-cmp :cmd/query :persistence-cmp]]
+   [:cmd/sub-comp [:persistence-cmp :tweet/prev-chunk :ws-cmp]]
+
+   [:cmd/sub-comp [:persistence-cmp :log/info :log-cmp]]])
 
 (defn get-system
   "Create system by wiring individual components so that component/start

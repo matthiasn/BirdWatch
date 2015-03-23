@@ -13,8 +13,8 @@
   "Take messages (vectors of tweets) from prev-chunks-chan, add each tweet to application
    state, then pause to give the event loop back to the application (otherwise, UI becomes
    unresponsive for a short while)."
-  [chunk app]
-  (doseq [t chunk] (p/add-tweet! t app)))
+  [msg app]
+  (doseq [t (:result msg)] (p/add-tweet! t app)))
 
 (defn handle-incoming
   "Handle incoming messages process / add to application state."

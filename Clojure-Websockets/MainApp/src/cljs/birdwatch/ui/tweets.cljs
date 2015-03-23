@@ -95,4 +95,4 @@
 
 (defn component
   []
-  (comp/make-component :tweets-comp mk-state nil state-pub-handler))
+  (comp/make-component :tweets-cmp mk-state nil state-pub-handler))

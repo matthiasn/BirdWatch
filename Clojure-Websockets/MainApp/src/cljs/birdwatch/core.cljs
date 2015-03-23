@@ -24,7 +24,7 @@
                     (cloud/component 5000) (wc-c/component 1000) (ts-c/component 500)
                     (cv/count-component) (cv/users-count-component) (cv/total-count-component)
                     (sv/component) (st/component) (pag/component)]]
-   [:cmd/tap-comp [:state-comp :ws-comp]]
-   [:cmd/tap-comp [[:ws-comp :tweets-comp :search-comp :sort-comp :pag-comp :cloud-comp :wc-c-comp] :state-comp]]
-   [:cmd/sub-comp-state [:state-comp [:tweets-comp :cloud-comp :wc-c-comp :ts-comp :search-comp
-                                      :sort-comp :pag-comp :count-comp :users-count-comp :tt-count-comp]]]])
+   [:cmd/tap-comp [:state-cmp :ws-cmp]]
+   [:cmd/tap-comp [[:ws-cmp :tweets-cmp :search-cmp :sort-cmp :pag-cmp :cloud-cmp :wc-c-cmp] :state-cmp]]
+   [:cmd/sub-comp-state [:state-cmp [:tweets-cmp :cloud-cmp :wc-c-cmp :ts-cmp :search-cmp :sort-cmp
+                                      :pag-cmp :count-cmp :users-count-cmp :tt-count-cmp]]]])

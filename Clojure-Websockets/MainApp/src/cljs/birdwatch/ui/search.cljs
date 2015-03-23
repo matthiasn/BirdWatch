@@ -11,4 +11,4 @@
     [:button.pure-button.pure-button-primary {:on-click #(put-fn [:start-search])}
      [:span {:class "glyphicon glyphicon-search"}]]]])
 
-(defn component [] (r/component :search-comp search-view "search" {}))
+(defn component [] (r/component :search-cmp search-view "search" {}))

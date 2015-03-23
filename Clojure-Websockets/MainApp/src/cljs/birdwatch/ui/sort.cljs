@@ -19,4 +19,4 @@
        ^{:key text} [:button.pure-button.not-rounded
                      {:class btn-class :on-click #(put-fn [:set-sort-order k])} text])]))
 
-(defn component [] (r/component :sort-comp sort-view "sort-buttons" {}))
+(defn component [] (r/component :sort-cmp sort-view "sort-buttons" {}))

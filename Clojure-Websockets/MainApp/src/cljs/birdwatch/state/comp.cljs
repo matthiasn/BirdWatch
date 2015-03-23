@@ -50,4 +50,4 @@
 
 (defn component
   []
-  (comp/make-component :state-comp mk-state handle-incoming nil))
+  (comp/make-component :state-cmp mk-state handle-incoming nil))

@@ -34,7 +34,9 @@
 
    [:cmd/wire-comp (pc/component :persistence-cmp conf)]
    [:cmd/sub-comp [:ws-cmp :cmd/query :persistence-cmp]]
+   [:cmd/sub-comp [:ws-cmp :cmd/missing :persistence-cmp]]
    [:cmd/sub-comp [:persistence-cmp :tweet/prev-chunk :ws-cmp]]
+   [:cmd/sub-comp [:persistence-cmp :tweet/missing-tweet :ws-cmp]]
 
    [:cmd/sub-comp [:persistence-cmp :log/info :log-cmp]]])
 

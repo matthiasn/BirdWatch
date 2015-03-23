@@ -22,7 +22,7 @@
   (match msg
          ;; tweet-related messages from server
          [:tweet/new tweet]           (p/add-tweet! tweet app)
-         [:tweet/missing-tweet tweet] (p/add-to-tweets-map! app :tweets-map tweet)
+         [:tweet/missing-tweet t]     (p/add-to-tweets-map! app :tweets-map (:tweet t))
          [:tweet/prev-chunk chunk]    (do (handle-prev-chunk chunk app) (s/load-prev app put-fn))
 
          ;; stats received 

@@ -7,37 +7,53 @@
    [birdwatch.percolator.component :as perc]
    [birdwatch.interop.component :as iop]
    [birdwatch.http.component :as http]
+
+   [birdwatch.http.markup :as markup]
    [birdwatch.switchboard :as sw]
    [com.matthiasnehlsen.inspect :as inspect]
    [clojure.edn :as edn]
    [clojure.tools.logging :as log]
    [clojure.tools.namespace.repl :refer (refresh)]
    [clj-pid.core :as pid]
+
+   [matthiasn.systems-toolbox.switchboard :as sb]
+   [matthiasn.systems-toolbox.sente :as sente]
+
    [com.stuartsierra.component :as component]))
 
 (def conf (edn/read-string (slurp "conf.edn")))
+
+(def switchboard (sb/component))
+(sb/send-mult-cmd
+  switchboard
+  [[:cmd/wire-comp (sente/component markup/index 8888)]
+   [:cmd/tap-comp [:ws-cmp :log-cmp]]
+
+   ])
 
 (defn get-system
   "Create system by wiring individual components so that component/start
    will bring up the individual components in the correct order."
   [conf]
   (component/system-map
-   :comm-channels          (comm/new-communicator-channels)
+   ;:comm-channels          (comm/new-communicator-channels)
    :persistence-channels   (p/new-persistence-channels)
    :percolation-channels   (perc/new-percolation-channels)
    :interop-channels       (iop/new-interop-channels)
    :metrics-channels       (m/new-metrics-channels)
-   :comm          (component/using (comm/new-communicator)     {:channels :comm-channels})
+   ;:comm          (component/using (comm/new-communicator)     {:channels :comm-channels})
    :interop       (component/using (iop/new-interop conf)      {:channels :interop-channels})
    :persistence   (component/using (p/new-persistence conf)    {:channels :persistence-channels})
    :percolator    (component/using (perc/new-percolator conf)  {:channels :percolation-channels})
-   :http          (component/using (http/new-http-server conf) {:comm     :comm})
+   ;:http          (component/using (http/new-http-server conf) {:comm     :comm})
    :metrics       (component/using (m/new-metrics)             {:channels :metrics-channels})
-   :switchboard   (component/using (sw/new-switchboard)        {:comm-chans    :comm-channels
-                                                                :pers-chans    :persistence-channels
-                                                                :perc-chans    :percolation-channels
-                                                                :iop-chans     :interop-channels
-                                                                :metrics-chans :metrics-channels})))
+   ;:switchboard   (component/using (sw/new-switchboard)        {;:comm-chans    :comm-channels
+   ;                                                             :pers-chans    :persistence-channels
+   ;                                                             :perc-chans    :percolation-channels
+   ;                                                             :iop-chans     :interop-channels
+;                                                                :metrics-chans :metrics-channels }
+;)
+  ))
 (def system (get-system conf))
 
 (inspect/configure {:port (:inspect-port conf) 

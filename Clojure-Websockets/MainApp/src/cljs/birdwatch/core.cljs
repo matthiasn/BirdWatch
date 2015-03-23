@@ -35,11 +35,11 @@
    [:cmd/wire-comp [:pag-comp         (pag/component)]]
 
    [:cmd/tap-comp [:state-comp :ws-comp]]
-   [:cmd/tap-comps
+   [:cmd/tap-comp
     [[:ws-comp :tweets-comp :search-comp :sort-comp :pag-comp :cloud-comp :wc-c-comp]
      :state-comp]]
 
-   [:cmd/sub-comps
+   [:cmd/sub-comp-state
     [:state-comp
      [:tweets-comp :cloud-comp :wc-c-comp :ts-comp :search-comp :sort-comp :pag-comp
       :count-comp :users-count-comp :tt-count-comp]]]])

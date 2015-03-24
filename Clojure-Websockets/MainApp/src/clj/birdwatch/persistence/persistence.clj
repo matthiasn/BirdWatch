@@ -62,6 +62,13 @@
     (when-not res (put-fn [:log/info [:persistence-cmp "missing tweet:" (:id_str req)]]))
     (put-fn [:tweet/missing-tweet {:tweet (strip-source res) :uid (:uid req)}])))
 
+(defn total-tweets-indexed
+  [app put-fn]
+  (let [conf (:conf app)
+        conn (:conn app)
+        cnt (esd/count conn (:es-index conf) "tweet")]
+    (put-fn [:stats/total-tweet-count (format "%,15d" (:count cnt))])))
+
 (defn in-handler
   "Handle incoming messages: process / add to application state."
   [app put-fn msg]

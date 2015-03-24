@@ -30,9 +30,7 @@
           listener (subscribe-topic put-fn conn "matches")]
       (println "Redis connection started to" redis-host redis-port)
       (put-fn [:log/info (str "Redis connection started to " redis-host redis-port)])
-      {:conf conf
-       :conn conn
-       :listener listener})))
+      {:conf conf :conn conn :listener listener})))
 
 (defn in-handler
   "Handle incoming messages: process / add to application state."

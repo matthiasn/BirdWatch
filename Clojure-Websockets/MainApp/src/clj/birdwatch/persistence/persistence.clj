@@ -16,8 +16,7 @@
           conn (esr/connect es-address)]
       (println "ElasticSearch connection started to" es-address)
       (put-fn [:log/info (str "ElasticSearch connection started to " es-address)])
-      {:conf conf
-       :conn conn})))
+      {:conf conf :conn conn})))
 
 (defn mk-query
   "Run a query on previous matching tweets."

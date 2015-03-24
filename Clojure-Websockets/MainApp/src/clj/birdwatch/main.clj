@@ -7,6 +7,7 @@
    [birdwatch.metrics.component :as m]
    [birdwatch.percolator.component :as perc]
    [birdwatch.interop.component :as iop]
+   [birdwatch.interop.interop :as iop-cmp]
    [birdwatch.http.component :as http]
 
    [birdwatch.http.markup :as markup]
@@ -37,8 +38,13 @@
    [:cmd/sub-comp [:ws-cmp :cmd/missing :persistence-cmp]]
    [:cmd/sub-comp [:persistence-cmp :tweet/prev-chunk :ws-cmp]]
    [:cmd/sub-comp [:persistence-cmp :tweet/missing-tweet :ws-cmp]]
+   [:cmd/sub-comp [:persistence-cmp :log/info :log-cmp]]
 
-   [:cmd/sub-comp [:persistence-cmp :log/info :log-cmp]]])
+   [:cmd/wire-comp (iop-cmp/component :interop-cmp conf)]
+   [:cmd/sub-comp [:interop-cmp :redis/matches :log-cmp]]
+
+
+])
 
 (defn get-system
   "Create system by wiring individual components so that component/start

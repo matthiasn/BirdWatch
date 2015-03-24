@@ -21,7 +21,7 @@
   [app put-fn msg]
   (match msg
          ;; tweet-related messages from server
-         [:tweet/new tweet]           (p/add-tweet! tweet app)
+         [:tweet/new t]              (p/add-tweet! (:tweet t) app)
          [:tweet/missing-tweet t]     (p/add-to-tweets-map! app :tweets-map (:tweet t))
          [:tweet/prev-chunk chunk]    (do (handle-prev-chunk chunk app) (s/load-prev app put-fn))
 

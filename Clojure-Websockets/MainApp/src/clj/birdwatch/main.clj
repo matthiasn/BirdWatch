@@ -47,6 +47,7 @@
    [:cmd/sub-comp [:ws-cmp :cmd/percolate :percolator-cmp]]
    [:cmd/sub-comp [:percolator-cmp :tweet/new :ws-cmp]]
 
+   [:cmd/sub-comp-state [:ws-cmp :percolator-cmp]]  ; percolator component needs connected uids
    ])
 
 (defn get-system

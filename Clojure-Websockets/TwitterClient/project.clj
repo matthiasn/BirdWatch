@@ -14,7 +14,6 @@
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [clj-time "0.9.0"]
                  [clj-pid "0.1.1"]
-                 [com.stuartsierra/component "0.2.3"]
                  [com.taoensso/carmine "2.9.0" :exclusions [com.taoensso/encore]]
                  [metrics-clojure "2.4.0"]]
 

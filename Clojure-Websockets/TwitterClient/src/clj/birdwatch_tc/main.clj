@@ -30,9 +30,11 @@
        [:cmd/wire-comp (pc/component :persistence-cmp conf)]
        [:cmd/wire-comp (iop-cmp/component :interop-cmp conf)]
        [:cmd/wire-comp (perc-cmp/component :percolator-cmp conf)]
-
-       [:cmd/tap-comp [:tc-cmp :log-cmp]]
+       ;[:cmd/tap-comp [:tc-cmp :log-cmp]]
        [:cmd/sub-comp [:tc-cmp :tweet/new :persistence-cmp]]
+       [:cmd/sub-comp [:tc-cmp :tweet/new :percolator-cmp]]
+       [:cmd/sub-comp [:percolator-cmp :perc/matches :interop-cmp]]
+       [:cmd/tap-comp [:percolator-cmp :log-cmp]]
        ])))
 
 (defn get-system

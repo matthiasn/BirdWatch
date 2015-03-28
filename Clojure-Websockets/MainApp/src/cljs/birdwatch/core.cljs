@@ -32,29 +32,29 @@
      (wc-c/component          :wc-c-cmp  1000)    ;  Chart: wordcloud (Reagent, SVG, custom component, regression)
      (ts-c/component          :ts-cmp     500)]]  ;  Chart: timeseries (Reagent, SVG, custom component)
 
-   [:cmd/tap-comp [:state-cmp :ws-cmp]]
+   [:cmd/tap-comp        ;                   Messages emitted by the :state-cmp are passed to :ws-cmp.
+    [:state-cmp          ;    »───»───»──╢   Example: - :state-cmp requests query results from server
+     :ws-cmp]]           ; <= «═══«═══«══╝            - :ws-cmp relays messages to server
 
    [:cmd/tap-comp
-    [[:ws-cmp      ;    »───»───»───»───»───»───»┐
-      :tweets-cmp  ;    »───»───»───»───»───»─┐  │   The state component reacts to all kinds of command messages
-      :search-cmp  ;    »───»───»───»───»──┐  │  │   that other components emit on their respective out channels,
-      :sort-cmp    ;    »───»───»───»───┐  │  │  │   such as for starting a new search.
-      :pag-cmp     ;    »───»───»───»┐  │  │  │  │
-      :cloud-cmp   ;    »───»───»─┐  │  │  │  │  │   We can now funnel these command messages into their destination
-      :wc-c-cmp]   ;    »───»──┐  │  │  │  │  │  │   by tapping the output channels of each into the :state-cmp.
-                   ;           │  │  │  │  │  │  │
-     :state-cmp]]  ; <= «═══«══╧══╧══╧══╧══╧══╧══╛
+    [[:ws-cmp            ;    »───»───»──╢
+      :tweets-cmp        ;    »───»───»──╢   The state component reacts to all kinds of command messages
+      :search-cmp        ;    »───»───»──╢   that other components emit on their respective out channels,
+      :sort-cmp          ;    »───»───»──╢   such as for starting a new search.
+      :pag-cmp           ;    »───»───»──╢
+      :cloud-cmp         ;    »───»───»──╢   We can now funnel these command messages into their destination
+      :wc-c-cmp]         ;    »───»───»──╢   by tapping the output channels of each into the :state-cmp.
+     :state-cmp]]        ; <= «═══«═══«══╝
 
    [:cmd/sub-comp-state
-    [:state-cmp          ; => »═══»══╤══╤══╤══╤══╤══╤══╤══╤══╤══╕
-                         ;           │  │  │  │  │  │  │  │  │  │
-     [:tweets-cmp        ;    «───«──┘  │  │  │  │  │  │  │  │  │   The :state-cmp holds observable state. Thus,
-      :cloud-cmp         ;    «───«───«─┘  │  │  │  │  │  │  │  │   state snapshots are published upon change and
-      :wc-c-cmp          ;    «───«───«───«┘  │  │  │  │  │  │  │   can be subscribed to by the UI components that
-      :ts-cmp            ;    «───«───«───«───┘  │  │  │  │  │  │   know how to render the application state.
-      :search-cmp        ;    «───«───«───«───«──┘  │  │  │  │  │
-      :sort-cmp          ;    «───«───«───«───«───«─┘  │  │  │  │   TODO: explore cursor / transformer / lens construct
-      :pag-cmp           ;    «───«───«───«───«───«───«┘  │  │  │
-      :count-cmp         ;    «───«───«───«───«───«───«───┘  │  │
-      :users-count-cmp   ;    «───«───«───«───«───«───«───«──┘  │
-      :tt-count-cmp]]]]) ;    «───«───«───«───«───«───«───«──«──┘
+    [:state-cmp          ; => »═══»═══»══╗
+     [:tweets-cmp        ;    «───«───«──╢   The :state-cmp holds observable state. Thus, state snapshots are
+      :cloud-cmp         ;    «───«───«──╢   published upon change and can be subscribed to by the UI components that
+      :wc-c-cmp          ;    «───«───«──╢   know how to render the application state.
+      :ts-cmp            ;    «───«───«──╢
+      :search-cmp        ;    «───«───«──╢   TODO: explore cursor / transformer / lens construct
+      :sort-cmp          ;    «───«───«──╢
+      :pag-cmp           ;    «───«───«──╢
+      :count-cmp         ;    «───«───«──╢
+      :users-count-cmp   ;    «───«───«──╢
+      :tt-count-cmp]]]]) ;    «───«───«──╢

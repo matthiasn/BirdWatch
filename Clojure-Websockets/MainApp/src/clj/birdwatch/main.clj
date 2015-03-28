@@ -25,7 +25,11 @@
        [:cmd/wire-comp (pc/component :persistence-cmp conf)]
        [:cmd/wire-comp (iop-cmp/component :interop-cmp conf)]
        [:cmd/wire-comp (perc-cmp/component :percolator-cmp conf)]
-       [:cmd/tap-comp [:ws-cmp :log-cmp]]
+
+       [:cmd/tap-comp [:ws-cmp :log-cmp]]   ; :ws-cmp ==>> :log-cmp
+                                            ; Sends all incoming messages to implicitly instantiated logging component
+                                            ; Only used for development purposes.
+
        [:cmd/sub-comp [:persistence-cmp :cmd/schedule-new :scheduler-cmp]]
        [:cmd/sub-comp [:scheduler-cmp :schedule/count :persistence-cmp]]
        [:cmd/sub-comp [:ws-cmp :cmd/query :persistence-cmp]]
@@ -36,6 +40,7 @@
        [:cmd/sub-comp [:interop-cmp :redis/matches :percolator-cmp]]
        [:cmd/sub-comp [:ws-cmp :cmd/percolate :percolator-cmp]]
        [:cmd/sub-comp [:percolator-cmp :tweet/new :ws-cmp]]
+
        [:cmd/sub-comp-state [:ws-cmp :percolator-cmp]]]))) ; percolator component needs connected uids
 
 (defn -main [& args]

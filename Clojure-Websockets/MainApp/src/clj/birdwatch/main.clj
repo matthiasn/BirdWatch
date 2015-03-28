@@ -20,8 +20,8 @@
   (let [switchboard (sb/component)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/wire-comp (sente/component markup/index 8888)]
-       [:cmd/wire-comp (sched/component)]
+      [[:cmd/wire-comp (sente/component :ws-cmp markup/index 8888)]
+       [:cmd/wire-comp (sched/component :scheduler-cmp)]
        [:cmd/wire-comp (pc/component :persistence-cmp conf)]
        [:cmd/wire-comp (iop-cmp/component :interop-cmp conf)]
        [:cmd/wire-comp (perc-cmp/component :percolator-cmp conf)]

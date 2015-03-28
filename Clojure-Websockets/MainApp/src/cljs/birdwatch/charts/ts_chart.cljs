@@ -66,5 +66,5 @@
   (swap! app assoc :bars (ts/ts-data state-snapshot)))
 
 (defn component
-  [throttle-ms]
-  (comp/make-component :ts-cmp mk-state nil state-pub-handler {:throttle-ms throttle-ms}))
+  [cmp-id throttle-ms]
+  (comp/make-component cmp-id mk-state nil state-pub-handler {:throttle-ms throttle-ms}))

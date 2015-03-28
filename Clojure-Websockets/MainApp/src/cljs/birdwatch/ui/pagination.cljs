@@ -20,4 +20,4 @@
    (for [n [5 10 25 100]]
      ^{:key (str "pag-size" n)} [pag-size-item n app put-fn])])
 
-(defn component [] (r/component :pag-cmp pagination-view "pagination" {}))
+(defn component [cmp-id] (r/component cmp-id pagination-view "pagination" {}))

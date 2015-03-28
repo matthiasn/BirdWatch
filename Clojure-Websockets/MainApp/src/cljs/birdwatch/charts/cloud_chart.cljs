@@ -21,5 +21,5 @@
   (.redraw (:word-cloud @app) (clj->js (wc/get-words state n))))
 
 (defn component
-  [throttle-ms]
-  (comp/make-component :cloud-cmp mk-state nil state-pub-handler {:throttle-ms throttle-ms}))
+  [cmp-id throttle-ms]
+  (comp/make-component cmp-id mk-state nil state-pub-handler {:throttle-ms throttle-ms}))

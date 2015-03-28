@@ -14,17 +14,47 @@
 
 (enable-console-print!)
 
-;;;; Main file of the BirdWatch client-side application.
-
 (def switchboard (sb/component))
 
 (sb/send-mult-cmd
   switchboard
-  [[:cmd/wire-comp [(sente/component) (state/component) (tw/component)
-                    (cloud/component 5000) (wc-c/component 1000) (ts-c/component 500)
-                    (cv/count-component) (cv/users-count-component) (cv/total-count-component)
-                    (sv/component) (st/component) (pag/component)]]
+  [[:cmd/wire-comp
+    [(sente/component         :ws-cmp)
+     (state/component         :state-cmp)
+     (tw/component            :tweets-cmp)
+     (cloud/component         :cloud-cmp    5000)
+     (wc-c/component          :wc-c-cmp     1000)
+     (ts-c/component          :ts-cmp        500)
+     (cv/count-component      :count-cmp)
+     (cv/users-cnt-component  :users-count-cmp)
+     (cv/total-cnt-component  :tt-count-cmp)
+     (sv/component            :search-cmp)
+     (st/component            :sort-cmp)
+     (pag/component           :pag-cmp)]]
+
    [:cmd/tap-comp [:state-cmp :ws-cmp]]
-   [:cmd/tap-comp [[:ws-cmp :tweets-cmp :search-cmp :sort-cmp :pag-cmp :cloud-cmp :wc-c-cmp] :state-cmp]]
-   [:cmd/sub-comp-state [:state-cmp [:tweets-cmp :cloud-cmp :wc-c-cmp :ts-cmp :search-cmp :sort-cmp
-                                      :pag-cmp :count-cmp :users-count-cmp :tt-count-cmp]]]])
+
+   [:cmd/tap-comp
+    [[:ws-cmp      ;    »───»───»───»───»───»───»───»┐
+      :tweets-cmp  ;    »───»───»───»───»───»───»─┐  │
+      :search-cmp  ;    »───»───»───»───»───»──┐  │  │
+      :sort-cmp    ;    »───»───»───»───»───┐  │  │  │
+      :pag-cmp     ;    »───»───»───»───»┐  │  │  │  │
+      :cloud-cmp   ;    »───»───»───»─┐  │  │  │  │  │
+      :wc-c-cmp]   ;    »───»───»──┐  │  │  │  │  │  │
+                   ;               │  │  │  │  │  │  │
+     :state-cmp]]  ; <= «═══«═══«══╧══╧══╧══╧══╧══╧══╛
+
+   [:cmd/sub-comp-state
+    [:state-cmp          ; => »═══»═══»══╤══╤══╤══╤══╤══╤══╤══╤══╤══╕
+                         ;               │  │  │  │  │  │  │  │  │  │
+     [:tweets-cmp        ;    «───«───«──┘  │  │  │  │  │  │  │  │  │
+      :cloud-cmp         ;    «───«───«───«─┘  │  │  │  │  │  │  │  │
+      :wc-c-cmp          ;    «───«───«───«───«┘  │  │  │  │  │  │  │
+      :ts-cmp            ;    «───«───«───«───«───┘  │  │  │  │  │  │
+      :search-cmp        ;    «───«───«───«───«───«──┘  │  │  │  │  │
+      :sort-cmp          ;    «───«───«───«───«───«───«─┘  │  │  │  │
+      :pag-cmp           ;    «───«───«───«───«───«───«───«┘  │  │  │
+      :count-cmp         ;    «───«───«───«───«───«───«───«───┘  │  │
+      :users-count-cmp   ;    «───«───«───«───«───«───«───«───«──┘  │
+      :tt-count-cmp]]]]) ;    «───«───«───«───«───«───«───«───«──«──┘

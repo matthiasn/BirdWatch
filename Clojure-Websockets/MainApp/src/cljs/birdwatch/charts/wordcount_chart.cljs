@@ -71,5 +71,5 @@
   (update-words (wc/get-words2 state 25)))
 
 (defn component
-  [throttle-ms]
-  (comp/make-component :wc-c-cmp mk-state nil state-pub-handler {:throttle-ms throttle-ms}))
+  [cmp-id throttle-ms]
+  (comp/make-component cmp-id mk-state nil state-pub-handler {:throttle-ms throttle-ms}))

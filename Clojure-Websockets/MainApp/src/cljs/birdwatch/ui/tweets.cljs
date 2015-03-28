@@ -94,5 +94,5 @@
   (when (:live state-snapshot) (reset! app state-snapshot)))
 
 (defn component
-  []
-  (comp/make-component :tweets-cmp mk-state nil state-pub-handler))
+  [cmp-id]
+  (comp/make-component cmp-id mk-state nil state-pub-handler))

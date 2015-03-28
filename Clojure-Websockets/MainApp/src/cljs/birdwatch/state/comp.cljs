@@ -48,6 +48,4 @@
   [_]
   (atom (i/initial-state)))
 
-(defn component
-  []
-  (comp/make-component :state-cmp mk-state handle-incoming nil))
+(defn component [cmp-id] (comp/make-component cmp-id mk-state handle-incoming nil))

@@ -30,20 +30,30 @@
         [:ws-cmp               ;    »───»───»──╢   Sends all incoming messages to implicitly instantiated logging
          :log-cmp]]            ; <= «═══«═══«══╝   component. Only used for development purposes.
 
-       [:cmd/sub-comp [:persistence-cmp :cmd/schedule-new :scheduler-cmp]]
+       [:cmd/sub-comp
+        [[:persistence-cmp :cmd/schedule-new]]    ;    »───»───»──╢
+         :scheduler-cmp]                          ; <= «═══«═══«══╝
 
-       [:cmd/sub-comp [:scheduler-cmp :schedule/count :persistence-cmp]]
-       [:cmd/sub-comp [:ws-cmp :cmd/query :persistence-cmp]]
-       [:cmd/sub-comp [:ws-cmp :cmd/missing :persistence-cmp]]
+       [:cmd/sub-comp
+        [[:scheduler-cmp :schedule/count]         ;    »───»───»──╢
+          [:ws-cmp :cmd/query]                    ;    »───»───»──╢
+          [:ws-cmp :cmd/missing]]                 ;    »───»───»──╢
+         :persistence-cmp]                        ; <= «═══«═══«══╝
 
-       [:cmd/sub-comp [:persistence-cmp :tweet/prev-chunk :ws-cmp]]
-       [:cmd/sub-comp [:persistence-cmp :tweet/missing-tweet :ws-cmp]]
-       [:cmd/sub-comp [:percolator-cmp :tweet/new :ws-cmp]]
+       [:cmd/sub-comp
+        [[:persistence-cmp :tweet/prev-chunk]     ;    »───»───»──╢
+         [:persistence-cmp :tweet/missing-tweet]  ;    »───»───»──╢
+         [:percolator-cmp :tweet/new]]            ;    »───»───»──╢
+        :ws-cmp]                                  ; <= «═══«═══«══╝
 
-       [:cmd/sub-comp [:persistence-cmp :log/info :log-cmp]]
+       [:cmd/sub-comp
+        [[:persistence-cmp :log/info]]            ;    »───»───»──╢
+        :log-cmp]                                 ; <= «═══«═══«══╝
 
-       [:cmd/sub-comp [:interop-cmp :redis/matches :percolator-cmp]]
-       [:cmd/sub-comp [:ws-cmp :cmd/percolate :percolator-cmp]]
+       [:cmd/sub-comp
+        [[:interop-cmp :redis/matches]            ;    »───»───»──╢
+         [:ws-cmp :cmd/percolate]]                ;    »───»───»──╢
+        :percolator-cmp]                          ; <= «═══«═══«══╝
 
        [:cmd/sub-comp-state    ;                   :percolator-cmp needs the websocker client UIDs for delivery of
         [:ws-cmp               ; => »═══»═══»══╗   percolation matches. State change snapshots make state easy AND

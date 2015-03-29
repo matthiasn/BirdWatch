@@ -20,44 +20,44 @@
   (let [switchboard (sb/component)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/wire-comp (sente/component :ws-cmp markup/index 8888)]
-       [:cmd/wire-comp (sched/component :scheduler-cmp)]
-       [:cmd/wire-comp (pc/component :persistence-cmp conf)]
-       [:cmd/wire-comp (iop-cmp/component :interop-cmp conf)]
-       [:cmd/wire-comp (perc-cmp/component :percolator-cmp conf)]
+      [[:cmd/wire-comp (sente/component :ws-cmp markup/index 8888)]   ; WebSockets component for client interaction
+       [:cmd/wire-comp (sched/component :scheduler-cmp)]              ; Scheduler component for task orchestration
+       [:cmd/wire-comp (pc/component :persistence-cmp conf)]          ; Persistence-related component
+       [:cmd/wire-comp (iop-cmp/component :interop-cmp conf)]         ; Interoperability between JVMs over Redis PubSub
+       [:cmd/wire-comp (perc-cmp/component :percolator-cmp conf)]     ; Component for matching tweets with searches.
 
        [:cmd/tap-comp
-        [:ws-cmp               ;    »───»───»──╢   Sends all incoming messages to implicitly instantiated logging
-         :log-cmp]]            ; <= «═══«═══«══╝   component. Only used for development purposes.
+        [:ws-cmp         ;    »───»───»──╢   Routes all incoming messages on WebSockets to the implicitly instantiated
+         :log-cmp]]      ; <= «═══«═══«══╝   logging component. Only used for development purposes.
 
        [:cmd/sub-comp
-        [[:persistence-cmp :cmd/schedule-new]]    ;    »───»───»──╢
-         :scheduler-cmp]                          ; <= «═══«═══«══╝
+        [[:persistence-cmp :cmd/schedule-new]]    ;    »───»───»──╢   :scheduler-cmp subscribes to command messages that
+        :scheduler-cmp]                           ; <= «═══«═══«══╝   trigger the creation of a new schedule.
 
        [:cmd/sub-comp
-        [[:scheduler-cmp :schedule/count]         ;    »───»───»──╢
-          [:ws-cmp :cmd/query]                    ;    »───»───»──╢
-          [:ws-cmp :cmd/missing]]                 ;    »───»───»──╢
-         :persistence-cmp]                        ; <= «═══«═══«══╝
+        [[:scheduler-cmp :schedule/count]         ;    »───»───»──╢   :persistence-cmp services data-related requests.
+         [:ws-cmp :cmd/query]                     ;    »───»───»──╢
+         [:ws-cmp :cmd/missing]]                  ;    »───»───»──╢
+        :persistence-cmp]                         ; <= «═══«═══«══╝
 
        [:cmd/sub-comp
-        [[:persistence-cmp :tweet/prev-chunk]     ;    »───»───»──╢
-         [:persistence-cmp :tweet/missing-tweet]  ;    »───»───»──╢
-         [:percolator-cmp :tweet/new]]            ;    »───»───»──╢
-        :ws-cmp]                                  ; <= «═══«═══«══╝
+        [[:persistence-cmp :tweet/prev-chunk]     ;    »───»───»──╢   :ws-cmp subscribes to responses from
+         [:persistence-cmp :tweet/missing-tweet]  ;    »───»───»──╢   :persistence-cmp and forwards results over
+         [:percolator-cmp :tweet/new]]            ;    »───»───»──╢   WebSockets (either to specific client or all
+        :ws-cmp]                                  ; <= «═══«═══«══╝   connected clients).
 
        [:cmd/sub-comp
-        [[:persistence-cmp :log/info]]            ;    »───»───»──╢
-        :log-cmp]                                 ; <= «═══«═══«══╝
+        [[:persistence-cmp :log/info]]            ;    »───»───»──╢   :log-cmp subscribes to :log/info messages from
+        :log-cmp]                                 ; <= «═══«═══«══╝   :persistence-cmp
 
        [:cmd/sub-comp
-        [[:interop-cmp :redis/matches]            ;    »───»───»──╢
-         [:ws-cmp :cmd/percolate]]                ;    »───»───»──╢
+        [[:interop-cmp :redis/matches]            ;    »───»───»──╢   :percolator-cmp responds to both percolation
+         [:ws-cmp :cmd/percolate]]                ;    »───»───»──╢   matches and registration requests.
         :percolator-cmp]                          ; <= «═══«═══«══╝
 
-       [:cmd/sub-comp-state    ;                   :percolator-cmp needs the websocker client UIDs for delivery of
-        [:ws-cmp               ; => »═══»═══»══╗   percolation matches. State change snapshots make state easy AND
-         :percolator-cmp]]]))) ;    «───«───«──╢   safe to obtain thanks to immutable data structures.
+       [:cmd/sub-comp-state     ;                   :percolator-cmp needs the websocker client UIDs for delivery of
+        [:ws-cmp                ; => »═══»═══»══╗   percolation matches. State change snapshots make state easy AND
+         :percolator-cmp]]])))  ;    «───«───«──╢   safe to obtain thanks to immutable data structures.
 
 (defn -main [& args]
   (pid/save (:pidfile-name conf))

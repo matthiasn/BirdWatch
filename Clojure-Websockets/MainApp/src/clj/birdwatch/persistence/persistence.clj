@@ -75,6 +75,7 @@
   (match msg
          [:cmd/query query] (es-query app put-fn query)
          [:cmd/missing req] (es-mt-query app put-fn req)
+         [:schedule/count ] (total-tweets-indexed app put-fn)
          :else (println "Unmatched event:" msg)))
 
 (defn component [cmp-id conf] (comp/make-component cmp-id (mk-state conf) in-handler nil))

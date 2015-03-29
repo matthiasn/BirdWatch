@@ -35,7 +35,7 @@
         :scheduler-cmp]                           ; <= «═══«═══«══╝   trigger the creation of a new schedule.
 
        [:cmd/sub-comp
-        [[:scheduler-cmp :schedule/count]         ;    »───»───»──╢   :persistence-cmp services data-related requests.
+        [[:scheduler-cmp :schedule/count-indexed] ;    »───»───»──╢   :persistence-cmp services data-related requests.
          [:ws-cmp :cmd/query]                     ;    »───»───»──╢
          [:ws-cmp :cmd/missing]]                  ;    »───»───»──╢
         :persistence-cmp]                         ; <= «═══«═══«══╝
@@ -43,17 +43,37 @@
        [:cmd/sub-comp
         [[:persistence-cmp :tweet/prev-chunk]     ;    »───»───»──╢   :ws-cmp subscribes to responses from
          [:persistence-cmp :tweet/missing-tweet]  ;    »───»───»──╢   :persistence-cmp and forwards results over
+         [:persistence-cmp :stats/total-tweet-count]
+         [:percolator-cmp :stats/users-count]
          [:percolator-cmp :tweet/new]]            ;    »───»───»──╢   WebSockets (either to specific client or all
         :ws-cmp]                                  ; <= «═══«═══«══╝   connected clients).
 
        [:cmd/sub-comp
-        [[:persistence-cmp :log/info]]            ;    »───»───»──╢   :log-cmp subscribes to :log/info messages from
-        :log-cmp]                                 ; <= «═══«═══«══╝   :persistence-cmp
+        [[:persistence-cmp :log/info]                 ;    »───»───»──╢   :log-cmp subscribes to :log/info
+         [:scheduler-cmp :schedule/count-indexed]     ;    »───»───»──╢   and stats/total-tweet-count messages from
+         [:scheduler-cmp :schedule/count-users]       ;    »───»───»──╢   persistence-cmp and to :log/info messages from
+         [:persistence-cmp :stats/total-tweet-count]] ;    »───»───»──╢   scheduled messages from :scheduler-cmp.
+        :log-cmp]                                     ; <= «═══«═══«══╝   TODO: wildcard matches
 
        [:cmd/sub-comp
-        [[:interop-cmp :redis/matches]            ;    »───»───»──╢   :percolator-cmp responds to both percolation
-         [:ws-cmp :cmd/percolate]]                ;    »───»───»──╢   matches and registration requests.
+        [[:interop-cmp :redis/matches]            ;    »───»───»──╢   :percolator-cmp responds to percolation matches,
+         [:ws-cmp :cmd/percolate]                 ;    »───»───»──╢   registration requests and request to count the
+         [:scheduler-cmp :schedule/count-users]]  ;    »───»───»──╢   number of currently connected users.
         :percolator-cmp]                          ; <= «═══«═══«══╝
+
+       [:cmd/send-to
+        [:scheduler-cmp
+         [:cmd/schedule-new {:timeout 3000
+                             :id :schedule/count-indexed
+                             :message [:schedule/count-indexed]
+                             :repeat true}]]]
+
+       [:cmd/send-to
+        [:scheduler-cmp
+         [:cmd/schedule-new {:timeout 1000
+                             :id :schedule/count-users
+                             :message [:schedule/count-users]
+                             :repeat true}]]]
 
        [:cmd/sub-comp-state     ;                   :percolator-cmp needs the websocker client UIDs for delivery of
         [:ws-cmp                ; => »═══»═══»══╗   percolation matches. State change snapshots make state easy AND

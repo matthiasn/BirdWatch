@@ -33,12 +33,19 @@
         (when (contains? matches (get subscriptions uid))
           (put-fn [:tweet/new {:tweet t :uid uid}])))))
 
+(defn count-users
+  "Count the number of currently connected client (for display in UI)."
+  [app put-fn]
+  (let [connected-uids (:connected-uids @app)]
+    (put-fn [:stats/users-count (count (:any connected-uids))])))
+
 (defn in-handler
   "Handle incoming messages: process / add to application state."
   [app put-fn msg]
   (match msg
          [:redis/matches t-matches] (deliver-perc-matches app put-fn t-matches)
-         [:cmd/percolate perc] (start-percolator app perc)
+         [:cmd/percolate      perc] (start-percolator app perc)
+         [:schedule/count-users   ] (count-users app put-fn)
          :else (println "Unmatched event received by percolator:" msg)))
 
 (defn state-pub-handler

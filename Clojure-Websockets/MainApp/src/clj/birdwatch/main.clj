@@ -63,14 +63,14 @@
 
        [:cmd/send-to
         [:scheduler-cmp
-         [:cmd/schedule-new {:timeout 3000
+         [:cmd/schedule-new {:timeout 5000
                              :id :schedule/count-indexed
                              :message [:schedule/count-indexed]
                              :repeat true}]]]
 
        [:cmd/send-to
         [:scheduler-cmp
-         [:cmd/schedule-new {:timeout 1000
+         [:cmd/schedule-new {:timeout 3000
                              :id :schedule/count-users
                              :message [:schedule/count-users]
                              :repeat true}]]]

@@ -20,8 +20,10 @@
                           (:user-access-token config)
                           (:user-access-token-secret config)))
 
-(defn- start-conn
+(defn- start-t-conn!
+  "Start connection to Twitter Streaming API."
   [conf callback]
+  (log/info "Starting Twitter client.")
   (tas/statuses-filter :params {:track (:track conf)}
                        :oauth-creds (creds conf)
                        :callbacks callback))
@@ -30,25 +32,40 @@
   "Returns function for making state while using provided configuration."
   [conf]
   (fn [put-fn]
-    (let [app (atom {})
-          last-received (atom (t/epoch))
+    (let [last-received (atom (t/epoch))
           chunk-chan (chan 1 (processing/process-chunk last-received) processing/ex-handler)
           callback (tas/AsyncStreamingCallback. #(>!! chunk-chan (str %2))
                                                 (comp println tch/response-return-everything)
                                                 tch/exception-print)
-          conn (start-conn conf callback)]
+          conn (start-t-conn! conf callback)]
       (go-loop [] (let [t (<! chunk-chan)]
                     (put-fn [:tweet/new t])
                     (recur)))
-      (swap! app assoc :conf conf)
-      (swap! app assoc :conn conn)
-      (log/info "TwitterClient component started." @app)
-      app)))
+      (log/info "TwitterClient component started.")
+      {:last-received last-received :conf conf :conn (atom conn) :callback callback})))
+
+(defn t-conn-alive?
+  "Check if connection to Twitter is alive. If not, restart."
+  [app put-fn]
+  (let [last-received (:last-received app)
+        conf (:conf app)
+        since-last-sec (t/in-seconds (t/interval @last-received (t/now)))
+        conn (:conn app)
+        m (meta @conn)]
+    (when (> since-last-sec (:tw-check-interval-sec conf))
+      (log/error since-last-sec "seconds since last tweet received")
+      (if m
+        (do
+          (log/info "Stopping Twitter client.")
+          ((:cancel m))
+          (reset! conn {}))
+        (reset! conn (start-t-conn! conf (:callback app)))))))
 
 (defn in-handler
   "Handle incoming messages: process / add to application state."
   [app put-fn msg]
   (match msg
+         [:schedule/t-conn-alive?] (t-conn-alive? app put-fn)
          :else (println "Unmatched event received by percolator:" msg)))
 
 (defn component

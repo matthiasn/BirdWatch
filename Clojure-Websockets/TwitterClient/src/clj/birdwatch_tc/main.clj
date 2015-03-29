@@ -22,11 +22,18 @@
        [:cmd/wire-comp (pc/component :persistence-cmp conf)]
        [:cmd/wire-comp (iop-cmp/component :interop-cmp conf)]
        [:cmd/wire-comp (perc-cmp/component :percolator-cmp conf)]
-       [:cmd/sub-comp [:tc-cmp :tweet/new :persistence-cmp]]
-       [:cmd/sub-comp [:tc-cmp :tweet/new :percolator-cmp]]
-       [:cmd/sub-comp [:percolator-cmp :perc/matches :interop-cmp]]
-       ;[:cmd/tap-comp [:percolator-cmp :log-cmp]]
-       ])))
+
+       [:cmd/sub-comp
+        [[:tc-cmp :tweet/new]]            ;    »───»───»──╢   :scheduler-cmp subscribes to command messages that
+        :persistence-cmp]                 ; <= «═══«═══«══╝   trigger the creation of a new schedule.
+
+       [:cmd/sub-comp
+        [[:tc-cmp :tweet/new]]            ;    »───»───»──╢   :scheduler-cmp subscribes to command messages that
+        :percolator-cmp]                  ; <= «═══«═══«══╝   trigger the creation of a new schedule.
+
+       [:cmd/sub-comp
+        [[:percolator-cmp :perc/matches]] ;    »───»───»──╢   :scheduler-cmp subscribes to command messages that
+        :interop-cmp]])))                 ; <= «═══«═══«══╝   trigger the creation of a new schedule.
 
 (inspect/configure
   {:port (:inspect-port conf) :title "Inspect: BirdWatch TwitterClient" :header "BirdWatch - TwitterClient"})

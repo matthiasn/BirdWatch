@@ -11,7 +11,8 @@
    [clj-pid.core :as pid]
    [matthiasn.systems-toolbox.switchboard :as sb]
    [matthiasn.systems-toolbox.sente :as sente]
-   [matthiasn.systems-toolbox.scheduler :as sched]))
+   [matthiasn.systems-toolbox.scheduler :as sched]
+   [matthiasn.systems-toolbox.metrics :as metrics]))
 
 (def conf (edn/read-string (slurp "conf.edn")))
 
@@ -25,6 +26,7 @@
        [:cmd/wire-comp (pc/component :persistence-cmp conf)]          ; Persistence-related component
        [:cmd/wire-comp (iop-cmp/component :interop-cmp conf)]         ; Interoperability between JVMs over Redis PubSub
        [:cmd/wire-comp (perc-cmp/component :percolator-cmp conf)]     ; Component for matching tweets with searches.
+       [:cmd/wire-comp (metrics/component :metrics-cmp)]              ; Component for metrics and stats.
 
        [:cmd/tap-comp
         [:ws-cmp         ;    »───»───»──╢   Routes all incoming messages on WebSockets to the implicitly instantiated
@@ -41,19 +43,25 @@
         :persistence-cmp]                         ; <= «═══«═══«══╝
 
        [:cmd/sub-comp
-        [[:persistence-cmp :tweet/prev-chunk]     ;    »───»───»──╢   :ws-cmp subscribes to responses from
-         [:persistence-cmp :tweet/missing-tweet]  ;    »───»───»──╢   :persistence-cmp and forwards results over
-         [:persistence-cmp :stats/total-tweet-count]
-         [:percolator-cmp :stats/users-count]
-         [:percolator-cmp :tweet/new]]            ;    »───»───»──╢   WebSockets (either to specific client or all
-        :ws-cmp]                                  ; <= «═══«═══«══╝   connected clients).
+        [[:persistence-cmp :tweet/prev-chunk]        ;    »───»───»──╢   :ws-cmp subscribes to responses from
+         [:persistence-cmp :tweet/missing-tweet]     ;    »───»───»──╢   :persistence-cmp and forwards results over
+         [:persistence-cmp :stats/total-tweet-count] ;    »───»───»──╢
+         [:percolator-cmp :stats/users-count]        ;    »───»───»──╢
+         [:metrics-cmp :stats/jvm]                   ;    »───»───»──╢   metrics about JVM / runtime.
+         [:percolator-cmp :tweet/new]]               ;    »───»───»──╢   WebSockets (either to specific client or all
+        :ws-cmp]                                     ; <= «═══«═══«══╝   connected clients).
 
        [:cmd/sub-comp
-        [[:persistence-cmp :log/info]                 ;    »───»───»──╢   :log-cmp subscribes to :log/info
-         [:scheduler-cmp :schedule/count-indexed]     ;    »───»───»──╢   and stats/total-tweet-count messages from
-         [:scheduler-cmp :schedule/count-users]       ;    »───»───»──╢   persistence-cmp and to :log/info messages from
-         [:persistence-cmp :stats/total-tweet-count]] ;    »───»───»──╢   scheduled messages from :scheduler-cmp.
+        [[:persistence-cmp :log/info]                 ;    »───»───»──╢   Logging: routing messages based on source
+         [:scheduler-cmp :schedule/count-indexed]     ;    »───»───»──╢   and type to : log-cmp
+         [:scheduler-cmp :schedule/count-users]       ;    »───»───»──╢
+         [:persistence-cmp :stats/total-tweet-count]  ;    »───»───»──╢
+         [:metrics-cmp :stats/jvm]]                   ;    »───»───»──╢   metrics about JVM / runtime.
         :log-cmp]                                     ; <= «═══«═══«══╝   TODO: wildcard matches
+
+       [:cmd/sub-comp
+        [[:scheduler-cmp :cmd/get-jvm-stats]]     ;    »───»───»──╢
+         :metrics-cmp]                            ; <= «═══«═══«══╝
 
        [:cmd/sub-comp
         [[:interop-cmp :redis/matches]            ;    »───»───»──╢   :percolator-cmp responds to percolation matches,
@@ -73,6 +81,13 @@
          [:cmd/schedule-new {:timeout 3000
                              :id :schedule/count-users
                              :message [:schedule/count-users]
+                             :repeat true}]]]
+
+       [:cmd/send-to
+        [:scheduler-cmp
+         [:cmd/schedule-new {:timeout 1000
+                             :id :cmd/get-jvm-stats
+                             :message [:cmd/get-jvm-stats]
                              :repeat true}]]]
 
        [:cmd/sub-comp-state     ;                   :percolator-cmp needs the websocker client UIDs for delivery of

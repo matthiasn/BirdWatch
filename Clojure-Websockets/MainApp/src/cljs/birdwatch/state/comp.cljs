@@ -40,6 +40,7 @@
          [:retrieve-missing id-str] (put-fn [:cmd/missing {:id_str id-str}])
          [:retrieve-missing id-str] (put-fn [:cmd/missing {:id_str id-str}])
          [:append-search-text text] (s/append-search-text app text)
+         [:stats/jvm _] () ; ignore for now
 
          :else (prn "unknown msg in data-loop" msg)))
 

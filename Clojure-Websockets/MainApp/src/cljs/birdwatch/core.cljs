@@ -3,6 +3,7 @@
             [birdwatch.charts.wordcount-chart :as wc-c]
             [birdwatch.charts.cloud-chart :as cloud]
             [birdwatch.ui.tweets :as tw]
+            [birdwatch.ui.jvmstats :as jvmstats]
             [birdwatch.ui.search :as sv]
             [birdwatch.ui.sort :as st]
             [birdwatch.ui.count-views :as cv]
@@ -22,6 +23,7 @@
     [(sente/component         :ws-cmp)            ;  WebSockets communication component from systems-toolbox
      (state/component         :state-cmp)         ;  Component holding the client-side application state and logic
      (tw/component            :tweets-cmp)        ;  UI component: list of tweets (Reagent, HTML, custom component)
+     (jvmstats/component      :jvmstats-cmp)      ;  UI component: JVM stats
      (cv/count-component      :count-cmp)         ;  UI component: tweet count (Reagent, HTML, simple component)
      (cv/users-cnt-component  :users-count-cmp)   ;  UI component: users count (Reagent, HTML, simple component)
      (cv/total-cnt-component  :tt-count-cmp)      ;  UI component: total tweet count (Reagent, HTML, simple component)
@@ -45,6 +47,10 @@
       :cloud-cmp         ;    »───»───»──╢   We can now funnel these command messages into their destination
       :wc-c-cmp]         ;    »───»───»──╢   by tapping the output channels of each into the :state-cmp.
      :state-cmp]]        ; <= «═══«═══«══╝
+
+   [:cmd/sub-comp
+    [[:ws-cmp :stats/jvm]]  ;    »───»───»──╢   Subscribe UI component for JVM stats to messages on WebSockets.
+    :jvmstats-cmp]          ; <= «═══«═══«══╝
 
    [:cmd/sub-comp-state
     [:state-cmp          ; => »═══»═══»══╗

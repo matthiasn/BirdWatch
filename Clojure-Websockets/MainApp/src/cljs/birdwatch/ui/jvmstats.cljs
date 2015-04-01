@@ -59,10 +59,11 @@
 
 (defn mk-state
   "Return clean initial component state atom."
-  [put-fn]
-  (let [app (atom {:readings []})]
-    (r/render-component [reading-view app] (util/by-id "jvm-stats-frame"))
-    app))
+  [dom-id]
+  (fn [put-fn]
+    (let [app (atom {:readings []})]
+      (r/render-component [reading-view app] (util/by-id dom-id))
+      app)))
 
 (defn recv-jvm-stats
   ""
@@ -77,5 +78,5 @@
          :else (println "Unmatched event:" msg)))
 
 (defn component
-  [cmp-id]
-  (comp/make-component cmp-id mk-state in-handler nil))
+  [cmp-id dom-id]
+  (comp/make-component cmp-id (mk-state dom-id) in-handler nil))

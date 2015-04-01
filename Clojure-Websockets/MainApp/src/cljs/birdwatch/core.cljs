@@ -23,7 +23,6 @@
     [(sente/component         :ws-cmp)            ;  WebSockets communication component from systems-toolbox
      (state/component         :state-cmp)         ;  Component holding the client-side application state and logic
      (tw/component            :tweets-cmp)        ;  UI component: list of tweets (Reagent, HTML, custom component)
-     (jvmstats/component      :jvmstats-cmp)      ;  UI component: JVM stats
      (cv/count-component      :count-cmp)         ;  UI component: tweet count (Reagent, HTML, simple component)
      (cv/users-cnt-component  :users-count-cmp)   ;  UI component: users count (Reagent, HTML, simple component)
      (cv/total-cnt-component  :tt-count-cmp)      ;  UI component: total tweet count (Reagent, HTML, simple component)
@@ -32,7 +31,8 @@
      (pag/component           :pag-cmp)           ;  UI component: pagination (Reagent, simple component)
      (cloud/component         :cloud-cmp 5000)    ;  Chart: word cloud (D3.js, custom component)
      (wc-c/component          :wc-c-cmp  1000)    ;  Chart: wordcloud (Reagent, SVG, custom component, regression)
-     (ts-c/component          :ts-cmp     500)]]  ;  Chart: timeseries (Reagent, SVG, custom component)
+     (ts-c/component          :ts-cmp     500)    ;  Chart: timeseries (Reagent, SVG, custom component)
+     (jvmstats/component      :jvmstats-cmp "jvm-stats-frame")]] ;  UI component: JVM stats
 
    [:cmd/tap-comp        ;                   Messages emitted by the :state-cmp are passed to :ws-cmp.
     [:state-cmp          ;    »───»───»──╢   Example: - :state-cmp requests query results from server

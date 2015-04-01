@@ -85,7 +85,7 @@
 
        [:cmd/send-to
         [:scheduler-cmp
-         [:cmd/schedule-new {:timeout 1000
+         [:cmd/schedule-new {:timeout 5000
                              :id :cmd/get-jvm-stats
                              :message [:cmd/get-jvm-stats]
                              :repeat true}]]]

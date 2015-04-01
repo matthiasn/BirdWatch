@@ -13,7 +13,13 @@
   [:rect {:x x :y (- y h) :fill "steelblue" :width w :height h}])
 
 (defn reading-view
-  ""
+  "View for displaying a JVM stats reading. In the case of the average system load, there's also a sparkline chart
+  for showing how the average load develops over time.
+  CAVEAT: this is not as useful as it could be. The JVM's system load average is an average over the last minute,
+  hence the slow response of the value, and more visibly, the sparkline. For more timely values, one could for
+  example call 'top' on the shell for the current PID at any useful interval and parse the text.
+  However, there are likely platform-specific differences to take into account.
+  TODO: refactoring, pulling out sparkline function, among other things."
   [app]
   (let [state @app
         fmt #(gstring/format %1 %2)
@@ -28,17 +34,28 @@
         available-cpus (:available-cpus latest)
         uptime (:uptime latest)
         m 60000 s 1000          ; minutes and seconds in milliseconds for uptime calculation
-        w 4 gap 1               ; bar width and gap between bars
-        chart-w 400 chart-h 40] ; chart dimensions
+        w 3 gap 1               ; bar width and gap between bars
+        chart-w 400 chart-h 16] ; chart dimensions
     [:div
-     [:div [:strong "System Load Average: "] (fmt "%.2f" (-> sys-load-avg (/ available-cpus) (* 100))) "%"]
-     [:svg {:width chart-w :height chart-h}
-          [:g
-           (for [[idx v] indexed]
-             ^{:key (str idx v)} [bar (* idx w) chart-h (* (/ v mx) chart-h) (- w gap)])]]
+     [:div.pure-g
+      [:div.pure-u-1.pure-u-sm-5-12.pure-u-lg-5-12
+       {:style {:padding-top 3 :padding-left 6}}
+       [:strong "Sys Load Avg: "]
+       (fmt "%.2f" (-> sys-load-avg (/ available-cpus) (* 100))) "%"]
+      [:div.pure-u-1.pure-u-sm-7-12.pure-u-lg-7-12
+       [:svg {:width chart-w :height chart-h}
+        [:g
+         (for [[idx v] indexed]
+           ^{:key (str idx v)} [bar (* idx w) chart-h (* (/ v mx) chart-h) (- w gap)])]]]]
      [:hr]
-     [:div [:strong "CPUs: "] available-cpus]
-     [:div [:strong "Uptime: "] (floor (/ uptime m)) "m" (floor (/ (rem uptime m) s)) "s"]]))
+     [:div.pure-g
+      {:style {:padding-top 3}}
+      [:div.pure-u-1.pure-u-sm-1-2.pure-u-lg-1-2
+       {:style {:padding-left 6}}
+       [:strong "CPUs: "] available-cpus]
+      [:div.pure-u-1.pure-u-sm-1-2.pure-u-lg-1-2
+       [:strong "Uptime: "] (floor (/ uptime m)) "m" (floor (/ (rem uptime m) s)) "s"]]
+     [:hr]]))
 
 (defn mk-state
   "Return clean initial component state atom."

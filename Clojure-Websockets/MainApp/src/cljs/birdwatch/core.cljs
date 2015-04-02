@@ -3,7 +3,6 @@
             [birdwatch.charts.wordcount-chart :as wc-c]
             [birdwatch.charts.cloud-chart :as cloud]
             [birdwatch.ui.tweets :as tw]
-            [birdwatch.ui.jvmstats :as jvmstats]
             [birdwatch.ui.search :as sv]
             [birdwatch.ui.sort :as st]
             [birdwatch.ui.count-views :as cv]
@@ -11,7 +10,8 @@
             [cljs.core.match :refer-macros [match]]
             [birdwatch.state.comp :as state]
             [matthiasn.systems-toolbox.switchboard :as sb]
-            [matthiasn.systems-toolbox.sente :as sente]))
+            [matthiasn.systems-toolbox.sente :as sente]
+            [matthiasn.systems-toolbox.ui.jvmstats :as jvmstats]))
 
 (enable-console-print!)
 

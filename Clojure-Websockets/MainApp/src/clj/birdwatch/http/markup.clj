@@ -52,6 +52,7 @@
          [:div#users-count]
          [:div#total-tweet-count]
          [:hr]
+         [:br] [:br] [:br] [:br] [:br] [:br] [:br] [:br]
          [:div#jvm-stats-frame]]]]
       [:script {:src "/bower_components/d3/d3.min.js"}]
       [:script {:src "/bower_components/momentjs/min/moment.min.js"}]

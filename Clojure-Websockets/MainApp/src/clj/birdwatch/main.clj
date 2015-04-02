@@ -61,7 +61,7 @@
 
        [:cmd/sub-comp
         [[:scheduler-cmp :cmd/get-jvm-stats]]     ;    »───»───»──╢
-         :metrics-cmp]                            ; <= «═══«═══«══╝
+        :metrics-cmp]                             ; <= «═══«═══«══╝
 
        [:cmd/sub-comp
         [[:interop-cmp :redis/matches]            ;    »───»───»──╢   :percolator-cmp responds to percolation matches,

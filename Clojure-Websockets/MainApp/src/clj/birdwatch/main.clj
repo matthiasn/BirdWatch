@@ -16,6 +16,11 @@
 
 (def conf (edn/read-string (slurp "conf.edn")))
 
+;;; This is the main namespace of the server side of BirdWatch. It is written in Clojure and makes use of
+;;; the systems-toolbox library (https://github.com/matthiasn/BirdWatch) for building and wiring components. Below,
+;;; a switchboard is created, which is a specialized component for wiring components together so that messages flow
+;;; through a system as desired.
+
 (defn start
   []
   (let [switchboard (sb/component)]

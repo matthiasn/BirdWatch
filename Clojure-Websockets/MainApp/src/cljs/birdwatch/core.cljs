@@ -15,11 +15,16 @@
 
 (enable-console-print!)
 
+;;; This is the main namespace of the client side of BirdWatch. It is written in ClojureScript and makes use of
+;;; the systems-toolbox library (https://github.com/matthiasn/BirdWatch) for building and wiring components. Below,
+;;; a switchboard is created, which is a specialized component for wiring components together so that messages flow
+;;; through a system as desired.
+
 (def switchboard (sb/component))
 
 (sb/send-mult-cmd
   switchboard
-  [[:cmd/wire-comp
+  [[:cmd/wire-comp     ; :cmd/wire-comp messages pass a vector of instantiated components
     [(sente/component         :ws-cmp)            ;  WebSockets communication component from systems-toolbox
      (state/component         :state-cmp)         ;  Component holding the client-side application state and logic
      (tw/component            :tweets-cmp)        ;  UI component: list of tweets (Reagent, HTML, custom component)

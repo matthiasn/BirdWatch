@@ -40,16 +40,22 @@
 (defn- tweet?
   "Checks if data is a tweet. If so, pass on, otherwise log error."
   [data]
-  (let [text (:text data)]
-    (when-not text (log/error "error-msg" data))
-    text))
+  (if-let [text (:text data)]
+    text
+    (when data (log/error "error-msg" data))))
+
+(defn parse-json
+  [chunk]
+  (try
+    (json/read-json chunk)
+    (catch Exception ex (log/error "Exception while parsing JSON" ex "\n" chunk))))
 
 (defn process-chunk
   "Creates composite transducer for processing tweet chunks. Last-received atom passed in for updates."
   [last-received]
   (comp
    (streaming-buffer)
-   (map json/read-json)
+   (map parse-json)
    (filter tweet?)
    (log-count last-received)))
 

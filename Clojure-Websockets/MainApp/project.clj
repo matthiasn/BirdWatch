@@ -2,11 +2,10 @@
   :description "Main part of the BirdWatch system (without TwitterClient)"
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "Eclipse Public License" :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0-alpha5"]
+  :dependencies [[org.clojure/clojure "1.7.0-alpha6"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.2.0-beta2"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [com.matthiasnehlsen/inspect "0.1.12"]
                  [matthiasn/systems-toolbox "0.1.23-SNAPSHOT"]
                  [org.clojure/tools.namespace "0.2.10"]
                  [ch.qos.logback/logback-classic "1.1.2"]
@@ -17,7 +16,7 @@
                  [http-kit "2.1.19"]
                  [hiccup "1.0.5"]
                  [garden "1.2.5"]
-                 [compojure "1.3.2"]
+                 [compojure "1.3.3"]
                  [ring "1.3.2"]
                  [ring/ring-defaults "0.1.4"]
                  [clj-time "0.9.0"]
@@ -28,7 +27,7 @@
                  [reagent "0.5.0"]
                  [clj-pid "0.1.1"]
                  [com.stuartsierra/component "0.2.3"]
-                 [com.taoensso/carmine "2.9.0"]
+                 [com.taoensso/carmine "2.9.2"]
                  [metrics-clojure "2.4.0"]]
 
   :source-paths ["src/clj/"]

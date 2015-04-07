@@ -1,5 +1,4 @@
 (ns birdwatch.ui.tweets
-  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.ui.util :as util]
             [reagent.core :as r :refer [atom]]
             [matthiasn.systems-toolbox.component :as comp]))

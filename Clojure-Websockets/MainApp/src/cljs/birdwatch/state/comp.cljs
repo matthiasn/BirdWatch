@@ -1,9 +1,7 @@
 (ns birdwatch.state.comp
-  (:require-macros [cljs.core.async.macros :refer [go-loop]])
   (:require [birdwatch.state.search :as s]
             [birdwatch.state.initial :as i]
             [birdwatch.state.proc :as p]
-            [cljs.core.async :refer [<! put! pipe timeout chan sliding-buffer]]
             [cljs.core.match :refer-macros [match]]
             [matthiasn.systems-toolbox.component :as comp]))
 

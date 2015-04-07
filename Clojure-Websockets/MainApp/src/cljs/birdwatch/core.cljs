@@ -7,7 +7,6 @@
             [birdwatch.ui.sort :as st]
             [birdwatch.ui.count-views :as cv]
             [birdwatch.ui.pagination :as pag]
-            [cljs.core.match :refer-macros [match]]
             [birdwatch.state.comp :as state]
             [matthiasn.systems-toolbox.switchboard :as sb]
             [matthiasn.systems-toolbox.sente :as sente]

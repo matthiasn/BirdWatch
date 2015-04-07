@@ -1,6 +1,5 @@
 (ns birdwatch.state.search
-  (:require [birdwatch.util :as util]
-            [cljs.core.async :refer [put!]]))
+  (:require [birdwatch.util :as util]))
 
 (defn append-search-text
   "Appends string s to search-text in app, separated by space."

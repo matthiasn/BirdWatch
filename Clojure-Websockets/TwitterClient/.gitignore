@@ -10,6 +10,7 @@ pom.xml.asc
 *.log
 *.hprof
 *.pid
+.DS_Store
 
 twitterconf.edn
 resources/public/js/build/

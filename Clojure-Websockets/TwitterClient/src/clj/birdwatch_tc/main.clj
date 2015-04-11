@@ -5,7 +5,6 @@
    [birdwatch-tc.percolator.percolator :as perc-cmp]
    [birdwatch-tc.interop.interop :as iop-cmp]
    [birdwatch-tc.twitterclient.twitterclient :as twitterclient]
-   [com.matthiasnehlsen.inspect :as inspect]
    [matthiasn.systems-toolbox.switchboard :as sb]
    [matthiasn.systems-toolbox.scheduler :as sched]
    [clojure.edn :as edn]
@@ -47,9 +46,6 @@
                              :id :schedule/t-conn-alive?
                              :message [:schedule/t-conn-alive?]
                              :repeat true}]]]])))
-
-(inspect/configure
-  {:port (:inspect-port conf) :title "Inspect: BirdWatch TwitterClient" :header "BirdWatch - TwitterClient"})
 
 (defn -main [& args]
   (pid/save (:pidfile-name conf))

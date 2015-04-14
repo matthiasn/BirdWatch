@@ -7,7 +7,7 @@
    [birdwatch.http.markup :as markup]
    [clojure.edn :as edn]
    [clojure.tools.logging :as log]
-   [clojure.tools.namespace.repl :refer (refresh)]
+   [clojure.tools.namespace.repl :refer [refresh]]
    [clj-pid.core :as pid]
    [matthiasn.systems-toolbox.switchboard :as sb]
    [matthiasn.systems-toolbox.sente :as sente]

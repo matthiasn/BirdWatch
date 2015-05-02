@@ -38,33 +38,25 @@
      (ts-c/component          :ts-cmp     500)    ;  Chart: timeseries (Reagent, SVG, custom component)
      (jvmstats/component      :jvmstats-cmp "jvm-stats-frame")]] ;  UI component: JVM stats
 
-   [:cmd/tap-comp        ;                   Messages emitted by the :state-cmp are passed to :ws-cmp.
-    [:state-cmp          ;    »───»───»──╢   Example: - :state-cmp requests query results from server
-     :ws-cmp]]           ; <= «═══«═══«══╝            - :ws-cmp relays messages to server
+   [:cmd/sub-comp  :state-cmp   :ws-cmp      :all]
+   [:cmd/sub-comp  :ws-cmp      :state-cmp   :all]
+   [:cmd/sub-comp  :tweets-cmp  :state-cmp   :all]
+   [:cmd/sub-comp  :search-cmp  :state-cmp   :all]
+   [:cmd/sub-comp  :sort-cmp    :state-cmp   :all]
+   [:cmd/sub-comp  :pag-cmp     :state-cmp   :all]
+   [:cmd/sub-comp  :cloud-cmp   :state-cmp   :all]
+   [:cmd/sub-comp  :wc-c-cmp    :state-cmp   :all]
+   [:cmd/sub-comp  :sort-cmp    :state-cmp   :all]
 
-   [:cmd/tap-comp
-    [[:ws-cmp            ;    »───»───»──╢
-      :tweets-cmp        ;    »───»───»──╢   The state component reacts to all kinds of command messages
-      :search-cmp        ;    »───»───»──╢   that other components emit on their respective out channels,
-      :sort-cmp          ;    »───»───»──╢   such as for starting a new search.
-      :pag-cmp           ;    »───»───»──╢
-      :cloud-cmp         ;    »───»───»──╢   We can now funnel these command messages into their destination
-      :wc-c-cmp]         ;    »───»───»──╢   by tapping the output channels of each into the :state-cmp.
-     :state-cmp]]        ; <= «═══«═══«══╝
+   [:cmd/sub-comp  :ws-cmp      :jvmstats-cmp   :stats/jvm]
 
-   [:cmd/sub-comp
-    [[:ws-cmp :stats/jvm]]  ;    »───»───»──╢   Subscribe UI component for JVM stats to messages on WebSockets.
-    :jvmstats-cmp]          ; <= «═══«═══«══╝
-
-   [:cmd/sub-comp-state
-    [:state-cmp          ; => »═══»═══»══╗
-     [:tweets-cmp        ;    «───«───«──╢   The :state-cmp holds observable state. Thus, state snapshots are
-      :cloud-cmp         ;    «───«───«──╢   published upon change and can be subscribed to by the UI components that
-      :wc-c-cmp          ;    «───«───«──╢   know how to render the application state.
-      :ts-cmp            ;    «───«───«──╢
-      :search-cmp        ;    «───«───«──╢   TODO: explore cursor / transformer / lens construct
-      :sort-cmp          ;    «───«───«──╢
-      :pag-cmp           ;    «───«───«──╢
-      :count-cmp         ;    «───«───«──╢
-      :users-count-cmp   ;    «───«───«──╢
-      :tt-count-cmp]]]]) ;    «───«───«──╢
+   [:cmd/sub-comp  :state-cmp   :tweets-cmp      :app-state]
+   [:cmd/sub-comp  :state-cmp   :cloud-cmp       :app-state]
+   [:cmd/sub-comp  :state-cmp   :wc-c-cmp        :app-state]
+   [:cmd/sub-comp  :state-cmp   :ts-cmp          :app-state]
+   [:cmd/sub-comp  :state-cmp   :search-cmp      :app-state]
+   [:cmd/sub-comp  :state-cmp   :sort-cmp        :app-state]
+   [:cmd/sub-comp  :state-cmp   :pag-cmp         :app-state]
+   [:cmd/sub-comp  :state-cmp   :count-cmp       :app-state]
+   [:cmd/sub-comp  :state-cmp   :users-count-cmp :app-state]
+   [:cmd/sub-comp  :state-cmp   :tt-count-cmp    :app-state]])

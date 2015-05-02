@@ -11,7 +11,8 @@
    {:class (when (= n (:n @app)) " pure-button-primary")
     :on-click #(put-fn [:set-page-size n])} n])
 
-(defn- pagination-view [app put-fn]
+(defn- pagination-view
+  [app local put-fn]
   [:div
    [:button.pure-button.not-rounded.button-xsmall [:strong "Page:"]]
    (for [idx (take 15 (range 1 (Math/floor (/ (:count @app) (:n @app)))))]

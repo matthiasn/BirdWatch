@@ -1,7 +1,8 @@
 (ns birdwatch.ui.search
   (:require [matthiasn.systems-toolbox.reagent :as r]))
 
-(defn- search-view [app put-fn]
+(defn- search-view
+  [app local put-fn]
   [:form.pure-form
    [:fieldset
     [:input {:type "text" :value (:search-text @app)

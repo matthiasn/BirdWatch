@@ -14,7 +14,7 @@
    :search "*"
    :users-count 0
    :total-tweet-count 0
-   :sorted :by-id
+   :sorted :by-retweets
    :live true
    :by-followers (priority-map-by >)
    :by-retweets (priority-map-by >)

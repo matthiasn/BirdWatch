@@ -9,7 +9,7 @@
 
 (defn sort-view
   "Reagent view function for rendering the sort view."
-  [app put-fn]
+  [app local put-fn]
   (let [curr-order (:sorted @app)]
     [:div
      [:button.pure-button.not-rounded

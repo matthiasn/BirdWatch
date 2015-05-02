@@ -19,8 +19,10 @@
 
 (defn start-percolator
   "register percolation search with ID based on hash of the query"
-  [app {:keys [query uid]}]
-  (let [sha (sha1 (str query))]
+  [app perc msg]
+  (let [query (:query perc)
+        sha (sha1 (str query))
+        uid (:sente-uid (meta msg))]
     (swap! app assoc-in [:subscriptions uid] sha)
     (perc/register-query (:conn @app) "percolator" sha :query query)))
 
@@ -44,7 +46,7 @@
   [app put-fn msg]
   (match msg
          [:redis/matches t-matches] (deliver-perc-matches app put-fn t-matches)
-         [:cmd/percolate      perc] (start-percolator app perc)
+         [:cmd/percolate      perc] (start-percolator app perc msg)
          [:schedule/count-users   ] (count-users app put-fn)
          :else (println "Unmatched event received by percolator:" msg)))
 

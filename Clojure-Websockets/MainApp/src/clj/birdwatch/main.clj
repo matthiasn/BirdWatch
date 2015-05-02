@@ -33,10 +33,6 @@
        [:cmd/wire-comp (perc-cmp/component :percolator-cmp conf)]     ; Component for matching tweets with searches.
        [:cmd/wire-comp (metrics/component :metrics-cmp)]              ; Component for metrics and stats.
 
-       [:cmd/tap-comp
-        [:ws-cmp         ;    »───»───»──╢   Routes all incoming messages on WebSockets to the implicitly instantiated
-         :log-cmp]]      ; <= «═══«═══«══╝   logging component. Only used for development purposes.
-
        [:cmd/sub-comp
         [[:persistence-cmp :cmd/schedule-new]]    ;    »───»───»──╢   :scheduler-cmp subscribes to command messages that
         :scheduler-cmp]                           ; <= «═══«═══«══╝   trigger the creation of a new schedule.
@@ -56,7 +52,7 @@
          [:percolator-cmp :tweet/new]]               ;    »───»───»──╢   WebSockets (either to specific client or all
         :ws-cmp]                                     ; <= «═══«═══«══╝   connected clients).
 
-       [:cmd/sub-comp
+       #_[:cmd/sub-comp
         [[:persistence-cmp :log/info]                 ;    »───»───»──╢   Logging: routing messages based on source
          [:scheduler-cmp :schedule/count-indexed]     ;    »───»───»──╢   and type to : log-cmp
          [:scheduler-cmp :schedule/count-users]       ;    »───»───»──╢

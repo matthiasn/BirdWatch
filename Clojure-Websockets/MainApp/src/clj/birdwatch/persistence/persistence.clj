@@ -15,7 +15,7 @@
           conn (esr/connect es-address)]
       (println "ElasticSearch connection started to" es-address)
       (put-fn [:log/info (str "ElasticSearch connection started to " es-address)])
-      {:conf conf :conn conn})))
+      {:conf conf :conn conn :state (atom {})})))
 
 (defn- strip-tweet
   "take only actually needed fields from tweet"
@@ -78,4 +78,4 @@
          [:schedule/count-indexed] (total-tweets-indexed app put-fn)
          :else (println "Unmatched event:" msg)))
 
-(defn component [cmp-id conf] (comp/make-component cmp-id (mk-state conf) in-handler nil))
+(defn component [cmp-id conf] (comp/make-component cmp-id (mk-state conf) in-handler nil {:watch :state}))

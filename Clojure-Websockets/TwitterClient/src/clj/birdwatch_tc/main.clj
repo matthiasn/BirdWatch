@@ -4,7 +4,7 @@
    [birdwatch-tc.persistence.persistence :as pc]
    [birdwatch-tc.percolator.percolator :as perc-cmp]
    [birdwatch-tc.interop.interop :as iop-cmp]
-   [birdwatch-tc.twitterclient.twitterclient :as twitterclient]
+   [birdwatch-tc.twitterclient.twitterclient :as tc]
    [matthiasn.systems-toolbox.switchboard :as sb]
    [matthiasn.systems-toolbox.scheduler :as sched]
    [clojure.edn :as edn]
@@ -15,30 +15,19 @@
 
 (defn start
   []
-  (let [switchboard (sb/component)]
+  (let [switchboard (sb/component :switchboard)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/wire-comp (twitterclient/component :tc-cmp conf)]
-       [:cmd/wire-comp (sched/component :scheduler-cmp)]              ; Scheduler component for task orchestration
-       [:cmd/wire-comp (pc/component :persistence-cmp conf)]
-       [:cmd/wire-comp (iop-cmp/component :interop-cmp conf)]
-       [:cmd/wire-comp (perc-cmp/component :percolator-cmp conf)]
+      [[:cmd/wire-comp (tc/component        :tc-cmp conf)]
+       [:cmd/wire-comp (sched/component     :scheduler-cmp)]              ; Scheduler component for task orchestration
+       [:cmd/wire-comp (pc/component        :persistence-cmp conf)]
+       [:cmd/wire-comp (iop-cmp/component   :interop-cmp conf)]
+       [:cmd/wire-comp (perc-cmp/component  :percolator-cmp conf)]
 
-       [:cmd/sub-comp
-        [[:tc-cmp :tweet/new]]            ;    »───»───»──╢   :persistence-cmp subscribes to new tweets.
-        :persistence-cmp]                 ; <= «═══«═══«══╝
-
-       [:cmd/sub-comp
-        [[:tc-cmp :tweet/new]]            ;    »───»───»──╢   :percolator-cmp subscribes to new tweets.
-        :percolator-cmp]                  ; <= «═══«═══«══╝
-
-       [:cmd/sub-comp
-        [[:percolator-cmp :perc/matches]] ;    »───»───»──╢   :interop-cmp subscribes to new percolation messages
-        :interop-cmp]                     ; <= «═══«═══«══╝   so that it can relay them over Redis Pub/Sub.
-
-       [:cmd/sub-comp
-        [[:scheduler-cmp :schedule/t-conn-alive?]] ;    »───»───»──╢   :scheduler-cmp subscribes to command messages that
-        :tc-cmp]                                   ; <= «═══«═══«══╝   trigger the creation of a new schedule.
+       [:cmd/sub-comp     :tc-cmp          :persistence-cmp  :tweet/new]
+       [:cmd/sub-comp     :tc-cmp          :percolator-cmp   :tweet/new]
+       [:cmd/sub-comp     :percolator-cmp  :interop-cmp      :perc/matches]
+       [:cmd/sub-comp     :scheduler-cmp   :tc-cmp           :schedule/t-conn-alive?]
 
        [:cmd/send-to
         [:scheduler-cmp

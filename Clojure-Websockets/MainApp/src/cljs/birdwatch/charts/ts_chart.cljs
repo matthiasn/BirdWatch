@@ -62,9 +62,12 @@
 
 (defn state-pub-handler
   "Handle incoming messages: process / add to application state."
-  [app _ [_ state-snapshot]]
-  (swap! app assoc :bars (ts/ts-data state-snapshot)))
+  [{:keys [cmp-state msg-payload]}]
+  (swap! cmp-state assoc :bars (ts/ts-data msg-payload)))
 
 (defn component
   [cmp-id throttle-ms]
-  (comp/make-component cmp-id mk-state nil state-pub-handler {:throttle-ms throttle-ms}))
+  (comp/make-component {:cmp-id   cmp-id
+                        :state-fn mk-state
+                        :state-pub-handler state-pub-handler
+                        :opts {:throttle-ms throttle-ms}}))

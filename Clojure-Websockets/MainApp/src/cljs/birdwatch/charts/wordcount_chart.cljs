@@ -67,9 +67,12 @@
 
 (defn state-pub-handler
   "Handle incoming messages: process / add to application state."
-  [_ _ [_ state]]
-  (update-words (wc/get-words2 state 25)))
+  [{:keys [msg-payload]}]
+  (update-words (wc/get-words2 msg-payload 25)))
 
 (defn component
   [cmp-id throttle-ms]
-  (comp/make-component cmp-id mk-state nil state-pub-handler {:throttle-ms throttle-ms}))
+  (comp/make-component {:cmp-id   cmp-id
+                        :state-fn mk-state
+                        :state-pub-handler state-pub-handler
+                        :opts {:throttle-ms throttle-ms}}))

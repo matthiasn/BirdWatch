@@ -9,14 +9,18 @@
 
 (defn sort-view
   "Reagent view function for rendering the sort view."
-  [app local put-fn]
-  (let [curr-order (:sorted @app)]
+  [{:keys [observed put-fn]}]
+  (let [curr-order (:sorted @observed)]
     [:div
      [:button.pure-button.not-rounded
-      {:class (btn-class? (:live @app)) :on-click #(put-fn [:toggle-live])} "Live"]
+      {:class (btn-class? (:live @observed)) :on-click #(put-fn [:toggle-live])} "Live"]
      [:button.pure-button.not-rounded.sort-button "Sort by:"]
      (for [[k text] sort-orders :let [btn-class (btn-class? (= k curr-order))]]
        ^{:key text} [:button.pure-button.not-rounded
                      {:class btn-class :on-click #(put-fn [:set-sort-order k])} text])]))
 
-(defn component [cmp-id] (r/component cmp-id sort-view "sort-buttons" {}))
+(defn component
+  [cmp-id]
+  (r/component {:cmp-id  cmp-id
+                :view-fn sort-view
+                :dom-id  "sort-buttons"}))

@@ -89,9 +89,11 @@
 
 (defn state-pub-handler
   "Handle incoming messages: process / add to application state."
-  [app _ [_ state-snapshot]]
-  (when (:live state-snapshot) (reset! app state-snapshot)))
+  [{:keys [cmp-state msg-payload]}]
+  (when (:live msg-payload) (reset! cmp-state msg-payload)))
 
 (defn component
   [cmp-id]
-  (comp/make-component cmp-id mk-state nil state-pub-handler))
+  (comp/make-component {:cmp-id   cmp-id
+                        :state-fn mk-state
+                        :state-pub-handler state-pub-handler}))

@@ -3,8 +3,8 @@
 
 (defn append-search-text
   "Appends string s to search-text in app, separated by space."
-  [app s]
-  (swap! app assoc :search-text (str (:search-text @app) " " s)))
+  [{:keys [cmp-state msg-payload]}]
+  (swap! cmp-state assoc :search-text (str (:search-text @cmp-state) " " msg-payload)))
 
 (defn- load-prev
   "Loads previous tweets matching the current search. Search is contructed
@@ -27,12 +27,15 @@
 
 (defn start-search
   "Initiates a new search."
-  [app initial-state put-fn]
-  (let [search (:search-text @app)
-        s (if (= search "") "*" search)]
-    (reset! app initial-state)
-    (swap! app assoc :search-text search)
-    (swap! app assoc :search s)
-    (aset js/window "location" "hash" (js/encodeURIComponent s))
-    (start-percolator app put-fn)
-    (dotimes [_ 2] (load-prev app put-fn))))
+  [initial-state]
+  (fn
+    [{:keys [cmp-state put-fn]}]
+    (let [search (:search-text @cmp-state)
+          s (if (= search "") "*" search)]
+      (reset! cmp-state initial-state)
+      (swap! cmp-state assoc :search-text search)
+      (swap! cmp-state assoc :search s)
+      (aset js/window "location" "hash" (js/encodeURIComponent s))
+      (start-percolator cmp-state put-fn)
+      (dotimes [_ 2] (load-prev cmp-state put-fn)))))
+

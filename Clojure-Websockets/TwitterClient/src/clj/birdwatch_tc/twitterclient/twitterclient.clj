@@ -33,12 +33,12 @@
   [conf]
   (fn [put-fn]
     (let [app (atom {:last-received (t/epoch) :conf conf})
-          last-received (t/epoch)
           received-now (fn [] (swap! app assoc :last-received (t/now)))
           chunk-chan (chan 1 (processing/process-chunk received-now) processing/ex-handler)
           callback (tas/AsyncStreamingCallback. #(>!! chunk-chan (str %2))
                                                 (comp println tch/response-return-everything)
                                                 tch/exception-print)]
+      (swap! app assoc :callback callback)
       (swap! app assoc :conn (start-t-conn! conf callback))
       (go-loop [] (let [t (<! chunk-chan)]
                     (put-fn [:tweet/new t])
@@ -59,8 +59,8 @@
         (do
           (log/info "Stopping Twitter client.")
           ((:cancel m))
-          (swap! cmp-state :assoc :conn {}))
-        (swap! cmp-state :assoc :conn (start-t-conn! conf (:callback state-snapshot)))))))
+          (swap! cmp-state assoc :conn {}))
+        (swap! cmp-state assoc :conn (start-t-conn! conf (:callback state-snapshot)))))))
 
 (defn component
   "Initiate TwitterClient subsystem."

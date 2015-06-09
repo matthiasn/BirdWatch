@@ -17,9 +17,12 @@
 
 (defn state-pub-handler
   "Handle incoming messages: process / add to application state."
-  [app _ [_ state]]
-  (.redraw (:word-cloud @app) (clj->js (wc/get-words state n))))
+  [{:keys [cmp-state msg-payload]}]
+  (.redraw (:word-cloud @cmp-state) (clj->js (wc/get-words msg-payload n))))
 
 (defn component
   [cmp-id throttle-ms]
-  (comp/make-component cmp-id mk-state nil state-pub-handler {:throttle-ms throttle-ms}))
+  (comp/make-component {:cmp-id   cmp-id
+                        :state-fn mk-state
+                        :state-pub-handler state-pub-handler
+                        :opts {:throttle-ms throttle-ms}}))

@@ -32,43 +32,39 @@
   "Returns function for making state while using provided configuration."
   [conf]
   (fn [put-fn]
-    (let [last-received (atom (t/epoch))
-          chunk-chan (chan 1 (processing/process-chunk last-received) processing/ex-handler)
+    (let [app (atom {:last-received (t/epoch) :conf conf})
+          last-received (t/epoch)
+          received-now (fn [] (swap! app assoc :last-received (t/now)))
+          chunk-chan (chan 1 (processing/process-chunk received-now) processing/ex-handler)
           callback (tas/AsyncStreamingCallback. #(>!! chunk-chan (str %2))
                                                 (comp println tch/response-return-everything)
-                                                tch/exception-print)
-          conn (start-t-conn! conf callback)]
+                                                tch/exception-print)]
+      (swap! app assoc :conn (start-t-conn! conf callback))
       (go-loop [] (let [t (<! chunk-chan)]
                     (put-fn [:tweet/new t])
                     (recur)))
       (log/info "TwitterClient component started.")
-      {:last-received last-received :conf conf :conn (atom conn) :callback callback})))
+      app)))
 
 (defn t-conn-alive?
   "Check if connection to Twitter is alive. If not, restart."
-  [app put-fn]
-  (let [last-received (:last-received app)
-        conf (:conf app)
-        since-last-sec (t/in-seconds (t/interval @last-received (t/now)))
-        conn (:conn app)
-        m (meta @conn)]
+  [{:keys [cmp-state]}]
+  (let [state-snapshot @cmp-state
+        conf (:conf state-snapshot)
+        since-last-sec (t/in-seconds (t/interval (:last-received state-snapshot) (t/now)))
+        m (meta (:conn state-snapshot))]
     (when (> since-last-sec (:tw-check-interval-sec conf))
       (log/error since-last-sec "seconds since last tweet received")
       (if m
         (do
           (log/info "Stopping Twitter client.")
           ((:cancel m))
-          (reset! conn {}))
-        (reset! conn (start-t-conn! conf (:callback app)))))))
-
-(defn in-handler
-  "Handle incoming messages: process / add to application state."
-  [app put-fn msg]
-  (match msg
-         [:schedule/t-conn-alive?] (t-conn-alive? app put-fn)
-         :else (println "Unmatched event received by percolator:" msg)))
+          (swap! cmp-state :assoc :conn {}))
+        (swap! cmp-state :assoc :conn (start-t-conn! conf (:callback state-snapshot)))))))
 
 (defn component
   "Initiate TwitterClient subsystem."
   [cmp-id conf]
-  (comp/make-component cmp-id (mk-state conf) in-handler nil))
+  (comp/make-component {:cmp-id      cmp-id
+                        :state-fn    (mk-state conf)
+                        :handler-map {:schedule/t-conn-alive? t-conn-alive?}}))

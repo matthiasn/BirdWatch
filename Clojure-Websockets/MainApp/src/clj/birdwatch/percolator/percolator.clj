@@ -19,40 +19,40 @@
 
 (defn start-percolator
   "register percolation search with ID based on hash of the query"
-  [app perc msg]
-  (let [query (:query perc)
+  [{:keys [cmp-state msg-payload msg-meta]}]
+  (let [query (:query msg-payload)
         sha (sha1 (str query))
-        uid (:sente-uid (meta msg))]
-    (swap! app assoc-in [:subscriptions uid] sha)
-    (perc/register-query (:conn @app) "percolator" sha :query query)))
+        uid (:sente-uid msg-meta)]
+    (swap! cmp-state assoc-in [:subscriptions uid] sha)
+    (perc/register-query (:conn @cmp-state) "percolator" sha :query query)))
 
 (defn deliver-perc-matches
   "Deliver percolation matches to interested clients by looking clients up in subscriptions and connected-uids."
-  [app put-fn [t matches]]
-    (let [connected-uids (:connected-uids @app)
-          subscriptions (:subscriptions @app)]
-      (doseq [uid (:any connected-uids)]
-        (when (contains? matches (get subscriptions uid))
-          (put-fn [:tweet/new {:tweet t :uid uid}])))))
+  [{:keys [cmp-state put-fn msg-payload]}]
+  (let [[t matches] msg-payload
+        connected-uids (:connected-uids @cmp-state)
+        subscriptions (:subscriptions @cmp-state)]
+    (doseq [uid (:any connected-uids)]
+      (when (contains? matches (get subscriptions uid))
+        (put-fn [:tweet/new {:tweet t :uid uid}])))))
 
 (defn count-users
   "Count the number of currently connected client (for display in UI)."
-  [app put-fn]
-  (let [connected-uids (:connected-uids @app)]
+  [{:keys [cmp-state put-fn]}]
+  (let [connected-uids (:connected-uids @cmp-state)]
     (put-fn [:stats/users-count (count (:any connected-uids))])))
-
-(defn in-handler
-  "Handle incoming messages: process / add to application state."
-  [app put-fn msg]
-  (match msg
-         [:redis/matches t-matches] (deliver-perc-matches app put-fn t-matches)
-         [:cmd/percolate      perc] (start-percolator app perc msg)
-         [:schedule/count-users   ] (count-users app put-fn)
-         :else (println "Unmatched event received by percolator:" msg)))
 
 (defn state-pub-handler
   "Handle incoming messages: process / add to application state."
-  [app _ [_ state-snapshot]]
-  (swap! app assoc-in [:connected-uids] state-snapshot))
+  [{:keys [cmp-state msg-payload]}]
+  (swap! cmp-state assoc-in [:connected-uids] msg-payload))
 
-(defn component [cmp-id conf] (comp/make-component cmp-id (mk-state conf) in-handler state-pub-handler))
+(defn component
+  "Create component for starting percolation in ElasticSearch and delivering matches."
+  [cmp-id conf]
+  (comp/make-component {:cmp-id      cmp-id
+                        :state-fn    (mk-state conf)
+                        :handler-map {:redis/matches deliver-perc-matches
+                                      :cmd/percolate   start-percolator
+                                      :schedule/count-users count-users}
+                        :state-pub-handler state-pub-handler}))

@@ -32,10 +32,9 @@
       (put-fn [:log/info (str "Redis connection started to " redis-host redis-port)])
       {:conf conf :conn conn :listener listener :state (atom {})})))
 
-(defn in-handler
-  "Handle incoming messages: process / add to application state."
-  [app put-fn msg]
-  (match msg
-         :else (println "Unmatched event:" msg)))
-
-(defn component [cmp-id conf] (comp/make-component cmp-id (mk-state conf) in-handler nil {:watch :state}))
+(defn component
+  "Create component for communicating with Redis."
+  [cmp-id conf]
+  (comp/make-component {:cmp-id      cmp-id
+                        :state-fn    (mk-state conf)
+                        :handler-map {}}))

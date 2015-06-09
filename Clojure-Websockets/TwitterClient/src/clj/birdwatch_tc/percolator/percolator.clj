@@ -9,10 +9,10 @@
 
 (defn percolate
   "Find percolation matches for given tweet."
-  [app t]
-  (let [response (perc/percolate (:conn @app) "percolator" "tweet" :doc t)
+  [{:keys [cmp-state put-fn msg-payload]}]
+  (let [response (perc/percolate (:conn @cmp-state) "percolator" "tweet" :doc msg-payload)
         matches (set (map :_id (esrsp/matches-from response)))] ;; set with SHAs
-    [t matches]))
+    (put-fn [:perc/matches [msg-payload matches]])))
 
 (defn mk-state
   "Returns function for making state while using provided configuration."
@@ -24,11 +24,8 @@
       (put-fn [:log/info (str "Percolator component started with ES connection to " es-address)])
       (atom {:conf conf :conn conn}))))
 
-(defn in-handler
-  "Handle incoming messages: process / add to application state."
-  [app put-fn msg]
-  (match msg
-         [:tweet/new t] (put-fn [:perc/matches (percolate app t)])
-         :else (println "Unmatched event received by percolator:" msg)))
-
-(defn component [cmp-id conf] (comp/make-component cmp-id (mk-state conf) in-handler nil))
+(defn component
+  [cmp-id conf]
+  (comp/make-component {:cmp-id      cmp-id
+                        :state-fn    (mk-state conf)
+                        :handler-map {:tweet/new percolate}}))

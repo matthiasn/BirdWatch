@@ -23,7 +23,7 @@
 
 (defn start
   []
-  (let [switchboard (sb/component)]
+  (let [switchboard (sb/component :switchboard)]
     (sb/send-mult-cmd
       switchboard
       [[:cmd/wire-comp (sente/component :ws-cmp markup/index 8888)]   ; WebSockets component for client interaction
@@ -34,38 +34,34 @@
        [:cmd/wire-comp (metrics/component :metrics-cmp)]              ; Component for metrics and stats.
 
        ;; :persistence-cmp services data-related requests.
-       [:cmd/sub-comp  :scheduler-cmp  :persistence-cmp  :schedule/count-indexed]
-       [:cmd/sub-comp  :ws-cmp         :persistence-cmp  :cmd/query]
-       [:cmd/sub-comp  :ws-cmp         :persistence-cmp  :cmd/missing]
+       [:cmd/route {:from :scheduler-cmp :to :persistence-cmp}]
+       [:cmd/route {:from :ws-cmp :to :persistence-cmp}]
 
        ;; :ws-comp subscribes to messages that are forwarded to clients over WebSockets.
-       [:cmd/sub-comp  :persistence-cmp  :ws-cmp  :tweet/prev-chunk]
-       [:cmd/sub-comp  :persistence-cmp  :ws-cmp  :tweet/missing-tweet]
-       [:cmd/sub-comp  :persistence-cmp  :ws-cmp  :stats/total-tweet-count]
-       [:cmd/sub-comp  :percolator-cmp   :ws-cmp  :stats/users-count]
-       [:cmd/sub-comp  :metrics-cmp      :ws-cmp  :stats/jvm]
-       [:cmd/sub-comp  :percolator-cmp   :ws-cmp  :tweet/new]
+       [:cmd/route-all {:from :persistence-cmp :to :ws-cmp}]
+       [:cmd/route-all {:from :percolator-cmp :to :ws-cmp}]
+       [:cmd/route-all {:from :metrics-cmp :to :ws-cmp}]
 
        ;; :percolator-cmp responds to percolation matches, registration requests and request to connected users.
-       [:cmd/sub-comp  :interop-cmp    :percolator-cmp  :redis/matches]
-       [:cmd/sub-comp  :ws-cmp         :percolator-cmp  :cmd/percolate]
-       [:cmd/sub-comp  :scheduler-cmp  :percolator-cmp  :schedule/count-users]
+       [:cmd/route {:from :interop-cmp :to :percolator-cmp}]
+       [:cmd/route {:from :ws-cmp :to :percolator-cmp}]
+       [:cmd/route {:from :scheduler-cmp :to :percolator-cmp}]
 
        ;; :percolator-cmp needs the websocker client UIDs for delivery of percolation matches.
-       [:cmd/sub-comp  :ws-cmp  :percolator-cmp  :app-state]
+       [:cmd/observe-state {:from :ws-cmp :to :percolator-cmp}]
 
        ;; :scheduler-cmp sends msgs to :metrics-cmp
-       [:cmd/sub-comp  :scheduler-cmp  :metrics-cmp  :cmd/get-jvm-stats]
+       [:cmd/route {:from :scheduler-cmp :to :metrics-cmp}]
 
-       [:cmd/send-to [:scheduler-cmp [:cmd/schedule-new {:timeout 5000 :id :schedule/count-indexed
-                                                         :message [:schedule/count-indexed] :repeat true}]]]
-
-       [:cmd/send-to [:scheduler-cmp [:cmd/schedule-new {:timeout 3000 :id :schedule/count-users
-                                                         :message [:schedule/count-users] :repeat true}]]]
-
-       [:cmd/send-to [:scheduler-cmp [:cmd/schedule-new {:timeout 5000 :id :cmd/get-jvm-stats
-                                                         :message [:cmd/get-jvm-stats] :repeat true}]]]
-       ])))
+       [:cmd/send {:to :scheduler-cmp
+                   :msg [:cmd/schedule-new
+                         {:timeout 5000 :id :schedule/count-indexed :message [:schedule/count-indexed] :repeat true}]}]
+       [:cmd/send {:to :scheduler-cmp
+                   :msg [:cmd/schedule-new
+                         {:timeout 3000 :id :schedule/count-users :message [:schedule/count-users] :repeat true}]}]
+       [:cmd/send {:to :scheduler-cmp
+                   :msg [:cmd/schedule-new
+                         {:timeout 5000 :id :cmd/get-jvm-stats :message [:cmd/get-jvm-stats] :repeat true}]}]])))
 
 (defn -main [& args]
   (pid/save (:pidfile-name conf))

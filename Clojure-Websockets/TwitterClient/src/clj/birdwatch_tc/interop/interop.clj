@@ -35,13 +35,16 @@
           listener (subscribe-topic put-fn conn "matches")]
       (println "Redis connection started to" redis-host redis-port)
       (put-fn [:log/info (str "Redis connection started to " redis-host redis-port)])
-      {:conf conf :conn conn :listener listener})))
+      (atom {:conf conf :conn conn :listener listener}))))
 
-(defn in-handler
-  "Handle incoming messages: process / add to application state."
-  [app put-fn msg]
-  (match msg
-         [:perc/matches t-matches] (publish (:conn app) "matches" t-matches)
-         :else (println "Unmatched event:" msg)))
+(defn publish-perc
+  "Publish percolation matches on Redis topic."
+  [{:keys [cmp-state msg-payload]}]
+  (publish (:conn @cmp-state) "matches" msg-payload))
 
-(defn component [cmp-id conf] (comp/make-component cmp-id (mk-state conf) in-handler nil))
+(defn component
+  "Create component for communicating with Redis."
+  [cmp-id conf]
+  (comp/make-component {:cmp-id      cmp-id
+                        :state-fn    (mk-state conf)
+                        :handler-map {:perc/matches publish-perc}}))

@@ -14,20 +14,17 @@
           conn (esr/connect es-address)]
       (println "ElasticSearch connection started to" es-address)
       (put-fn [:log/info (str "ElasticSearch connection started to " es-address)])
-      {:conf conf :conn conn})))
+      (atom {:conf conf :conn conn}))))
 
 (defn- save-tweet
   "Persist tweet into configured ElasticSearch index."
-  [app put-fn t]
+  [{:keys [cmp-state put-fn msg-payload]}]
   (try
-    (esd/put (:conn app) (:es-index (:conf app)) "tweet" (:id_str t) t)
+    (esd/put (:conn @cmp-state) (:es-index (:conf @cmp-state)) "tweet" (:id_str msg-payload) msg-payload)
     (catch Exception ex (put-fn [:exception/persistence ex]))))
 
-(defn in-handler
-  "Handle incoming messages: process / add to application state."
-  [app put-fn msg]
-  (match msg
-         [:tweet/new t] (save-tweet app put-fn t)
-         :else (put-fn [:in-handler/unmatched "Persistence" msg]))) ; component should know it's own ID
-
-(defn component [cmp-id conf] (comp/make-component cmp-id (mk-state conf) in-handler nil))
+(defn component
+  [cmp-id conf]
+  (comp/make-component {:cmp-id      cmp-id
+                        :state-fn    (mk-state conf)
+                        :handler-map {:tweet/new save-tweet}}))

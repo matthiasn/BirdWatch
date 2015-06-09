@@ -19,7 +19,7 @@
 ;;; a switchboard is created, which is a specialized component for wiring components together so that messages flow
 ;;; through a system as desired.
 
-(def switchboard (sb/component))
+(def switchboard (sb/component :switchboard))
 
 (sb/send-mult-cmd
   switchboard

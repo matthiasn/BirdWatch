@@ -8,7 +8,7 @@
 
 (defn- log-count
   "Stateful transducer, counts processed items and updating last-received atom. Logs progress every 1000 items."
-  [last-received]
+  [received-now]
   (fn [step]
     (let [cnt (atom 0)]
       (fn
@@ -16,7 +16,7 @@
         ([r x]
          (swap! cnt inc)
          (when (zero? (mod @cnt 1000)) (log/info "processed" @cnt "since startup"))
-         (reset! last-received (t/now))
+         (received-now)
          (step r x))))))
 
 (defn- insert-newline
@@ -52,12 +52,12 @@
 
 (defn process-chunk
   "Creates composite transducer for processing tweet chunks. Last-received atom passed in for updates."
-  [last-received]
+  [received-now]
   (comp
    (streaming-buffer)
    (map parse-json)
    (filter tweet?)
-   (log-count last-received)))
+   (log-count received-now)))
 
 (defn ex-handler [ex]
   (log/error "Exception while processing chunk" ex))

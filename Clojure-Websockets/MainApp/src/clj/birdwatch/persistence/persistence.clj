@@ -15,16 +15,16 @@
           conn (esr/connect es-address)]
       (println "ElasticSearch connection started to" es-address)
       (put-fn [:log/info (str "ElasticSearch connection started to " es-address)])
-      {:conf conf :conn conn :state (atom {})})))
+      (atom {:conf conf :conn conn :state (atom {})}))))
 
 (defn- strip-tweet
   "take only actually needed fields from tweet"
   [t]
   (let [u (:user t)]
-    {:id_str (:id_str t) :id (:id t) :text (:text t) :created_at (:created_at t)
+    {:id_str        (:id_str t) :id (:id t) :text (:text t) :created_at (:created_at t)
      :retweet_count (:retweet_count t) :favorite_count (:favorite_count t) :entities (:entities t)
-     :user {:followers_count (:followers_count u) :name (:name u) :profile_image_url (:profile_image_url u)
-            :screen_name (:screen_name u)}}))
+     :user          {:followers_count (:followers_count u) :name (:name u) :profile_image_url (:profile_image_url u)
+                     :screen_name     (:screen_name u)}}))
 
 (defn strip-source
   "get tweet stripped down to necessary fields"
@@ -48,34 +48,32 @@
 
 (defn es-query
   "Handler function for previous tweets. Uses put-fn for returning results."
-  [app put-fn query]
-  (let [conf (:conf app)
-        conn (:conn app)]
-    (put-fn [:tweet/prev-chunk {:uid (:uid query) :result (mk-query query conf conn)}])))
+  [{:keys [cmp-state put-fn msg-payload]}]
+  (let [conf (:conf @cmp-state)
+        conn (:conn @cmp-state)]
+    (put-fn [:tweet/prev-chunk {:uid (:uid msg-payload) :result (mk-query msg-payload conf conn)}])))
 
 (defn es-mt-query
   "Handler function for missing tweets. Uses put-fn for returning results."
-  [app put-fn req]
-  (let [conf (:conf app)
-        conn (:conn app)
-        res (esd/get conn (:es-index conf) "tweet" (:id_str req))]
-    (when-not res (put-fn [:log/info [:persistence-cmp "missing tweet:" (:id_str req)]]))
-    (put-fn [:tweet/missing-tweet {:tweet (strip-source res) :uid (:uid req)}])))
+  [{:keys [cmp-state put-fn msg-payload]}]
+  (let [conf (:conf @cmp-state)
+        conn (:conn @cmp-state)
+        res (esd/get conn (:es-index conf) "tweet" (:id_str msg-payload))]
+    (when-not res (put-fn [:log/info [:persistence-cmp "missing tweet:" (:id_str msg-payload)]]))
+    (put-fn [:tweet/missing-tweet {:tweet (strip-source res) :uid (:uid msg-payload)}])))
 
 (defn total-tweets-indexed
-  [app put-fn]
-  (let [conf (:conf app)
-        conn (:conn app)
+  [{:keys [cmp-state put-fn]}]
+  (let [conf (:conf @cmp-state)
+        conn (:conn @cmp-state)
         cnt (esd/count conn (:es-index conf) "tweet")]
     (put-fn [:stats/total-tweet-count (format "%,15d" (:count cnt))])))
 
-(defn in-handler
-  "Handle incoming messages: process / add to application state."
-  [app put-fn msg]
-  (match msg
-         [:cmd/query        query] (es-query app put-fn query)
-         [:cmd/missing        req] (es-mt-query app put-fn req)
-         [:schedule/count-indexed] (total-tweets-indexed app put-fn)
-         :else (println "Unmatched event:" msg)))
-
-(defn component [cmp-id conf] (comp/make-component cmp-id (mk-state conf) in-handler nil {:watch :state}))
+(defn component
+  "Create component for retrieving documents from ElasticSearch"
+  [cmp-id conf]
+  (comp/make-component {:cmp-id      cmp-id
+                        :state-fn    (mk-state conf)
+                        :handler-map {:schedule/count-indexed total-tweets-indexed
+                                      :cmd/query              es-query
+                                      :cmd/missing            es-mt-query}}))

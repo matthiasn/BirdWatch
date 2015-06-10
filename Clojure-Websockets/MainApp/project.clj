@@ -43,14 +43,14 @@
                                               :output-dir    "resources/public/js/build/dev-out"
                                               :optimizations :simple
                                               :externs       ["externs/misc.js"]
-                                              :source-map    "resources/public/js/build/birdwatch.js.map"}}
+                                              ;:source-map    "resources/public/js/build/birdwatch.js.map"
+                                              }}
                               {:id           "release"
                                :source-paths ["src/cljs"]
                                :compiler     {:output-to     "resources/public/js/build/birdwatch-opt.js"
                                               :output-dir    "resources/public/js/build/out"
                                               :optimizations :advanced
-                                              :externs       ["externs/misc.js"]
-                                              :source-map    "resources/public/js/build/birdwatch-opt.js.map"}}
+                                              :externs       ["externs/misc.js"]}}
                               {:id           "test"
                                :source-paths ["src/cljs" "test/cljs"]
                                :compiler     {:output-to     "test-out/birdwatch.js"

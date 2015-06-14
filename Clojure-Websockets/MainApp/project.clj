@@ -5,9 +5,9 @@
   :license {:name "GNU General Public License" :url "http://www.gnu.org/licenses/gpl-3.0.en.html"}
   :dependencies [[org.clojure/clojure "1.7.0-RC1"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
-                 [clojurewerkz/elastisch "2.2.0-beta2"]
+                 [clojurewerkz/elastisch "2.2.0-beta3"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [matthiasn/systems-toolbox "0.2.1-SNAPSHOT"] ;; please install locally for now with 'lein install'
+                 [matthiasn/systems-toolbox "0.2.1-SNAPSHOT"]
                  [org.clojure/tools.namespace "0.2.10"]
                  [ch.qos.logback/logback-classic "1.1.2"]
                  [hiccup "1.0.5"]

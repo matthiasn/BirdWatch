@@ -8,7 +8,7 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.2.0-beta3"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [matthiasn/systems-toolbox "0.2.1-SNAPSHOT"] ;; please install locally for now with 'lein install'
+                 [matthiasn/systems-toolbox "0.2.1-SNAPSHOT"]
                  [ch.qos.logback/logback-classic "1.1.2"]
                  [clj-time "0.9.0"]
                  [clj-pid "0.1.2"]

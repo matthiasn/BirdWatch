@@ -57,13 +57,14 @@
          [:br] [:br] [:br] [:br] [:br]
          [:div#observer]]]]
       [:script {:src "/bower_components/d3/d3.min.js"}]
-      [:script {:src "/bower_components/momentjs/min/moment.min.js"}]
       [:script {:src "/js/vendor/d3.layout.cloud.js"}]
       [:script {:src "/js/wordcloud.js"}]
       [:script {:src "//platform.twitter.com/widgets.js", :type "text/javascript"}]
       (if dev?
         [:script {:src "/js/build/birdwatch.js"}]
         [:script {:src "/js/build/birdwatch-opt.js"}])
+      [:script {:src "/js/vendor/d3.layout.cloud.js"}]
+      [:script {:src "/js/wordcloud.js"}]
       ; Google Analytics for tracking demo page: Todo: edit ID or remove in your own project.
       (when-not dev? [:script {:async "", :src "//www.google-analytics.com/analytics.js"}])
       (when-not dev? (analytics "'UA-40261983-4'"))]]))

@@ -9,11 +9,10 @@
  :user-access-token        "<YOUR ACCESS TOKEN HERE>"
  :user-access-token-secret "<YOUR ACCESS TOKEN SECRET HERE>"
  :es-address               "http://127.0.0.1:9200"
- :es-index                 "berlin"
- :track                    "berlin"
+ :es-index                 "it-stuff"
+ :track                    "1Pr0grammer,akka,angularjs,bigdata,cassandra,clojure,couchbase,couchdb,csharp,db2,dilbert,dynamodb,dzone,ec2,elasticsearch,erlang,fortran,fsharp,functional,hackernews,hadoop,haskell,hbase,java,javascript,jquery,jvm,kibana,lambda,leveldb,lisp,matthiasnehlsen,mulesoft,muleesb,memcached,meteorjs,mnesia,mongodb,mysql,neo4j,oracle,pingconf,playframework,postgres,python,reactjs,redis,riak,scala,scaladays,scalajs,sql,sqlite,sqlserver,typesafe,vertexdb"
  :tw-check-interval-sec    10
  :tw-restart-wait          60
  :pidfile-name             "twitterclient.pid"
  :redis-host               "127.0.0.1"
- :redis-port               6379
- :inspect-port             8002}
+ :redis-port               6379}

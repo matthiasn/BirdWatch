@@ -7,11 +7,13 @@
             [birdwatch.ui.sort :as st]
             [birdwatch.ui.count-views :as cv]
             [birdwatch.ui.pagination :as pag]
+            [birdwatch.conf.observer :as obs-cfg]
             [birdwatch.state.comp :as state]
             [matthiasn.systems-toolbox.switchboard :as sb]
             [matthiasn.systems-toolbox.sente :as sente]
             [matthiasn.systems-toolbox.ui.jvmstats :as jvmstats]
-            [matthiasn.systems-toolbox.ui.observer :as obs]))
+            [matthiasn.systems-toolbox.ui.observer :as obs]
+            [cljsjs.moment]))
 
 (enable-console-print!)
 
@@ -37,8 +39,10 @@
      (cloud/component         :client/cloud-cmp 5000)    ;  Chart: word cloud (D3.js, custom component)
      (wc-c/component          :client/wc-c-cmp  1000)    ;  Chart: wordcloud (Reagent, SVG, custom component, regression)
      (ts-c/component          :client/ts-cmp     500)    ;  Chart: timeseries (Reagent, SVG, custom component)
-     (obs/component :client/observer-cmp "observer") ; UI component for observing system
-     (jvmstats/component      :client/jvmstats-cmp "jvm-stats-frame")]] ;  UI component: JVM stats
+     (jvmstats/component      :client/jvmstats-cmp "jvm-stats-frame") ;  UI component: JVM stats
+     (obs/component :client/observer-cmp obs-cfg/cfg-map)]] ; UI component for observing system
+
+   [:cmd/attach-to-firehose :client/observer-cmp]
 
    [:cmd/route-all {:from :client/state-cmp :to :client/ws-cmp}]
    [:cmd/route {:from :client/ws-cmp :to :client/state-cmp}]
@@ -59,7 +63,4 @@
    [:cmd/observe-state {:from :client/state-cmp :to :client/pag-cmp}]
    [:cmd/observe-state {:from :client/state-cmp :to :client/count-cmp}]
    [:cmd/observe-state {:from :client/state-cmp :to :client/users-count-cmp}]
-   [:cmd/observe-state {:from :client/state-cmp :to :client/tt-count-cmp}]
-
-   [:cmd/observe-state {:from :client/switchboard :to :client/observer-cmp}]
-   [:cmd/attach-to-firehose :client/observer-cmp]])
+   [:cmd/observe-state {:from :client/state-cmp :to :client/tt-count-cmp}]])

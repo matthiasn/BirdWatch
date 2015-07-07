@@ -9,7 +9,11 @@
     [matthiasn.systems-toolbox.scheduler :as sched]
     [clojure.edn :as edn]
     [clojure.tools.logging :as log]
+    [io.aviso.logging :as pretty]
     [clj-pid.core :as pid]))
+
+(pretty/install-pretty-logging)
+(pretty/install-uncaught-exception-handler)
 
 (def conf (edn/read-string (slurp "twitterconf.edn")))
 

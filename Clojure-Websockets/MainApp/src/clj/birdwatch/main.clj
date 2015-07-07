@@ -7,12 +7,16 @@
    [birdwatch.http.markup :as markup]
    [clojure.edn :as edn]
    [clojure.tools.logging :as log]
+   [io.aviso.logging :as pretty]
    [clojure.tools.namespace.repl :refer [refresh]]
    [clj-pid.core :as pid]
    [matthiasn.systems-toolbox.switchboard :as sb]
    [matthiasn.systems-toolbox.sente :as sente]
    [matthiasn.systems-toolbox.scheduler :as sched]
    [matthiasn.systems-toolbox.metrics :as metrics]))
+
+(pretty/install-pretty-logging)
+(pretty/install-uncaught-exception-handler)
 
 (def conf (edn/read-string (slurp "conf.edn")))
 

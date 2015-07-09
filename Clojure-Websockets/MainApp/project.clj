@@ -7,7 +7,7 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.2.0-beta3"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [matthiasn/systems-toolbox "0.2.12"]
+                 [matthiasn/systems-toolbox "0.2.14"]
                  [org.clojure/tools.namespace "0.2.10"]
                  [ch.qos.logback/logback-classic "1.1.2"]
                  [hiccup "1.0.5"]
@@ -33,23 +33,27 @@
 
   :plugins [[lein-cljsbuild "1.0.6"]
             [com.cemerick/clojurescript.test "0.3.3"]
+            [lein-figwheel "0.3.7" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]
             [quickie "0.3.6" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]
-            [codox "0.8.10"]]
+            [codox "0.8.12"]]
+
+  :figwheel {:server-port 3452
+             :css-dirs ["resources/public/css"]}
 
   :clean-targets ^{:protect false} ["resources/public/js/build/"]
 
   :cljsbuild {:builds        [{:id           "dev"
-                               :source-paths ["src/cljs"]
-                               :compiler     {:output-to     "resources/public/js/build/birdwatch.js"
-                                              :output-dir    "resources/public/js/build/dev-out"
-                                              :optimizations :simple
-                                              :externs       ["externs/misc.js"]
-                                              ;:source-map    "resources/public/js/build/birdwatch.js.map"
-                                              }}
+                               :source-paths ["src/cljs" "env/dev/cljs"]
+                               :figwheel     true
+                               :compiler     {:main          "birdwatch.dev"
+                                              :asset-path    "js/build"
+                                              :optimizations :none
+                                              :output-dir    "resources/public/js/build/"
+                                              :output-to     "resources/public/js/build/birdwatch.js"
+                                              :source-map    true}}
                               {:id           "release"
                                :source-paths ["src/cljs"]
-                               :compiler     {:output-to     "resources/public/js/build/birdwatch-opt.js"
-                                              :output-dir    "resources/public/js/build/out"
+                               :compiler     {:output-to     "resources/public/js/build/birdwatch.js"
                                               :optimizations :advanced
                                               :externs       ["externs/misc.js"]}}
                               {:id           "test"

@@ -18,7 +18,7 @@
 (defn from-now
   "Formats a date using the external moment.js library."
   [date]
-  (let [time-string (. (js/moment. date) (fromNow true))]
+  (let [time-string (.fromNow (js/moment. date) true)]
     (if (= time-string "a few seconds") "just now" time-string)))
 
 (def twitter-url "https://twitter.com/")
@@ -91,7 +91,7 @@
             tweet)
         cnt ((keyword (:id_str t)) (:by-rt-since-startup state))
         reach ((keyword (:id_str t)) (:by-reach state))]
-    (when (> cnt 0)
+    (when (pos? cnt)
       (str "analyzed: " (number-format cnt) " retweets, reach " (number-format reach)))))
 
 (defn tweets-by-order

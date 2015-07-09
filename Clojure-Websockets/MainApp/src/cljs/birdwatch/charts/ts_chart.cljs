@@ -29,13 +29,13 @@
 (defn labels
   "Renders a label for a bar chart. Makes use of Rickshaws CSS."
   [bars mx cnt w label]
-  (when-not (empty? label)
+  (when (seq label)
     (let [idx (:idx label)
           [k v] (get (vec bars) idx)
           top (- ts-h (* (/ v mx) ts-h))
           lr (if (< (/ idx cnt) 0.6) "left" "right")]
       [:div.detail {:style {:left (* idx w)}}
-       [:div.x_label {:class lr} (.toString (.unix js/moment k))]
+       [:div.x_label {:class lr} (str (.unix js/moment k))]
        [:div.item.active {:class lr :style {:top top}} "Tweets: " v]
        [:div.dot.active {:style {:top top :border-color "steelblue"}}]])))
 

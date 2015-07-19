@@ -18,6 +18,6 @@
                    :client/pag-cmp          {:x 800 :y 700}
                    :client/cloud-cmp        {:x 800 :y 800}
                    :client/wc-c-cmp         {:x 750 :y 900}
-                   :client/ts-cmp           {:x 260 :y 380}
+                   :client/ts-cmp           {:x 650 :y 100}
                    :client/jvmstats-cmp     {:x 100 :y 700}
-                   :client/state-cmp        {:x 430 :y 420}}})
+                   :client/state-cmp        {:x 360 :y 350}}})

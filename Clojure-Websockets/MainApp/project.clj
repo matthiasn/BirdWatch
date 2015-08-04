@@ -50,9 +50,11 @@
                                        :optimizations :none
                                        :output-dir    "resources/public/js/build/"
                                        :output-to     "resources/public/js/build/birdwatch.js"
-                                       :source-map    true}}
+                                       :source-map    true
+                                       :pretty-print  true}}
                        {:id           "release"
                         :source-paths ["src/cljs"]
                         :compiler     {:output-to     "resources/public/js/build/birdwatch.js"
                                        :optimizations :advanced
-                                       :externs       ["externs/misc.js"]}}]})
+                                       :externs       ["externs/misc.js"]
+                                       :pretty-print  false}}]})

@@ -20,10 +20,6 @@
      [:head
       [:meta {:content "initial-scale=1.0, user-scalable=no, width=device-width" :name "viewport"}]
       [:title "BirdWatch"]
-      (if dev?
-        [:link {:href "/css/bootstrap-glyphicons.css" :media "screen" :rel "stylesheet"}]
-        [:link {:href "//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"
-                :media "screen" :rel "stylesheet"}])
       (when dev? [:link {:href "/bower_components/pure/pure.css" :media "screen" :rel "stylesheet"}])
       (when dev? [:link {:href "/bower_components/pure/grids-responsive.css" :media "screen" :rel "stylesheet"}])
       (when dev? [:link {:href "/css/birdwatch.css" :media "screen" :rel "stylesheet"}])
@@ -60,10 +56,9 @@
          [:div#jvm-stats-frame]
          [:br] [:br] [:br] [:br] [:br]
          [:div#observer]]]]
-      (if dev? [:script {:src "/bower_components/d3/d3.min.js"}]
-               [:script {:src "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"}])
-      (if dev? [:script {:src "/js/wordcloud.js"}]
-               [:script {:src "/js/wordcloud.min.js"}])
+      (when dev? [:script {:src "/bower_components/d3/d3.js"}])
+      (if dev? [:script {:src "/js/wordcloud.js"}]      ; uncompressed file contains d3 cloud and BirdWatch wordcloud
+               [:script {:src "/js/wordcloud.min.js"}]) ; minified file contains d3, d3 cloud and BirdWatch wordcloud
       [:script {:src "/js/build/birdwatch.js"}]
       ; Google Analytics for tracking demo page: Todo: edit ID or remove in your own project.
       [:script {:async "" :src "//www.google-analytics.com/analytics.js"}]

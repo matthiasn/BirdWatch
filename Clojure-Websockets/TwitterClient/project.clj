@@ -8,9 +8,9 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.2.0-beta4"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [matthiasn/systems-toolbox "0.2.22"]
-                 [ch.qos.logback/logback-classic "1.1.2"]
-                 [clj-time "0.9.0"]
+                 [matthiasn/systems-toolbox "0.2.24"]
+                 [ch.qos.logback/logback-classic "1.1.3"]
+                 [clj-time "0.10.0"]
                  [clj-pid "0.1.2"]
                  [com.taoensso/carmine "2.11.1"]
                  [metrics-clojure "2.5.1"]]
@@ -18,4 +18,4 @@
   :main ^:skip-aot birdwatch-tc.main
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
-  :plugins [[quickie "0.3.5" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]])
+  :plugins [[quickie "0.3.6" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]])

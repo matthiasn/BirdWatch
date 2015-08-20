@@ -10,7 +10,7 @@
                  [org.clojure/tools.logging "0.3.1"]
                  [matthiasn/systems-toolbox "0.2.26"]
                  [ch.qos.logback/logback-classic "1.1.3"]
-                 [clj-time "0.10.0"]
+                 [clj-time "0.11.0"]
                  [clj-pid "0.1.2"]
                  [com.taoensso/carmine "2.11.1"]
                  [metrics-clojure "2.5.1"]]

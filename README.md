@@ -18,5 +18,13 @@ There are a couple of blog posts covering this application. The best starting po
 
 A series of articles about the all-Clojure version is currently in the works. Check out **[matthiasnehlsen.com](http://matthiasnehlsen.com)** and subscribe to the newsletter if you want to stay up to date.
 
+## YourKit
+
+YourKit is kindly supporting open source projects with its full-featured Java Profiler.
+YourKit, LLC is the creator of innovative and intelligent tools for profiling
+Java and .NET applications. Take a look at YourKit's leading software products:
+<a href="http://www.yourkit.com/java/profiler/index.jsp">YourKit Java Profiler</a> and
+<a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profiler</a>.
+
 ## License
 Copyright © 2014 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the **GNU GENERAL PUBLIC LICENSE**, Version 3. See separate LICENSE file.

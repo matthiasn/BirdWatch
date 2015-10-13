@@ -62,14 +62,9 @@
           (swap! cmp-state assoc :conn {}))
         (swap! cmp-state assoc :conn (start-t-conn! conf (:callback state-snapshot)))))))
 
-(defn cmp-map
-  "Create TwiterClient component map"
-  [cmp-id conf]
-  {:cmp-id      cmp-id
-   :state-fn    (mk-state conf)
-   :handler-map {:schedule/t-conn-alive? t-conn-alive?}})
-
 (defn component
-  "Initiate TwitterClient subsystem"
+  "Initiate TwitterClient subsystem."
   [cmp-id conf]
-  (comp/make-component (cmp-map cmp-id conf)))
+  (comp/make-component {:cmp-id      cmp-id
+                        :state-fn    (mk-state conf)
+                        :handler-map {:schedule/t-conn-alive? t-conn-alive?}}))

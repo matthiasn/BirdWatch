@@ -23,10 +23,10 @@
     (sb/send-mult-cmd
       switchboard
       [[:cmd/wire-comp (tc/component :tc-cmp conf)]
-       [:cmd/init-comp (sched/cmp-map :scheduler-cmp)]
-       [:cmd/init-comp (pc/cmp-map :persistence-cmp conf)]
-       [:cmd/init-comp (iop-cmp/cmp-map :interop-cmp conf)]
-       [:cmd/init-comp (perc-cmp/cmp-map :percolator-cmp conf)]
+       [:cmd/wire-comp (sched/component :scheduler-cmp)]
+       [:cmd/wire-comp (pc/component :persistence-cmp conf)]
+       [:cmd/wire-comp (iop-cmp/component :interop-cmp conf)]
+       [:cmd/wire-comp (perc-cmp/component :percolator-cmp conf)]
 
        [:cmd/route {:from :tc-cmp :to :persistence-cmp}]
        [:cmd/route {:from :tc-cmp :to :percolator-cmp}]

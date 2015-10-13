@@ -2,6 +2,7 @@
   (:gen-class)
   (:require
     [clojure.core.match :refer [match]]
+    [matthiasn.systems-toolbox.component :as comp]
     [taoensso.carmine :as car :refer (wcar)]))
 
 (defn publish
@@ -41,9 +42,9 @@
   [{:keys [cmp-state msg-payload]}]
   (publish (:conn @cmp-state) "matches" msg-payload))
 
-(defn cmp-map
+(defn component
   "Create component for communicating with Redis."
   [cmp-id conf]
-  {:cmp-id      cmp-id
-   :state-fn    (mk-state conf)
-   :handler-map {:perc/matches publish-perc}})
+  (comp/make-component {:cmp-id      cmp-id
+                        :state-fn    (mk-state conf)
+                        :handler-map {:perc/matches publish-perc}}))

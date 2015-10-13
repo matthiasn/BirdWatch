@@ -3,8 +3,7 @@
             [birdwatch.stats.wordcount :as wc]
             [birdwatch.stats.regression :as reg]
             [birdwatch.charts.shapes :as s]
-            [reagent.core :as r :refer [atom]]
-            [matthiasn.systems-toolbox.component :as comp]))
+            [reagent.core :as r :refer [atom]]))
 
 (def items (atom []))
 (def pos-trends (atom {}))
@@ -70,9 +69,9 @@
   [{:keys [msg-payload]}]
   (update-words (wc/get-words2 msg-payload 25)))
 
-(defn component
+(defn cmp-map
   [cmp-id throttle-ms]
-  (comp/make-component {:cmp-id   cmp-id
-                        :state-fn mk-state
-                        :state-pub-handler state-pub-handler
-                        :opts {:throttle-ms throttle-ms}}))
+  {:cmp-id            cmp-id
+   :state-fn          mk-state
+   :state-pub-handler state-pub-handler
+   :opts              {:throttle-ms throttle-ms}})

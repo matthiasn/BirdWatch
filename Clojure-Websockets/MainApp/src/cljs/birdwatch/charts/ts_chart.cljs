@@ -1,8 +1,7 @@
 (ns birdwatch.charts.ts-chart
   (:require [birdwatch.util :as util]
             [birdwatch.stats.timeseries :as ts]
-            [reagent.core :as r :refer [atom]]
-            [matthiasn.systems-toolbox.component :as comp]))
+            [reagent.core :as r :refer [atom]]))
 
 (def ts-elem (util/by-id "timeseries1"))
 (def ts-w (aget ts-elem "offsetWidth"))
@@ -65,9 +64,9 @@
   [{:keys [cmp-state msg-payload]}]
   (swap! cmp-state assoc :bars (ts/ts-data msg-payload)))
 
-(defn component
+(defn cmp-map
   [cmp-id throttle-ms]
-  (comp/make-component {:cmp-id   cmp-id
-                        :state-fn mk-state
-                        :state-pub-handler state-pub-handler
-                        :opts {:throttle-ms throttle-ms}}))
+  {:cmp-id            cmp-id
+   :state-fn          mk-state
+   :state-pub-handler state-pub-handler
+   :opts              {:throttle-ms throttle-ms}})

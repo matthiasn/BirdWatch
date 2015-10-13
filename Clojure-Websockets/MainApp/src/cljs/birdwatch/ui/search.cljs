@@ -17,8 +17,8 @@
           [:button.pure-button.pure-button-primary {:on-click #(put-fn [:start-search])}
            [:span s]]]]])
 
-(defn component
+(defn cmp-map
   [cmp-id]
-  (r/component {:cmp-id  cmp-id
-                :view-fn search-view
-                :dom-id  "search"}))
+  (r/cmp-map {:cmp-id  cmp-id
+              :view-fn search-view
+              :dom-id  "search"}))

@@ -2,8 +2,7 @@
   (:require [birdwatch.state.search :as s]
             [birdwatch.state.initial :as i]
             [birdwatch.state.proc :as p]
-            [cljs.core.match :refer-macros [match]]
-            [matthiasn.systems-toolbox.component :as comp]))
+            [cljs.core.match :refer-macros [match]]))
 
 ;;;; Channels processing namespace. Here, messages are taken from channels and processed.
 
@@ -28,9 +27,8 @@
    :start-search            (s/start-search (i/initial-state))
    :first-open              (s/start-search (i/initial-state))})
 
-(defn component
+(defn cmp-map
   [cmp-id]
-  (comp/make-component
-    {:cmp-id      cmp-id
-     :state-fn    mk-state
-     :handler-map handler-map}))
+  {:cmp-id      cmp-id
+   :state-fn    mk-state
+   :handler-map handler-map})

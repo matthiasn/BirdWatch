@@ -19,8 +19,8 @@
        ^{:key text} [:button.pure-button.not-rounded
                      {:class btn-class :on-click #(put-fn [:set-sort-order k])} text])]))
 
-(defn component
+(defn cmp-map
   [cmp-id]
-  (r/component {:cmp-id  cmp-id
-                :view-fn sort-view
-                :dom-id  "sort-buttons"}))
+  (r/cmp-map {:cmp-id  cmp-id
+              :view-fn sort-view
+              :dom-id  "sort-buttons"}))

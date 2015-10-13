@@ -8,11 +8,11 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.2.0-beta4"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [matthiasn/systems-toolbox "0.2.30"]
+                 [matthiasn/systems-toolbox "0.3.2"]
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [clj-time "0.11.0"]
                  [clj-pid "0.1.2"]
-                 [com.taoensso/carmine "2.11.1"]
+                 [com.taoensso/carmine "2.12.0"]
                  [metrics-clojure "2.5.1"]]
   :source-paths ["src/clj/"]
   :main ^:skip-aot birdwatch-tc.main

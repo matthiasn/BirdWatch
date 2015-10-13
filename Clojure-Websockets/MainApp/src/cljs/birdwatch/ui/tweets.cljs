@@ -1,7 +1,6 @@
 (ns birdwatch.ui.tweets
   (:require [birdwatch.ui.util :as util]
-            [reagent.core :as r :refer [atom]]
-            [matthiasn.systems-toolbox.component :as comp]))
+            [reagent.core :as r :refer [atom]]))
 
 (defn twitter-intent
   "Renders a twitter intent as a clickable image, for example for retweeting directly
@@ -92,8 +91,8 @@
   [{:keys [cmp-state msg-payload]}]
   (when (:live msg-payload) (reset! cmp-state msg-payload)))
 
-(defn component
+(defn cmp-map
   [cmp-id]
-  (comp/make-component {:cmp-id   cmp-id
-                        :state-fn mk-state
-                        :state-pub-handler state-pub-handler}))
+  {:cmp-id            cmp-id
+   :state-fn          mk-state
+   :state-pub-handler state-pub-handler})

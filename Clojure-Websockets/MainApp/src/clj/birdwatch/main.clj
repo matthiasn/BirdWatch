@@ -30,12 +30,12 @@
   (let [switchboard (sb/component :switchboard)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/wire-comp (sente/component :ws-cmp markup/index)]   ; WebSockets component for client interaction
-       [:cmd/wire-comp (sched/component :scheduler-cmp)]              ; Scheduler component for task orchestration
-       [:cmd/wire-comp (pc/component :persistence-cmp conf)]          ; Persistence-related component
-       [:cmd/wire-comp (iop-cmp/component :interop-cmp conf)]         ; Interoperability between JVMs over Redis PubSub
-       [:cmd/wire-comp (perc-cmp/component :percolator-cmp conf)]     ; Component for matching tweets with searches.
-       [:cmd/wire-comp (metrics/component :metrics-cmp)]              ; Component for metrics and stats.
+      [[:cmd/wire-comp (sente/component :ws-cmp markup/index)]  ; WebSockets component for client interaction
+       [:cmd/init-comp (sched/cmp-map :scheduler-cmp)]          ; Scheduler component for task orchestration
+       [:cmd/init-comp (pc/cmp-map :persistence-cmp conf)]      ; Persistence-related component
+       [:cmd/init-comp (iop-cmp/cmp-map :interop-cmp conf)]     ; Interoperability between JVMs over Redis PubSub
+       [:cmd/init-comp (perc-cmp/cmp-map :percolator-cmp conf)] ; Component for matching tweets with searches.
+       [:cmd/init-comp (metrics/cmp-map :metrics-cmp)]          ; Component for metrics and stats.
 
        ;; :persistence-cmp services data-related requests.
        [:cmd/route {:from :scheduler-cmp :to :persistence-cmp}]

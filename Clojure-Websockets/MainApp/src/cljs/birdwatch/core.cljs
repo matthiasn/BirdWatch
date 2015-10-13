@@ -28,21 +28,22 @@
   []
   (sb/send-mult-cmd
     switchboard
-    [[:cmd/wire-comp     ; :cmd/wire-comp messages pass a vector of instantiated components
-      [(sente/component         :client/ws-cmp)            ;  WebSockets communication component from systems-toolbox
-       (state/component         :client/state-cmp)         ;  Component holding the client-side application state and logic
-       (tw/component            :client/tweets-cmp)        ;  UI component: list of tweets (Reagent, HTML, custom component)
-       (cv/count-component      :client/count-cmp)         ;  UI component: tweet count (Reagent, HTML, simple component)
-       (cv/users-cnt-component  :client/users-count-cmp)   ;  UI component: users count (Reagent, HTML, simple component)
-       (cv/total-cnt-component  :client/tt-count-cmp)      ;  UI component: total tweet count (Reagent, HTML, simple component)
-       (sv/component            :client/search-cmp)        ;  UI component: search bar (Reagent, HTML, simple component)
-       (st/component            :client/sort-cmp)          ;  UI component: sort orders (Reagent, simple component)
-       (pag/component           :client/pag-cmp)           ;  UI component: pagination (Reagent, simple component)
-       (cloud/component         :client/cloud-cmp 5000)    ;  Chart: word cloud (D3.js, custom component)
-       (wc-c/component          :client/wc-c-cmp  1000)    ;  Chart: wordcloud (Reagent, SVG, custom component, regression)
-       (ts-c/component          :client/ts-cmp     500)    ;  Chart: timeseries (Reagent, SVG, custom component)
-       (jvmstats/component      :client/jvmstats-cmp "jvm-stats-frame") ;  UI component: JVM stats
-       (obs/component :client/observer-cmp obs-cfg/cfg-map)]] ; UI component for observing system
+    [[:cmd/init-comp
+      [(sente/cmp-map    :client/ws-cmp)          ;  WebSockets communication component from systems-toolbox
+       (jvmstats/cmp-map :client/jvmstats-cmp "jvm-stats-frame") ;  UI component: JVM stats
+       (obs/cmp-map      :client/observer-cmp obs-cfg/cfg-map)   ; UI component for observing system
+       (state/cmp-map    :client/state-cmp)       ;  Component holding the client-side application state and logic
+       (tw/cmp-map       :client/tweets-cmp)      ;  UI component: list of tweets (Reagent, HTML, custom component)
+       (cv/count-cmp-map :client/count-cmp)       ;  UI component: tweet count (Reagent, HTML, simple component)
+       (cv/users-cmp-map :client/users-count-cmp) ;  UI component: users count (Reagent, HTML, simple component)
+       (cv/total-cmp-map :client/tt-count-cmp)    ;  UI component: total tweet count (Reagent, HTML, simple component)
+       (sv/cmp-map       :client/search-cmp)      ;  UI component: search bar (Reagent, HTML, simple component)
+       (st/cmp-map       :client/sort-cmp)        ;  UI component: sort orders (Reagent, simple component)
+       (pag/cmp-map      :client/pag-cmp)         ;  UI component: pagination (Reagent, simple component)
+       (cloud/cmp-map    :client/cloud-cmp 5000)  ;  Chart: word cloud (D3.js, custom component)
+       (wc-c/cmp-map     :client/wc-c-cmp  1000)  ;  Chart: wordcloud (Reagent, SVG, custom component, regression)
+       (ts-c/cmp-map     :client/ts-cmp     500)  ;  Chart: timeseries (Reagent, SVG, custom component)
+       ]]
 
      [:cmd/attach-to-firehose :client/observer-cmp]
 

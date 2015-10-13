@@ -2,7 +2,6 @@
   (:gen-class)
   (:require
     [clojure.core.match :refer [match]]
-    [matthiasn.systems-toolbox.component :as comp]
     [clojurewerkz.elastisch.rest :as esr]
     [clojurewerkz.elastisch.rest.response :as esrsp]
     [clojurewerkz.elastisch.rest.percolation :as perc]))
@@ -24,8 +23,8 @@
       (put-fn [:log/info (str "Percolator component started with ES connection to " es-address)])
       (atom {:conf conf :conn conn}))))
 
-(defn component
+(defn cmp-map
   [cmp-id conf]
-  (comp/make-component {:cmp-id      cmp-id
-                        :state-fn    (mk-state conf)
-                        :handler-map {:tweet/new percolate}}))
+  {:cmp-id      cmp-id
+   :state-fn    (mk-state conf)
+   :handler-map {:tweet/new percolate}})

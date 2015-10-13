@@ -4,14 +4,14 @@
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "GNU General Public License" :url "http://www.gnu.org/licenses/gpl-3.0.en.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "1.7.122"]
+                 [org.clojure/clojurescript "1.7.145"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.2.0-beta4"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [com.taoensso/timbre "4.1.2"]
-                 [com.taoensso/encore "2.18.0"]
-                 [com.taoensso/carmine "2.11.1"]
-                 [matthiasn/systems-toolbox "0.2.30"]
+                 [com.taoensso/timbre "4.1.4"]
+                 [com.taoensso/encore "2.19.0"]
+                 [com.taoensso/carmine "2.12.0"]
+                 [matthiasn/systems-toolbox "0.3.2"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [hiccup "1.0.5"]
@@ -41,7 +41,7 @@
   :figwheel {:server-port 3452
              :css-dirs    ["resources/public/css"]}
 
-  :clean-targets ^{:protect false} ["resources/public/js/build/"]
+  :clean-targets ^{:protect false} ["resources/public/js/build/" "target/"]
 
   :cljsbuild {:builds [{:id           "dev"
                         :source-paths ["src/cljs" "env/dev/cljs"]

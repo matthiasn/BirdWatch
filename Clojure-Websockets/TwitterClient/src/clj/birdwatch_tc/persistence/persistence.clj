@@ -2,7 +2,6 @@
   (:gen-class)
   (:require
     [clojure.core.match :refer [match]]
-    [matthiasn.systems-toolbox.component :as comp]
     [clojurewerkz.elastisch.rest :as esr]
     [clojurewerkz.elastisch.rest.document :as esd]))
 
@@ -23,8 +22,8 @@
     (esd/put (:conn @cmp-state) (:es-index (:conf @cmp-state)) "tweet" (:id_str msg-payload) msg-payload)
     (catch Exception ex (put-fn [:exception/persistence ex]))))
 
-(defn component
+(defn cmp-map
   [cmp-id conf]
-  (comp/make-component {:cmp-id      cmp-id
-                        :state-fn    (mk-state conf)
-                        :handler-map {:tweet/new save-tweet}}))
+  {:cmp-id      cmp-id
+   :state-fn    (mk-state conf)
+   :handler-map {:tweet/new save-tweet}})

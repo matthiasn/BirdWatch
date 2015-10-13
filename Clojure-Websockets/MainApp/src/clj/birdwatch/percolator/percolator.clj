@@ -3,7 +3,6 @@
   (:require
     [clojure.core.match :refer [match]]
     [pandect.core :refer [sha1]]
-    [matthiasn.systems-toolbox.component :as comp]
     [clojurewerkz.elastisch.rest :as esr]
     [clojurewerkz.elastisch.rest.percolation :as perc]))
 
@@ -47,12 +46,11 @@
   [{:keys [cmp-state msg-payload]}]
   (swap! cmp-state assoc-in [:connected-uids] msg-payload))
 
-(defn component
+(defn cmp-map
   "Create component for starting percolation in ElasticSearch and delivering matches."
-  [cmp-id conf]
-  (comp/make-component {:cmp-id      cmp-id
-                        :state-fn    (mk-state conf)
-                        :handler-map {:redis/matches deliver-perc-matches
-                                      :cmd/percolate   start-percolator
-                                      :schedule/count-users count-users}
-                        :state-pub-handler state-pub-handler}))
+  [cmp-id conf] {:cmp-id            cmp-id
+                 :state-fn          (mk-state conf)
+                 :handler-map       {:redis/matches        deliver-perc-matches
+                                     :cmd/percolate        start-percolator
+                                     :schedule/count-users count-users}
+                 :state-pub-handler state-pub-handler})

@@ -1,7 +1,6 @@
 (ns birdwatch.charts.cloud-chart
   (:require [birdwatch.util :as util]
-            [birdwatch.stats.wordcount :as wc]
-            [matthiasn.systems-toolbox.component :as comp]))
+            [birdwatch.stats.wordcount :as wc]))
 
 ;;; WordCloud element (implemented externally in JavaScript)
 (def cloud-elem (util/by-id "wordCloud"))
@@ -20,9 +19,9 @@
   [{:keys [cmp-state msg-payload]}]
   (.redraw (:word-cloud @cmp-state) (clj->js (wc/get-words msg-payload n))))
 
-(defn component
+(defn cmp-map
   [cmp-id throttle-ms]
-  (comp/make-component {:cmp-id   cmp-id
-                        :state-fn mk-state
-                        :state-pub-handler state-pub-handler
-                        :opts {:throttle-ms throttle-ms}}))
+  {:cmp-id            cmp-id
+   :state-fn          mk-state
+   :state-pub-handler state-pub-handler
+   :opts              {:throttle-ms throttle-ms}})

@@ -2,7 +2,6 @@
   (:gen-class)
   (:require
     [clojure.core.match :refer [match]]
-    [matthiasn.systems-toolbox.component :as comp]
     [clojurewerkz.elastisch.rest :as esr]
     [clojurewerkz.elastisch.rest.document :as esd]
     [clojurewerkz.elastisch.rest.response :as esrsp]))
@@ -69,11 +68,11 @@
         cnt (esd/count conn (:es-index conf) "tweet")]
     (put-fn [:stats/total-tweet-count (format "%,15d" (:count cnt))])))
 
-(defn component
+(defn cmp-map
   "Create component for retrieving documents from ElasticSearch"
   [cmp-id conf]
-  (comp/make-component {:cmp-id      cmp-id
-                        :state-fn    (mk-state conf)
-                        :handler-map {:schedule/count-indexed total-tweets-indexed
-                                      :cmd/query              es-query
-                                      :cmd/missing            es-mt-query}}))
+  {:cmp-id      cmp-id
+   :state-fn    (mk-state conf)
+   :handler-map {:schedule/count-indexed total-tweets-indexed
+                 :cmd/query              es-query
+                 :cmd/missing            es-mt-query}})

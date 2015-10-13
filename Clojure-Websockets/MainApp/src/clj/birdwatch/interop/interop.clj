@@ -2,7 +2,6 @@
   (:gen-class)
   (:require
     [clojure.core.match :refer [match]]
-    [matthiasn.systems-toolbox.component :as comp]
     [taoensso.carmine :as car]))
 
 (defn- msg-handler-fn
@@ -32,10 +31,10 @@
       (put-fn [:log/info (str "Redis connection started to " redis-host redis-port)])
       {:conf conf :conn conn :listener listener :state (atom {})})))
 
-(defn component
+(defn cmp-map
   "Create component for communicating with Redis."
   [cmp-id conf]
-  (comp/make-component {:cmp-id      cmp-id
-                        :state-fn    (mk-state conf)
-                        :handler-map {}
-                        :opts     {:watch :state}}))
+  {:cmp-id      cmp-id
+   :state-fn    (mk-state conf)
+   :handler-map {}
+   :opts        {:watch :state}})

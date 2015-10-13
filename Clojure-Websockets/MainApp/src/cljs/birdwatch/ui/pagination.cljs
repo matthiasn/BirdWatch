@@ -21,8 +21,8 @@
    (for [n [5 10 25 100]]
      ^{:key (str "pag-size" n)} [pag-size-item n observed put-fn])])
 
-(defn component
+(defn cmp-map
   [cmp-id]
-  (r/component {:cmp-id  cmp-id
-                :view-fn pagination-view
-                :dom-id  "pagination"}))
+  (r/cmp-map {:cmp-id  cmp-id
+              :view-fn pagination-view
+              :dom-id  "pagination"}))

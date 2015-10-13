@@ -14,20 +14,20 @@
   [{:keys [observed]}]
   [:span "Indexed: " [:strong (:total-tweet-count @observed)] " tweets"])
 
-(defn count-component
+(defn count-cmp-map
   [cmp-id]
-  (r/component {:cmp-id  cmp-id
-                :view-fn count-view
-                :dom-id  "tweet-count"}))
+  (r/cmp-map {:cmp-id  cmp-id
+              :view-fn count-view
+              :dom-id  "tweet-count"}))
 
-(defn users-cnt-component
+(defn users-cmp-map
   [cmp-id]
-  (r/component {:cmp-id  cmp-id
-                :view-fn users-count-view
-                :dom-id  "users-count"}))
+  (r/cmp-map {:cmp-id  cmp-id
+              :view-fn users-count-view
+              :dom-id  "users-count"}))
 
-(defn total-cnt-component
+(defn total-cmp-map
   [cmp-id]
-  (r/component {:cmp-id  cmp-id
-                :view-fn total-count-view
-                :dom-id  "total-tweet-count"}))
+  (r/cmp-map {:cmp-id  cmp-id
+              :view-fn total-count-view
+              :dom-id  "total-tweet-count"}))

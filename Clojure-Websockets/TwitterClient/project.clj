@@ -5,10 +5,9 @@
   :license {:name "GNU General Public License" :url "http://www.gnu.org/licenses/gpl-3.0.en.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [twitter-api "0.7.8"]
-                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [clojurewerkz/elastisch "2.2.0-beta4"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [matthiasn/systems-toolbox "0.3.7"]
+                 [matthiasn/systems-toolbox "0.3.8"]
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [clj-time "0.11.0"]
                  [clj-pid "0.1.2"]

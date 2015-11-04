@@ -10,7 +10,7 @@
                  [com.taoensso/timbre "4.1.4"]
                  [com.taoensso/encore "2.20.0"]
                  [com.taoensso/carmine "2.12.0"]
-                 [matthiasn/systems-toolbox "0.3.8"]
+                 [matthiasn/systems-toolbox "0.3.10"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [hiccup "1.0.5"]
@@ -34,8 +34,8 @@
 
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-figwheel "0.4.1" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]
-            [quickie "0.3.6" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]
-            [codox "0.8.13"]]
+            [quickie "0.4.1" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]
+            [codox "0.9.0"]]
 
   :figwheel {:server-port 3452
              :css-dirs    ["resources/public/css"]}

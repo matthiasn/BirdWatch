@@ -7,7 +7,7 @@
                  [twitter-api "0.7.8"]
                  [clojurewerkz/elastisch "2.2.0-beta4"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [matthiasn/systems-toolbox "0.3.8"]
+                 [matthiasn/systems-toolbox "0.3.11"]
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [clj-time "0.11.0"]
                  [clj-pid "0.1.2"]
@@ -17,4 +17,4 @@
   :main ^:skip-aot birdwatch-tc.main
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}}
-  :plugins [[quickie "0.3.6" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]])
+  :plugins [[quickie "0.4.1" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]])

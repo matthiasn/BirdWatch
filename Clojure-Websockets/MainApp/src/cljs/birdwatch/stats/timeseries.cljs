@@ -41,7 +41,7 @@
 (defn tweet-ts
   "Retrieves seconds since epoch from tweet using moment.js."
   [t]
-  (.unix (js/moment. (:created_at t))))
+  (.unix (js/moment. (:created_at t) "ddd MMM DD HH:mm:ss Z YYYY")))
 
 (defn ts-data
   "Performs time series analysis by counting tweets in even intervals."

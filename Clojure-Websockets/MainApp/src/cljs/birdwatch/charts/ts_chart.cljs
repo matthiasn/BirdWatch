@@ -34,7 +34,7 @@
           top (- ts-h (* (/ v mx) ts-h))
           lr (if (< (/ idx cnt) 0.6) "left" "right")]
       [:div.detail {:style {:left (* idx w)}}
-       [:div.x_label {:class lr} (str (.unix js/moment k))]
+       [:div.x_label {:class lr} (.format (.unix js/moment k))]
        [:div.item.active {:class lr :style {:top top}} "Tweets: " v]
        [:div.dot.active {:style {:top top :border-color "steelblue"}}]])))
 

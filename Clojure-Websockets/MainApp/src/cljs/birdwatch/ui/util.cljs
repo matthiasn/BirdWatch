@@ -18,7 +18,7 @@
 (defn from-now
   "Formats a date using the external moment.js library."
   [date]
-  (let [time-string (.fromNow (js/moment. date) true)]
+  (let [time-string (.fromNow (js/moment. date "ddd MMM DD HH:mm:ss Z YYYY") true)]
     (if (= time-string "a few seconds") "just now" time-string)))
 
 (def twitter-url "https://twitter.com/")

@@ -61,10 +61,5 @@ Once the steps described above are completed, usage is easy. You can start up th
 
     lein run
 
-Alternatively, you can use the REPL:
-
-    lein repl
-    birdwatch.main=> (alter-var-root #'system component/start)
-
 ## License
 Copyright © 2014 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the **GNU GENERAL PUBLIC LICENSE**, Version 3. See separate LICENSE file.

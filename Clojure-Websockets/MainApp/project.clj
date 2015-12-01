@@ -8,9 +8,9 @@
                  [clojurewerkz/elastisch "2.2.0-beta4"]
                  [org.clojure/tools.logging "0.3.1"]
                  [com.taoensso/timbre "4.1.4"]
-                 [com.taoensso/encore "2.20.0"]
-                 [com.taoensso/carmine "2.12.0"]
-                 [matthiasn/systems-toolbox "0.3.11"]
+                 [com.taoensso/encore "2.26.1"]
+                 [com.taoensso/carmine "2.12.1"]
+                 [matthiasn/systems-toolbox "0.3.14"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [hiccup "1.0.5"]
@@ -22,7 +22,7 @@
                  [reagent "0.5.1"]
                  [cljsjs/moment "2.10.6-0"]
                  [clj-pid "0.1.2"]
-                 [metrics-clojure "2.5.1"]]
+                 [metrics-clojure "2.6.0"]]
 
   :source-paths ["src/clj/"]
 
@@ -33,7 +33,7 @@
   :profiles {:uberjar {:aot :all}}
 
   :plugins [[lein-cljsbuild "1.1.1"]
-            [lein-figwheel "0.4.1" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]
+            [lein-figwheel "0.5.0-2" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]
             [quickie "0.4.1" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]
             [codox "0.9.0"]]
 

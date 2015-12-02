@@ -23,7 +23,11 @@ Alternatively, you can use the following during development to detect file syste
     lein cljsbuild auto release
     lein cljsbuild auto dev
 
-Another way for an even more interactive development experience is to use **Figwheel**.
+Another way for an even more interactive development experience is to use **[lein-figwheel](https://github.com/bhauman/lein-figwheel)** which will allow for live reloading while maintaining the client-side application state. For this, you use 
+
+    lein figwheel
+
+instead of the cljsbuild command above. Then, whenever code changes, only the changed namespace is recompiled, which typically only takes fractions of a second. Note however that this mode is only meant for use during development on a local machine. Instead of a single, optimized JavaScript file, the browser needs to download many small files. Also, the resulting JavaScript code is slower than the code that went through advanced compilation in the **[Closure compiler](https://developers.google.com/closure/compiler)**.
 
 You also need **[Bower](http://bower.io)** for managing the client-side dependencies. Once you have it installed, all you need to do is run it once:
 

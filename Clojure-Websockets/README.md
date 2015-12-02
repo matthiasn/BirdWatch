@@ -4,13 +4,13 @@ This is an **all-Clojure** implementation of the **BirdWatch** application. Ther
 ## Building blocks:
 Here is a brief overview of the building blocks:
 
-* The server side is organized as a few independent **components** that are wired together by **[@stuartsierra](https://twitter.com/stuartsierra)**'s **[component](https://github.com/stuartsierra/component)** library.
+* The system is built out of smaller subsystems that communicate via asynchronous message passing. These subsystems instantiated and wired together using the **[systems-toolbox](https://github.com/matthiasn/systems-toolbox)** library. Subsystems on the server and on the connected web clients look very similar because they are, the library uses cljc so that the code can shared between Clojure and ClojureScript projects.
 * A twitter client on top of **Adam Wynne**'s **[twitter-api](https://github.com/adamwynne/twitter-api)** connects to the **[Twitter Streaming API](https://dev.twitter.com/streaming/overview)** and subscribes to a number of terms.
-* The *information grid* or pipes and tubes of the application is provided by **[core.async](https://github.com/clojure/core.async)**.
-* Tweets are persisted into **[ElasticSearch](http://www.elasticsearch.org)** using **[@ClojureWerkz](https://twitter.com/clojurewerkz)** **[Elastisch](https://github.com/clojurewerkz/elastisch)** client.
+* The *information grid* or pipes and tubes of the application is provided by **[core.async](https://github.com/clojure/core.async)**, but that part is abstracted away by the **systems-toolbox** library.
+* Tweets are persisted into **[ElasticSearch](http://www.elasticsearch.org)** using **[@ClojureWerkz](https://twitter.com/clojurewerkz)** **[Elastisch](https://github.com/clojurewerkz/elastisch)** client. Note that currently, the latest supported version by this client is ElasticSearch 1.7.2.
 * Clients connect over **[WebSockets](http://en.wikipedia.org/wiki/WebSocket)** provided by **[@ptaoussanis](https://twitter.com/ptaoussanis)** **[sente](https://github.com/ptaoussanis/sente)** library.
 * Clients can perform **live searches**, where matching new tweets with running searches is done via ElasticSearch's **[Percolator](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/search-percolate.html)** feature. The client UI is then updated in (near)-real time over the existing WebSockets connection.
-* The client UI is built using **[@swannodette](https://twitter.com/swannodette)**'s **[Om](https://github.com/swannodette/om)** library on top of Facebook's **[react](https://github.com/facebook/react)**.
+* The client UI is built using **[Reagent](https://github.com/reagent-project/reagent)** library on top of Facebook's **[react](https://github.com/facebook/react)**. UI components can observe the state of another component, this feature is also provided by the **[systems-toolbox](https://github.com/matthiasn/systems-toolbox)** library.
 
 ## Installation of MainApp
 First of all, **[Leiningen](http://leiningen.org)** must be installed on your system. Then, you need to build the client-side application:
@@ -22,6 +22,8 @@ Alternatively, you can use the following during development to detect file syste
 
     lein cljsbuild auto release
     lein cljsbuild auto dev
+
+Another way for an even more interactive development experience is to use **Figwheel**.
 
 You also need **[Bower](http://bower.io)** for managing the client-side dependencies. Once you have it installed, all you need to do is run it once:
 
@@ -60,6 +62,10 @@ In the twitterconf.edn, you can specify
 Once the steps described above are completed, usage is easy. You can start up the both applications in their respective directories like this:
 
     lein run
+
+The command above will have the MainApp application listen on **[localhost:8888](http://localhost:8888)**. You can alternatively specify a different port or IP address to listen through environment variables, like so:
+
+    PORT=9999 HOST=192.1.1.100 lein run
 
 ## License
 Copyright © 2014 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the **GNU GENERAL PUBLIC LICENSE**, Version 3. See separate LICENSE file.

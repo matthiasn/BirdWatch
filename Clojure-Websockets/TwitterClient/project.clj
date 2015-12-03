@@ -3,7 +3,7 @@
   :description "Twitter client part of the BirdWatch system"
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "GNU General Public License" :url "http://www.gnu.org/licenses/gpl-3.0.en.html"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.8.0-RC3"]
                  [twitter-api "0.7.8"]
                  [clojurewerkz/elastisch "2.2.0-beta4"]
                  [org.clojure/tools.logging "0.3.1"]

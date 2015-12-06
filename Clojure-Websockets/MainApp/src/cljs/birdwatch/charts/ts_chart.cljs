@@ -52,12 +52,12 @@
      [barchart indexed mx cnt w app]
      [labels bars mx cnt w (:label @app)]]))
 
-(defn mk-state
+(defn ts-chart-state-fn
   "Return clean initial component state atom."
   [_]
   (let [app (atom {:bars [] :label {}})]
     (r/render-component [ts-chart app] ts-elem)
-    app))
+    {:state app}))
 
 (defn state-pub-handler
   "Handle incoming messages: process / add to application state."
@@ -67,6 +67,6 @@
 (defn cmp-map
   [cmp-id throttle-ms]
   {:cmp-id            cmp-id
-   :state-fn          mk-state
+   :state-fn          ts-chart-state-fn
    :state-pub-handler state-pub-handler
    :opts              {:throttle-ms throttle-ms}})

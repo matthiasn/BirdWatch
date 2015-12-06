@@ -6,7 +6,7 @@
     [clojurewerkz.elastisch.rest.document :as esd]
     [clojurewerkz.elastisch.rest.response :as esrsp]))
 
-(defn mk-state
+(defn persistence-state-fn
   "Returns function for making state while using provided configuration."
   [conf]
   (fn [put-fn]
@@ -14,7 +14,8 @@
           conn (esr/connect es-address)]
       (println "ElasticSearch connection started to" es-address)
       (put-fn [:log/info (str "ElasticSearch connection started to " es-address)])
-      (atom {:conf conf :conn conn :state (atom {})}))))
+      {:state (atom {:conf conf
+                     :conn conn})})))
 
 (defn- strip-tweet
   "take only actually needed fields from tweet"
@@ -72,7 +73,7 @@
   "Create component for retrieving documents from ElasticSearch"
   [cmp-id conf]
   {:cmp-id      cmp-id
-   :state-fn    (mk-state conf)
+   :state-fn    (persistence-state-fn conf)
    :handler-map {:schedule/count-indexed total-tweets-indexed
                  :cmd/query              es-query
                  :cmd/missing            es-mt-query}})

@@ -2,8 +2,8 @@
   (:gen-class)
   (:require
    [birdwatch.persistence.persistence :as pc]
-   [birdwatch.percolator.percolator :as perc-cmp]
-   [birdwatch.interop.interop :as iop-cmp]
+   [birdwatch.percolator.percolator :as perc]
+   [birdwatch.interop.interop :as iop]
    [birdwatch.http.markup :as markup]
    [clojure.edn :as edn]
    [clojure.tools.logging :as log]
@@ -25,7 +25,18 @@
 ;;; a switchboard is created, which is a specialized component for wiring components together so that messages flow
 ;;; through a system as desired.
 
-(defn start
+(defn restart!
+  "Starts (or restarts) a system built out of the specified subsystems. The switchboard will
+  then fire up subsystems according to the blueprint maps, which are in passed in the second
+  position of the :cmd/init-comp vectors. These subsystems are then wired to provide the
+  communication paths required by the application.
+  The system can be restarted on the REPL. For example, say we modify the
+  birdwatch.percolator.percolator namespace. Then, we can reload it:
+
+    (require '[birdwatch.percolator.percolator :as perc] :reload)
+
+  Then, calling this function again will restart the system while maintaining the state of
+  the individual subsystems."
   []
   (let [switchboard (sb/component :switchboard)]
     (sb/send-mult-cmd
@@ -33,8 +44,8 @@
       [[:cmd/wire-comp (sente/component :ws-cmp markup/index)]  ; WebSockets component for client interaction
        [:cmd/init-comp (sched/cmp-map :scheduler-cmp)]          ; Scheduler component for task orchestration
        [:cmd/init-comp (pc/cmp-map :persistence-cmp conf)]      ; Persistence-related component
-       [:cmd/init-comp (iop-cmp/cmp-map :interop-cmp conf)]     ; Interoperability between JVMs over Redis PubSub
-       [:cmd/init-comp (perc-cmp/cmp-map :percolator-cmp conf)] ; Component for matching tweets with searches.
+       [:cmd/init-comp (iop/cmp-map :interop-cmp conf)]         ; Interoperability between JVMs over Redis PubSub
+       [:cmd/init-comp (perc/cmp-map :percolator-cmp conf)]     ; Component for matching tweets with searches.
        [:cmd/init-comp (metrics/cmp-map :metrics-cmp)]          ; Component for metrics and stats.
 
        ;; :persistence-cmp services data-related requests.
@@ -67,8 +78,12 @@
                    :msg [:cmd/schedule-new
                          {:timeout 5000 :id :cmd/get-jvm-stats :message [:cmd/get-jvm-stats] :repeat true}]}]])))
 
-(defn -main [& args]
+(defn -main
+  "Starts the application from command line. Also saves and logs process ID. The system that is fired up when
+  start! is called proceeds in core.async's thread pool. Since we don't want the application to exit when
+  just because the current thread is out of work, we just put it to sleep."
+  [& args]
   (pid/save (:pidfile-name conf))
   (pid/delete-on-shutdown! (:pidfile-name conf))
   (log/info "Application started, PID" (pid/current))
-  (start))
+  (restart!))

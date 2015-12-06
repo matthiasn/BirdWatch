@@ -19,7 +19,7 @@
     {"matches" (msg-handler-fn put-fn)}
     (car/subscribe topic)))
 
-(defn mk-state
+(defn iop-state-fn
   "Returns function for making state of the interop-component while using provided configuration."
   [conf]
   (fn [put-fn]
@@ -29,12 +29,13 @@
           listener (subscribe-topic put-fn conn "matches")]
       (println "Redis connection started to" redis-host redis-port)
       (put-fn [:log/info (str "Redis connection started to " redis-host redis-port)])
-      {:conf conf :conn conn :listener listener :state (atom {})})))
+      {:state (atom {:conf     conf
+                     :conn     conn
+                     :listener listener})})))
 
 (defn cmp-map
   "Create component for communicating with Redis."
   [cmp-id conf]
   {:cmp-id      cmp-id
-   :state-fn    (mk-state conf)
-   :handler-map {}
-   :opts        {:watch :state}})
+   :state-fn    (iop-state-fn conf)
+   :handler-map {}})

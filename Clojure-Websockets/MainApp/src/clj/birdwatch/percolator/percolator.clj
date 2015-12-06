@@ -6,7 +6,7 @@
     [clojurewerkz.elastisch.rest :as esr]
     [clojurewerkz.elastisch.rest.percolation :as perc]))
 
-(defn mk-state
+(defn percolator-state-fn
   "Returns function for making state while using provided configuration."
   [conf]
   (fn [put-fn]
@@ -14,7 +14,10 @@
           conn (esr/connect es-address)]
       (println "Percolator component started with ES connection to" es-address)
       (put-fn [:log/info (str "Percolator component started with ES connection to " es-address)])
-      (atom {:conf conf :conn conn :subscriptions {} :connected-uids {}}))))
+      {:state (atom {:conf           conf
+                     :conn           conn
+                     :subscriptions  {}
+                     :connected-uids {}})})))
 
 (defn start-percolator
   "register percolation search with ID based on hash of the query"
@@ -49,7 +52,7 @@
 (defn cmp-map
   "Create component for starting percolation in ElasticSearch and delivering matches."
   [cmp-id conf] {:cmp-id            cmp-id
-                 :state-fn          (mk-state conf)
+                 :state-fn          (percolator-state-fn conf)
                  :handler-map       {:redis/matches        deliver-perc-matches
                                      :cmd/percolate        start-percolator
                                      :schedule/count-users count-users}

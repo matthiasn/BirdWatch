@@ -79,12 +79,12 @@
                                  ^{:key (:id_str t)} [tweet-view t state]
                                  ^{:key (:id_str t)} [missing-tweet t put-fn]))]))))
 
-(defn mk-state
+(defn tweets-state-fn
   "Return clean initial component state atom."
   [put-fn]
   (let [app (atom {})]
     (r/render-component [tweets-view app put-fn] (util/by-id "tweet-frame"))
-    app))
+    {:state app}))
 
 (defn state-pub-handler
   "Handle incoming messages: process / add to application state."
@@ -94,5 +94,5 @@
 (defn cmp-map
   [cmp-id]
   {:cmp-id            cmp-id
-   :state-fn          mk-state
+   :state-fn          tweets-state-fn
    :state-pub-handler state-pub-handler})

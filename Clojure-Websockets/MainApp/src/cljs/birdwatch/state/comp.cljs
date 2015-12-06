@@ -6,10 +6,10 @@
 
 ;;;; Channels processing namespace. Here, messages are taken from channels and processed.
 
-(defn mk-state
+(defn state-fn
   "Return clean initial component state atom. put-fn argument not used."
   [_]
-  (atom (i/initial-state)))
+  {:state (atom (i/initial-state))})
 
 (def handler-map
   {:tweet/new               p/add-tweet!
@@ -30,5 +30,5 @@
 (defn cmp-map
   [cmp-id]
   {:cmp-id      cmp-id
-   :state-fn    mk-state
+   :state-fn    state-fn
    :handler-map handler-map})

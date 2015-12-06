@@ -28,7 +28,7 @@
                        :oauth-creds (creds conf)
                        :callbacks callback))
 
-(defn mk-state
+(defn tc-state-fn
   "Returns function for making state while using provided configuration."
   [conf]
   (fn [put-fn]
@@ -44,7 +44,7 @@
                     (put-fn [:tweet/new t])
                     (recur)))
       (log/info "TwitterClient component started.")
-      app)))
+      {:state app})))
 
 (defn t-conn-alive?
   "Check if connection to Twitter is alive. If not, restart."
@@ -66,5 +66,5 @@
   "Initiate TwitterClient subsystem."
   [cmp-id conf]
   (comp/make-component {:cmp-id      cmp-id
-                        :state-fn    (mk-state conf)
+                        :state-fn    (tc-state-fn conf)
                         :handler-map {:schedule/t-conn-alive? t-conn-alive?}}))

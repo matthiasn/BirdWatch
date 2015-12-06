@@ -14,7 +14,7 @@
         matches (set (map :_id (esrsp/matches-from response)))] ;; set with SHAs
     (put-fn [:perc/matches [msg-payload matches]])))
 
-(defn mk-state
+(defn percolator-state-fn
   "Returns function for making state while using provided configuration."
   [conf]
   (fn [put-fn]
@@ -22,10 +22,11 @@
           conn (esr/connect es-address)]
       (println "Percolator component started with ES connection to" es-address)
       (put-fn [:log/info (str "Percolator component started with ES connection to " es-address)])
-      (atom {:conf conf :conn conn}))))
+      {:state (atom {:conf conf
+                     :conn conn})})))
 
 (defn component
   [cmp-id conf]
   (comp/make-component {:cmp-id      cmp-id
-                        :state-fn    (mk-state conf)
+                        :state-fn    (percolator-state-fn conf)
                         :handler-map {:tweet/new percolate}}))

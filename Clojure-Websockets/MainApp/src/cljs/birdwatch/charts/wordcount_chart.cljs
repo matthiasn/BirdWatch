@@ -58,11 +58,11 @@
       (swap! ratio-trends assoc-in [text]
              (get (reg/linear-regression (take 1000 (get @ratio-items text))) 1)))))
 
-(defn mk-state
+(defn wordcount-state-fn
   "Return clean initial component state atom."
   [put-fn]
   (r/render-component [wordcount-barchart put-fn] wc-elem)
-  (atom {}))
+  {:state (atom {})})
 
 (defn state-pub-handler
   "Handle incoming messages: process / add to application state."
@@ -72,6 +72,6 @@
 (defn cmp-map
   [cmp-id throttle-ms]
   {:cmp-id            cmp-id
-   :state-fn          mk-state
+   :state-fn          wordcount-state-fn
    :state-pub-handler state-pub-handler
    :opts              {:throttle-ms throttle-ms}})

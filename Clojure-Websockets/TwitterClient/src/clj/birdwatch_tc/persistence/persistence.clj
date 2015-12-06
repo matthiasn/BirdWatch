@@ -6,7 +6,7 @@
     [clojurewerkz.elastisch.rest :as esr]
     [clojurewerkz.elastisch.rest.document :as esd]))
 
-(defn mk-state
+(defn persistence-state-fn
   "Returns function for making state while using provided configuration."
   [conf]
   (fn [put-fn]
@@ -14,7 +14,8 @@
           conn (esr/connect es-address)]
       (println "ElasticSearch connection started to" es-address)
       (put-fn [:log/info (str "ElasticSearch connection started to " es-address)])
-      (atom {:conf conf :conn conn}))))
+      {:state (atom {:conf conf
+                     :conn conn})})))
 
 (defn- save-tweet
   "Persist tweet into configured ElasticSearch index."
@@ -26,5 +27,5 @@
 (defn component
   [cmp-id conf]
   (comp/make-component {:cmp-id      cmp-id
-                        :state-fn    (mk-state conf)
+                        :state-fn    (persistence-state-fn conf)
                         :handler-map {:tweet/new save-tweet}}))

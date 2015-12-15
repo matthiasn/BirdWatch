@@ -2,7 +2,6 @@
   (:gen-class)
   (:require
     [clojure.core.match :refer [match]]
-    [matthiasn.systems-toolbox.component :as comp]
     [taoensso.carmine :as car :refer (wcar)]))
 
 (defn publish
@@ -35,8 +34,8 @@
           listener (subscribe-topic put-fn conn "matches")]
       (println "Redis connection started to" redis-host redis-port)
       (put-fn [:log/info (str "Redis connection started to " redis-host redis-port)])
-      {:state (atom {:conf conf
-                     :conn conn
+      {:state (atom {:conf     conf
+                     :conn     conn
                      :listener listener})})))
 
 (defn publish-perc
@@ -44,9 +43,9 @@
   [{:keys [cmp-state msg-payload]}]
   (publish (:conn @cmp-state) "matches" msg-payload))
 
-(defn component
+(defn cmp-map
   "Create component for communicating with Redis."
   [cmp-id conf]
-  (comp/make-component {:cmp-id      cmp-id
-                        :state-fn    (iop-state-fn conf)
-                        :handler-map {:perc/matches publish-perc}}))
+  {:cmp-id      cmp-id
+   :state-fn    (iop-state-fn conf)
+   :handler-map {:perc/matches publish-perc}})

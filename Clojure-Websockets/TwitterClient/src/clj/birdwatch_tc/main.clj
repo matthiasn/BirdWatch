@@ -33,11 +33,11 @@
   (let [switchboard (sb/component :switchboard)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/wire-comp (tc/component :tc-cmp conf)]
-       [:cmd/wire-comp (sched/component :scheduler-cmp)]
-       [:cmd/wire-comp (pc/component :persistence-cmp conf)]
-       [:cmd/wire-comp (iop/component :interop-cmp conf)]
-       [:cmd/wire-comp (perc/component :percolator-cmp conf)]
+      [[:cmd/init-comp (tc/cmp-map :tc-cmp conf)]
+       [:cmd/init-comp (sched/cmp-map :scheduler-cmp)]
+       [:cmd/init-comp (pc/cmp-map :persistence-cmp conf)]
+       [:cmd/init-comp (iop/cmp-map :interop-cmp conf)]
+       [:cmd/init-comp (perc/cmp-map :percolator-cmp conf)]
 
        [:cmd/route {:from :tc-cmp :to :persistence-cmp}]
        [:cmd/route {:from :tc-cmp :to :percolator-cmp}]
@@ -59,4 +59,5 @@
   (pid/save (:pidfile-name conf))
   (pid/delete-on-shutdown! (:pidfile-name conf))
   (log/info "Application started, PID" (pid/current))
-  (restart!))
+  (restart!)
+  (Thread/sleep Long/MAX_VALUE))

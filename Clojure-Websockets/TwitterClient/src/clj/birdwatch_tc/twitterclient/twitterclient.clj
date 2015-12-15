@@ -3,7 +3,6 @@
   (:require
     [clojure.core.match :refer [match]]
     [clojure.tools.logging :as log]
-    [matthiasn.systems-toolbox.component :as comp]
     [clj-time.core :as t]
     [twitter.api.streaming :as tas]
     [twitter.oauth :as oauth]
@@ -62,9 +61,9 @@
           (swap! cmp-state assoc :conn {}))
         (swap! cmp-state assoc :conn (start-t-conn! conf (:callback state-snapshot)))))))
 
-(defn component
+(defn cmp-map
   "Initiate TwitterClient subsystem."
   [cmp-id conf]
-  (comp/make-component {:cmp-id      cmp-id
-                        :state-fn    (tc-state-fn conf)
-                        :handler-map {:schedule/t-conn-alive? t-conn-alive?}}))
+  {:cmp-id      cmp-id
+   :state-fn    (tc-state-fn conf)
+   :handler-map {:schedule/t-conn-alive? t-conn-alive?}})

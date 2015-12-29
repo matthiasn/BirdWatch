@@ -11,7 +11,7 @@
                  [com.taoensso/timbre "4.1.4"]
                  [com.taoensso/encore "2.31.0"]
                  [com.taoensso/carmine "2.12.1"]
-                 [matthiasn/systems-toolbox "0.4.8"]
+                 [matthiasn/systems-toolbox "0.4.10" :exclusions [com.taoensso/nippy]]
                  [org.clojure/tools.namespace "0.2.11"]
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [hiccup "1.0.5"]

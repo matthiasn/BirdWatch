@@ -6,14 +6,14 @@
   :dependencies [[org.clojure/clojure "1.8.0-RC4"]
                  [clj-http "2.0.0"]
                  [twitter-api "0.7.8" :exclusions [org.clojure/data.json]]
+                 [org.clojure/core.match "0.3.0-alpha4"]
                  [clojurewerkz/elastisch "2.2.0-rc1"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [matthiasn/systems-toolbox "0.4.10" :exclusions [com.taoensso/nippy]]
+                 [matthiasn/systems-toolbox "0.5.1"]
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [clj-time "0.11.0"]
                  [clj-pid "0.1.2"]
-                 [com.taoensso/carmine "2.12.1" :exclusions [org.clojure/tools.reader]]
-                 [metrics-clojure "2.6.0"]]
+                 [com.taoensso/carmine "2.12.1" :exclusions [org.clojure/tools.reader]]]
   :source-paths ["src/clj/"]
   :main ^:skip-aot birdwatch-tc.main
   :target-path "target/%s"

@@ -1,5 +1,5 @@
 (ns birdwatch.ui.count-views
-  (:require [matthiasn.systems-toolbox.reagent :as r]))
+  (:require [matthiasn.systems-toolbox-ui.reagent :as r]))
 
 (defn- count-view
   [{:keys [observed]}]

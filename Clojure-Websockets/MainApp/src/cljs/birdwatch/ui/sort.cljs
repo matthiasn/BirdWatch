@@ -1,5 +1,5 @@
 (ns birdwatch.ui.sort
-  (:require [matthiasn.systems-toolbox.reagent :as r]))
+  (:require [matthiasn.systems-toolbox-ui.reagent :as r]))
 
 (def sort-orders [[:by-id "latest"][:by-followers "followers"]
                   [:by-retweets "retweets"][:by-rt-since-startup "retweets2"]

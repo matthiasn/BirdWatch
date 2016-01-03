@@ -1,5 +1,5 @@
 (ns birdwatch.ui.pagination
-  (:require [matthiasn.systems-toolbox.reagent :as r]))
+  (:require [matthiasn.systems-toolbox-ui.reagent :as r]))
 
 (defn- pag-item [idx app put-fn]
   [:button.pure-button.not-rounded.button-xsmall

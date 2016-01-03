@@ -1,5 +1,5 @@
 (ns birdwatch.ui.search
-  (:require [matthiasn.systems-toolbox.reagent :as r]))
+  (:require [matthiasn.systems-toolbox-ui.reagent :as r]))
 
 (def s [:svg {:height "1em" :viewBox "0 0 1200 1200"}
             [:g {:transform "rotate(90 600 600)"}

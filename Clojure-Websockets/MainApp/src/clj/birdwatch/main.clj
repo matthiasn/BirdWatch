@@ -11,9 +11,9 @@
    [clojure.tools.namespace.repl :refer [refresh]]
    [clj-pid.core :as pid]
    [matthiasn.systems-toolbox.switchboard :as sb]
-   [matthiasn.systems-toolbox.sente :as sente]
    [matthiasn.systems-toolbox.scheduler :as sched]
-   [matthiasn.systems-toolbox.metrics :as metrics]))
+   [matthiasn.systems-toolbox-sente.sente :as sente]
+   [matthiasn.systems-toolbox-metrics.metrics :as metrics]))
 
 (pretty/install-pretty-logging)
 (pretty/install-uncaught-exception-handler)
@@ -41,7 +41,7 @@
   (let [switchboard (sb/component :switchboard)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/wire-comp (sente/component :ws-cmp markup/index)]  ; WebSockets component for client interaction
+      [[:cmd/init-comp (sente/cmp-map :ws-cmp markup/index)]  ; WebSockets component for client interaction
        [:cmd/init-comp (sched/cmp-map :scheduler-cmp)]          ; Scheduler component for task orchestration
        [:cmd/init-comp (pc/cmp-map :persistence-cmp conf)]      ; Persistence-related component
        [:cmd/init-comp (iop/cmp-map :interop-cmp conf)]         ; Interoperability between JVMs over Redis PubSub
@@ -86,4 +86,5 @@
   (pid/save (:pidfile-name conf))
   (pid/delete-on-shutdown! (:pidfile-name conf))
   (log/info "Application started, PID" (pid/current))
-  (restart!))
+  (restart!)
+  (Thread/sleep Long/MAX_VALUE))

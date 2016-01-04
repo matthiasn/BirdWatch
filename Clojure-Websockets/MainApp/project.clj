@@ -4,12 +4,12 @@
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "GNU General Public License" :url "http://www.gnu.org/licenses/gpl-3.0.en.html"}
   :dependencies [[org.clojure/clojure "1.8.0-RC4"]
-                 [org.clojure/tools.reader "1.0.0-alpha1"]
+                 [org.clojure/tools.reader "1.0.0-alpha2"]
                  [org.clojure/clojurescript "1.7.170"]
                  [clojurewerkz/elastisch "2.2.0"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [com.taoensso/timbre "4.1.4"]
-                 [com.taoensso/encore "2.31.0"]
+                 [com.taoensso/timbre "4.2.0"]
+                 [com.taoensso/encore "2.31.3"]
                  [com.taoensso/carmine "2.12.1"]
                  [matthiasn/systems-toolbox "0.5.1"]
                  [matthiasn/systems-toolbox-sente "0.5.1"]

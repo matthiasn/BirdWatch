@@ -7,7 +7,7 @@
                  [clj-http "2.0.0"]
                  [twitter-api "0.7.8" :exclusions [org.clojure/data.json]]
                  [org.clojure/core.match "0.3.0-alpha4"]
-                 [clojurewerkz/elastisch "2.2.0-rc1"]
+                 [clojurewerkz/elastisch "2.2.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [matthiasn/systems-toolbox "0.5.1"]
                  [ch.qos.logback/logback-classic "1.1.3"]

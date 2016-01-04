@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.8.0-RC4"]
                  [org.clojure/tools.reader "1.0.0-alpha1"]
                  [org.clojure/clojurescript "1.7.170"]
-                 [clojurewerkz/elastisch "2.2.0-rc1"]
+                 [clojurewerkz/elastisch "2.2.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [com.taoensso/timbre "4.1.4"]
                  [com.taoensso/encore "2.31.0"]

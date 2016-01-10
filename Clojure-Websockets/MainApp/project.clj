@@ -26,6 +26,7 @@
                  [reagent "0.5.1"]
                  [cljsjs/moment "2.10.6-0"]
                  [clj-pid "0.1.2"]
+                 [ring/ring-ssl "0.2.1" :exclusions [ring/ring-core]]
                  [metrics-clojure "2.6.0"]]
 
   :source-paths ["src/clj/"]

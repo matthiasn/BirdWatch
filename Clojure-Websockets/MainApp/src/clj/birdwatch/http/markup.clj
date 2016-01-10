@@ -1,5 +1,6 @@
 (ns birdwatch.http.markup
   (:require [hiccup.core :refer [html]]
+            [ring.middleware.ssl :as ssl]
             [birdwatch.http.css :refer [index-css]]))
 
 (defn analytics
@@ -69,6 +70,7 @@
 
 (def sente-map
   {:index-page-fn index-page-fn
+   :middleware ssl/wrap-hsts
    :undertow-cfg  (when (and ssl-keystore key-password)
                     {:ssl-port     (get (System/getenv) "SSL_PORT" 8443)
                      :keystore     ssl-keystore

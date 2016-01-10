@@ -12,7 +12,7 @@
                  ga('create', " analytics-id ", 'auto');
                  ga('send', 'pageview');")])
 
-(defn index
+(defn index-page-fn
   "Renders Index page."
   [dev?]
   (html
@@ -63,3 +63,13 @@
       ; Google Analytics for tracking demo page: Todo: edit ID or remove in your own project.
       [:script {:async "" :src "//www.google-analytics.com/analytics.js"}]
       (analytics "'UA-40261983-4'")]]))
+
+(def ssl-keystore (get (System/getenv) "SSL_KEYSTORE"))
+(def key-password (get (System/getenv) "SSL_KEYSTORE_PW"))
+
+(def sente-map
+  {:index-page-fn index-page-fn
+   :undertow-cfg  (when (and ssl-keystore key-password)
+                    {:ssl-port     (get (System/getenv) "SSL_PORT" 8443)
+                     :keystore     ssl-keystore
+                     :key-password key-password})})

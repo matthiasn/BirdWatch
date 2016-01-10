@@ -41,7 +41,7 @@
   (let [switchboard (sb/component :switchboard)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/init-comp (sente/cmp-map :ws-cmp markup/index)]  ; WebSockets component for client interaction
+      [[:cmd/init-comp (sente/cmp-map :ws-cmp markup/sente-map)]  ; WebSockets component for client interaction
        [:cmd/init-comp (sched/cmp-map :scheduler-cmp)]          ; Scheduler component for task orchestration
        [:cmd/init-comp (pc/cmp-map :persistence-cmp conf)]      ; Persistence-related component
        [:cmd/init-comp (iop/cmp-map :interop-cmp conf)]         ; Interoperability between JVMs over Redis PubSub

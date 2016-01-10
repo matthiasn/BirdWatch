@@ -12,6 +12,7 @@ pom.xml.asc
 *.log
 *.hprof
 *.pid
+*.jks
 
 twitterconf.edn
 resources/public/js/build/

@@ -1,0 +1,10 @@
+# Disable unsafe algorithms so that only the safest TLS ciphers remain. Likely not all of these settings
+# are required here, but it won't hurt to strengthen the JVM anyway, especially since these changes
+# are local to the application and not globally in $JAVA_HOME/jre/lib/security/java.security, where they could
+# potentially interfere with other applications on your system.
+
+jdk.certpath.disabledAlgorithms=MD2, RSA keySize < 2048, MD4, MD5, EC keySize < 160, DSA keySize < 2048
+jdk.tls.disabledAlgorithms=EC keySize < 160, SSLv3, RC4, TLSv1, TLSv1.1, DSA, RSA keySize < 2048, MD5, CBC
+
+# Disable support for any and all legacy algorithms.
+jdk.tls.legacyAlgorithms=

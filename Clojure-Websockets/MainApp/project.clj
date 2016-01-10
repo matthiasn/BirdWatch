@@ -30,7 +30,8 @@
 
   :source-paths ["src/clj/"]
 
-  :jvm-opts ^:replace ["-Xmx1G" "-server"]
+  :jvm-opts ["-Xmx1G" "-server" "-Djdk.tls.ephemeralDHKeySize=2048"
+             "-Djava.security.properties=TLS/birdwatch.security"]
 
   :main ^:skip-aot birdwatch.main
   :target-path "target/%s"

@@ -25,7 +25,7 @@
       (when dev? [:link {:href "/css/birdwatch.css" :media "screen" :rel "stylesheet"}])
       (when-not dev? [:link {:href "/css/birdwatch.min.css" :media "screen" :rel "stylesheet"}])
       [:style (index-css dev?)]
-      [:link {:href "http://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext" :rel "stylesheet" :type "text/css"}]
+      [:link {:href "https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext" :rel "stylesheet" :type "text/css"}]
       [:link {:href "/images/favicon.png" :rel "shortcut icon" :type "image/png"}]]
      [:body
       [:div.header

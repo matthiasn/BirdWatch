@@ -1,6 +1,7 @@
 (ns birdwatch.ui.tweets
   (:require [birdwatch.ui.util :as util]
-            [reagent.core :as r :refer [atom]]))
+            [reagent.core :as r :refer [atom]]
+            [clojure.string :as s]))
 
 (defn twitter-intent
   "Renders a twitter intent as a clickable image, for example for retweeting directly
@@ -36,6 +37,11 @@
    [:div.pull-right.time-interval (str (util/rt-count tweet state) (util/fav-count tweet state))
     [:br] (util/rt-count-since-startup tweet state)]])
 
+(defn http-replacer
+  "Function for replacing 'http' with 'https' in image URLs."
+  [url]
+  (s/replace url "http:" "https:"))
+
 (defn image-view
   "Renders the first image inside the media vector as its only argument.
    The assumption is that the interesting image is always contained at
@@ -43,7 +49,7 @@
   [media]
   [:div.tweet-image
    [:a {:href (:url (get media 0)) :target "_blank"}
-    [:img.pure-img-responsive {:src (str (:media_url (get media 0)) ":small")}]]])
+    [:img.pure-img-responsive {:src (http-replacer (str (:media_url (get media 0)) ":small"))}]]])
 
 (defn tweet-view
   "Renders a tweet with all the elements it contains. Takes the raw (unformatted)
@@ -54,8 +60,8 @@
         screen-name (:screen_name user)
         href (str "https://www.twitter.com/" screen-name)]
     [:div.tweet
-     [:span [:a {:href href :target "_blank"} [:img.thumbnail{:src (:profile_image_url user)}]]]
-     [:a {:href href :target "_blank"} [:span.username {:src (:profile_image_url user)} (:name user)]]
+     [:span [:a {:href href :target "_blank"} [:img.thumbnail {:src (http-replacer (:profile_image_url user))}]]]
+     [:a {:href href :target "_blank"} [:span.username {:src (http-replacer (:profile_image_url user))} (:name user)]]
      [:span.username_screen (str " @" screen-name)]
      [:div.pull-right.time-interval (util/from-now (:created_at tweet))]
      [tweet-text tweet user state]

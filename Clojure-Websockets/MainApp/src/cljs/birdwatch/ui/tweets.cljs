@@ -52,7 +52,7 @@
   (let [tweet ((memoize util/format-tweet) raw-tweet)
         user (:user tweet)
         screen-name (:screen_name user)
-        href (str "http://www.twitter.com/" screen-name)]
+        href (str "https://www.twitter.com/" screen-name)]
     [:div.tweet
      [:span [:a {:href href :target "_blank"} [:img.thumbnail{:src (:profile_image_url user)}]]]
      [:a {:href href :target "_blank"} [:span.username {:src (:profile_image_url user)} (:name user)]]

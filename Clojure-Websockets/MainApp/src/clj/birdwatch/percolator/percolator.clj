@@ -42,7 +42,7 @@
   "Count the number of currently connected client (for display in UI)."
   [{:keys [cmp-state put-fn]}]
   (let [connected-uids (:connected-uids @cmp-state)]
-    (put-fn [:stats/users-count (count (:any connected-uids))])))
+    (put-fn (with-meta [:stats/users-count (count (:any connected-uids))] {:sente-uid :broadcast}))))
 
 (defn state-pub-handler
   "Handle incoming messages: process / add to application state."

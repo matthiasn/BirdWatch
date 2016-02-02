@@ -10,7 +10,7 @@
             [birdwatch.conf.observer :as obs-cfg]
             [birdwatch.state.comp :as state]
             [matthiasn.systems-toolbox.switchboard :as sb]
-            [matthiasn.systems-toolbox-sente.sente :as sente]
+            [matthiasn.systems-toolbox-sente.client :as sente]
             [matthiasn.systems-toolbox-metrics.jvmstats :as jvmstats]
             [matthiasn.systems-toolbox-ui.charts.observer :as obs]
             [cljsjs.moment]))

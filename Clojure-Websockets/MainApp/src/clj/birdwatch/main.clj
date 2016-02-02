@@ -12,7 +12,7 @@
    [clj-pid.core :as pid]
    [matthiasn.systems-toolbox.switchboard :as sb]
    [matthiasn.systems-toolbox.scheduler :as sched]
-   [matthiasn.systems-toolbox-sente.sente :as sente]
+   [matthiasn.systems-toolbox-sente.server :as sente]
    [matthiasn.systems-toolbox-metrics.metrics :as metrics]))
 
 (pretty/install-pretty-logging)
@@ -41,12 +41,12 @@
   (let [switchboard (sb/component :switchboard)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/init-comp (sente/cmp-map :ws-cmp markup/sente-map)]  ; WebSockets component for client interaction
-       [:cmd/init-comp (sched/cmp-map :scheduler-cmp)]          ; Scheduler component for task orchestration
-       [:cmd/init-comp (pc/cmp-map :persistence-cmp conf)]      ; Persistence-related component
-       [:cmd/init-comp (iop/cmp-map :interop-cmp conf)]         ; Interoperability between JVMs over Redis PubSub
-       [:cmd/init-comp (perc/cmp-map :percolator-cmp conf)]     ; Component for matching tweets with searches.
-       [:cmd/init-comp (metrics/cmp-map :metrics-cmp)]          ; Component for metrics and stats.
+      [[:cmd/init-comp (sente/cmp-map :ws-cmp markup/sente-map)] ; WebSockets component for client interaction
+       [:cmd/init-comp (sched/cmp-map :scheduler-cmp)]           ; Scheduler component for task orchestration
+       [:cmd/init-comp (pc/cmp-map :persistence-cmp conf)]       ; Persistence-related component
+       [:cmd/init-comp (iop/cmp-map :interop-cmp conf)]          ; Interoperability between JVMs over Redis PubSub
+       [:cmd/init-comp (perc/cmp-map :percolator-cmp conf)]      ; Component for matching tweets with searches.
+       [:cmd/init-comp (metrics/cmp-map :metrics-cmp)]           ; Component for metrics and stats.
 
        ;; :persistence-cmp services data-related requests.
        [:cmd/route {:from :scheduler-cmp :to :persistence-cmp}]
@@ -68,15 +68,21 @@
        ;; :scheduler-cmp sends msgs to :metrics-cmp
        [:cmd/route {:from :scheduler-cmp :to :metrics-cmp}]
 
-       [:cmd/send {:to :scheduler-cmp
-                   :msg [:cmd/schedule-new
-                         {:timeout 5000 :id :schedule/count-indexed :message [:schedule/count-indexed] :repeat true}]}]
-       [:cmd/send {:to :scheduler-cmp
-                   :msg [:cmd/schedule-new
-                         {:timeout 3000 :id :schedule/count-users :message [:schedule/count-users] :repeat true}]}]
-       [:cmd/send {:to :scheduler-cmp
-                   :msg [:cmd/schedule-new
-                         {:timeout 5000 :id :cmd/get-jvm-stats :message [:cmd/get-jvm-stats] :repeat true}]}]])))
+       [:cmd/send {:to  :scheduler-cmp
+                   :msg [:cmd/schedule-new {:timeout 5000
+                                            :id      :schedule/count-indexed
+                                            :message [:schedule/count-indexed]
+                                            :repeat  true}]}]
+       [:cmd/send {:to  :scheduler-cmp
+                   :msg [:cmd/schedule-new {:timeout 3000
+                                            :id      :schedule/count-users
+                                            :message [:schedule/count-users]
+                                            :repeat  true}]}]
+       [:cmd/send {:to  :scheduler-cmp
+                   :msg [:cmd/schedule-new {:timeout 5000
+                                            :id      :cmd/get-jvm-stats
+                                            :message (with-meta [:cmd/get-jvm-stats] {:sente-uid :broadcast})
+                                            :repeat  true}]}]])))
 
 (defn -main
   "Starts the application from command line. Also saves and logs process ID. The system that is fired up when

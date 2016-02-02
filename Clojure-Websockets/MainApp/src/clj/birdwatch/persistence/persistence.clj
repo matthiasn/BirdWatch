@@ -48,26 +48,27 @@
 
 (defn es-query
   "Handler function for previous tweets. Uses put-fn for returning results."
-  [{:keys [cmp-state put-fn msg-payload]}]
+  [{:keys [cmp-state put-fn msg-meta msg-payload]}]
   (let [conf (:conf @cmp-state)
         conn (:conn @cmp-state)]
-    (put-fn [:tweet/prev-chunk {:uid (:uid msg-payload) :result (mk-query msg-payload conf conn)}])))
+    (put-fn (with-meta [:tweet/prev-chunk {:result (mk-query msg-payload conf conn)}] msg-meta))))
 
 (defn es-mt-query
   "Handler function for missing tweets. Uses put-fn for returning results."
-  [{:keys [cmp-state put-fn msg-payload]}]
+  [{:keys [cmp-state put-fn msg-meta msg-payload]}]
   (let [conf (:conf @cmp-state)
         conn (:conn @cmp-state)
         res (esd/get conn (:es-index conf) "tweet" (:id_str msg-payload))]
     (when-not res (put-fn [:log/info [:persistence-cmp "missing tweet:" (:id_str msg-payload)]]))
-    (put-fn [:tweet/missing-tweet {:tweet (strip-source res) :uid (:uid msg-payload)}])))
+    (put-fn (with-meta [:tweet/missing-tweet {:tweet (strip-source res)}] msg-meta))))
 
 (defn total-tweets-indexed
   [{:keys [cmp-state put-fn]}]
   (let [conf (:conf @cmp-state)
         conn (:conn @cmp-state)
         cnt (esd/count conn (:es-index conf) "tweet")]
-    (put-fn [:stats/total-tweet-count (format "%,15d" (:count cnt))])))
+    (put-fn (with-meta [:stats/total-tweet-count (format "%,15d" (:count cnt))]
+                       {:sente-uid :broadcast}))))
 
 (defn cmp-map
   "Create component for retrieving documents from ElasticSearch"

@@ -3,18 +3,18 @@
   :description "Main part of the BirdWatch system (without TwitterClient)"
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "GNU General Public License" :url "http://www.gnu.org/licenses/gpl-3.0.en.html"}
-  :dependencies [[org.clojure/clojure "1.8.0-RC4"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/tools.reader "1.0.0-alpha2"]
-                 [org.clojure/clojurescript "1.7.170"]
-                 [clojurewerkz/elastisch "2.2.0"]
+                 [org.clojure/clojurescript "1.7.228"]
+                 [clojurewerkz/elastisch "2.2.1"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [com.taoensso/timbre "4.2.0"]
-                 [com.taoensso/encore "2.31.3"]
-                 [com.taoensso/carmine "2.12.1"]
-                 [matthiasn/systems-toolbox "0.5.2"]
-                 [matthiasn/systems-toolbox-sente "0.5.2"]
-                 [matthiasn/systems-toolbox-ui "0.5.1"]
-                 [matthiasn/systems-toolbox-metrics "0.5.1"]
+                 [com.taoensso/timbre "4.2.1"]
+                 [com.taoensso/encore "2.33.0"]
+                 [com.taoensso/carmine "2.12.2"]
+                 [matthiasn/systems-toolbox "0.5.7"]
+                 [matthiasn/systems-toolbox-sente "0.5.8"]
+                 [matthiasn/systems-toolbox-ui "0.5.2"]
+                 [matthiasn/systems-toolbox-metrics "0.5.2"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [hiccup "1.0.5"]
@@ -24,7 +24,7 @@
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.7"]
                  [reagent "0.5.1"]
-                 [cljsjs/moment "2.10.6-0"]
+                 [cljsjs/moment "2.10.6-1"]
                  [clj-pid "0.1.2"]
                  [ring/ring-ssl "0.2.1" :exclusions [ring/ring-core]]
                  [metrics-clojure "2.6.0"]]
@@ -39,7 +39,7 @@
   :profiles {:uberjar {:aot :all}}
 
   :plugins [[lein-cljsbuild "1.1.2"]
-            [lein-figwheel "0.5.0-2" :exclusions [org.clojure/clojure
+            [lein-figwheel "0.5.0-6" :exclusions [org.clojure/clojure
                                                   org.clojure/clojurescript
                                                   org.clojure/tools.reader
                                                   org.clojure/google-closure-library

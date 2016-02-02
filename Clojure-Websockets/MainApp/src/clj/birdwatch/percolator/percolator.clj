@@ -36,7 +36,7 @@
         subscriptions (:subscriptions @cmp-state)]
     (doseq [uid (:any connected-uids)]
       (when (contains? matches (get subscriptions uid))
-        (put-fn [:tweet/new {:tweet t :uid uid}])))))
+        (put-fn (with-meta [:tweet/new {:tweet t}] {:sente-uid uid}))))))
 
 (defn count-users
   "Count the number of currently connected client (for display in UI)."

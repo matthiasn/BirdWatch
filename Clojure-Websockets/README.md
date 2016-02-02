@@ -42,7 +42,7 @@ In the conf.edn, you can specify
 ## Installation of TwitterClient
 You will need to create a file named twitterconf.edn. You can copy **twitterconf-tpl.edn** as a template. Edit it and fill out the credentials you have obtained from **[dev.twitter.com](dev.twitter.com)**:
 
-      { :consumer-key             "<YOUR API KEY HERE>"
+       {:consumer-key             "<YOUR API KEY HERE>"
         :consumer-secret          "<YOUR API SECRET HERE>"
         :user-access-token        "<YOUR ACCESS TOKEN HERE>"
         :user-access-token-secret "<YOUR ACCESS TOKEN SECRET HERE>"
@@ -71,5 +71,7 @@ The command above will have the MainApp application listen on **[localhost:8888]
 
     PORT=9999 HOST=192.1.1.100 lein run
 
+You can now also run the application in a secure fashion using TLS, have a look at this separate **[README](./MainApp/TLS/README.md)**.
+
 ## License
-Copyright © 2014 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the **GNU GENERAL PUBLIC LICENSE**, Version 3. See separate LICENSE file.
+Copyright © 2014-2016 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the **GNU GENERAL PUBLIC LICENSE**, Version 3. See separate LICENSE file.

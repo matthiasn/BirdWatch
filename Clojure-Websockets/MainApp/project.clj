@@ -1,5 +1,4 @@
-(defproject
-  birdwatch "0.2.0-SNAPSHOT"
+(defproject birdwatch "0.2.0-SNAPSHOT"
   :description "Main part of the BirdWatch system (without TwitterClient)"
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "GNU General Public License" :url "http://www.gnu.org/licenses/gpl-3.0.en.html"}
@@ -11,8 +10,9 @@
                  [com.taoensso/timbre "4.2.1"]
                  [com.taoensso/encore "2.33.0"]
                  [com.taoensso/carmine "2.12.2"]
+                 [io.undertow/undertow-core "1.3.14.Final"]
                  [matthiasn/systems-toolbox "0.5.7"]
-                 [matthiasn/systems-toolbox-sente "0.5.8"]
+                 [matthiasn/systems-toolbox-sente "0.5.9" :exclusions [org.jboss.xnio/xnio-nio]]
                  [matthiasn/systems-toolbox-ui "0.5.2"]
                  [matthiasn/systems-toolbox-metrics "0.5.2"]
                  [org.clojure/tools.namespace "0.2.11"]
@@ -27,7 +27,7 @@
                  [cljsjs/moment "2.10.6-1"]
                  [clj-pid "0.1.2"]
                  [ring/ring-ssl "0.2.1" :exclusions [ring/ring-core]]
-                 [metrics-clojure "2.6.0"]]
+                 [metrics-clojure "2.6.1"]]
 
   :source-paths ["src/clj/"]
 
@@ -36,7 +36,9 @@
 
   :main ^:skip-aot birdwatch.main
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}}
+
+  :profiles {:uberjar {:aot :all}
+             :http2   {:jvm-opts ["-Xbootclasspath/p:TLS/alpn-boot-8.1.7.v20160121.jar"]}}
 
   :plugins [[lein-cljsbuild "1.1.2"]
             [lein-figwheel "0.5.0-6" :exclusions [org.clojure/clojure

@@ -42,6 +42,11 @@ This will start the application with TLS enabled on port 8443. If you want a dif
 
 Obviously, you will also want to configure `iptables` or whatever you are using for port redirects if you want the application to respond on the normal https port 443.
 
+You can now also run the application in HTTP2 mode. For this, start the application as follows instead:
+
+    SSL_KEYSTORE=TLS/keystore.jks SSL_KEYSTORE_PW=<some-random-password> HTTP2=true lein with-profile http2 run
+
+**HTTP2** required TLS.
 
 # Possible improvements
 

@@ -14,9 +14,11 @@
                  ga('create', " analytics-id ", 'auto');
                  ga('send', 'pageview');")])
 
+(def dev? (get (System/getenv) "DEV" false))
+
 (defn index-page-fn
   "Renders Index page."
-  [dev?]
+  [_req]
   (html
     [:html {:lang "en"}
      [:head

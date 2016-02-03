@@ -21,6 +21,7 @@
                  [garden "1.2.5"]
                  [clj-time "0.11.0"]
                  [pandect "0.5.4"]
+                 [amalloy/ring-gzip-middleware "0.1.3"]
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.7"]
                  [reagent "0.5.1"]

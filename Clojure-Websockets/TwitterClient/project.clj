@@ -9,7 +9,7 @@
                  [clojurewerkz/elastisch "2.2.1"]
                  [org.clojure/tools.logging "0.3.1"]
                  [matthiasn/systems-toolbox "0.5.7"]
-                 [ch.qos.logback/logback-classic "1.1.3"]
+                 [ch.qos.logback/logback-classic "1.1.5"]
                  [clj-time "0.11.0"]
                  [clj-pid "0.1.2"]
                  [com.taoensso/carmine "2.12.2" :exclusions [org.clojure/tools.reader]]]

@@ -8,15 +8,15 @@
                  [clojurewerkz/elastisch "2.2.1"]
                  [org.clojure/tools.logging "0.3.1"]
                  [com.taoensso/timbre "4.2.1"]
-                 [com.taoensso/encore "2.33.0"]
+                 [com.taoensso/encore "2.34.0"]
                  [com.taoensso/carmine "2.12.2"]
-                 [io.undertow/undertow-core "1.3.14.Final"]
+                 [io.undertow/undertow-core "1.3.17.Final"]
                  [matthiasn/systems-toolbox "0.5.7"]
                  [matthiasn/systems-toolbox-sente "0.5.9" :exclusions [org.jboss.xnio/xnio-nio]]
                  [matthiasn/systems-toolbox-ui "0.5.2"]
                  [matthiasn/systems-toolbox-metrics "0.5.2"]
                  [org.clojure/tools.namespace "0.2.11"]
-                 [ch.qos.logback/logback-classic "1.1.3"]
+                 [ch.qos.logback/logback-classic "1.1.5"]
                  [hiccup "1.0.5"]
                  [garden "1.2.5"]
                  [clj-time "0.11.0"]
@@ -25,7 +25,7 @@
                  [tailrecursion/cljs-priority-map "1.1.0"]
                  [org.clojure/data.priority-map "0.0.7"]
                  [reagent "0.5.1"]
-                 [cljsjs/moment "2.10.6-1"]
+                 [cljsjs/moment "2.10.6-2"]
                  [clj-pid "0.1.2"]
                  [ring/ring-ssl "0.2.1" :exclusions [ring/ring-core]]
                  [metrics-clojure "2.6.1"]]
@@ -50,7 +50,8 @@
                                                   ring/ring-core
                                                   org.codehaus.plexus/plexus-utils]]
             [quickie "0.4.1" :exclusions [org.clojure/clojure org.codehaus.plexus/plexus-utils]]
-            [codox "0.9.1" :exclusions [org.clojure/tools.reader org.clojure/tools.namespace]]]
+            [codox "0.9.4" :exclusions [org.clojure/tools.reader org.clojure/tools.namespace]]]
+
 
   :figwheel {:server-port 3452
              :css-dirs    ["resources/public/css"]}

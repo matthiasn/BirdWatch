@@ -3,12 +3,12 @@
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "GNU General Public License" :url "http://www.gnu.org/licenses/gpl-3.0.en.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [clj-http "2.0.1"]
+                 [clj-http "2.1.0"]
                  [twitter-api "0.7.8" :exclusions [org.clojure/data.json]]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [clojurewerkz/elastisch "2.2.1"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [matthiasn/systems-toolbox "0.5.7"]
+                 [matthiasn/systems-toolbox "0.5.10"]
                  [ch.qos.logback/logback-classic "1.1.5"]
                  [clj-time "0.11.0"]
                  [clj-pid "0.1.2"]

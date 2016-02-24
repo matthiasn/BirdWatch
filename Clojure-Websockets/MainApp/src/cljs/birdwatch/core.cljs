@@ -31,7 +31,7 @@
     [[:cmd/init-comp
       [(sente/cmp-map    :client/ws-cmp)          ;  WebSockets communication component from systems-toolbox
        (jvmstats/cmp-map :client/jvmstats-cmp "jvm-stats-frame") ;  UI component: JVM stats
-       (obs/cmp-map      :client/observer-cmp obs-cfg/cfg-map)   ; UI component for observing system
+       (obs/cmp-map      :client/observer-cmp obs-cfg/cfg-map)   ;  UI component for observing system
        (state/cmp-map    :client/state-cmp)       ;  Component holding the client-side application state and logic
        (tw/cmp-map       :client/tweets-cmp)      ;  UI component: list of tweets (Reagent, HTML, custom component)
        (cv/count-cmp-map :client/count-cmp)       ;  UI component: tweet count (Reagent, HTML, simple component)

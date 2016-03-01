@@ -1,8 +1,6 @@
 (ns birdwatch.interop.interop
-  (:gen-class)
-  (:require
-    [clojure.core.match :refer [match]]
-    [taoensso.carmine :as car]))
+  (:require [clojure.core.match :refer [match]]
+            [taoensso.carmine :as car]))
 
 (defn- msg-handler-fn
   "create handler function for messages from Redis Pub/Sub"

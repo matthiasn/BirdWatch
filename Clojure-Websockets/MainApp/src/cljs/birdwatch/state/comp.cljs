@@ -4,11 +4,9 @@
             [birdwatch.state.proc :as p]
             [cljs.core.match :refer-macros [match]]))
 
-;;;; Channels processing namespace. Here, messages are taken from channels and processed.
-
 (defn state-fn
-  "Return clean initial component state atom. put-fn argument not used."
-  [_]
+  "Return clean initial component state atom."
+  [_put-fn]
   {:state (atom (i/initial-state))})
 
 (def handler-map

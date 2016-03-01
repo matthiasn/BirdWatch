@@ -1,10 +1,8 @@
 (ns birdwatch.percolator.percolator
-  (:gen-class)
-  (:require
-    [clojure.core.match :refer [match]]
-    [pandect.core :refer [sha1]]
-    [clojurewerkz.elastisch.rest :as esr]
-    [clojurewerkz.elastisch.rest.percolation :as perc]))
+  (:require [clojure.core.match :refer [match]]
+            [pandect.core :refer [sha1]]
+            [clojurewerkz.elastisch.rest :as esr]
+            [clojurewerkz.elastisch.rest.percolation :as perc]))
 
 (defn percolator-state-fn
   "Returns function for making state while using provided configuration."

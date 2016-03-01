@@ -1,10 +1,8 @@
 (ns birdwatch.persistence.persistence
-  (:gen-class)
-  (:require
-    [clojure.core.match :refer [match]]
-    [clojurewerkz.elastisch.rest :as esr]
-    [clojurewerkz.elastisch.rest.document :as esd]
-    [clojurewerkz.elastisch.rest.response :as esrsp]))
+  (:require [clojure.core.match :refer [match]]
+            [clojurewerkz.elastisch.rest :as esr]
+            [clojurewerkz.elastisch.rest.document :as esd]
+            [clojurewerkz.elastisch.rest.response :as esrsp]))
 
 (defn persistence-state-fn
   "Returns function for making state while using provided configuration."
@@ -17,14 +15,12 @@
       {:state (atom {:conf conf
                      :conn conn})})))
 
-(defn- strip-tweet
+(defn strip-tweet
   "take only actually needed fields from tweet"
   [t]
-  (let [u (:user t)]
-    {:id_str        (:id_str t) :id (:id t) :text (:text t) :created_at (:created_at t)
-     :retweet_count (:retweet_count t) :favorite_count (:favorite_count t) :entities (:entities t)
-     :user          {:followers_count (:followers_count u) :name (:name u) :profile_image_url (:profile_image_url u)
-                     :screen_name     (:screen_name u)}}))
+  (-> t
+      (select-keys [:id_str :id :text :created_at :retweet_count :favorite_count :entities])
+      (assoc :user (select-keys (:user t) [:followers_count :name :profile_image_url :screen_name]))))
 
 (defn strip-source
   "get tweet stripped down to necessary fields"
@@ -42,9 +38,8 @@
   [{:keys [query n from]} conf conn]
   (let [search (esd/search conn (:es-index conf) "tweet" :query query :size n :from from :sort {:id :desc})
         hits (esrsp/hits-from search)
-        source (get-source hits)
-        res (vec source)]
-    res))
+        source (get-source hits)]
+    (vec source)))
 
 (defn es-query
   "Handler function for previous tweets. Uses put-fn for returning results."

@@ -1,19 +1,17 @@
 (ns birdwatch.main
-  (:gen-class)
-  (:require
-   [birdwatch.persistence.persistence :as pc]
-   [birdwatch.percolator.percolator :as perc]
-   [birdwatch.interop.interop :as iop]
-   [birdwatch.http.markup :as markup]
-   [clojure.edn :as edn]
-   [clojure.tools.logging :as log]
-   [io.aviso.logging :as pretty]
-   [clojure.tools.namespace.repl :refer [refresh]]
-   [clj-pid.core :as pid]
-   [matthiasn.systems-toolbox.switchboard :as sb]
-   [matthiasn.systems-toolbox.scheduler :as sched]
-   [matthiasn.systems-toolbox-sente.server :as sente]
-   [matthiasn.systems-toolbox-metrics.metrics :as metrics]))
+  (:require [birdwatch.persistence.persistence :as pc]
+            [birdwatch.percolator.percolator :as perc]
+            [birdwatch.interop.interop :as iop]
+            [birdwatch.http.markup :as markup]
+            [clojure.edn :as edn]
+            [clojure.tools.logging :as log]
+            [io.aviso.logging :as pretty]
+            [clojure.tools.namespace.repl :refer [refresh]]
+            [clj-pid.core :as pid]
+            [matthiasn.systems-toolbox.switchboard :as sb]
+            [matthiasn.systems-toolbox.scheduler :as sched]
+            [matthiasn.systems-toolbox-sente.server :as sente]
+            [matthiasn.systems-toolbox-metrics.metrics :as metrics]))
 
 (pretty/install-pretty-logging)
 (pretty/install-uncaught-exception-handler)
@@ -49,18 +47,13 @@
        [:cmd/init-comp (metrics/cmp-map :metrics-cmp)]           ; Component for metrics and stats.
 
        ;; :persistence-cmp services data-related requests.
-       [:cmd/route {:from :scheduler-cmp :to :persistence-cmp}]
-       [:cmd/route {:from :ws-cmp :to :persistence-cmp}]
+       [:cmd/route {:from [:scheduler-cmp :ws-cmp] :to :persistence-cmp}]
 
        ;; :ws-comp subscribes to messages that are forwarded to clients over WebSockets.
-       [:cmd/route-all {:from :persistence-cmp :to :ws-cmp}]
-       [:cmd/route-all {:from :percolator-cmp :to :ws-cmp}]
-       [:cmd/route-all {:from :metrics-cmp :to :ws-cmp}]
+       [:cmd/route-all {:from [:persistence-cmp :percolator-cmp :metrics-cmp] :to :ws-cmp}]
 
        ;; :percolator-cmp responds to percolation matches, registration requests and request to connected users.
-       [:cmd/route {:from :interop-cmp :to :percolator-cmp}]
-       [:cmd/route {:from :ws-cmp :to :percolator-cmp}]
-       [:cmd/route {:from :scheduler-cmp :to :percolator-cmp}]
+       [:cmd/route {:from [:interop-cmp :ws-cmp :scheduler-cmp] :to :percolator-cmp}]
 
        ;; :percolator-cmp needs the websocker client UIDs for delivery of percolation matches.
        [:cmd/observe-state {:from :ws-cmp :to :percolator-cmp}]

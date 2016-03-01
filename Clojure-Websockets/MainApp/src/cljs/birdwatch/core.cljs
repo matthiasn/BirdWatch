@@ -44,28 +44,13 @@
        (wc-c/cmp-map     :client/wc-c-cmp  1000)  ;  Chart: wordcloud (Reagent, SVG, custom component, regression)
        (ts-c/cmp-map     :client/ts-cmp     500)  ;  Chart: timeseries (Reagent, SVG, custom component)
        ]]
-
      [:cmd/attach-to-firehose :client/observer-cmp]
-
      [:cmd/route-all {:from :client/state-cmp :to :client/ws-cmp}]
-     [:cmd/route {:from :client/ws-cmp :to :client/state-cmp}]
-     [:cmd/route {:from :client/tweets-cmp :to :client/state-cmp}]
-     [:cmd/route {:from :client/search-cmp :to :client/state-cmp}]
-     [:cmd/route {:from :client/sort-cmp :to :client/state-cmp}]
-     [:cmd/route {:from :client/pag-cmp :to :client/state-cmp}]
-     [:cmd/route {:from :client/cloud-cmp :to :client/state-cmp}]
-     [:cmd/route {:from :client/wc-c-cmp :to :client/state-cmp}]
-     [:cmd/route {:from :client/ws-cmp :to :client/jvmstats-cmp}]
-
-     [:cmd/observe-state {:from :client/state-cmp :to :client/tweets-cmp}]
-     [:cmd/observe-state {:from :client/state-cmp :to :client/cloud-cmp}]
-     [:cmd/observe-state {:from :client/state-cmp :to :client/wc-c-cmp}]
-     [:cmd/observe-state {:from :client/state-cmp :to :client/ts-cmp}]
-     [:cmd/observe-state {:from :client/state-cmp :to :client/search-cmp}]
-     [:cmd/observe-state {:from :client/state-cmp :to :client/sort-cmp}]
-     [:cmd/observe-state {:from :client/state-cmp :to :client/pag-cmp}]
-     [:cmd/observe-state {:from :client/state-cmp :to :client/count-cmp}]
-     [:cmd/observe-state {:from :client/state-cmp :to :client/users-count-cmp}]
-     [:cmd/observe-state {:from :client/state-cmp :to :client/tt-count-cmp}]]))
+     [:cmd/route {:from [:client/ws-cmp :client/tweets-cmp :client/search-cmp :client/sort-cmp :client/pag-cmp
+                         :client/cloud-cmp :client/wc-c-cmp] :to :client/state-cmp}]
+     [:cmd/observe-state
+      {:from :client/state-cmp
+       :to   [:client/tweets-cmp :client/cloud-cmp :client/wc-c-cmp :client/ts-cmp :client/search-cmp
+              :client/sort-cmp :client/pag-cmp :client/count-cmp :client/users-count-cmp :client/tt-count-cmp]}]]))
 
 (init)

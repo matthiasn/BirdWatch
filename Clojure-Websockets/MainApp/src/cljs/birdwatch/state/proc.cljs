@@ -1,61 +1,48 @@
 (ns birdwatch.state.proc
   (:require [birdwatch.stats.wordcount :as wc]
             [birdwatch.state.search :as s]
-            [cljs.pprint :as pp]))
+            [com.rpl.specter :as sp]))
 
-(defn swap-pmap
-  "swaps item in priority-map"
-  [app priority-map id n]
-  (swap! app assoc priority-map (assoc (priority-map @app) id n)))
-
-(defn- add-to-tweets-map!
-  "adds tweet to tweets-map"
-  [app tweets-map tweet]
-  (swap! app
-         assoc-in [tweets-map (keyword (:id_str tweet))]
-         tweet))
-
-(defn- swap-when-larger
-  "Swaps item in priority-map when new value is larger than old value."
-  [app priority-map rt-id n]
-  (when (> n (rt-id (priority-map @app))) (swap-pmap app priority-map rt-id n)))
+(defn add-rt-status
+  "Process original, retweeted tweet."
+  [tweet state]
+  (if-let [rt (:retweeted_status tweet)]
+    (let [rt-id (keyword (:id_str rt))
+          rt-count (:retweet_count rt)
+          newer? #(> rt-count (:retweet_count %))]
+      (->> state
+           (sp/transform [:by-rt-since-startup rt-id] inc)
+           (sp/transform [:by-reach rt-id] #(+ % (:followers_count (:user tweet))))
+           (sp/transform [:by-retweets rt-id] #(max % rt-count))
+           (sp/transform [:by-favorites rt-id] #(max % (:favorite_count rt)))
+           (sp/setval [:tweets-map rt-id newer?] rt)))
+    state))
 
 (defn add-words
   "Add words to the words map and the sorted set with the counts (while discarding old entry)."
-  [app words]
-  (doseq [word words]
-    (swap-pmap app :words-sorted-by-count word (inc (get (:words-sorted-by-count @app) word 0)))))
-
-(defn add-rt-status!
-  "Process original, retweeted tweet."
-  [app tweet]
-  (if (contains? tweet :retweeted_status)
-    (let [state @app
-          rt (:retweeted_status tweet)
-          rt-id (keyword (:id_str rt))
-          rt-count (:retweet_count rt)]
-      (swap-when-larger app :by-retweets rt-id rt-count)
-      (swap-when-larger app :by-favorites rt-id (:favorite_count rt))
-      (swap-pmap app :by-rt-since-startup rt-id (inc (get (:by-rt-since-startup state) rt-id 0)))
-      (swap-pmap app :by-reach rt-id (+ (get (:by-reach state) rt-id 0) (:followers_count (:user tweet))))
-      (when (> rt-count (:retweet_count (rt-id (:tweets-map state))))
-        (add-to-tweets-map! app :tweets-map rt)))))
+  [tweet state]
+  (reduce (fn [state word]
+            (sp/transform [:words-sorted-by-count (sp/keypath word)] inc state))
+          state
+          (wc/words-in-tweet (:text tweet))))
 
 (defn add-tweet!
   "Increment counter, add tweet to tweets map and to sorted sets by id and by followers. Modifies
    application state."
   [{:keys [cmp-state msg-payload]}]
-  (let [state @cmp-state
-        tweet (:tweet msg-payload)
+  (let [tweet (:tweet msg-payload)
         id-str (:id_str tweet)
-        id-key (keyword id-str)]
-    (swap! cmp-state assoc :count (inc (:count state)))
-    (add-to-tweets-map! cmp-state :tweets-map tweet)
-    (swap-pmap cmp-state :by-followers id-key (:followers_count (:user tweet)))
-    (swap-pmap cmp-state :by-id id-key id-str)
-    (swap-pmap cmp-state :by-reach id-key (+ (get (:by-reach state) id-key 0) (:followers_count (:user tweet))))
-    (add-rt-status! cmp-state tweet)
-    (add-words cmp-state (wc/words-in-tweet (:text tweet)))))
+        id-key (keyword id-str)
+        update-fn (fn [state]
+                    (->> state
+                         (sp/transform [:count] inc)
+                         (sp/setval [:tweets-map (keyword id-str)] tweet)
+                         (sp/setval [:by-followers id-key] (:followers_count (:user tweet)))
+                         (sp/setval [:by-id id-key] id-str)
+                         (sp/transform [:by-reach id-key] #(+ % (:followers_count (:user tweet))))
+                         (add-rt-status tweet)
+                         (add-words tweet)))]
+    (swap! cmp-state update-fn)))
 
 (defn update-count
   [k]
@@ -73,13 +60,11 @@
 (defn update-in-cmp
   "Helper for creating a function that updates value in component atom in given path by applying f."
   [path f]
-  (fn
-    [{:keys [cmp-state]}]
+  (fn [{:keys [cmp-state]}]
     (swap! cmp-state update-in path f)))
 
 (defn assoc-in-cmp
-  "Helper for creating a function that updates value in component atom in given path by applying f."
+  "Helper for creating a function that sets value in component atom in given path."
   [path]
-  (fn
-    [{:keys [cmp-state msg-payload]}]
+  (fn [{:keys [cmp-state msg-payload]}]
     (swap! cmp-state assoc-in path msg-payload)))

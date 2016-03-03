@@ -7,12 +7,10 @@
             [birdwatch.ui.sort :as st]
             [birdwatch.ui.count-views :as cv]
             [birdwatch.ui.pagination :as pag]
-            [birdwatch.conf.observer :as obs-cfg]
             [birdwatch.state.comp :as state]
             [matthiasn.systems-toolbox.switchboard :as sb]
             [matthiasn.systems-toolbox-sente.client :as sente]
             [matthiasn.systems-toolbox-metrics.jvmstats :as jvmstats]
-            [matthiasn.systems-toolbox-ui.charts.observer :as obs]
             [cljsjs.moment]))
 
 (enable-console-print!)
@@ -31,7 +29,6 @@
     [[:cmd/init-comp
       [(sente/cmp-map    :client/ws-cmp)          ;  WebSockets communication component from systems-toolbox
        (jvmstats/cmp-map :client/jvmstats-cmp "jvm-stats-frame") ;  UI component: JVM stats
-       (obs/cmp-map      :client/observer-cmp obs-cfg/cfg-map)   ;  UI component for observing system
        (state/cmp-map    :client/state-cmp)       ;  Component holding the client-side application state and logic
        (tw/cmp-map       :client/tweets-cmp)      ;  UI component: list of tweets (Reagent, HTML, custom component)
        (cv/count-cmp-map :client/count-cmp)       ;  UI component: tweet count (Reagent, HTML, simple component)
@@ -41,10 +38,9 @@
        (st/cmp-map       :client/sort-cmp)        ;  UI component: sort orders (Reagent, simple component)
        (pag/cmp-map      :client/pag-cmp)         ;  UI component: pagination (Reagent, simple component)
        (cloud/cmp-map    :client/cloud-cmp 5000)  ;  Chart: word cloud (D3.js, custom component)
-       (wc-c/cmp-map     :client/wc-c-cmp  1000)  ;  Chart: wordcloud (Reagent, SVG, custom component, regression)
-       (ts-c/cmp-map     :client/ts-cmp     500)  ;  Chart: timeseries (Reagent, SVG, custom component)
+       (wc-c/cmp-map     :client/wc-c-cmp  2500)  ;  Chart: wordcloud (Reagent, SVG, custom component, regression)
+       (ts-c/cmp-map     :client/ts-cmp    2000)  ;  Chart: timeseries (Reagent, SVG, custom component)
        ]]
-     [:cmd/attach-to-firehose :client/observer-cmp]
      [:cmd/route-all {:from :client/state-cmp :to :client/ws-cmp}]
      [:cmd/route {:from [:client/ws-cmp :client/tweets-cmp :client/search-cmp :client/sort-cmp :client/pag-cmp
                          :client/cloud-cmp :client/wc-c-cmp] :to :client/state-cmp}]

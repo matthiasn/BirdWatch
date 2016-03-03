@@ -11,7 +11,7 @@
                  [com.taoensso/timbre "4.3.1" :exclusions [io.aviso/pretty]]
                  [com.taoensso/encore "2.38.0"]
                  [com.taoensso/carmine "2.12.2"]
-                 [matthiasn/systems-toolbox "0.5.10"]
+                 [matthiasn/systems-toolbox "0.5.11"]
                  [matthiasn/systems-toolbox-sente "0.5.12"]
                  [matthiasn/systems-toolbox-ui "0.5.5"]
                  [matthiasn/systems-toolbox-metrics "0.5.2"]

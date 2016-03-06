@@ -8,7 +8,7 @@
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [clojurewerkz/elastisch "2.2.1"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [matthiasn/systems-toolbox "0.5.10"]
+                 [matthiasn/systems-toolbox "0.5.13"]
                  [ch.qos.logback/logback-classic "1.1.5"]
                  [clj-time "0.11.0"]
                  [clj-pid "0.1.2"]

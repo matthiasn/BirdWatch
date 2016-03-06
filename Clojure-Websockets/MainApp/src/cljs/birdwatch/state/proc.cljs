@@ -53,8 +53,8 @@
   "Take messages (vectors of tweets) from prev-chunks-chan, add each tweet to application
    state, then pause to give the event loop back to the application (otherwise, UI becomes
    unresponsive for a short while)."
-  [{:keys [cmp-state put-fn msg-payload]}]
-  (doseq [t (:result msg-payload)] (add-tweet! {:msg-payload {:tweet t} :cmp-state cmp-state}))
+  [{:keys [cmp-state put-fn msg-payload onto-in-chan]}]
+  (onto-in-chan (map (fn [t] [:tweet/new {:tweet t}]) (:result msg-payload)))
   (s/load-prev cmp-state put-fn))
 
 (defn update-in-cmp

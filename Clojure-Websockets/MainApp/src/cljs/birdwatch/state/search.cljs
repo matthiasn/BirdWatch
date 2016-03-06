@@ -38,4 +38,3 @@
       (aset js/window "location" "hash" (js/encodeURIComponent s))
       (start-percolator cmp-state put-fn)
       (dotimes [_ 2] (load-prev cmp-state put-fn)))))
-

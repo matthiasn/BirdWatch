@@ -44,6 +44,7 @@
      [:cmd/route-all {:from :client/state-cmp :to :client/ws-cmp}]
      [:cmd/route {:from [:client/ws-cmp :client/tweets-cmp :client/search-cmp :client/sort-cmp :client/pag-cmp
                          :client/cloud-cmp :client/wc-c-cmp] :to :client/state-cmp}]
+     [:cmd/route {:from :client/ws-cmp :to :client/jvmstats-cmp}]
      [:cmd/observe-state
       {:from :client/state-cmp
        :to   [:client/tweets-cmp :client/cloud-cmp :client/wc-c-cmp :client/ts-cmp :client/search-cmp

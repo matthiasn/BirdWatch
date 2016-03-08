@@ -2,16 +2,16 @@
   (:require [clojure.core.match :refer [match]]
             [clojurewerkz.elastisch.rest :as esr]
             [clojurewerkz.elastisch.rest.document :as esd]
-            [clojurewerkz.elastisch.rest.response :as esrsp]))
+            [clojurewerkz.elastisch.rest.response :as esrsp]
+            [clojure.tools.logging :as log]))
 
 (defn persistence-state-fn
   "Returns function for making state while using provided configuration."
   [conf]
-  (fn [put-fn]
+  (fn [_put-fn]
     (let [es-address (:es-address conf)
           conn (esr/connect es-address)]
-      (println "ElasticSearch connection started to" es-address)
-      (put-fn [:log/info (str "ElasticSearch connection started to " es-address)])
+      (log/info "ElasticSearch connection started to" es-address)
       {:state (atom {:conf conf
                      :conn conn})})))
 
@@ -43,27 +43,24 @@
 
 (defn es-query
   "Handler function for previous tweets. Uses put-fn for returning results."
-  [{:keys [cmp-state put-fn msg-meta msg-payload]}]
-  (let [conf (:conf @cmp-state)
-        conn (:conn @cmp-state)]
-    (put-fn (with-meta [:tweet/prev-chunk {:result (mk-query msg-payload conf conn)}] msg-meta))))
+  [{:keys [state-snapshot msg-payload]}]
+  (let [{:keys [conn conf]} state-snapshot]
+    {:emit-msg [:tweet/prev-chunk {:result (mk-query msg-payload conf conn)}]}))
 
 (defn es-mt-query
   "Handler function for missing tweets. Uses put-fn for returning results."
-  [{:keys [cmp-state put-fn msg-meta msg-payload]}]
-  (let [conf (:conf @cmp-state)
-        conn (:conn @cmp-state)
+  [{:keys [state-snapshot put-fn msg-payload]}]
+  (let [{:keys [conn conf]} state-snapshot
         res (esd/get conn (:es-index conf) "tweet" (:id_str msg-payload))]
     (when-not res (put-fn [:log/info [:persistence-cmp "missing tweet:" (:id_str msg-payload)]]))
-    (put-fn (with-meta [:tweet/missing-tweet {:tweet (strip-source res)}] msg-meta))))
+    {:emit-msg [:tweet/missing-tweet {:tweet (strip-source res)}]}))
 
 (defn total-tweets-indexed
-  [{:keys [cmp-state put-fn]}]
-  (let [conf (:conf @cmp-state)
-        conn (:conn @cmp-state)
-        cnt (esd/count conn (:es-index conf) "tweet")]
-    (put-fn (with-meta [:stats/total-tweet-count (format "%,15d" (:count cnt))]
-                       {:sente-uid :broadcast}))))
+  "Publishes the total tweet count when requested."
+  [{:keys [state-snapshot]}]
+  (let [cnt (esd/count (:conn state-snapshot) (:es-index (:conf state-snapshot)) "tweet")]
+    {:emit-msg (with-meta [:stats/total-tweet-count (format "%,15d" (:count cnt))]
+                          {:sente-uid :broadcast})}))
 
 (defn cmp-map
   "Create component for retrieving documents from ElasticSearch"

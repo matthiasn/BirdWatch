@@ -61,8 +61,8 @@
 
 (defn state-pub-handler
   "Handle incoming messages: process / add to application state."
-  [{:keys [cmp-state msg-payload]}]
-  (swap! cmp-state assoc :bars (ts/ts-data msg-payload)))
+  [{:keys [state-snapshot msg-payload]}]
+  {:new-state (assoc-in state-snapshot [:bars] (ts/ts-data msg-payload))})
 
 (defn cmp-map
   [cmp-id throttle-ms]

@@ -5,7 +5,7 @@
 (defn- msg-handler-fn
   "create handler function for messages from Redis Pub/Sub"
   [put-fn]
-  (fn [[msg-type topic payload]]
+  (fn [[msg-type _topic payload]]
     (when (= msg-type "message")
       (put-fn [:redis/matches payload]))))
 

@@ -29,25 +29,18 @@
 (defn add-tweet!
   "Increment counter, add tweet to tweets map and to sorted sets by id and by followers. Modifies
    application state."
-  [{:keys [cmp-state msg-payload]}]
+  [{:keys [state-snapshot msg-payload]}]
   (let [tweet (:tweet msg-payload)
         id-str (:id_str tweet)
-        id-key (keyword id-str)
-        update-fn (fn [state]
-                    (->> state
-                         (sp/transform [:count] inc)
-                         (sp/setval [:tweets-map (keyword id-str)] tweet)
-                         (sp/setval [:by-followers id-key] (:followers_count (:user tweet)))
-                         (sp/setval [:by-id id-key] id-str)
-                         (sp/transform [:by-reach id-key] #(+ % (:followers_count (:user tweet))))
-                         (add-rt-status tweet)
-                         (add-words tweet)))]
-    (swap! cmp-state update-fn)))
-
-(defn update-count
-  [k]
-  (fn [{:keys [cmp-state msg-payload]}]
-    (swap! cmp-state assoc k msg-payload)))
+        id-key (keyword id-str)]
+    {:new-state (->> state-snapshot
+                     (sp/transform [:count] inc)
+                     (sp/setval [:tweets-map (keyword id-str)] tweet)
+                     (sp/setval [:by-followers id-key] (:followers_count (:user tweet)))
+                     (sp/setval [:by-id id-key] id-str)
+                     (sp/transform [:by-reach id-key] #(+ % (:followers_count (:user tweet))))
+                     (add-rt-status tweet)
+                     (add-words tweet))}))
 
 (defn handle-prev-chunk
   "Take messages (vectors of tweets) from prev-chunks-chan, add each tweet to application
@@ -56,15 +49,3 @@
   [{:keys [cmp-state put-fn msg-payload onto-in-chan]}]
   (onto-in-chan (map (fn [t] [:tweet/new {:tweet t}]) (:result msg-payload)))
   (s/load-prev cmp-state put-fn))
-
-(defn update-in-cmp
-  "Helper for creating a function that updates value in component atom in given path by applying f."
-  [path f]
-  (fn [{:keys [cmp-state]}]
-    (swap! cmp-state update-in path f)))
-
-(defn assoc-in-cmp
-  "Helper for creating a function that sets value in component atom in given path."
-  [path]
-  (fn [{:keys [cmp-state msg-payload]}]
-    (swap! cmp-state assoc-in path msg-payload)))

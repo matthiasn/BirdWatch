@@ -2,6 +2,7 @@
   (:require [birdwatch.state.search :as s]
             [birdwatch.state.initial :as i]
             [birdwatch.state.proc :as p]
+            [matthiasn.systems-toolbox.handler-utils :as hu]
             [cljs.core.match :refer-macros [match]]))
 
 (defn state-fn
@@ -12,14 +13,14 @@
 (def handler-map
   {:tweet/new               p/add-tweet!
    :tweet/missing-tweet     p/add-tweet!
-   :stats/users-count       (p/update-count :users-count)
-   :stats/total-tweet-count (p/update-count :total-tweet-count)
+   :stats/users-count       (hu/assoc-in-cmp [:users-count])
+   :stats/total-tweet-count (hu/assoc-in-cmp [:total-tweet-count])
    :tweet/prev-chunk        p/handle-prev-chunk
-   :toggle-live             (p/update-in-cmp [:live] not)
-   :set-search-text         (p/assoc-in-cmp [:search-text])
-   :set-current-page        (p/assoc-in-cmp [:page])
-   :set-page-size           (p/assoc-in-cmp [:n])
-   :set-sort-order          (p/assoc-in-cmp [:sorted])
+   :toggle-live             (hu/update-in-cmp [:live] not)
+   :set-search-text         (hu/assoc-in-cmp [:search-text])
+   :set-current-page        (hu/assoc-in-cmp [:page])
+   :set-page-size           (hu/assoc-in-cmp [:n])
+   :set-sort-order          (hu/assoc-in-cmp [:sorted])
    :retrieve-missing        (fn [{:keys [put-fn msg-payload]}] (put-fn [:cmd/missing {:id_str msg-payload}]))
    :append-search-text      s/append-search-text
    :start-search            (s/start-search (i/initial-state))

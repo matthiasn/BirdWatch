@@ -1,14 +1,12 @@
 (ns birdwatch-tc.twitterclient.twitterclient
-  (:gen-class)
-  (:require
-    [clojure.core.match :refer [match]]
-    [clojure.tools.logging :as log]
-    [clj-time.core :as t]
-    [twitter.api.streaming :as tas]
-    [twitter.oauth :as oauth]
-    [twitter.callbacks.handlers :as tch]
-    [clojure.core.async :refer [chan go-loop >!! <!]]
-    [birdwatch-tc.twitterclient.processing :as processing])
+  (:require [clojure.core.match :refer [match]]
+            [clojure.tools.logging :as log]
+            [clj-time.core :as t]
+            [twitter.api.streaming :as tas]
+            [twitter.oauth :as oauth]
+            [twitter.callbacks.handlers :as tch]
+            [clojure.core.async :refer [chan go-loop >!! <!]]
+            [birdwatch-tc.twitterclient.processing :as processing])
   (:import (twitter.callbacks.protocols AsyncStreamingCallback)))
 
 (defn- creds
@@ -47,19 +45,17 @@
 
 (defn t-conn-alive?
   "Check if connection to Twitter is alive. If not, restart."
-  [{:keys [cmp-state]}]
-  (let [state-snapshot @cmp-state
-        conf (:conf state-snapshot)
-        since-last-sec (t/in-seconds (t/interval (:last-received state-snapshot) (t/now)))
-        m (meta (:conn state-snapshot))]
+  [{:keys [current-state cmp-state]}]
+  (let [conf (:conf current-state)
+        since-last-sec (t/in-seconds (t/interval (:last-received current-state) (t/now)))
+        m (meta (:conn current-state))]
     (when (> since-last-sec (:tw-check-interval-sec conf))
       (log/error since-last-sec "seconds since last tweet received")
       (if m
-        (do
-          (log/info "Stopping Twitter client.")
-          ((:cancel m))
-          (swap! cmp-state assoc :conn {}))
-        (swap! cmp-state assoc :conn (start-t-conn! conf (:callback state-snapshot)))))))
+        (do (log/info "Stopping Twitter client.")
+            ((:cancel m))
+            (swap! cmp-state assoc :conn {}))
+        (swap! cmp-state assoc :conn (start-t-conn! conf (:callback current-state)))))))
 
 (defn cmp-map
   "Initiate TwitterClient subsystem."

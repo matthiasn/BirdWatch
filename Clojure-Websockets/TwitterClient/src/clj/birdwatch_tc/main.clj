@@ -1,16 +1,14 @@
 (ns birdwatch-tc.main
-  (:gen-class)
-  (:require
-    [birdwatch-tc.persistence.persistence :as pc]
-    [birdwatch-tc.percolator.percolator :as perc]
-    [birdwatch-tc.interop.interop :as iop]
-    [birdwatch-tc.twitterclient.twitterclient :as tc]
-    [matthiasn.systems-toolbox.switchboard :as sb]
-    [matthiasn.systems-toolbox.scheduler :as sched]
-    [clojure.edn :as edn]
-    [clojure.tools.logging :as log]
-    [io.aviso.logging :as pretty]
-    [clj-pid.core :as pid]))
+  (:require [birdwatch-tc.persistence.persistence :as pc]
+            [birdwatch-tc.percolator.percolator :as perc]
+            [birdwatch-tc.interop.interop :as iop]
+            [birdwatch-tc.twitterclient.twitterclient :as tc]
+            [matthiasn.systems-toolbox.switchboard :as sb]
+            [matthiasn.systems-toolbox.scheduler :as sched]
+            [clojure.edn :as edn]
+            [clojure.tools.logging :as log]
+            [io.aviso.logging :as pretty]
+            [clj-pid.core :as pid]))
 
 (pretty/install-pretty-logging)
 (pretty/install-uncaught-exception-handler)

@@ -20,12 +20,12 @@
 
 (defn start-percolator
   "register percolation search with ID based on hash of the query"
-  [{:keys [state-snapshot msg-payload msg-meta]}]
+  [{:keys [current-state msg-payload msg-meta]}]
   (let [query (:query msg-payload)
         sha (sha1 (str query))
         uid (:sente-uid msg-meta)]
-    (perc/register-query (:conn state-snapshot) "percolator" sha :query query)
-    {:new-state (assoc-in state-snapshot [:subscriptions uid] sha)}))
+    (perc/register-query (:conn current-state) "percolator" sha :query query)
+    {:new-state (assoc-in current-state [:subscriptions uid] sha)}))
 
 (defn deliver-perc-matches
   "Deliver percolation matches to interested clients by looking clients up in subscriptions and connected-uids."
@@ -39,8 +39,8 @@
 
 (defn count-users
   "Count the number of currently connected client (for display in UI)."
-  [{:keys [state-snapshot]}]
-  (let [connected-uids (:connected-uids state-snapshot)]
+  [{:keys [current-state]}]
+  (let [connected-uids (:connected-uids current-state)]
     {:emit-msg (with-meta [:stats/users-count (count (:any connected-uids))] {:sente-uid :broadcast})}))
 
 (defn cmp-map

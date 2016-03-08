@@ -1,10 +1,7 @@
 (ns birdwatch-tc.twitterclient.processing
-  (:gen-class)
-  (:require
-   [clojure.string :as str]
-   [clojure.data.json :as json]
-   [clj-time.core :as t]
-   [clojure.tools.logging :as log]))
+  (:require [clojure.string :as str]
+            [clojure.data.json :as json]
+            [clojure.tools.logging :as log]))
 
 (defn- log-count
   "Stateful transducer, counts processed items and updating last-received atom. Logs progress every 1000 items."

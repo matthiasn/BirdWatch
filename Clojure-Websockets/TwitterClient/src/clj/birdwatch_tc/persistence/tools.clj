@@ -1,5 +1,4 @@
-(ns birdwatch-tc.persistence.tools
-  (:gen-class))
+(ns birdwatch-tc.persistence.tools)
 
 (defn- strip-tweet
   "take only actually needed fields from tweet"

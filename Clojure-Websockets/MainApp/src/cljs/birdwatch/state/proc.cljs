@@ -29,11 +29,11 @@
 (defn add-tweet!
   "Increment counter, add tweet to tweets map and to sorted sets by id and by followers. Modifies
    application state."
-  [{:keys [state-snapshot msg-payload]}]
+  [{:keys [current-state msg-payload]}]
   (let [tweet (:tweet msg-payload)
         id-str (:id_str tweet)
         id-key (keyword id-str)]
-    {:new-state (->> state-snapshot
+    {:new-state (->> current-state
                      (sp/transform [:count] inc)
                      (sp/setval [:tweets-map (keyword id-str)] tweet)
                      (sp/setval [:by-followers id-key] (:followers_count (:user tweet)))

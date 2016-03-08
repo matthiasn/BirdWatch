@@ -43,21 +43,21 @@
 
 (defn es-query
   "Handler function for previous tweets. Emits message with results of ElasticSearch query."
-  [{:keys [state-snapshot msg-payload]}]
-  (let [{:keys [conn conf]} state-snapshot]
+  [{:keys [current-state msg-payload]}]
+  (let [{:keys [conn conf]} current-state]
     {:emit-msg [:tweet/prev-chunk {:result (mk-query msg-payload conf conn)}]}))
 
 (defn es-mt-query
   "Handler function for missing tweets. Uses put-fn for returning results."
-  [{:keys [state-snapshot put-fn msg-payload]}]
-  (let [{:keys [conn conf]} state-snapshot
+  [{:keys [current-state put-fn msg-payload]}]
+  (let [{:keys [conn conf]} current-state
         res (esd/get conn (:es-index conf) "tweet" (:id_str msg-payload))]
     {:emit-msg [:tweet/missing-tweet {:tweet (strip-source res)}]}))
 
 (defn total-tweets-indexed
   "Publishes the total tweet count when requested."
-  [{:keys [state-snapshot]}]
-  (let [cnt (esd/count (:conn state-snapshot) (:es-index (:conf state-snapshot)) "tweet")]
+  [{:keys [current-state]}]
+  (let [cnt (esd/count (:conn current-state) (:es-index (:conf current-state)) "tweet")]
     {:emit-msg (with-meta [:stats/total-tweet-count (format "%,15d" (:count cnt))]
                           {:sente-uid :broadcast})}))
 

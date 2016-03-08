@@ -1,8 +1,7 @@
 (ns birdwatch-tc.interop.interop
-  (:gen-class)
-  (:require
-    [clojure.core.match :refer [match]]
-    [taoensso.carmine :as car :refer (wcar)]))
+  (:require [clojure.core.match :refer [match]]
+            [taoensso.carmine :as car :refer (wcar)]
+            [clojure.tools.logging :as log]))
 
 (defn publish
   "Publish tweet with matches on Redis Pub/Sub for specified topic."
@@ -32,8 +31,7 @@
           redis-port (:redis-port conf)
           conn {:pool {} :spec {:host redis-host :port redis-port}}
           listener (subscribe-topic put-fn conn "matches")]
-      (println "Redis connection started to" redis-host redis-port)
-      (put-fn [:log/info (str "Redis connection started to " redis-host redis-port)])
+      (log/info "Redis connection started to" redis-host redis-port)
       {:state (atom {:conf     conf
                      :conn     conn
                      :listener listener})})))

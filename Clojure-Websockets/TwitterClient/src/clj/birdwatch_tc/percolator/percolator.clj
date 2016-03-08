@@ -1,26 +1,24 @@
 (ns birdwatch-tc.percolator.percolator
-  (:gen-class)
-  (:require
-    [clojure.core.match :refer [match]]
-    [clojurewerkz.elastisch.rest :as esr]
-    [clojurewerkz.elastisch.rest.response :as esrsp]
-    [clojurewerkz.elastisch.rest.percolation :as perc]))
+  (:require [clojure.core.match :refer [match]]
+            [clojurewerkz.elastisch.rest :as esr]
+            [clojurewerkz.elastisch.rest.response :as esrsp]
+            [clojurewerkz.elastisch.rest.percolation :as perc]
+            [clojure.tools.logging :as log]))
 
 (defn percolate
   "Find percolation matches for given tweet."
-  [{:keys [cmp-state put-fn msg-payload]}]
-  (let [response (perc/percolate (:conn @cmp-state) "percolator" "tweet" :doc msg-payload)
+  [{:keys [current-state msg-payload]}]
+  (let [response (perc/percolate (:conn current-state) "percolator" "tweet" :doc msg-payload)
         matches (set (map :_id (esrsp/matches-from response)))] ;; set with SHAs
-    (put-fn [:perc/matches [msg-payload matches]])))
+    {:emit-msg [:perc/matches [msg-payload matches]]}))
 
 (defn percolator-state-fn
   "Returns function for making state while using provided configuration."
   [conf]
-  (fn [put-fn]
+  (fn [_put-fn]
     (let [es-address (:es-address conf)
           conn (esr/connect es-address)]
-      (println "Percolator component started with ES connection to" es-address)
-      (put-fn [:log/info (str "Percolator component started with ES connection to " es-address)])
+      (log/info "Percolator component started with ES connection to" es-address)
       {:state (atom {:conf conf
                      :conn conn})})))
 

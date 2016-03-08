@@ -62,8 +62,8 @@
 (defn state-pub-handler
   "Handler for observed state snapshots, generates timeseries data from those snapshots
   and replaces the previous timeseries data under the :bars key of the local state."
-  [{:keys [state-snapshot msg-payload]}]
-  {:new-state (assoc-in state-snapshot [:bars] (ts/ts-data msg-payload))})
+  [{:keys [current-state msg-payload]}]
+  {:new-state (assoc-in current-state [:bars] (ts/ts-data msg-payload))})
 
 (defn cmp-map
   [cmp-id throttle-ms]

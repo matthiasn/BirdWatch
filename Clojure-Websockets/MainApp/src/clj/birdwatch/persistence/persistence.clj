@@ -42,7 +42,7 @@
     (vec source)))
 
 (defn es-query
-  "Handler function for previous tweets. Uses put-fn for returning results."
+  "Handler function for previous tweets. Emits message with results of ElasticSearch query."
   [{:keys [state-snapshot msg-payload]}]
   (let [{:keys [conn conf]} state-snapshot]
     {:emit-msg [:tweet/prev-chunk {:result (mk-query msg-payload conf conn)}]}))
@@ -52,7 +52,6 @@
   [{:keys [state-snapshot put-fn msg-payload]}]
   (let [{:keys [conn conf]} state-snapshot
         res (esd/get conn (:es-index conf) "tweet" (:id_str msg-payload))]
-    (when-not res (put-fn [:log/info [:persistence-cmp "missing tweet:" (:id_str msg-payload)]]))
     {:emit-msg [:tweet/missing-tweet {:tweet (strip-source res)}]}))
 
 (defn total-tweets-indexed

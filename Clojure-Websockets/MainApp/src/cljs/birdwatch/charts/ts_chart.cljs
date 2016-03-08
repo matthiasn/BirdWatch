@@ -60,7 +60,8 @@
     {:state app}))
 
 (defn state-pub-handler
-  "Handle incoming messages: process / add to application state."
+  "Handler for observed state snapshots, generates timeseries data from those snapshots
+  and replaces the previous timeseries data under the :bars key of the local state."
   [{:keys [state-snapshot msg-payload]}]
   {:new-state (assoc-in state-snapshot [:bars] (ts/ts-data msg-payload))})
 

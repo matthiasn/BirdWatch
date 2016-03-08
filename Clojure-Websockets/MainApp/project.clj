@@ -41,7 +41,7 @@
   :profiles {:uberjar {:aot :all}
              :http2   {:jvm-opts ["-Xbootclasspath/p:TLS/alpn-boot-8.1.7.v20160121.jar"]}}
 
-  :plugins [[lein-cljsbuild "1.1.2"]
+  :plugins [[lein-cljsbuild "1.1.3"]
             [lein-figwheel "0.5.0-6" :exclusions [org.clojure/clojure
                                                   org.clojure/clojurescript
                                                   org.clojure/tools.reader

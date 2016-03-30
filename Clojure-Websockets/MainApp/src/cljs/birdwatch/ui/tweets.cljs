@@ -69,7 +69,7 @@
      [twitter-intents tweet]]))
 
 (defn tweets-view
-  "Renders a list of tweets. Takes two atoms app and tweets plus the cmd-chan
+  "Renders a list of tweets. Takes atom app plus the cmd-chan
    as arguments. Dereferences both and passes down dereferenced data structures
    so that so that the tweet-view component and all components down the hierarchy
    can be implemented as pure functions.
@@ -82,8 +82,8 @@
     (when order
       (let [tweets (util/tweets-by-order order state n page)]
         [:div (for [t tweets] (if (:user t)
-                                 ^{:key (:id_str t)} [tweet-view t state]
-                                 ^{:key (:id_str t)} [missing-tweet t put-fn]))]))))
+                                ^{:key (:id_str t)} [tweet-view t state]
+                                ^{:key (:id_str t)} [missing-tweet t put-fn]))]))))
 
 (defn tweets-state-fn
   "Return clean initial component state atom."

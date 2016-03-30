@@ -1,7 +1,8 @@
 (ns birdwatch.state.proc
   (:require [birdwatch.stats.wordcount :as wc]
             [birdwatch.state.search :as s]
-            [com.rpl.specter :as sp]))
+            [com.rpl.specter :as sp]
+            [cljs.pprint :as pp]))
 
 (defn add-rt-status
   "Process original, retweeted tweet."
@@ -33,14 +34,23 @@
   (let [tweet (:tweet msg-payload)
         id-str (:id_str tweet)
         id-key (keyword id-str)]
-    {:new-state (->> current-state
-                     (sp/transform [:count] inc)
-                     (sp/setval [:tweets-map (keyword id-str)] tweet)
-                     (sp/setval [:by-followers id-key] (:followers_count (:user tweet)))
-                     (sp/setval [:by-id id-key] id-str)
-                     (sp/transform [:by-reach id-key] #(+ % (:followers_count (:user tweet))))
-                     (add-rt-status tweet)
-                     (add-words tweet))}))
+    (if id-str
+      {:new-state (->> current-state
+                       (sp/transform [:count] inc)
+                       (sp/setval [:tweets-map id-key] tweet)
+                       (sp/setval [:by-followers id-key] (:followers_count (:user tweet)))
+                       (sp/setval [:by-id id-key] id-str)
+                       (sp/transform [:by-reach id-key] #(+ % (:followers_count (:user tweet))))
+                       (add-rt-status tweet)
+                       (add-words tweet))}
+      ;; Oddly, there was an issue where id-str evaluated to nil, despite the pprint looking fine
+      ;; upon inspection. This only happened during a single afternoon, so maybe there was something
+      ;; wrong/different with tweets intermittently. I do remember seeing the :id key shown as an
+      ;; object in the pprint, rather than as the usual long. However, I cannot compare the raw data
+      ;; from Twitter at time any longer. Here, it would be very useful to have the raw data available
+      ;; for inspection, for example in a Kafka queue, containing byte arrays with the raw JSON.
+      ;; For now, enough to watch if problem comes back.
+      (pp/pprint [id-str id-key msg-payload]))))
 
 (defn handle-prev-chunk
   "Take messages (vectors of tweets) from prev-chunks-chan, add each tweet to application

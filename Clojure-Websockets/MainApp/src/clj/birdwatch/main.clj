@@ -36,44 +36,45 @@
   Then, calling this function again will restart the system while maintaining the state of
   the individual subsystems."
   []
-  (let [switchboard (sb/component :switchboard)]
+  (let [switchboard (sb/component :backend/switchboard)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/init-comp (sente/cmp-map :ws-cmp markup/sente-map)] ; WebSockets component for client interaction
-       [:cmd/init-comp (sched/cmp-map :scheduler-cmp)]           ; Scheduler component for task orchestration
-       [:cmd/init-comp (pc/cmp-map :persistence-cmp conf)]       ; Persistence-related component
-       [:cmd/init-comp (iop/cmp-map :interop-cmp conf)]          ; Interoperability between JVMs over Redis PubSub
-       [:cmd/init-comp (perc/cmp-map :percolator-cmp conf)]      ; Component for matching tweets with searches.
-       [:cmd/init-comp (metrics/cmp-map :metrics-cmp)]           ; Component for metrics and stats.
+      [[:cmd/init-comp
+        #{(sente/cmp-map :backend/ws-cmp markup/sente-map) ; WebSockets component for client interaction
+          (sched/cmp-map :backend/scheduler-cmp)           ; Scheduler component for task orchestration
+          (pc/cmp-map :backend/persistence-cmp conf)       ; Persistence-related component
+          (iop/cmp-map :backend/interop-cmp conf)          ; Interoperability between JVMs over Redis PubSub
+          (perc/cmp-map :backend/percolator-cmp conf)      ; Component for matching tweets with searches.
+          (metrics/cmp-map :backend/metrics-cmp)}]         ; Component for metrics and stats.
 
        ;; :persistence-cmp services data-related requests.
-       [:cmd/route {:from [:scheduler-cmp :ws-cmp] :to :persistence-cmp}]
+       [:cmd/route {:from #{:backend/scheduler-cmp :backend/ws-cmp}
+                    :to   :backend/persistence-cmp}]
 
        ;; :ws-comp subscribes to messages that are forwarded to clients over WebSockets.
-       [:cmd/route-all {:from [:persistence-cmp :percolator-cmp :metrics-cmp] :to :ws-cmp}]
+       [:cmd/route-all {:from #{:backend/persistence-cmp :backend/percolator-cmp :backend/metrics-cmp}
+                        :to   :backend/ws-cmp}]
 
        ;; :percolator-cmp responds to percolation matches, registration requests and request to connected users.
-       [:cmd/route {:from [:interop-cmp :ws-cmp :scheduler-cmp] :to :percolator-cmp}]
+       [:cmd/route {:from #{:backend/interop-cmp :backend/ws-cmp :backend/scheduler-cmp}
+                    :to   :backend/percolator-cmp}]
 
        ;; :percolator-cmp needs the websocker client UIDs for delivery of percolation matches.
-       [:cmd/observe-state {:from :ws-cmp :to :percolator-cmp}]
+       [:cmd/observe-state {:from :backend/ws-cmp :to :backend/percolator-cmp}]
 
        ;; :scheduler-cmp sends msgs to :metrics-cmp
-       [:cmd/route {:from :scheduler-cmp :to :metrics-cmp}]
+       [:cmd/route {:from :backend/scheduler-cmp :to :backend/metrics-cmp}]
 
-       [:cmd/send {:to  :scheduler-cmp
+       [:cmd/send {:to  :backend/scheduler-cmp
                    :msg [:cmd/schedule-new {:timeout 5000
-                                            :id      :schedule/count-indexed
                                             :message [:schedule/count-indexed]
                                             :repeat  true}]}]
-       [:cmd/send {:to  :scheduler-cmp
+       [:cmd/send {:to  :backend/scheduler-cmp
                    :msg [:cmd/schedule-new {:timeout 3000
-                                            :id      :schedule/count-users
                                             :message [:schedule/count-users]
                                             :repeat  true}]}]
-       [:cmd/send {:to  :scheduler-cmp
+       [:cmd/send {:to  :backend/scheduler-cmp
                    :msg [:cmd/schedule-new {:timeout 5000
-                                            :id      :cmd/get-jvm-stats
                                             :message (with-meta [:cmd/get-jvm-stats] {:sente-uid :broadcast})
                                             :repeat  true}]}]])))
 

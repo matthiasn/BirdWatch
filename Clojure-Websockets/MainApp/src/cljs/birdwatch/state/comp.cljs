@@ -16,15 +16,15 @@
    :stats/users-count       (hu/assoc-in-cmp [:users-count])
    :stats/total-tweet-count (hu/assoc-in-cmp [:total-tweet-count])
    :tweet/prev-chunk        p/handle-prev-chunk
-   :toggle-live             (hu/update-in-cmp [:live] not)
-   :set-search-text         (hu/assoc-in-cmp [:search-text])
-   :set-current-page        (hu/assoc-in-cmp [:page])
-   :set-page-size           (hu/assoc-in-cmp [:n])
-   :set-sort-order          (hu/assoc-in-cmp [:sorted])
-   :retrieve-missing        (fn [{:keys [put-fn msg-payload]}] (put-fn [:cmd/missing {:id_str msg-payload}]))
-   :append-search-text      s/append-search-text
-   :start-search            (s/start-search (i/initial-state))
-   :first-open              (s/start-search (i/initial-state))})
+   :cmd/toggle-live         (hu/update-in-cmp [:live] not)
+   :cmd/set-search-text     (hu/assoc-in-cmp [:search-text])
+   :cmd/set-current-page    (hu/assoc-in-cmp [:page])
+   :cmd/set-page-size       (hu/assoc-in-cmp [:n])
+   :cmd/set-sort-order      (hu/assoc-in-cmp [:sorted])
+   :cmd/retrieve-missing    (fn [{:keys [put-fn msg-payload]}] (put-fn [:cmd/missing {:id_str msg-payload}]))
+   :cmd/append-search-text  s/append-search-text
+   :cmd/start-search        (s/start-search (i/initial-state))
+   :sente/first-open        (s/start-search (i/initial-state))})
 
 (defn cmp-map
   [cmp-id]

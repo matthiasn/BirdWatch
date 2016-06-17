@@ -18,7 +18,7 @@
 (defn- bar [text cnt y h w idx put-fn]
   (let [pos-slope (get @pos-trends text)
         ratio-slope (get @ratio-trends text)]
-    [:g {:on-click #(put-fn [:append-search-text text])}
+    [:g {:on-click #(put-fn [:cmd/append-search-text text])}
      [:text {:y (+ y 8) :x 138 :stroke "none" :fill "black" :dy ".35em" :textAnchor "end"} text]
      [s/arrow 146 y (cond (pos? pos-slope)   :UP       (neg? pos-slope )   :DOWN       :else :RIGHT)]
      [s/arrow 160 y (cond (pos? ratio-slope) :RIGHT-UP (neg? ratio-slope ) :RIGHT-DOWN :else :RIGHT)]

@@ -24,7 +24,7 @@
    been displayed instead is loaded over the WebSockets connection."
   [tweet put-fn]
   (let [id-str (:id_str tweet)]
-    (put-fn [:retrieve-missing id-str])
+    (put-fn [:cmd/retrieve-missing id-str])
     [:div.tweet "loading... " (:id_str tweet)]))
 
 (defn tweet-text

@@ -11,10 +11,10 @@
         [:form.pure-form
          [:fieldset
           [:input {:type         "text"
-                   :on-key-press #(when (== (.-keyCode %) 13) (put-fn [:start-search]))
-                   :on-change    #(put-fn [:set-search-text (.. % -target -value)])
+                   :on-key-press #(when (== (.-keyCode %) 13) (put-fn [:cmd/start-search]))
+                   :on-change    #(put-fn [:cmd/set-search-text (.. % -target -value)])
                    :placeholder  "Example search: java (job OR jobs OR hiring)"}]
-          [:button.pure-button.pure-button-primary {:on-click #(put-fn [:start-search])}
+          [:button.pure-button.pure-button-primary {:on-click #(put-fn [:cmd/start-search])}
            [:span s]]]]])
 
 (defn cmp-map

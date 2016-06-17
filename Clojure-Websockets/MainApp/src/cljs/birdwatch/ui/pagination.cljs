@@ -4,12 +4,12 @@
 (defn- pag-item [idx app put-fn]
   [:button.pure-button.not-rounded.button-xsmall
    {:class (when (= idx (:page @app)) " pure-button-primary")
-    :on-click #(put-fn [:set-current-page idx])} idx])
+    :on-click #(put-fn [:cmd/set-current-page idx])} idx])
 
 (defn- pag-size-item [n app put-fn]
   [:button.pure-button.not-rounded.button-xsmall
    {:class (when (= n (:n @app)) " pure-button-primary")
-    :on-click #(put-fn [:set-page-size n])} n])
+    :on-click #(put-fn [:cmd/set-page-size n])} n])
 
 (defn- pagination-view
   [{:keys [observed put-fn]}]

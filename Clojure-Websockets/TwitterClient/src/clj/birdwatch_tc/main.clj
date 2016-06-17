@@ -28,21 +28,20 @@
   Then, calling this function again will restart the system while maintaining the state of
   the individual subsystems."
   []
-  (let [switchboard (sb/component :switchboard)]
+  (let [switchboard (sb/component :tc/switchboard)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/init-comp (tc/cmp-map :tc-cmp conf)]
-       [:cmd/init-comp (sched/cmp-map :scheduler-cmp)]
-       [:cmd/init-comp (pc/cmp-map :persistence-cmp conf)]
-       [:cmd/init-comp (iop/cmp-map :interop-cmp conf)]
-       [:cmd/init-comp (perc/cmp-map :percolator-cmp conf)]
+      [[:cmd/init-comp (tc/cmp-map :tc/client-cmp conf)]
+       [:cmd/init-comp (sched/cmp-map :tc/scheduler-cmp)]
+       [:cmd/init-comp (pc/cmp-map :tc/persistence-cmp conf)]
+       [:cmd/init-comp (iop/cmp-map :tc/interop-cmp conf)]
+       [:cmd/init-comp (perc/cmp-map :tc/percolator-cmp conf)]
 
-       [:cmd/route {:from :tc-cmp :to :persistence-cmp}]
-       [:cmd/route {:from :tc-cmp :to :percolator-cmp}]
-       [:cmd/route {:from :percolator-cmp :to :interop-cmp}]
-       [:cmd/route {:from :scheduler-cmp :to :tc-cmp}]
+       [:cmd/route {:from :tc/client-cmp :to #{:tc/persistence-cmp :tc/percolator-cmp}}]
+       [:cmd/route {:from :tc/percolator-cmp :to :tc/interop-cmp}]
+       [:cmd/route {:from :tc/scheduler-cmp :to :tc/client-cmp}]
 
-       [:cmd/send {:to  :scheduler-cmp
+       [:cmd/send {:to  :tc/scheduler-cmp
                    :msg [:cmd/schedule-new
                          {:timeout 60000
                           :id      :schedule/t-conn-alive?

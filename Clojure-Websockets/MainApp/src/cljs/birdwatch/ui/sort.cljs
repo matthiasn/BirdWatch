@@ -13,11 +13,11 @@
   (let [curr-order (:sorted @observed)]
     [:div
      [:button.pure-button.not-rounded
-      {:class (btn-class? (:live @observed)) :on-click #(put-fn [:toggle-live])} "Live"]
+      {:class (btn-class? (:live @observed)) :on-click #(put-fn [:cmd/toggle-live])} "Live"]
      [:button.pure-button.not-rounded.sort-button "Sort by:"]
      (for [[k text] sort-orders :let [btn-class (btn-class? (= k curr-order))]]
        ^{:key text} [:button.pure-button.not-rounded
-                     {:class btn-class :on-click #(put-fn [:set-sort-order k])} text])]))
+                     {:class btn-class :on-click #(put-fn [:cmd/set-sort-order k])} text])]))
 
 (defn cmp-map
   [cmp-id]

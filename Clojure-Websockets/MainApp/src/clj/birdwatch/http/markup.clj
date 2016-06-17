@@ -74,7 +74,8 @@
 (def sente-map
   {:index-page-fn index-page-fn
    :middleware    (fn [app] (gzip/wrap-gzip (ssl/wrap-hsts app)))
-   :undertow-cfg  (when (and ssl-keystore key-password)
+   :undertow-cfg  (if (and ssl-keystore key-password)
                     {:ssl-port     (get (System/getenv) "SSL_PORT" 8443)
                      :keystore     ssl-keystore
-                     :key-password key-password})})
+                     :key-password key-password}
+                    {})})

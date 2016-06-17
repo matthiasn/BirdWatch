@@ -10,7 +10,7 @@
 (defn cloud-chart-state-fn
   "Return clean initial component state atom."
   [put-fn]
-  (let [on-click #(put-fn [:append-search-text %])
+  (let [on-click #(put-fn [:cmd/append-search-text %])
         word-cloud (.WordCloud js/BirdWatch w (* w 0.7) n on-click cloud-elem)]
     {:state (atom {:word-cloud word-cloud})}))
 

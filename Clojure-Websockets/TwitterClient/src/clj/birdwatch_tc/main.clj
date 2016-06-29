@@ -1,5 +1,6 @@
 (ns birdwatch-tc.main
-  (:require [birdwatch-tc.persistence.persistence :as pc]
+  (:require [matthiasn.birdwatch-specs.specs]
+            [birdwatch-tc.persistence.persistence :as pc]
             [birdwatch-tc.percolator.percolator :as perc]
             [birdwatch-tc.interop.interop :as iop]
             [birdwatch-tc.twitterclient.twitterclient :as tc]
@@ -31,12 +32,11 @@
   (let [switchboard (sb/component :tc/switchboard)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/init-comp (tc/cmp-map :tc/client-cmp conf)]
-       [:cmd/init-comp (sched/cmp-map :tc/scheduler-cmp)]
-       [:cmd/init-comp (pc/cmp-map :tc/persistence-cmp conf)]
-       [:cmd/init-comp (iop/cmp-map :tc/interop-cmp conf)]
-       [:cmd/init-comp (perc/cmp-map :tc/percolator-cmp conf)]
-
+      [[:cmd/init-comp #{(tc/cmp-map :tc/client-cmp conf)
+                         (sched/cmp-map :tc/scheduler-cmp)
+                         (pc/cmp-map :tc/persistence-cmp conf)
+                         (iop/cmp-map :tc/interop-cmp conf)
+                         (perc/cmp-map :tc/percolator-cmp conf)}]
        [:cmd/route {:from :tc/client-cmp :to #{:tc/persistence-cmp :tc/percolator-cmp}}]
        [:cmd/route {:from :tc/percolator-cmp :to :tc/interop-cmp}]
        [:cmd/route {:from :tc/scheduler-cmp :to :tc/client-cmp}]

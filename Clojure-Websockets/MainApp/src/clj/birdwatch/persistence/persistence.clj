@@ -3,7 +3,8 @@
             [clojurewerkz.elastisch.rest :as esr]
             [clojurewerkz.elastisch.rest.document :as esd]
             [clojurewerkz.elastisch.rest.response :as esrsp]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [clojure.string :as s]))
 
 (defn persistence-state-fn
   "Returns function for making state while using provided configuration."
@@ -36,7 +37,8 @@
 (defn mk-query
   "Run a query on previous matching tweets."
   [{:keys [query n from]} conf conn]
-  (let [search (esd/search conn (:es-index conf) "tweet" :query query :size n :from from :sort {:id :desc})
+  (let [search (esd/search conn (:es-index conf) "tweet"
+                           :query query :size n :from from :sort {:id :desc})
         hits (esrsp/hits-from search)
         source (get-source hits)]
     (vec source)))
@@ -52,13 +54,13 @@
   [{:keys [current-state put-fn msg-payload]}]
   (let [{:keys [conn conf]} current-state
         res (esd/get conn (:es-index conf) "tweet" (:id_str msg-payload))]
-    {:emit-msg [:tweet/missing-tweet {:tweet (strip-source res)}]}))
+    {:emit-msg [:tweet/missing-tweet (strip-source res)]}))
 
 (defn total-tweets-indexed
   "Publishes the total tweet count when requested."
   [{:keys [current-state]}]
   (let [cnt (esd/count (:conn current-state) (:es-index (:conf current-state)) "tweet")]
-    {:emit-msg (with-meta [:stats/total-tweet-count (format "%,15d" (:count cnt))]
+    {:emit-msg (with-meta [:stats/total-tweet-count (s/trim (format "%,15d" (:count cnt)))]
                           {:sente-uid :broadcast})}))
 
 (defn cmp-map

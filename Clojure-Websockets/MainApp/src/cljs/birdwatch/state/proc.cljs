@@ -31,7 +31,7 @@
   "Increment counter, add tweet to tweets map and to sorted sets by id and by followers. Modifies
    application state."
   [{:keys [current-state msg-payload]}]
-  (let [tweet (:tweet msg-payload)
+  (let [tweet msg-payload
         id-str (:id_str tweet)
         id-key (keyword id-str)]
     (if id-str
@@ -57,5 +57,5 @@
    state, then pause to give the event loop back to the application (otherwise, UI becomes
    unresponsive for a short while)."
   [{:keys [cmp-state put-fn msg-payload onto-in-chan]}]
-  (onto-in-chan (map (fn [t] [:tweet/new {:tweet t}]) (:result msg-payload)))
+  (onto-in-chan (map (fn [t] [:tweet/new t]) (:result msg-payload)))
   (s/load-prev cmp-state put-fn))

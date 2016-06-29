@@ -6,9 +6,9 @@
 (defn- msg-handler-fn
   "create handler function for messages from Redis Pub/Sub"
   [put-fn]
-  (fn [[msg-type _topic payload]]
+  (fn [[msg-type _topic msg]]
     (when (= msg-type "message")
-      (put-fn [:redis/matches payload]))))
+      (put-fn msg))))
 
 (defn subscribe-topic
   "subscribe to topic, put items on specified channel"
@@ -24,10 +24,11 @@
   (fn [put-fn]
     (let [redis-host (:redis-host conf)
           redis-port (:redis-port conf)
-          conn {:pool {} :spec {:host redis-host :port redis-port}}
+          conn {:pool {}
+                :spec {:host redis-host
+                       :port redis-port}}
           listener (subscribe-topic put-fn conn "matches")]
       (log/info "Redis connection started to" redis-host redis-port)
-      (put-fn [:log/info (str "Redis connection started to " redis-host redis-port)])
       {:state (atom {:conf     conf
                      :conn     conn
                      :listener listener})})))

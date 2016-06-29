@@ -74,6 +74,12 @@
 (def sente-map
   {:index-page-fn index-page-fn
    :middleware    (fn [app] (gzip/wrap-gzip (ssl/wrap-hsts app)))
+   :relay-types   #{:tweet/new
+                    :tweet/prev-chunk
+                    :tweet/missing-tweet
+                    :stats/users-count
+                    :stats/total-tweet-count
+                    :stats/jvm}
    :undertow-cfg  (if (and ssl-keystore key-password)
                     {:ssl-port     (get (System/getenv) "SSL_PORT" 8443)
                      :keystore     ssl-keystore

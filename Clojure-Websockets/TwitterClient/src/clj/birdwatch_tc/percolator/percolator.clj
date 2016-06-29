@@ -10,7 +10,8 @@
   [{:keys [current-state msg-payload]}]
   (let [response (perc/percolate (:conn current-state) "percolator" "tweet" :doc msg-payload)
         matches (set (map :_id (esrsp/matches-from response)))] ;; set with SHAs
-    {:emit-msg [:perc/matches [msg-payload matches]]}))
+    {:emit-msg [:perc/matches {:tweet   msg-payload
+                               :matches matches}]}))
 
 (defn percolator-state-fn
   "Returns function for making state while using provided configuration."

@@ -1,6 +1,7 @@
-{:es-address       "http://127.0.0.1:9200"
- :es-index         "it-stuff"
- :port             8888
- :pidfile-name     "birdwatch.pid"
- :redis-host       "127.0.0.1"
- :redis-port       6379}
+{:es-address   "http://127.0.0.1:9200"
+ :es-index     "it-stuff"
+ :port         8888
+ :pidfile-name "birdwatch.pid"
+ :redis        {:host  "127.0.0.1"
+                :port  6379
+                :topic "birdwatch"}}

@@ -14,6 +14,7 @@
                  [matthiasn/systems-toolbox-sente "0.6.1-SNAPSHOT"]
                  [matthiasn/systems-toolbox-ui "0.6.1-SNAPSHOT"]
                  [matthiasn/systems-toolbox-metrics "0.6.1-SNAPSHOT"]
+                 [matthiasn/systems-toolbox-redis "0.6.1-SNAPSHOT"]
                  [matthiasn/birdwatch-specs "0.3.1"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [ch.qos.logback/logback-classic "1.1.7"]

@@ -9,6 +9,7 @@
                  [clojurewerkz/elastisch "2.2.1"]
                  [org.clojure/tools.logging "0.3.1"]
                  [matthiasn/systems-toolbox "0.6.1-SNAPSHOT"]
+                 [matthiasn/systems-toolbox-redis "0.6.1-SNAPSHOT"]
                  [matthiasn/birdwatch-specs "0.3.1"]
                  [ch.qos.logback/logback-classic "1.1.7"]
                  [clj-time "0.12.0"]

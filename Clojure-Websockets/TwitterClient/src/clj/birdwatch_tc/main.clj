@@ -2,9 +2,9 @@
   (:require [matthiasn.birdwatch-specs.specs]
             [birdwatch-tc.persistence.persistence :as pc]
             [birdwatch-tc.percolator.percolator :as perc]
-            [birdwatch-tc.interop.interop :as iop]
             [birdwatch-tc.twitterclient.twitterclient :as tc]
             [matthiasn.systems-toolbox.switchboard :as sb]
+            [matthiasn.systems-toolbox-redis.sender :as redis]
             [matthiasn.systems-toolbox.scheduler :as sched]
             [clojure.edn :as edn]
             [clojure.tools.logging :as log]
@@ -35,7 +35,8 @@
       [[:cmd/init-comp #{(tc/cmp-map :tc/client-cmp conf)
                          (sched/cmp-map :tc/scheduler-cmp)
                          (pc/cmp-map :tc/persistence-cmp conf)
-                         (iop/cmp-map :tc/interop-cmp conf)
+                         (redis/cmp-map :tc/interop-cmp (merge (:redis conf)
+                                                               {:relay-types #{:perc/matches}}))
                          (perc/cmp-map :tc/percolator-cmp conf)}]
        [:cmd/route {:from :tc/client-cmp :to #{:tc/persistence-cmp :tc/percolator-cmp}}]
        [:cmd/route {:from :tc/percolator-cmp :to :tc/interop-cmp}]

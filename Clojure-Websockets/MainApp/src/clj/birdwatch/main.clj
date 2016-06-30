@@ -7,7 +7,6 @@
   (:require [matthiasn.birdwatch-specs.specs]
             [birdwatch.persistence.persistence :as pc]
             [birdwatch.percolator.percolator :as perc]
-            [birdwatch.interop.interop :as iop]
             [birdwatch.http.markup :as markup]
             [clojure.edn :as edn]
             [clojure.tools.logging :as log]
@@ -17,6 +16,7 @@
             [matthiasn.systems-toolbox.switchboard :as sb]
             [matthiasn.systems-toolbox.scheduler :as sched]
             [matthiasn.systems-toolbox-sente.server :as sente]
+            [matthiasn.systems-toolbox-redis.receiver :as redis]
             [matthiasn.systems-toolbox-metrics.metrics :as metrics]))
 
 (pretty/install-pretty-logging)
@@ -41,12 +41,12 @@
     (sb/send-mult-cmd
       switchboard
       [[:cmd/init-comp
-        #{(sente/cmp-map :backend/ws-cmp markup/sente-map) ; WebSockets component
-          (sched/cmp-map :backend/scheduler-cmp)           ; Scheduler component
-          (pc/cmp-map :backend/persistence-cmp conf)       ; Persistence-related component
-          (iop/cmp-map :backend/interop-cmp conf)          ; Interop between JVMs over Redis PubSub
-          (perc/cmp-map :backend/percolator-cmp conf)      ; Matching tweets with searches
-          (metrics/cmp-map :backend/metrics-cmp)}]         ; Metrics and stats
+        #{(sente/cmp-map :backend/ws-cmp markup/sente-map)   ; WebSockets component
+          (sched/cmp-map :backend/scheduler-cmp)             ; Scheduler component
+          (pc/cmp-map :backend/persistence-cmp conf)         ; Persistence-related component
+          (redis/cmp-map :backend/interop-cmp (:redis conf)) ; Redis PubSub interop between JVMs
+          (perc/cmp-map :backend/percolator-cmp conf)        ; Matching tweets with searches
+          (metrics/cmp-map :backend/metrics-cmp)}]           ; Metrics and stats
 
        [:cmd/route {:from #{:backend/scheduler-cmp :backend/ws-cmp}
                     :to   :backend/persistence-cmp}]

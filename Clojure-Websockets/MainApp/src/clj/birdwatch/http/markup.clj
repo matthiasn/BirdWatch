@@ -24,19 +24,32 @@
      [:head
       [:meta {:content "initial-scale=1.0, user-scalable=no, width=device-width" :name "viewport"}]
       [:title "BirdWatch"]
-      (when dev? [:link {:href "/bower_components/pure/pure.css" :media "screen" :rel "stylesheet"}])
-      (when dev? [:link {:href "/bower_components/pure/grids-responsive.css" :media "screen" :rel "stylesheet"}])
+      (when dev? [:link {:href  "/bower_components/pure/pure.css"
+                         :media "screen"
+                         :rel   "stylesheet"}])
+      (when dev? [:link {:href  "/bower_components/pure/grids-responsive.css"
+                         :media "screen"
+                         :rel   "stylesheet"}])
       (when dev? [:link {:href "/css/birdwatch.css" :media "screen" :rel "stylesheet"}])
-      (when-not dev? [:link {:href "/css/birdwatch.min.css" :media "screen" :rel "stylesheet"}])
+      (when-not dev? [:link {:href  "/css/birdwatch.min.css"
+                             :media "screen"
+                             :rel   "stylesheet"}])
       [:style (index-css dev?)]
-      [:link {:href "https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext" :rel "stylesheet" :type "text/css"}]
-      [:link {:href "/images/favicon.png" :rel "shortcut icon" :type "image/png"}]]
+      [:link {:href "https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext"
+              :rel  "stylesheet"
+              :type "text/css"}]
+      [:link {:href "/images/favicon.png"
+              :rel  "shortcut icon"
+              :type "image/png"}]]
      [:body
       [:div.header
        [:div.home-menu.pure-menu.pure-menu-open.pure-menu-horizontal.pure-menu-fixed
         [:a.pure-menu-heading {:href ""} "Birdwatch"]
-        [:ul [:li [:a {:href "https://github.com/matthiasn/Birdwatch" :target "_blank"} "GitHub"]]
-         [:li [:a {:href "https://leanpub.com/building-a-system-in-clojure" :target "_blank"} "About"]]]]]
+        [:ul [:li [:a {:href   "https://github.com/matthiasn/Birdwatch"
+                       :target "_blank"} "GitHub"]]
+         [:li [:a {:href   "https://leanpub.com/building-a-system-in-clojure"
+                   :target "_blank"}
+               "About"]]]]]
       [:div.content-wrapper
        [:div.l-box
         [:div#count "Tweets: " [:span#tweet-count]]
@@ -61,8 +74,9 @@
          [:br] [:br] [:br] [:br] [:br]
          [:div#observer]]]]
       (when dev? [:script {:src "/bower_components/d3/d3.js"}])
-      (if dev? [:script {:src "/js/wordcloud.js"}]      ; uncompressed file contains d3 cloud and BirdWatch wordcloud
-               [:script {:src "/js/wordcloud.min.js"}]) ; minified file contains d3, d3 cloud and BirdWatch wordcloud
+      (if dev?
+        [:script {:src "/js/wordcloud.js"}]      ; uncompressed, with d3 cloud and BirdWatch wordcloud
+        [:script {:src "/js/wordcloud.min.js"}]) ; minified, with d3, d3 cloud and BirdWatch wordcloud
       [:script {:src "/js/build/birdwatch.js"}]
       ; Google Analytics for tracking demo page: Todo: edit ID or remove in your own project.
       [:script {:async "" :src "//www.google-analytics.com/analytics.js"}]

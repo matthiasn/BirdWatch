@@ -42,7 +42,8 @@
   "Count the number of currently connected client (for display in UI)."
   [{:keys [current-state]}]
   (let [connected-uids (:connected-uids current-state)]
-    {:emit-msg (with-meta [:stats/users-count (count (:any connected-uids))] {:sente-uid :broadcast})}))
+    {:emit-msg (with-meta [:stats/users-count (count (:any connected-uids))]
+                          {:sente-uid :broadcast})}))
 
 (defn cmp-map
   "Create component for starting percolation in ElasticSearch and delivering matches."

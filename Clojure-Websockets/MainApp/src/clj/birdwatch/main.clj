@@ -24,6 +24,8 @@
 
 (def conf (edn/read-string (slurp "conf.edn")))
 
+(defonce switchboard (sb/component :backend/switchboard))
+
 (defn restart!
   "Starts (or restarts) a system built out of the specified subsystems. The switchboard will
   then fire up subsystems according to the blueprint maps, which are in passed in the second
@@ -37,45 +39,44 @@
   Then, calling this function again will restart the system while maintaining the state of
   the individual subsystems."
   []
-  (let [switchboard (sb/component :backend/switchboard)]
-    (sb/send-mult-cmd
-      switchboard
-      [[:cmd/init-comp
-        #{(sente/cmp-map :backend/ws-cmp markup/sente-map)   ; WebSockets component
-          (sched/cmp-map :backend/scheduler-cmp)             ; Scheduler component
-          (pc/cmp-map :backend/persistence-cmp conf)         ; Persistence-related component
-          (redis/cmp-map :backend/interop-cmp (:redis conf)) ; Redis PubSub interop between JVMs
-          (perc/cmp-map :backend/percolator-cmp conf)        ; Matching tweets with searches
-          (metrics/cmp-map :backend/metrics-cmp)}]           ; Metrics and stats
+  (sb/send-mult-cmd
+    switchboard
+    [[:cmd/init-comp
+      #{(sente/cmp-map :backend/ws-cmp markup/sente-map)    ; WebSockets component
+        (sched/cmp-map :backend/scheduler-cmp)              ; Scheduler component
+        (pc/cmp-map :backend/persistence-cmp conf)          ; Persistence-related component
+        (redis/cmp-map :backend/interop-cmp (:redis conf))  ; Redis PubSub interop between JVMs
+        (perc/cmp-map :backend/percolator-cmp conf)         ; Matching tweets with searches
+        (metrics/cmp-map :backend/metrics-cmp)}]            ; Metrics and stats
 
-       [:cmd/route {:from #{:backend/scheduler-cmp :backend/ws-cmp}
-                    :to   :backend/persistence-cmp}]
+     [:cmd/route {:from #{:backend/scheduler-cmp :backend/ws-cmp}
+                  :to   :backend/persistence-cmp}]
 
-       [:cmd/route {:from #{:backend/persistence-cmp :backend/percolator-cmp :backend/metrics-cmp}
-                    :to   :backend/ws-cmp}]
+     [:cmd/route {:from #{:backend/persistence-cmp :backend/percolator-cmp :backend/metrics-cmp}
+                  :to   :backend/ws-cmp}]
 
-       [:cmd/route {:from #{:backend/interop-cmp :backend/ws-cmp :backend/scheduler-cmp}
-                    :to   :backend/percolator-cmp}]
+     [:cmd/route {:from #{:backend/interop-cmp :backend/ws-cmp :backend/scheduler-cmp}
+                  :to   :backend/percolator-cmp}]
 
-       [:cmd/observe-state {:from :backend/ws-cmp
-                            :to   :backend/percolator-cmp}]
+     [:cmd/observe-state {:from :backend/ws-cmp
+                          :to   :backend/percolator-cmp}]
 
-       [:cmd/route {:from :backend/scheduler-cmp
-                    :to   :backend/metrics-cmp}]
+     [:cmd/route {:from :backend/scheduler-cmp
+                  :to   :backend/metrics-cmp}]
 
-       [:cmd/send {:to  :backend/scheduler-cmp
-                   :msg [:cmd/schedule-new {:timeout 5000
-                                            :message [:schedule/count-indexed]
-                                            :repeat  true}]}]
-       [:cmd/send {:to  :backend/scheduler-cmp
-                   :msg [:cmd/schedule-new {:timeout 3000
-                                            :message [:schedule/count-users]
-                                            :repeat  true}]}]
-       [:cmd/send {:to  :backend/scheduler-cmp
-                   :msg [:cmd/schedule-new {:timeout 5000
-                                            :message (with-meta [:cmd/get-jvm-stats]
-                                                                {:sente-uid :broadcast})
-                                            :repeat  true}]}]])))
+     [:cmd/send {:to  :backend/scheduler-cmp
+                 :msg [:cmd/schedule-new {:timeout 5000
+                                          :message [:schedule/count-indexed]
+                                          :repeat  true}]}]
+     [:cmd/send {:to  :backend/scheduler-cmp
+                 :msg [:cmd/schedule-new {:timeout 3000
+                                          :message [:schedule/count-users]
+                                          :repeat  true}]}]
+     [:cmd/send {:to  :backend/scheduler-cmp
+                 :msg [:cmd/schedule-new {:timeout 5000
+                                          :message (with-meta [:cmd/get-jvm-stats]
+                                                              {:sente-uid :broadcast})
+                                          :repeat  true}]}]]))
 
 (defn -main
   "Starts the application from command line. Also saves and logs process ID. The system that is

@@ -1,6 +1,7 @@
 (ns birdwatch.state.initial
   (:require [birdwatch.util :as util]
-            [tailrecursion.priority-map :refer [priority-map-by]]))
+            #?(:clj  [clojure.data.priority-map :refer [priority-map-by]]
+               :cljs [tailrecursion.priority-map :refer [priority-map-by]])))
 
 (defn initial-state
   "Returns fresh application state, with :search-text from the URI location hash.."

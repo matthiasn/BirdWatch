@@ -6,7 +6,7 @@
   [{:keys [cmp-state msg-payload]}]
   (swap! cmp-state assoc :search-text (str (:search-text @cmp-state) " " msg-payload)))
 
-(defn- load-prev
+(defn load-prev
   "Loads previous tweets matching the current search. Search is contructed
    by calling the util/query-string function with dereferenced app state."
   [app put-fn]
@@ -19,7 +19,7 @@
                            :from  (* chunk-size prev-chunks-loaded)}])
       (swap! app update-in [:prev-chunks-loaded] inc))))
 
-(defn- start-percolator
+(defn start-percolator
   "Triggers percolation matching of new tweets on the server side so that
    future matches will be delivered to the client."
   [app put-fn]
@@ -35,6 +35,6 @@
       (reset! cmp-state initial-state)
       (swap! cmp-state assoc :search-text search)
       (swap! cmp-state assoc :search s)
-      (aset js/window "location" "hash" (js/encodeURIComponent s))
+      (util/set-search-hash s)
       (start-percolator cmp-state put-fn)
       (dotimes [_ 2] (load-prev cmp-state put-fn)))))

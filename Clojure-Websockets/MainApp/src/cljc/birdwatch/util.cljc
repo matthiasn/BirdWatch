@@ -3,17 +3,22 @@
 (defn by-id
   "Get DOM element by specified ID."
   [id]
-  (.getElementById js/document id))
+  #?(:cljs (.getElementById js/document id)))
 
 (defn elem-width
   "Get width of specified DOM element."
   [elem]
-  (aget elem "offsetWidth"))
+  #?(:cljs (aget elem "offsetWidth")))
 
 (defn search-hash
   "Get location hash for current page."
   []
-  (subs (js/decodeURIComponent (aget js/window "location" "hash")) 1))
+  #?(:cljs (subs (js/decodeURIComponent (aget js/window "location" "hash")) 1)))
+
+(defn set-search-hash
+  "Set location hash for current page."
+  [s]
+  #?(:cljs (aset js/window "location" "hash" (js/encodeURIComponent s))))
 
 (defn tweets-by-order
   "Find top n tweets by specified order."

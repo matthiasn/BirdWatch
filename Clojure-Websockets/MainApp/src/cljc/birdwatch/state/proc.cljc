@@ -1,9 +1,11 @@
 (ns birdwatch.state.proc
-  (:require-macros [com.rpl.specter.macros :as spm])
+  #?(:cljs (:require-macros [com.rpl.specter.macros :as spm]))
   (:require [birdwatch.stats.wordcount :as wc]
             [birdwatch.state.search :as s]
             [com.rpl.specter :as sp]
-            [cljs.pprint :as pp]))
+            #?(:clj [com.rpl.specter.macros :as spm])
+            #?(:clj [clojure.pprint :as pp]
+               :cljs [cljs.pprint :as pp])))
 
 (defn add-rt-status
   "Process original, retweeted tweet."

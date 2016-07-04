@@ -14,5 +14,6 @@
  :tw-check-interval-sec    10
  :tw-restart-wait          60
  :pidfile-name             "twitterclient.pid"
- :redis-host               "127.0.0.1"
- :redis-port               6379}
+ :redis                    {:host  "127.0.0.1"
+                            :port  6379
+                            :topic "birdwatch"}}

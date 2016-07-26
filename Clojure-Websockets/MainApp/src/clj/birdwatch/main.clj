@@ -17,7 +17,8 @@
             [matthiasn.systems-toolbox.scheduler :as sched]
             [matthiasn.systems-toolbox-sente.server :as sente]
             [matthiasn.systems-toolbox-redis.receiver :as redis]
-            [matthiasn.systems-toolbox-metrics.metrics :as metrics]))
+            [matthiasn.systems-toolbox-metrics.metrics :as metrics])
+  (:gen-class))
 
 (pretty/install-pretty-logging)
 (pretty/install-uncaught-exception-handler)

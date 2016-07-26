@@ -39,8 +39,10 @@
   :main ^:skip-aot birdwatch.main
   :target-path "target/%s"
 
-  :profiles {:uberjar {:aot :all}
-             :http2   {:jvm-opts ["-Xbootclasspath/p:TLS/alpn-boot-8.1.7.v20160121.jar"]}}
+  :profiles
+  {:uberjar {:aot   :all
+             :auto-clean false}
+   :http2   {:jvm-opts ["-Xbootclasspath/p:TLS/alpn-boot-8.1.7.v20160121.jar"]}}
 
   :plugins [[lein-cljsbuild "1.1.3"]
             [lein-figwheel "0.5.4-7"]
@@ -51,19 +53,20 @@
 
   :clean-targets ^{:protect false} ["resources/public/js/build/" "target/"]
 
-  :cljsbuild {:builds [{:id           "dev"
-                        :source-paths ["src/cljc" "src/cljs" "env/dev/cljs"]
-                        :figwheel     true
-                        :compiler     {:main          "birdwatch.dev"
-                                       :asset-path    "js/build"
-                                       :optimizations :none
-                                       :output-dir    "resources/public/js/build/"
-                                       :output-to     "resources/public/js/build/birdwatch.js"
-                                       :source-map    true
-                                       :pretty-print  true}}
-                       {:id           "release"
-                        :source-paths ["src/cljc" "src/cljs"]
-                        :compiler     {:output-to     "resources/public/js/build/birdwatch.js"
-                                       :optimizations :advanced
-                                       :externs       ["externs/misc.js"]
-                                       :pretty-print  false}}]})
+  :cljsbuild
+  {:builds [{:id           "dev"
+             :source-paths ["src/cljc" "src/cljs" "env/dev/cljs"]
+             :figwheel     true
+             :compiler     {:main          "birdwatch.dev"
+                            :asset-path    "js/build"
+                            :optimizations :none
+                            :output-dir    "resources/public/js/build/"
+                            :output-to     "resources/public/js/build/birdwatch.js"
+                            :source-map    true
+                            :pretty-print  true}}
+            {:id           "release"
+             :source-paths ["src/cljc" "src/cljs"]
+             :compiler     {:output-to     "resources/public/js/build/birdwatch.js"
+                            :optimizations :advanced
+                            :externs       ["externs/misc.js"]
+                            :pretty-print  false}}]})

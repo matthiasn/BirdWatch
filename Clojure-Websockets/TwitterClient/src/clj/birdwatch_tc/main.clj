@@ -15,9 +15,6 @@
 (pretty/install-pretty-logging)
 (pretty/install-uncaught-exception-handler)
 
-(def conf-filepath (get (System/getenv) "CONF_PATH" "twitterconf.edn"))
-(def conf (edn/read-string (slurp conf-filepath)))
-
 (defn restart!
   "Starts (or restarts) a system built out of the specified subsystems. The
    switchboard will then fire up subsystems according to the blueprint maps,
@@ -31,7 +28,7 @@
 
    Then, calling this function again will restart the system while maintaining
    the state of the individual subsystems."
-  []
+  [conf]
   (let [switchboard (sb/component :tc/switchboard)]
     (sb/send-mult-cmd
       switchboard
@@ -60,8 +57,10 @@
    thread pool. Since we don't want the application to exit when just because
    the current thread is out of work, we just put it to sleep."
   [& args]
-  (pid/save (:pidfile-name conf))
-  (pid/delete-on-shutdown! (:pidfile-name conf))
-  (log/info "Application started, PID" (pid/current))
-  (restart!)
-  (Thread/sleep Long/MAX_VALUE))
+  (let [conf-filepath (get (System/getenv) "CONF_PATH" "twitterconf.edn")
+        conf (edn/read-string (slurp conf-filepath))]
+    (pid/save (:pidfile-name conf))
+    (pid/delete-on-shutdown! (:pidfile-name conf))
+    (log/info "Application started, PID" (pid/current))
+    (restart! conf)
+    (Thread/sleep Long/MAX_VALUE)))

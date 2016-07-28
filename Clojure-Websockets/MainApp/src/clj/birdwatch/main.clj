@@ -24,9 +24,6 @@
 (pretty/install-pretty-logging)
 (pretty/install-uncaught-exception-handler)
 
-(def conf-filepath (get (System/getenv) "CONF_PATH" "conf.edn"))
-(def conf (edn/read-string (slurp conf-filepath)))
-
 (defonce switchboard (sb/component :backend/switchboard))
 
 (defn restart!
@@ -42,7 +39,7 @@
 
    Then, calling this function again will restart the system while maintaining
    the state of the individual subsystems."
-  []
+  [conf]
   (sb/send-mult-cmd
     switchboard
     [[:cmd/init-comp
@@ -93,8 +90,10 @@
    thread pool. Since we don't want the application to exit when just because
    the current thread is out of work, we just put it to sleep."
   [& args]
-  (pid/save (:pidfile-name conf))
-  (pid/delete-on-shutdown! (:pidfile-name conf))
-  (log/info "Application started, PID" (pid/current))
-  (restart!)
-  (Thread/sleep Long/MAX_VALUE))
+  (let [conf-filepath (get (System/getenv) "CONF_PATH" "conf.edn")
+        conf (edn/read-string (slurp conf-filepath))]
+    (pid/save (:pidfile-name conf))
+    (pid/delete-on-shutdown! (:pidfile-name conf))
+    (log/info "Application started, PID" (pid/current))
+    (restart! conf)
+    (Thread/sleep Long/MAX_VALUE)))

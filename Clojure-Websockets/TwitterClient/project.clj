@@ -11,6 +11,7 @@
                  [matthiasn/systems-toolbox "0.6.1-alpha2"]
                  [matthiasn/systems-toolbox-redis "0.6.1-alpha1"]
                  [matthiasn/birdwatch-specs "0.3.1"]
+                 [matthiasn/systemd-watchdog "0.1.2"]
                  [ch.qos.logback/logback-classic "1.1.7"]
                  [clj-time "0.12.0"]
                  [clj-pid "0.1.2"]

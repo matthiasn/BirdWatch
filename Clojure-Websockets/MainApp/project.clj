@@ -16,6 +16,7 @@
                  [matthiasn/systems-toolbox-metrics "0.6.1-alpha1"]
                  [matthiasn/systems-toolbox-redis "0.6.1-alpha1"]
                  [matthiasn/birdwatch-specs "0.3.1"]
+                 [matthiasn/systemd-watchdog "0.1.2"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [ch.qos.logback/logback-classic "1.1.7"]
                  [hiccup "1.0.5"]

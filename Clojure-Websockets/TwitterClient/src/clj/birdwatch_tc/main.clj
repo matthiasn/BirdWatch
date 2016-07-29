@@ -9,6 +9,7 @@
             [clojure.edn :as edn]
             [clojure.tools.logging :as log]
             [io.aviso.logging :as pretty]
+            [matthiasn.systemd-watchdog.core :as wd]
             [clj-pid.core :as pid])
   (:gen-class))
 
@@ -63,4 +64,5 @@
     (pid/delete-on-shutdown! (:pidfile-name conf))
     (log/info "Application started, PID" (pid/current))
     (restart! conf)
+    (wd/start-watchdog! 5000)
     (Thread/sleep Long/MAX_VALUE)))

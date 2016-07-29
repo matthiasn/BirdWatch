@@ -14,6 +14,7 @@
             [io.aviso.logging :as pretty]
             [clojure.tools.namespace.repl :refer [refresh]]
             [clj-pid.core :as pid]
+            [matthiasn.systemd-watchdog.core :as wd]
             [matthiasn.systems-toolbox.switchboard :as sb]
             [matthiasn.systems-toolbox.scheduler :as sched]
             [matthiasn.systems-toolbox-sente.server :as sente]
@@ -96,4 +97,5 @@
     (pid/delete-on-shutdown! (:pidfile-name conf))
     (log/info "Application started, PID" (pid/current))
     (restart! conf)
+    (wd/start-watchdog! 5000)
     (Thread/sleep Long/MAX_VALUE)))

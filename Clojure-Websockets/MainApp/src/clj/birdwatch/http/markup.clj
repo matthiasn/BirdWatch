@@ -16,28 +16,27 @@
 
 (def dev? (get (System/getenv) "DEV" false))
 
+(defn stylesheet [href] [:link {:href href :rel "stylesheet"}])
+(defn script [src] [:script {:src src}])
+
 (defn index-page-fn
   "Renders Index page."
   [_req]
   (html
     [:html {:lang "en"}
      [:head
-      [:meta {:content "initial-scale=1.0, user-scalable=no, width=device-width" :name "viewport"}]
+      [:meta {:content "initial-scale=1.0, user-scalable=no, width=device-width"
+              :name "viewport"}]
       [:title "BirdWatch"]
-      (when dev? [:link {:href  "/bower_components/pure/pure.css"
-                         :media "screen"
-                         :rel   "stylesheet"}])
-      (when dev? [:link {:href  "/bower_components/pure/grids-responsive.css"
-                         :media "screen"
-                         :rel   "stylesheet"}])
-      (when dev? [:link {:href "/css/birdwatch.css" :media "screen" :rel "stylesheet"}])
-      (when-not dev? [:link {:href  "/css/birdwatch.min.css"
-                             :media "screen"
-                             :rel   "stylesheet"}])
+
+      ;(stylesheet "/bower_components/pure/pure.css")
+      ;(stylesheet "/bower_components/pure/grids-responsive.css")
+      ;(stylesheet "/css/birdwatch.css")
+      (stylesheet "/css/birdwatch.min.css")
+
       [:style (index-css dev?)]
-      [:link {:href "https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext"
-              :rel  "stylesheet"
-              :type "text/css"}]
+      (stylesheet
+        "https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext")
       [:link {:href "/images/favicon.png"
               :rel  "shortcut icon"
               :type "image/png"}]]
@@ -73,11 +72,11 @@
          [:div#jvm-stats-frame]
          [:br] [:br] [:br] [:br] [:br]
          [:div#observer]]]]
-      (when dev? [:script {:src "/bower_components/d3/d3.js"}])
-      (if dev?
-        [:script {:src "/js/wordcloud.js"}]      ; uncompressed, with d3 cloud and BirdWatch wordcloud
-        [:script {:src "/js/wordcloud.min.js"}]) ; minified, with d3, d3 cloud and BirdWatch wordcloud
-      [:script {:src "/js/build/birdwatch.js"}]
+      (script "/webjars/d3/3.5.17/d3.js")
+      (script "/webjars/d3-cloud/1.2.1/build/d3.layout.cloud.js")
+      (script "/js/wordcloud.js")
+      (script "/js/build/birdwatch.js")
+
       ; Google Analytics for tracking demo page: Todo: edit ID or remove in your own project.
       [:script {:async "" :src "//www.google-analytics.com/analytics.js"}]
       (analytics "'UA-40261983-4'")]]))

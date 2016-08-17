@@ -1,9 +1,10 @@
 (defproject birdwatch "0.2.0-SNAPSHOT"
   :description "Main part of the BirdWatch system (without TwitterClient)"
   :url "https://github.com/matthiasn/Birdwatch"
-  :license {:name "GNU General Public License" :url "http://www.gnu.org/licenses/gpl-3.0.en.html"}
+  :license {:name "GNU General Public License"
+            :url  "http://www.gnu.org/licenses/gpl-3.0.en.html"}
   :dependencies [[org.clojure/clojure "1.9.0-alpha10"]
-                 [org.clojure/clojurescript "1.9.93" :exclusions [org.clojure/tools.reader]]
+                 [org.clojure/clojurescript "1.9.216"]
                  [clojurewerkz/elastisch "2.2.2" :exclusions [commons-io potemkin]]
                  [com.rpl/specter "0.11.2"]
                  [org.clojure/tools.logging "0.3.1"]
@@ -28,6 +29,9 @@
                  [tailrecursion/cljs-priority-map "1.2.0"]
                  [org.clojure/data.priority-map "0.0.7"]
                  [cljsjs/moment "2.10.6-4"]
+                 [org.webjars.bower/purecss "0.6.0"]
+                 [org.webjars.bower/d3 "3.5.17"]
+                 [org.webjars.bower/d3-cloud "1.2.1"]
                  [clj-pid "0.1.2"]
                  [ring/ring-ssl "0.2.1" :exclusions [ring/ring-core]]
                  [metrics-clojure "2.7.0"]]

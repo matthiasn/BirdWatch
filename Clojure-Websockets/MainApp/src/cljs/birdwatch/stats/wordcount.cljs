@@ -21,8 +21,7 @@
 (defn get-words
   "get vector of maps with word as :key and count as :value"
   [state n]
-  (vec (map
-        (fn [w] (let [[k v] w] {:key k :value v}))
+  (vec (map (fn [[k v]] {:key k :value v})
         (take n (:words-sorted-by-count state)))))
 
 (defn get-words2

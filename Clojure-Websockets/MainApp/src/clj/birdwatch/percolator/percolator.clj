@@ -29,7 +29,8 @@
     {:new-state (assoc-in current-state [:subscriptions uid] sha)}))
 
 (defn deliver-perc-matches
-  "Deliver percolation matches to interested clients by looking clients up in subscriptions and connected-uids."
+  "Deliver percolation matches to interested clients by looking clients up in
+   subscriptions and connected-uids."
   [{:keys [cmp-state put-fn msg-payload]}]
   (let [{:keys [tweet matches]} msg-payload
         connected-uids (:connected-uids @cmp-state)
@@ -46,10 +47,12 @@
                           {:sente-uid :broadcast})}))
 
 (defn cmp-map
-  "Create component for starting percolation in ElasticSearch and delivering matches."
-  [cmp-id conf] {:cmp-id            cmp-id
-                 :state-fn          (percolator-state-fn conf)
-                 :handler-map       {:perc/matches         deliver-perc-matches
-                                     :cmd/percolate        start-percolator
-                                     :schedule/count-users count-users}
-                 :state-pub-handler (hu/assoc-in-cmp [:connected-uids])})
+  "Create component for starting percolation in ElasticSearch and delivering
+   matches."
+  [cmp-id conf]
+  {:cmp-id            cmp-id
+   :state-fn          (percolator-state-fn conf)
+   :handler-map       {:perc/matches         deliver-perc-matches
+                       :cmd/percolate        start-percolator
+                       :schedule/count-users count-users}
+   :state-pub-handler (hu/assoc-in-cmp [:connected-uids])})

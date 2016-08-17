@@ -20,8 +20,10 @@
   "take only actually needed fields from tweet"
   [t]
   (-> t
-      (select-keys [:id_str :id :text :created_at :retweet_count :favorite_count :entities])
-      (assoc :user (select-keys (:user t) [:followers_count :name :profile_image_url :screen_name]))))
+      (select-keys [:id_str :id :text :created_at :retweet_count :favorite_count
+                    :entities])
+      (assoc :user (select-keys (:user t) [:followers_count :name
+                                           :profile_image_url :screen_name]))))
 
 (defn strip-source
   "get tweet stripped down to necessary fields"

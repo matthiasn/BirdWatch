@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0-alpha14"]
                  [org.clojure/clojurescript "1.9.293"]
                  [clojurewerkz/elastisch "2.2.2" :exclusions [commons-io potemkin]]
-                 [com.rpl/specter "0.11.2"]
+                 [com.rpl/specter "0.13.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [com.taoensso/timbre "4.7.4"]
                  [com.taoensso/encore "2.86.1"]

@@ -1,11 +1,9 @@
 (ns birdwatch.state.proc
-  #?(:cljs (:require-macros [com.rpl.specter.macros :as spm]))
   (:require [birdwatch.stats.wordcount :as wc]
             [birdwatch.state.search :as s]
             [com.rpl.specter :as sp]
-            #?(:clj [com.rpl.specter.macros :as spm])
-            #?(:clj [clojure.pprint :as pp]
-               :cljs [cljs.pprint :as pp])))
+    #?(:clj  [clojure.pprint :as pp]
+       :cljs [cljs.pprint :as pp])))
 
 (defn add-rt-status
   "Process original, retweeted tweet."
@@ -15,18 +13,18 @@
           rt-count (:retweet_count rt)
           newer? #(> rt-count (:retweet_count %))]
       (->> state
-           (spm/transform [:by-rt-since-startup rt-id] inc)
-           (spm/transform [:by-reach rt-id] #(+ % (:followers_count (:user tweet))))
-           (spm/transform [:by-retweets rt-id] #(max % rt-count))
-           (spm/transform [:by-favorites rt-id] #(max % (:favorite_count rt)))
-           (spm/setval [:tweets-map rt-id newer?] rt)))
+           (sp/transform [:by-rt-since-startup rt-id] inc)
+           (sp/transform [:by-reach rt-id] #(+ % (:followers_count (:user tweet))))
+           (sp/transform [:by-retweets rt-id] #(max % rt-count))
+           (sp/transform [:by-favorites rt-id] #(max % (:favorite_count rt)))
+           (sp/setval [:tweets-map rt-id newer?] rt)))
     state))
 
 (defn add-words
   "Add words to the words map and the sorted set with the counts (while discarding old entry)."
   [tweet state]
   (reduce (fn [state word]
-            (spm/transform [:words-sorted-by-count (sp/keypath word)] inc state))
+            (sp/transform [:words-sorted-by-count (sp/keypath word)] inc state))
           state
           (wc/words-in-tweet (:text tweet))))
 
@@ -39,11 +37,11 @@
         id-key (keyword id-str)]
     (if id-str
       {:new-state (->> current-state
-                       (spm/transform [:count] inc)
-                       (spm/setval [:tweets-map id-key] tweet)
-                       (spm/setval [:by-followers id-key] (:followers_count (:user tweet)))
-                       (spm/setval [:by-id id-key] id-str)
-                       (spm/transform [:by-reach id-key] #(+ % (:followers_count (:user tweet))))
+                       (sp/transform [:count] inc)
+                       (sp/setval [:tweets-map id-key] tweet)
+                       (sp/setval [:by-followers id-key] (:followers_count (:user tweet)))
+                       (sp/setval [:by-id id-key] id-str)
+                       (sp/transform [:by-reach id-key] #(+ % (:followers_count (:user tweet))))
                        (add-rt-status tweet)
                        (add-words tweet))}
       ;; Oddly, there was an issue where id-str evaluated to nil, despite the pprint looking fine

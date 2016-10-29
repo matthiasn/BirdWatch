@@ -3,19 +3,19 @@
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "GNU General Public License"
             :url  "http://www.gnu.org/licenses/gpl-3.0.en.html"}
-  :dependencies [[org.clojure/clojure "1.9.0-alpha10"]
-                 [org.clojure/clojurescript "1.9.216"]
+  :dependencies [[org.clojure/clojure "1.9.0-alpha14"]
+                 [org.clojure/clojurescript "1.9.293"]
                  [clojurewerkz/elastisch "2.2.2" :exclusions [commons-io potemkin]]
                  [com.rpl/specter "0.11.2"]
                  [org.clojure/tools.logging "0.3.1"]
-                 [com.taoensso/timbre "4.7.3"]
-                 [com.taoensso/encore "2.68.0"]
-                 [com.taoensso/carmine "2.14.0"]
-                 [matthiasn/systems-toolbox "0.6.1-alpha2"]
-                 [matthiasn/systems-toolbox-sente "0.6.1-alpha4"]
-                 [matthiasn/systems-toolbox-ui "0.6.1-alpha6"]
+                 [com.taoensso/timbre "4.7.4"]
+                 [com.taoensso/encore "2.86.1"]
+                 [com.taoensso/carmine "2.15.0"]
+                 [matthiasn/systems-toolbox "0.6.1-alpha8"]
+                 [matthiasn/systems-toolbox-sente "0.6.1-alpha13"]
+                 [matthiasn/systems-toolbox-ui "0.6.1-alpha11"]
                  [matthiasn/systems-toolbox-metrics "0.6.1-alpha1"]
-                 [matthiasn/systems-toolbox-redis "0.6.1-alpha1"]
+                 [matthiasn/systems-toolbox-redis "0.6.1-alpha3"]
                  [matthiasn/birdwatch-specs "0.3.1"]
                  [matthiasn/systemd-watchdog "0.1.2"]
                  [org.clojure/tools.namespace "0.2.11"]
@@ -23,8 +23,8 @@
                  [hiccup "1.0.5"]
                  [garden "1.2.5"]
                  [clj-time "0.12.0"]
-                 [org.bouncycastle/bcprov-jdk15on "1.54"]
-                 [pandect "0.6.0"]
+                 [org.bouncycastle/bcprov-jdk15on "1.55"]
+                 [pandect "0.6.1"]
                  [amalloy/ring-gzip-middleware "0.1.3"]
                  [tailrecursion/cljs-priority-map "1.2.0"]
                  [org.clojure/data.priority-map "0.0.7"]
@@ -49,9 +49,9 @@
              :auto-clean false}
    :http2   {:jvm-opts ["-Xbootclasspath/p:TLS/alpn-boot-8.1.7.v20160121.jar"]}}
 
-  :plugins [[lein-cljsbuild "1.1.3"]
-            [lein-figwheel "0.5.4-7"]
-            [codox "0.9.5"]]
+  :plugins [[lein-cljsbuild "1.1.4"]
+            [lein-figwheel "0.5.8"]
+            [codox "0.10.1"]]
 
   :figwheel {:server-port 3452
              :css-dirs    ["resources/public/css"]}

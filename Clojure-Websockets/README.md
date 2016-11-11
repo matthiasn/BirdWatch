@@ -74,4 +74,4 @@ The command above will have the MainApp application listen on **[localhost:8888]
 You can now also run the application in a secure fashion using TLS, have a look at this separate **[README](./MainApp/TLS/README.md)**.
 
 ## License
-Copyright © 2014-2016 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the **GNU GENERAL PUBLIC LICENSE**, Version 3. See separate LICENSE file.
+Copyright © 2014-2016 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the **GNU AFFERO PUBLIC LICENSE**, Version 3. See separate LICENSE file.

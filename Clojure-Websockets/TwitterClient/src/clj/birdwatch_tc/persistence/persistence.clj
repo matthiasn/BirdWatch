@@ -14,7 +14,7 @@
       {:state (atom {:conf conf
                      :conn conn})})))
 
-(defn- save-tweet
+(defn save-tweet
   "Persist tweet into configured ElasticSearch index."
   [{:keys [current-state msg-payload]}]
   (try (esd/put (:conn current-state)
@@ -22,7 +22,8 @@
                 "tweet"
                 (:id_str msg-payload)
                 msg-payload)
-       (catch Exception ex (log/error "Exception when persisting tweet:" ex))))
+       (catch Exception ex (log/error "Exception when persisting tweet:" ex)))
+  {})
 
 (defn cmp-map
   [cmp-id conf]

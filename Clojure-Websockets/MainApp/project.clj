@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0-alpha15"]
                  [org.clojure/clojurescript "1.9.473"]
                  [clojurewerkz/elastisch "2.2.2" :exclusions [commons-io]]
-                 [com.rpl/specter "0.13.2"]
+                 [com.rpl/specter "1.0.0"]
                  [org.clojure/tools.logging "0.3.1"]
                  [com.taoensso/timbre "4.8.0"]
                  [com.taoensso/encore "2.90.1"]
@@ -14,10 +14,11 @@
                  [matthiasn/systems-toolbox "0.6.6"]
                  [matthiasn/systems-toolbox-sente "0.6.7"]
                  [matthiasn/systems-toolbox-ui "0.6.2"]
-                 [matthiasn/systems-toolbox-metrics "0.6.1"]
+                 [matthiasn/systems-toolbox-metrics "0.6.2"]
                  [matthiasn/systems-toolbox-redis "0.6.3"]
                  [matthiasn/birdwatch-specs "0.3.1"]
                  [matthiasn/systemd-watchdog "0.1.3"]
+                 [re-frame "0.9.2"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [ch.qos.logback/logback-classic "1.2.2"]
                  [hiccup "1.0.5"]
@@ -77,6 +78,6 @@
             {:id           "release"
              :source-paths ["src/cljc" "src/cljs"]
              :compiler     {:output-to     "resources/public/js/build/birdwatch.js"
-                            :optimizations :whitespace
+                            :optimizations :advanced
                             :externs       ["externs/misc.js"]
                             :pretty-print  false}}]})

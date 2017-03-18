@@ -1,6 +1,7 @@
 (ns birdwatch.state.initial
   (:require [birdwatch.util :as util]
-    #?(:clj  [clojure.data.priority-map :refer [priority-map-by]]
+    #?(:clj
+            [clojure.data.priority-map :refer [priority-map-by]]
        :cljs [tailrecursion.priority-map :refer [priority-map-by]])))
 
 (defn initial-state
@@ -17,6 +18,8 @@
    :total-tweet-count     0
    :sorted                :by-id
    :live                  true
+   :ts                    {:tweet-timestamps []}
+   :ts-data               []
    :by-followers          (priority-map-by >)
    :by-retweets           (priority-map-by >)
    :by-favorites          (priority-map-by >)

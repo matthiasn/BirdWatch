@@ -28,8 +28,7 @@
 (defn start-search
   "Initiates a new search."
   [initial-state]
-  (fn
-    [{:keys [cmp-state put-fn]}]
+  (fn [{:keys [cmp-state put-fn]}]
     (let [search (:search-text @cmp-state)
           s (if (= search "") "*" search)]
       (reset! cmp-state initial-state)
@@ -37,4 +36,5 @@
       (swap! cmp-state assoc :search s)
       (util/set-search-hash s)
       (start-percolator cmp-state put-fn)
-      (dotimes [_ 2] (load-prev cmp-state put-fn)))))
+      (load-prev cmp-state put-fn))
+    {}))

@@ -1,29 +1,31 @@
 (ns birdwatch.charts.ts-chart
   (:require [birdwatch.util :as util]
             [birdwatch.stats.timeseries :as ts]
+            [re-frame.core :refer [subscribe]]
+            [reagent.ratom :refer-macros [reaction]]
             [reagent.core :as r :refer [atom]]))
 
-(def ts-elem (util/by-id "timeseries1"))
-(def ts-w (aget ts-elem "offsetWidth"))
+(def ts-w 700)
 (def ts-h 100)
 
 (defn bar
   "Renders a vertical bar. Enables showing a label when the mouse is
    positioned above the bar."
-  [x y h w idx app]
+  [x y h w idx]
   [:rect {:x x :y (- y h) :fill "steelblue" :width w :height h
-          :on-mouse-enter #(swap! app assoc :label {:idx idx})
-          :on-mouse-leave #(swap! app assoc :label {})}])
+          ;:on-mouse-enter #(swap! app assoc :label {:idx idx})
+          ;:on-mouse-leave #(swap! app assoc :label {})
+          }])
 
 (defn barchart
   "Renders a bar chart, making use of the bar function above. Returns
    entire SVG element."
-  [indexed mx cnt w app]
+  [indexed mx cnt w]
   (let [gap (/ (/ ts-w 20) cnt)]
     [:svg {:width ts-w :height ts-h}
      [:g
       (for [[idx [k v]] indexed]
-        ^{:key k} [bar (* idx w) ts-h (* (/ v mx) ts-h) (- w gap) idx app])]]))
+        ^{:key k} [bar (* idx w) ts-h (* (/ v mx) ts-h) (- w gap) idx])]]))
 
 (defn labels
   "Renders a label for a bar chart. Makes use of Rickshaws CSS."
@@ -52,23 +54,18 @@
      [barchart indexed mx cnt w app]
      [labels bars mx cnt w (:label @app)]]))
 
-(defn ts-chart-state-fn
-  "Return clean initial component state atom."
-  [_]
-  (let [app (atom {:bars [] :label {}})]
-    (r/render-component [ts-chart app] ts-elem)
-    {:state app}))
-
-(defn state-pub-handler
-  "Handler for observed state snapshots, generates timeseries data from those
-   snapshots and replaces the previous timeseries data under the :bars key of
-   the local state."
-  [{:keys [current-state msg-payload]}]
-  {:new-state (assoc-in current-state [:bars] (ts/ts-data msg-payload))})
-
-(defn cmp-map
-  [cmp-id throttle-ms]
-  {:cmp-id            cmp-id
-   :state-fn          ts-chart-state-fn
-   :state-pub-handler state-pub-handler
-   :opts              {:throttle-ms throttle-ms}})
+(defn ts-chart2
+  "Renders time series chart consisting of SVG for the bars and a label.
+   Appearance is similar to the Rickshaw timeseries chart, which this
+   component replaced, except for the CSS."
+  []
+  (let [bars (subscribe [:ts-data])
+        indexed (reaction (vec (map-indexed vector @bars)))
+        mx (reaction (apply max (map (fn [[_ v]] v) @bars)))
+        cnt (reaction (count @bars))
+        w (reaction (when (pos? @cnt) (/ ts-w @cnt)))]
+    (fn ts-chart-render []
+      [:div.rickshaw_graph
+       [barchart @indexed @mx @cnt @w]
+       ;[labels bars mx cnt w (:label @app)]
+       ])))

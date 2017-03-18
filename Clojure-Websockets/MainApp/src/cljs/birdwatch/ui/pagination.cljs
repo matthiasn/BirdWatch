@@ -1,28 +1,34 @@
 (ns birdwatch.ui.pagination
-  (:require [matthiasn.systems-toolbox-ui.reagent :as r]))
+  (:require [re-frame.core :refer [subscribe]]))
 
-(defn- pag-item [idx app put-fn]
-  [:button.pure-button.not-rounded.button-xsmall
-   {:class (when (= idx (:page @app)) " pure-button-primary")
-    :on-click #(put-fn [:cmd/set-current-page idx])} idx])
+(defn pag-item
+  ""
+  [idx put-fn]
+  (let [page (subscribe [:page])]
+    (fn pag-render [idx put-fn]
+      [:button.pure-button.not-rounded.button-xsmall
+       {:class    (when (= idx @page) " pure-button-primary")
+        :on-click #(put-fn [:cmd/set-current-page idx])} idx])))
 
-(defn- pag-size-item [n app put-fn]
-  [:button.pure-button.not-rounded.button-xsmall
-   {:class (when (= n (:n @app)) " pure-button-primary")
-    :on-click #(put-fn [:cmd/set-page-size n])} n])
+(defn pag-size-item
+  ""
+  [p-size put-fn]
+  (let [n (subscribe [:n])]
+    (fn pag-size-render [p-size put-fn]
+      [:button.pure-button.not-rounded.button-xsmall
+       {:class    (when (= p-size @n) " pure-button-primary")
+        :on-click #(put-fn [:cmd/set-page-size p-size])} p-size])))
 
-(defn- pagination-view
-  [{:keys [observed put-fn]}]
-  [:div
-   [:button.pure-button.not-rounded.button-xsmall [:strong "Page:"]]
-   (for [idx (take 15 (range 1 (Math/floor (/ (:count @observed) (:n @observed)))))]
-     ^{:key idx} [pag-item idx observed put-fn])
-   [:button.pure-button.not-rounded.button-xsmall [:strong "per Page:"]]
-   (for [n [5 10 25 100]]
-     ^{:key (str "pag-size" n)} [pag-size-item n observed put-fn])])
-
-(defn cmp-map
-  [cmp-id]
-  (r/cmp-map {:cmp-id  cmp-id
-              :view-fn pagination-view
-              :dom-id  "pagination"}))
+(defn pagination-view
+  ""
+  [put-fn]
+  (let [count (subscribe [:count])
+        n (subscribe [:n])]
+    (fn pagination-render [put-fn]
+      [:div
+       [:button.pure-button.not-rounded.button-xsmall [:strong "Page:"]]
+       (for [idx (take 15 (range 1 (Math/floor (/ @count @n))))]
+         ^{:key idx} [pag-item idx put-fn])
+       [:button.pure-button.not-rounded.button-xsmall [:strong "per Page:"]]
+       (for [p-size [5 10 25 100]]
+         ^{:key (str "pag-size" p-size)} [pag-size-item p-size put-fn])])))

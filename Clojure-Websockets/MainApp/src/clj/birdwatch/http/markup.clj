@@ -28,10 +28,8 @@
       [:meta {:content "initial-scale=1.0, user-scalable=no, width=device-width"
               :name "viewport"}]
       [:title "BirdWatch"]
-
       (stylesheet "/bower_components/pure/pure.css")
       (stylesheet "/css/birdwatch.css")
-
       [:style (index-css dev?)]
       (stylesheet
         "https://fonts.googleapis.com/css?family=Lato&subset=latin,latin-ext")
@@ -39,32 +37,8 @@
               :rel  "shortcut icon"
               :type "image/png"}]]
      [:body
-      [:div.grid
-       [:div.wrapper
-        [:div.menu
-         [:h1 {:href ""} "Birdwatch"]
-         [:div
-          [:a {:href   "https://github.com/matthiasn/Birdwatch"
-               :target "_blank"} "GitHub"]]
-         [:div
-          [:a {:href   "https://leanpub.com/building-a-system-in-clojure"
-               :target "_blank"}
-           "About"]]]
-        [:div.controls
-         [:div#search]
-         [:div#pagination]
-         [:div#sort-buttons]]
-        [:div.left [:div#tweet-frame]]
-        [:div.right
-         [:div#timeseries1.timeseries]
-         [:div#wordCloud.cloud]
-         [:div#observer]
-         [:div#wordcount-barchart.barchart]
-         [:div#jvm-stats-frame]]
-        [:div.footer
-         [:div#total-tweet-count]
-         [:div#users-count]
-         [:div#count "Tweets: " [:span#tweet-count]]]]]
+      [:div#ui]
+      [:div#jvm-stats-frame]
       (script "/webjars/d3/3.5.17/d3.js")
       (script "/webjars/d3-cloud/1.2.1/build/d3.layout.cloud.js")
       (script "/js/wordcloud.js")

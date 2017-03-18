@@ -1,5 +1,6 @@
 (ns birdwatch.stats.timeseries
-  (:require [birdwatch.util :as util]))
+  (:require [birdwatch.util :as util]
+            [matthiasn.systems-toolbox.component :as st]))
 
 (defn date-round
   "Returns function that rounds the provided seconds since epoch down to the
@@ -19,11 +20,11 @@
    timespan between newest and oldest."
   [newest oldest]
   (cond
-   (> (- newest oldest) (* 20 day)) day  ;round by nearest day
-   (> (- newest oldest) (* 5 day))  qday ;round by nearest quarter day
-   (> (- newest oldest) (* 20 hr))  hr   ;round by nearest hour
-   (> (- newest oldest) (* 4 hr))   qhr  ;round by nearest quarter hour
-   :else                            m))  ;round by nearest minute
+    (> (- newest oldest) (* 20 day)) day                    ;round by nearest day
+    (> (- newest oldest) (* 5 day)) qday                    ;round by nearest quarter day
+    (> (- newest oldest) (* 20 hr)) hr                      ;round by nearest hour
+    (> (- newest oldest) (* 4 hr)) qhr                      ;round by nearest quarter hour
+    :else m))                                               ;round by nearest minute
 
 (defn empty-ts-map
   "Generates map with all rounded intervals between oldest and newest,
@@ -46,12 +47,21 @@
 (defn ts-data
   "Performs time series analysis by counting tweets in even intervals."
   [state]
-  (when (seq (:tweets-map state))
-    (let [tweets-by-id ((util/tweets-by-order :tweets-map :by-id) state 100000)]
-      (let [oldest (tweet-ts (last tweets-by-id))
-            newest (tweet-ts (first tweets-by-id))
-            interval (grouping-interval newest oldest)
-            rounder (date-round interval)]
-        (reduce count-into-map
-                (empty-ts-map newest oldest interval)
-                (map #(rounder (tweet-ts %)) tweets-by-id))))))
+  (let [tweet-timestamps (:tweet-timestamps (:ts state))
+        oldest (:oldest (:ts state))
+        newest (:newest (:ts state))
+        interval (grouping-interval newest oldest)
+        rounder (date-round interval)]
+    (reduce count-into-map
+            (empty-ts-map newest oldest interval)
+            (map #(rounder %) tweet-timestamps))))
+
+(defn ts-data2
+  "Performs time series analysis by counting tweets in even intervals."
+  [state tweet]
+  (let [tweet-timestamps (:tweet-timestamps (:ts state))
+        oldest (:oldest (:ts state))
+        newest (:newest (:ts state))
+        interval (grouping-interval newest oldest)
+        rounder (date-round interval)]
+    (count-into-map (:ts-data state) (rounder (tweet-ts tweet)))))

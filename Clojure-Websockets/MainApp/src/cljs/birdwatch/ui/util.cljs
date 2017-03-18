@@ -21,49 +21,6 @@
   (let [time-string (.fromNow (js/moment. date "ddd MMM DD HH:mm:ss Z YYYY") true)]
     (if (= time-string "a few seconds") "just now" time-string)))
 
-(def twitter-url "https://twitter.com/")
-
-(defn a-blank
-  "Creates HTML string for a link that opens in a new tab in the browser."
-  [url text]
-  (str "<a href='" url "' target='_blank'>" text "</a>"))
-
-(defn- url-replacer
-  "Replaces URL occurrences in tweet texts with HTML (including links)."
-  [acc entity]
-  (s/replace acc (:url entity) (a-blank (:url entity) (:display_url entity))))
-
-(defn- hashtags-replacer
-  "Replaces hashtags in tweet text with HTML (including links)."
-  [acc entity]
-  (let [hashtag (:text entity)
-        f-hashtag (str "#" hashtag)]
-    (s/replace acc f-hashtag (a-blank (str twitter-url "search?q=%23" hashtag) f-hashtag))))
-
-(defn- mentions-replacer
-  "Replaces user mentions in tweet text with HTML (including links)."
-  [acc entity]
-  (let [screen-name (:screen_name entity)
-        f-screen-name (str "@" screen-name)]
-    (s/replace acc f-screen-name (a-blank (str twitter-url screen-name) f-screen-name))))
-
-(defn- reducer
-  "Generic reducer, allows calling specified function for each item in the collection."
-  [text coll fun]
-  (reduce fun text coll))
-
-(defn format-tweet
-  "Formats tweet text for display by running multiple reducers."
-  [tweet]
-  (let [{:keys [urls media user_mentions hashtags]} (:entities tweet)]
-    (assoc tweet :html-text
-      (-> (:text tweet)
-          (reducer , urls url-replacer)
-          (reducer , media url-replacer)
-          (reducer , user_mentions mentions-replacer)
-          (reducer , hashtags hashtags-replacer)
-          (s/replace , "RT " "<strong>RT </strong>")))))
-
 (defn entity-count
   "Gets count of specified entity from either tweet or, if exists, original (retweeted) tweet."
   [tweet state k s]
@@ -96,8 +53,11 @@
 
 (defn tweets-by-order
   "Finds top n tweets by specified order."
-  [order state n skip]
-  (map (fn [[k _]] (get (:tweets-map state) k {:id_str (name k)}))
-       (->> (order state)
-            (drop (* n skip) ,)
-            (take n ,))))
+  [state]
+  (let [order (:sorted state)
+        n (:n state)
+        skip (dec (:page state))]
+    (map (fn [[k _]] (get (:tweets-map state) k {:id_str (name k)}))
+         (->> (order state)
+              (drop (* n skip))
+              (take n)))))

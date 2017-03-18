@@ -20,15 +20,10 @@
 
 (defn get-words
   "get vector of maps with word as :key and count as :value"
-  [state n]
+  [words n]
   (vec (map
-        (fn [w] (let [[k v] w] {:key k :value v}))
-        (take n (:words-sorted-by-count state)))))
-
-(defn get-words2
-  "get vector of maps with word as :key and count as :value"
-  [state n]
-  (vec (take n (:words-sorted-by-count state))))
+         (fn [w] (let [[k v] w] {:key k :value v}))
+         (take n words))))
 
 (defn words-in-tweet
   "process tweet: split, filter, lower case, replace punctuation, add word"

@@ -81,9 +81,10 @@
         page (dec (:page state))]
     (when order
       (let [tweets (util/tweets-by-order order state n page)]
-        [:div (for [t tweets] (if (:user t)
-                                ^{:key (:id_str t)} [tweet-view t state]
-                                ^{:key (:id_str t)} [missing-tweet t put-fn]))]))))
+        [:div
+         (for [t tweets] (if (:user t)
+                           ^{:key (:id_str t)} [tweet-view t state]
+                           ^{:key (:id_str t)} [missing-tweet t put-fn]))]))))
 
 (defn tweets-state-fn
   "Return clean initial component state atom."

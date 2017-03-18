@@ -16,5 +16,5 @@ pom.xml.asc
 !TLS/alpn-boot-8.1.7.v20160121.jar
 
 twitterconf.edn
-resources/public/js/build/
+resources/public/
 resources/public/bower_components/

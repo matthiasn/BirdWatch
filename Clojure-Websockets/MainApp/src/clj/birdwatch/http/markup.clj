@@ -29,10 +29,8 @@
               :name "viewport"}]
       [:title "BirdWatch"]
 
-      ;(stylesheet "/bower_components/pure/pure.css")
-      ;(stylesheet "/bower_components/pure/grids-responsive.css")
-      ;(stylesheet "/css/birdwatch.css")
-      (stylesheet "/css/birdwatch.min.css")
+      (stylesheet "/bower_components/pure/pure.css")
+      (stylesheet "/css/birdwatch.css")
 
       [:style (index-css dev?)]
       (stylesheet
@@ -41,37 +39,32 @@
               :rel  "shortcut icon"
               :type "image/png"}]]
      [:body
-      [:div.header
-       [:div.home-menu.pure-menu.pure-menu-open.pure-menu-horizontal.pure-menu-fixed
-        [:a.pure-menu-heading {:href ""} "Birdwatch"]
-        [:ul [:li [:a {:href   "https://github.com/matthiasn/Birdwatch"
-                       :target "_blank"} "GitHub"]]
-         [:li [:a {:href   "https://leanpub.com/building-a-system-in-clojure"
-                   :target "_blank"}
-               "About"]]]]]
-      [:div.content-wrapper
-       [:div.l-box
-        [:div#count "Tweets: " [:span#tweet-count]]
-        [:div#search]
-        [:div#pagination]
-        [:div#sort-buttons]]
-       [:div.pure-g
-        [:div.pure-u-1.pure-u-sm-1-2.pure-u-lg-5-12.l-box [:div#tweet-frame]]
-        [:div.pure-u-1.pure-u-sm-1-2.pure-u-lg-7-12.l-box
+      [:div.grid
+       [:div.wrapper
+        [:div.menu
+         [:h1 {:href ""} "Birdwatch"]
+         [:div
+          [:a {:href   "https://github.com/matthiasn/Birdwatch"
+               :target "_blank"} "GitHub"]]
+         [:div
+          [:a {:href   "https://leanpub.com/building-a-system-in-clojure"
+               :target "_blank"}
+           "About"]]]
+        [:div.controls
+         [:div#search]
+         [:div#pagination]
+         [:div#sort-buttons]]
+        [:div.left [:div#tweet-frame]]
+        [:div.right
          [:div#timeseries1.timeseries]
-         [:hr]
          [:div#wordCloud.cloud]
-         [:hr]
-         [:h5 "word frequency"]
+         [:div#observer]
          [:div#wordcount-barchart.barchart]
-         [:hr]
-         [:div#users-count]
+         [:div#jvm-stats-frame]]
+        [:div.footer
          [:div#total-tweet-count]
-         [:hr]
-         [:br] [:br] [:br] [:br] [:br] [:br] [:br]
-         [:div#jvm-stats-frame]
-         [:br] [:br] [:br] [:br] [:br]
-         [:div#observer]]]]
+         [:div#users-count]
+         [:div#count "Tweets: " [:span#tweet-count]]]]]
       (script "/webjars/d3/3.5.17/d3.js")
       (script "/webjars/d3-cloud/1.2.1/build/d3.layout.cloud.js")
       (script "/js/wordcloud.js")

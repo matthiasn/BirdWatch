@@ -38,9 +38,8 @@
               :type "image/png"}]]
      [:body
       [:div#ui]
-      [:div#jvm-stats-frame]
       (script "/webjars/d3/3.5.17/d3.js")
-      (script "/webjars/d3-cloud/1.2.1/build/d3.layout.cloud.js")
+      (script "/webjars/d3-cloud/1.2.4/build/d3.layout.cloud.js")
       (script "/js/wordcloud.js")
       (script "/js/build/birdwatch.js")
 
@@ -58,8 +57,7 @@
                     :tweet/prev-chunk
                     :tweet/missing-tweet
                     :stats/users-count
-                    :stats/total-tweet-count
-                    :stats/jvm}
+                    :stats/total-tweet-count}
    :undertow-cfg  (if (and ssl-keystore key-password)
                     {:ssl-port     (get (System/getenv) "SSL_PORT" 8443)
                      :keystore     ssl-keystore

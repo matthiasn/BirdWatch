@@ -1,4 +1,4 @@
-(defproject matthiasn/birdwatch-specs "0.3.1"
+(defproject matthiasn/birdwatch-specs "0.3.2"
   :description "Specs for BirdWatch"
   :url "https://github.com/matthiasn/Birdwatch"
   :license {:name "GNU General Public License" :url "http://www.gnu.org/licenses/gpl-3.0.en.html"}

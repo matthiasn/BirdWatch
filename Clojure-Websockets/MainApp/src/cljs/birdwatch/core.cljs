@@ -10,7 +10,6 @@
             [birdwatch.state.comp :as state]
             [matthiasn.systems-toolbox.switchboard :as sb]
             [matthiasn.systems-toolbox-sente.client :as sente]
-            [matthiasn.systems-toolbox-metrics.jvmstats :as jvmstats]
             [cljsjs.moment]))
 
 (enable-console-print!)
@@ -24,7 +23,6 @@
     switchboard
     [[:cmd/init-comp
       #{(sente/cmp-map :client/ws-cmp {:relay-types #{:cmd/query :cmd/percolate}})
-        (jvmstats/cmp-map :client/jvmstats-cmp {:dom-id "jvm-stats-frame"})
         (state/cmp-map :client/state-cmp)
         (ui/cmp-map :client/ui-cmp)
         ;(cloud/cmp-map :client/cloud-cmp 5000) ; Chart: word cloud (D3.js)
@@ -39,9 +37,6 @@
                           ;:client/cloud-cmp
                           }
                   :to   :client/state-cmp}]
-
-     [:cmd/route {:from :client/ws-cmp
-                  :to   :client/jvmstats-cmp}]
 
      [:cmd/observe-state
       {:from :client/state-cmp

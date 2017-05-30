@@ -1,6 +1,5 @@
 (ns birdwatch.ui.sort
-  (:require [matthiasn.systems-toolbox-ui.reagent :as r]
-            [re-frame.core :refer [subscribe]]))
+  (:require [re-frame.core :refer [subscribe]]))
 
 (def sort-orders {:by-id               "latest"
                   :by-followers        "followers"

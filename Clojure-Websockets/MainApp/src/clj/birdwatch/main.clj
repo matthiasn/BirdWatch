@@ -18,8 +18,7 @@
             [matthiasn.systems-toolbox.switchboard :as sb]
             [matthiasn.systems-toolbox.scheduler :as sched]
             [matthiasn.systems-toolbox-sente.server :as sente]
-            [matthiasn.systems-toolbox-redis.receiver :as redis]
-            [matthiasn.systems-toolbox-metrics.metrics :as metrics])
+            [matthiasn.systems-toolbox-redis.receiver :as redis])
   (:gen-class))
 
 (pretty/install-pretty-logging)
@@ -48,15 +47,13 @@
         (sched/cmp-map :backend/scheduler-cmp)
         (pc/cmp-map :backend/persistence-cmp conf)
         (redis/cmp-map :backend/interop-cmp (:redis conf))
-        (perc/cmp-map :backend/percolator-cmp conf)
-        (metrics/cmp-map :backend/metrics-cmp)}]
+        (perc/cmp-map :backend/percolator-cmp conf)}]
 
      [:cmd/route {:from #{:backend/scheduler-cmp :backend/ws-cmp}
                   :to   :backend/persistence-cmp}]
 
      [:cmd/route {:from #{:backend/persistence-cmp
-                          :backend/percolator-cmp
-                          :backend/metrics-cmp}
+                          :backend/percolator-cmp}
                   :to   :backend/ws-cmp}]
 
      [:cmd/route {:from #{:backend/interop-cmp
@@ -66,9 +63,6 @@
 
      [:cmd/observe-state {:from :backend/ws-cmp
                           :to   :backend/percolator-cmp}]
-
-     [:cmd/route {:from :backend/scheduler-cmp
-                  :to   :backend/metrics-cmp}]
 
      [:cmd/send {:to  :backend/scheduler-cmp
                  :msg [:cmd/schedule-new {:timeout 5000

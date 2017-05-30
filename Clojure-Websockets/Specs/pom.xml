@@ -3,7 +3,7 @@
   <groupId>matthiasn</groupId>
   <artifactId>birdwatch-specs</artifactId>
   <packaging>jar</packaging>
-  <version>0.3.1</version>
+  <version>0.3.2</version>
   <name>birdwatch-specs</name>
   <description>Specs for BirdWatch</description>
   <url>https://github.com/matthiasn/Birdwatch</url>

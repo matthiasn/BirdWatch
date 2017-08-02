@@ -4,4 +4,7 @@
  :pidfile-name "birdwatch.pid"
  :redis        {:host  "127.0.0.1"
                 :port  6379
-                :topic "birdwatch"}}
+                :topic "birdwatch"}
+ :kafka        {:bootstrap-servers "localhost:9092"
+                :group-id          "group1"
+                :topic             "birdwatch"}}

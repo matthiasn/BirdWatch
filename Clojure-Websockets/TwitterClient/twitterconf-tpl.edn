@@ -14,6 +14,6 @@
  :tw-check-interval-sec    10
  :tw-restart-wait          60
  :pidfile-name             "twitterclient.pid"
- :redis                    {:host  "127.0.0.1"
-                            :port  6379
-                            :topic "birdwatch"}}
+ :kafka                    {:bootstrap-servers "localhost:9092"
+                            :group-id          "group1"
+                            :topic             "birdwatch"}}

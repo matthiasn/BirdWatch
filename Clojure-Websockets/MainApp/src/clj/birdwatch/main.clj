@@ -18,6 +18,7 @@
             [matthiasn.systems-toolbox.switchboard :as sb]
             [matthiasn.systems-toolbox.scheduler :as sched]
             [matthiasn.systems-toolbox-sente.server :as sente]
+            [matthiasn.systems-toolbox-kafka.kafka-consumer :as kc]
             [matthiasn.systems-toolbox-redis.receiver :as redis])
   (:gen-class))
 
@@ -46,7 +47,7 @@
       #{(sente/cmp-map :backend/ws-cmp markup/sente-map)
         (sched/cmp-map :backend/scheduler-cmp)
         (pc/cmp-map :backend/persistence-cmp conf)
-        (redis/cmp-map :backend/interop-cmp (:redis conf))
+        (kc/cmp-map :backend/kafka-consumer {:cfg (:kafka conf)})
         (perc/cmp-map :backend/percolator-cmp conf)}]
 
      [:cmd/route {:from #{:backend/scheduler-cmp :backend/ws-cmp}
@@ -56,7 +57,7 @@
                           :backend/percolator-cmp}
                   :to   :backend/ws-cmp}]
 
-     [:cmd/route {:from #{:backend/interop-cmp
+     [:cmd/route {:from #{:backend/kafka-consumer
                           :backend/ws-cmp
                           :backend/scheduler-cmp}
                   :to   :backend/percolator-cmp}]

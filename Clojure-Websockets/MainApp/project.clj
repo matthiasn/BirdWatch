@@ -14,6 +14,7 @@
                  [matthiasn/systems-toolbox "0.6.10"]
                  [matthiasn/systems-toolbox-sente "0.6.15"]
                  [matthiasn/systems-toolbox-redis "0.6.4"]
+                 [matthiasn/systems-toolbox-kafka "0.6.2"]
                  [matthiasn/birdwatch-specs "0.3.2"]
                  [matthiasn/systemd-watchdog "0.1.3"]
                  [re-frame "0.9.4"]

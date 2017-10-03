@@ -1,4 +1,4 @@
-#BirdWatch  
+# BirdWatch  
 BirdWatch is a reactive web application for visualizing a stream of live tweets. It started out as a playground for trying out different ways of solving the same problem. There is a server-side application which subscribes to the Twitter Streaming API and then allows a client-side single-page application to perform a live search, meaning that a search on historical tweets up until now will be performed and then updated as new tweets matching the same search are retrieved.
 
 ## Implementations
@@ -27,4 +27,4 @@ Java and .NET applications. Take a look at YourKit's leading software products:
 <a href="http://www.yourkit.com/.net/profiler/index.jsp">YourKit .NET Profiler</a>.
 
 ## License
-Copyright © 2014-2016 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the **GNU GENERAL PUBLIC LICENSE**, Version 3. See separate LICENSE file.
+Copyright © 2014-2017 **[Matthias Nehlsen](http://www.matthiasnehlsen.com)**. Distributed under the **GNU GENERAL PUBLIC LICENSE**, Version 3. See separate LICENSE file.

@@ -17,6 +17,7 @@
             [matthiasn.systemd-watchdog.core :as wd]
             [matthiasn.systems-toolbox.switchboard :as sb]
             [matthiasn.systems-toolbox.scheduler :as sched]
+            [matthiasn.systems-toolbox-kafka.kafka-producer2 :as kp2]
             [matthiasn.systems-toolbox-sente.server :as sente]
             [matthiasn.systems-toolbox-kafka.kafka-consumer :as kc]
             [matthiasn.systems-toolbox-redis.receiver :as redis])
@@ -25,7 +26,21 @@
 (pretty/install-pretty-logging)
 (pretty/install-uncaught-exception-handler)
 
-(defonce switchboard (sb/component :backend/switchboard))
+(defonce switchboard (sb/component :main/switchboard))
+
+(defn make-observable [components]
+  (if (System/getenv "OBSERVER")
+    (let [cfg {:cfg         {:bootstrap-servers "localhost:9092"
+                             :auto-offset-reset "latest"
+                             :topic             "firehose"}
+               :relay-types #{:firehose/cmp-put
+                              :firehose/cmp-publish-state
+                              :firehose/cmp-recv}}
+          mapper #(assoc-in % [:opts :msgs-on-firehose] true)
+          components (set (mapv mapper components))
+          firehose-kafka (kp2/cmp-map :main/kafka-firehose cfg)]
+      (conj components firehose-kafka))
+    components))
 
 (defn restart!
   "Starts (or restarts) a system built out of the specified subsystems. The
@@ -41,44 +56,48 @@
    Then, calling this function again will restart the system while maintaining
    the state of the individual subsystems."
   [conf]
-  (sb/send-mult-cmd
-    switchboard
-    [[:cmd/init-comp
-      #{(sente/cmp-map :backend/ws-cmp markup/sente-map)
-        (sched/cmp-map :backend/scheduler-cmp)
-        (pc/cmp-map :backend/persistence-cmp conf)
-        (kc/cmp-map :backend/kafka-consumer {:cfg (:kafka conf)})
-        (perc/cmp-map :backend/percolator-cmp conf)}]
+  (let [cmps #{(sente/cmp-map :main/ws-cmp markup/sente-map)
+               (sched/cmp-map :main/scheduler-cmp)
+               (pc/cmp-map :main/persistence-cmp conf)
+               (kc/cmp-map :main/kafka-consumer {:cfg (:kafka conf)})
+               (perc/cmp-map :main/percolator-cmp conf)}
+        cmps (make-observable cmps)]
+    (sb/send-mult-cmd
+      switchboard
+      [[:cmd/init-comp cmps]
 
-     [:cmd/route {:from #{:backend/scheduler-cmp :backend/ws-cmp}
-                  :to   :backend/persistence-cmp}]
+       [:cmd/route {:from #{:main/scheduler-cmp :main/ws-cmp}
+                    :to   :main/persistence-cmp}]
 
-     [:cmd/route {:from #{:backend/persistence-cmp
-                          :backend/percolator-cmp}
-                  :to   :backend/ws-cmp}]
+       [:cmd/route {:from #{:main/persistence-cmp
+                            :main/percolator-cmp}
+                    :to   :main/ws-cmp}]
 
-     [:cmd/route {:from #{:backend/kafka-consumer
-                          :backend/ws-cmp
-                          :backend/scheduler-cmp}
-                  :to   :backend/percolator-cmp}]
+       [:cmd/route {:from #{:main/kafka-consumer
+                            :main/ws-cmp
+                            :main/scheduler-cmp}
+                    :to   :main/percolator-cmp}]
 
-     [:cmd/observe-state {:from :backend/ws-cmp
-                          :to   :backend/percolator-cmp}]
+       [:cmd/observe-state {:from :main/ws-cmp
+                            :to   :main/percolator-cmp}]
 
-     [:cmd/send {:to  :backend/scheduler-cmp
-                 :msg [:cmd/schedule-new {:timeout 5000
-                                          :message [:schedule/count-indexed]
-                                          :repeat  true}]}]
-     [:cmd/send {:to  :backend/scheduler-cmp
-                 :msg [:cmd/schedule-new {:timeout 3000
-                                          :message [:schedule/count-users]
-                                          :repeat  true}]}]
-     [:cmd/send {:to  :backend/scheduler-cmp
-                 :msg [:cmd/schedule-new
-                       {:timeout 5000
-                        :message (with-meta [:cmd/get-jvm-stats]
-                                            {:sente-uid :broadcast})
-                        :repeat  true}]}]]))
+       [:cmd/send {:to  :main/scheduler-cmp
+                   :msg [:cmd/schedule-new {:timeout 5000
+                                            :message [:schedule/count-indexed]
+                                            :repeat  true}]}]
+       [:cmd/send {:to  :main/scheduler-cmp
+                   :msg [:cmd/schedule-new {:timeout 3000
+                                            :message [:schedule/count-users]
+                                            :repeat  true}]}]
+       [:cmd/send {:to  :main/scheduler-cmp
+                   :msg [:cmd/schedule-new
+                         {:timeout 5000
+                          :message (with-meta [:cmd/get-jvm-stats]
+                                              {:sente-uid :broadcast})
+                          :repeat  true}]}]
+
+       (when (System/getenv "OBSERVER")
+         [:cmd/attach-to-firehose :main/kafka-firehose])])))
 
 (defn -main
   "Starts the application from command line. Also saves and logs process ID.

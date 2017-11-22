@@ -5,6 +5,7 @@
             [birdwatch-tc.twitterclient.twitterclient :as tc]
             [matthiasn.systems-toolbox.switchboard :as sb]
             [matthiasn.systems-toolbox-kafka.kafka-producer :as kp]
+            [matthiasn.systems-toolbox-kafka.kafka-producer2 :as kp2]
             [matthiasn.systems-toolbox.scheduler :as sched]
             [clojure.edn :as edn]
             [clojure.tools.logging :as log]
@@ -15,6 +16,20 @@
 
 (pretty/install-pretty-logging)
 (pretty/install-uncaught-exception-handler)
+
+(defn make-observable [components]
+  (if (System/getenv "OBSERVER")
+    (let [cfg {:cfg         {:bootstrap-servers "localhost:9092"
+                             :auto-offset-reset "latest"
+                             :topic             "firehose"}
+               :relay-types #{:firehose/cmp-put
+                              :firehose/cmp-publish-state
+                              :firehose/cmp-recv}}
+          mapper #(assoc-in % [:opts :msgs-on-firehose] true)
+          components (set (mapv mapper components))
+          firehose-kafka (kp2/cmp-map :tc/kafka-firehose cfg)]
+      (conj components firehose-kafka))
+    components))
 
 (defn restart!
   "Starts (or restarts) a system built out of the specified subsystems. The
@@ -31,27 +46,37 @@
    the state of the individual subsystems."
   [conf]
   (let [switchboard (sb/component :tc/switchboard)
-        kafka-cfg {:cfg (:kafka conf) :relay-types #{:perc/matches}}]
+        kafka-cfg {:cfg (:kafka conf) :relay-types #{:perc/matches}}
+        cmps #{(tc/cmp-map :tc/client-cmp conf)
+               (sched/cmp-map :tc/scheduler-cmp)
+               (pc/cmp-map :tc/persistence-cmp conf)
+               (kp/cmp-map :tc/kafka-prod kafka-cfg)
+               (perc/cmp-map :tc/percolator-cmp conf)}
+        cmps (make-observable cmps)]
     (sb/send-mult-cmd
       switchboard
-      [[:cmd/init-comp
-        #{(tc/cmp-map :tc/client-cmp conf)
-          (sched/cmp-map :tc/scheduler-cmp)
-          (pc/cmp-map :tc/persistence-cmp conf)
-          (kp/cmp-map :tc/kafka-prod kafka-cfg)
-          (perc/cmp-map :tc/percolator-cmp conf)}]
-       [:cmd/route {:from :tc/client-cmp :to #{:tc/persistence-cmp
-                                               :tc/percolator-cmp}}]
+      [[:cmd/init-comp cmps]
+
+       [:cmd/route {:from :tc/client-cmp
+                    :to   #{:tc/persistence-cmp
+                            :tc/percolator-cmp}}]
+
        [:cmd/route {:from :tc/percolator-cmp
-                    :to   #{:tc/interop-cmp :tc/kafka-prod}}]
-       [:cmd/route {:from :tc/scheduler-cmp :to :tc/client-cmp}]
+                    :to   #{:tc/interop-cmp
+                            :tc/kafka-prod}}]
+
+       [:cmd/route {:from :tc/scheduler-cmp
+                    :to   :tc/client-cmp}]
 
        [:cmd/send {:to  :tc/scheduler-cmp
                    :msg [:cmd/schedule-new
                          {:timeout 60000
                           :id      :schedule/t-conn-alive?
                           :message [:schedule/t-conn-alive?]
-                          :repeat  true}]}]])))
+                          :repeat  true}]}]
+
+       (when (System/getenv "OBSERVER")
+         [:cmd/attach-to-firehose :tc/kafka-firehose])])))
 
 (defn -main
   "Starts the application from command line. Also saves and logs process ID.

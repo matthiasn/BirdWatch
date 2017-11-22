@@ -16,31 +16,34 @@
 
 (defonce switchboard (sb/component :client/switchboard))
 
-(defn init
-  "Initialize components and wire communication between them."
-  []
-  (sb/send-mult-cmd
-    switchboard
-    [[:cmd/init-comp
-      #{(sente/cmp-map :client/ws-cmp {:relay-types #{:cmd/query :cmd/percolate}})
-        (state/cmp-map :client/state-cmp)
-        (ui/cmp-map :client/ui-cmp)
-        ;(cloud/cmp-map :client/cloud-cmp 5000) ; Chart: word cloud (D3.js)
-        }]
+(defn make-observable [components]
+  (let [mapper #(assoc-in % [:opts :msgs-on-firehose] true)]
+    (set (mapv mapper components))))
 
-     [:cmd/route {:from #{:client/state-cmp
-                          :client/ui-cmp}
-                  :to   :client/ws-cmp}]
+(defn init []
+  (let [ws-cfg {:relay-types #{:cmd/query :cmd/percolate}}
+        sente-firehose-cfg {:opts {:in-chan [:buffer 100]}}
+        cmps #{(sente/cmp-map :client/ws-cmp ws-cfg)
+               (state/cmp-map :client/state-cmp)
+               (sente/cmp-map :client/ws-firehose sente-firehose-cfg)
+               (ui/cmp-map :client/ui-cmp)}
+        cmps (make-observable cmps)]
+    (sb/send-mult-cmd
+      switchboard
+      [[:cmd/init-comp cmps]
 
-     [:cmd/route {:from #{:client/ws-cmp
-                          :client/ui-cmp
-                          ;:client/cloud-cmp
-                          }
-                  :to   :client/state-cmp}]
+       [:cmd/route {:from #{:client/state-cmp
+                            :client/ui-cmp}
+                    :to   :client/ws-cmp}]
 
-     [:cmd/observe-state
-      {:from :client/state-cmp
-       :to   #{;:client/cloud-cmp
-               :client/ui-cmp}}]]))
+       [:cmd/route {:from #{:client/ws-cmp
+                            :client/ui-cmp}
+                    :to   :client/state-cmp}]
+
+       [:cmd/observe-state
+        {:from :client/state-cmp
+         :to   #{:client/ui-cmp}}]
+
+       [:cmd/attach-to-firehose :client/ws-firehose]])))
 
 (init)

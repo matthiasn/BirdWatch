@@ -17,8 +17,6 @@ There are a couple of blog posts covering this application. The best starting po
 
 Check out **[matthiasnehlsen.com](http://matthiasnehlsen.com)** and subscribe to the newsletter if you want to stay up to date.
 
-## YourKit
-
 ![YourKit Logo](http://www.yourkit.com/images/yklogo.png)
 
 YourKit is kindly supporting open source projects with its full-featured Java Profiler.

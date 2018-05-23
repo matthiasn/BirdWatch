@@ -8,7 +8,6 @@ On the server side, there are currently two different implementations:
 
 2. **[Clojure](https://github.com/clojure/clojure)** application communicating with the client over Websockets. This application makes use of my **[systems-toolbox](https://github.com/matthiasn/systems-toolbox)** library, which it uses extensively on both the server and the **[ClojureScript](https://github.com/clojure/clojurescript)** client. **[Read more](./Clojure-Websockets/)**
 
-
 ## Installation
 Installation instructions live with the respective implementations.
 
@@ -19,6 +18,8 @@ There are a couple of blog posts covering this application. The best starting po
 Check out **[matthiasnehlsen.com](http://matthiasnehlsen.com)** and subscribe to the newsletter if you want to stay up to date.
 
 ## YourKit
+
+![YourKit Logo](http://www.yourkit.com/images/yklogo.png)
 
 YourKit is kindly supporting open source projects with its full-featured Java Profiler.
 YourKit, LLC is the creator of innovative and intelligent tools for profiling

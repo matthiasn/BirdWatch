@@ -25,7 +25,7 @@
   (fn [step]
     (let [buff (atom "")]
       (fn
-        ([r] (step r))
+        ([r] (step r @buff))
         ([r x]
          (let [json-lines (-> (str @buff x)
                               (insert-newline)
